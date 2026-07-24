@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#102a43" />
+    <meta
+      name="description"
+      content="Studio5 Ink & PDF Prototype لاختبار القلم والحفظ والاستعادة على MatePad."
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Studio5 — Ink & PDF Prototype</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand">
+        <img src="./assets/icon.svg" alt="" width="42" height="42" />
+        <div>
+          <div class="brand-line">
+            <h1>Studio5</h1>
+            <span class="phase-badge">Prototype P1</span>
+          </div>
+          <p>اختبار القلم، PDF، الحفظ والاستعادة</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span id="saveState" class="save-state" role="status" aria-live="polite">جاهز</span>
+        <button id="installButton" class="ghost-button" type="button" hidden>
+          تثبيت التطبيق
+        </button>
+        <button id="diagnosticsButton" class="ghost-button" type="button">
+          تقرير الاختبار
+        </button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <aside class="tool-panel" aria-label="أدوات الرسم">
+        <section class="tool-section">
+          <h2>الملف</h2>
+          <label class="file-button" for="pdfInput">
+            <span>فتح PDF</span>
+            <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
+          </label>
+          <p id="documentName" class="muted">لم يُفتح ملف بعد</p>
+        </section>
+
+        <section class="tool-section">
+          <h2>الأداة</h2>
+          <div class="segmented-control" role="group" aria-label="اختيار أداة الرسم">
+            <button class="tool-button active" data-tool="pen" type="button">قلم</button>
+            <button class="tool-button" data-tool="eraser" type="button">ممحاة</button>
+            <button class="tool-button" data-tool="hand" type="button">تحريك</button>
+          </div>
+
+          <label class="field-row" for="colorInput">
+            <span>اللون</span>
+            <input id="colorInput" type="color" value="#102a43" />
+          </label>
+
+          <label class="field-stack" for="sizeInput">
+            <span>السماكة: <strong id="sizeValue">3</strong></span>
+            <input id="sizeInput" type="range" min="1" max="14" step="0.5" value="3" />
+          </label>
+
+          <label class="switch-row" for="penOnlyInput">
+            <span>
+              <strong>قلم فقط</strong>
+              <small>يرفض لمس الكف أثناء الرسم</small>
+            </span>
+            <input id="penOnlyInput" type="checkbox" checked />
+          </label>
+        </section>
+
+        <section class="tool-section">
+          <h2>المحاولة</h2>
+          <div class="button-grid">
+            <button id="undoButton" type="button" disabled>تراجع</button>
+            <button id="redoButton" type="button" disabled>إعادة</button>
+            <button id="clearButton" class="danger-button" type="button" disabled>
+              مسح الصفحة
+            </button>
+          </div>
+        </section>
+
+        <section class="tool-section session-card">
+          <h2>قياس الجلسة</h2>
+          <dl>
+            <div>
+              <dt>نوع المؤشر</dt>
+              <dd id="pointerTypeMetric">—</dd>
+            </div>
+            <div>
+              <dt>الضغط</dt>
+              <dd id="pressureMetric">لم يُختبر</dd>
+            </div>
+            <div>
+              <dt>عينات القلم</dt>
+              <dd id="sampleMetric">0</dd>
+            </div>
+            <div>
+              <dt>آخر حفظ</dt>
+              <dd id="saveMetric">—</dd>
+            </div>
+          </dl>
+        </section>
+      </aside>
+
+      <section class="workspace-card" aria-label="مساحة PDF والرسم">
+        <div class="workspace-toolbar">
+          <div class="page-controls">
+            <button id="previousPageButton" type="button" disabled>السابق</button>
+            <label>
+              صفحة
+              <input id="pageInput" type="number" min="1" value="1" disabled />
+              من <span id="pageCount">0</span>
+            </label>
+            <button id="nextPageButton" type="button" disabled>التالي</button>
+          </div>
+
+          <div class="zoom-controls">
+            <button id="zoomOutButton" type="button" disabled aria-label="تصغير">−</button>
+            <output id="zoomOutput">100%</output>
+            <button id="zoomInButton" type="button" disabled aria-label="تكبير">+</button>
+            <button id="fitButton" type="button" disabled>ملاءمة</button>
+          </div>
+        </div>
+
+        <div id="workspaceViewport" class="workspace-viewport">
+          <div id="emptyState" class="empty-state">
+            <div class="empty-icon" aria-hidden="true">✦</div>
+            <h2>ابدأ بملزمة أو ورقة تمرين</h2>
+            <p>
+              افتح ملف PDF، اكتب فوقه بالقلم، ثم أغلق التطبيق وافتحه للتأكد أن
+              الملف والحبر رجعا بدون فقدان.
+            </p>
+            <label class="primary-button" for="pdfInput">اختيار ملف PDF</label>
+          </div>
+
+          <div id="pageStage" class="page-stage" hidden>
+            <canvas id="pdfCanvas" aria-label="صفحة PDF"></canvas>
+            <canvas id="inkCanvas" aria-label="طبقة الحبر"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="diagnosticsDialog">
+      <form method="dialog">
+        <div class="dialog-header">
+          <div>
+            <span class="eyebrow">Prototype P1</span>
+            <h2>تقرير اختبار الجهاز</h2>
+          </div>
+          <button class="close-button" value="cancel" aria-label="إغلاق">×</button>
+        </div>
+
+        <div class="diagnostics-form">
+          <label>
+            طراز الجهاز
+            <input id="deviceModelInput" type="text" placeholder="Huawei MatePad ..." />
+          </label>
+          <label>
+            إصدار النظام
+            <input id="systemVersionInput" type="text" placeholder="HarmonyOS / Android" />
+          </label>
+          <label>
+            نوع القلم
+            <input id="stylusModelInput" type="text" placeholder="M-Pencil ..." />
+          </label>
+          <label>
+            النتيجة الذاتية
+            <select id="subjectiveResultInput">
+              <option value="not-tested">لم يُختبر</option>
+              <option value="pass">Pass — مريح</option>
+              <option value="degraded">Degraded — مقبول بقيود</option>
+              <option value="fail">Fail — غير عملي</option>
+            </select>
+          </label>
+          <label class="wide-field">
+            ملاحظاتك
+            <textarea
+              id="testerNotesInput"
+              rows="4"
+              placeholder="التأخير، الكف، انزياح الحبر، فقدان بيانات..."
+            ></textarea>
+          </label>
+        </div>
+
+        <div id="diagnosticsSummary" class="diagnostics-summary"></div>
+
+        <div class="dialog-actions">
+          <button id="exportDiagnosticsButton" class="primary-button" type="button">
+            تنزيل التقرير JSON
+          </button>
+          <button value="cancel" type="submit">إغلاق</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

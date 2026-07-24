@@ -1,0 +1,21 @@
+{
+  "name": "Studio5 Ink & PDF Prototype",
+  "short_name": "Studio5 P1",
+  "description": "Prototype لاختبار القلم وPDF والحفظ والاستعادة على MatePad.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#edf2f7",
+  "theme_color": "#102a43",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
