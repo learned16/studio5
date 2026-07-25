@@ -85,14 +85,21 @@ input:focus-visible {
 }
 
 .status-cluster {
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 12px;
 }
 
-.save-state {
+.save-state,
+.notebook-state {
   padding: 7px 11px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
   font-size: 0.85rem;
+}
+
+.notebook-state {
+  color: #f6e4cd;
 }
 
 .save-state[data-state="saving"] {
@@ -126,11 +133,24 @@ input:focus-visible {
 .tool-button,
 .text-button,
 .icon-button,
-.danger-button {
+.danger-button,
+.primary-button {
   padding: 8px 13px;
   border-color: #cbc3b6;
   background: white;
   color: var(--ink);
+}
+
+.primary-button {
+  border-color: #e6b17a;
+  background: #e6b17a;
+  color: #17251f;
+  font-weight: 700;
+}
+
+.primary-button:disabled {
+  cursor: progress;
+  opacity: 0.6;
 }
 
 .topbar .text-button {

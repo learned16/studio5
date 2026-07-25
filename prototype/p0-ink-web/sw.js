@@ -1,4 +1,4 @@
-const CACHE_NAME = "studio5-p0-v2";
+const CACHE_NAME = "studio5-notebook-gate-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,19 @@ const ASSETS = [
   "./app.mjs",
   "./ink-core.mjs",
   "./storage.mjs",
+  "./notebook-bridge.mjs",
+  "./core-runtime.mjs",
+  "./core/ids.mjs",
+  "./core/model.mjs",
+  "./core/schema.mjs",
+  "./core/store.mjs",
+  "./core/local-database.mjs",
+  "./core/indexeddb-driver.mjs",
+  "./core/file-intake.mjs",
+  "./core/indexeddb-file-content-store.mjs",
+  "./core/ink-format.mjs",
+  "./core/today-query.mjs",
+  "./core/academic-repository.mjs",
   "./manifest.webmanifest",
 ];
 

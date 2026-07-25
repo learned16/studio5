@@ -18,6 +18,7 @@ import {
   writeSnapshotJournal,
   writeStrokeJournal,
 } from "./storage.mjs";
+import { openBrowserNotebookDemo } from "./core-runtime.mjs";
 
 const canvas = document.querySelector("#ink-canvas");
 const context = canvas.getContext("2d", { alpha: false, desynchronized: true });
@@ -32,6 +33,8 @@ const hint = document.querySelector("#canvas-hint");
 const toast = document.querySelector("#toast");
 const diagnosticsDialog = document.querySelector("#diagnostics-dialog");
 const diagnosticsList = document.querySelector("#diagnostics-list");
+const notebookState = document.querySelector("#notebook-state");
+const saveRevisionButton = document.querySelector("#save-revision-button");
 
 let inkDocument = createDocument();
 let tool = "pen";
@@ -53,6 +56,8 @@ let lastFrameMs = 0;
 let pressureObserved = false;
 let storageMode = "جارٍ الفحص";
 let dragging = false;
+let notebookDemo = null;
+let notebookRevisionCount = 0;
 
 function cloneStrokes() {
   return structuredClone(inkDocument.strokes);
@@ -101,6 +106,33 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("is-visible");
   window.setTimeout(() => toast.classList.remove("is-visible"), 2200);
+}
+
+function updateNotebookState(message = null) {
+  notebookState.textContent = message
+    ?? `دفتر مرتبط · ${notebookRevisionCount} نسخة`;
+}
+
+async function saveNotebookRevision() {
+  if (!notebookDemo) return;
+  saveRevisionButton.disabled = true;
+  updateNotebookState("جارٍ تثبيت النسخة…");
+  try {
+    storageMode = await saveDocument(inkDocument);
+    clearJournal();
+    const result = await notebookDemo.save(inkDocument.strokes);
+    notebookRevisionCount = result.revisionCount;
+    updateNotebookState();
+    showToast(result.status === "duplicate"
+      ? "هذه النسخة محفوظة مسبقاً، لم ننشئ نسخة مكررة"
+      : `تم حفظ النسخة ${result.revision.revisionNumber}`);
+  } catch (error) {
+    console.error(error);
+    updateNotebookState("تعذر حفظ نسخة Notebook");
+    showToast("فشل حفظ النسخة، المسودة المحلية ما زالت محفوظة");
+  } finally {
+    saveRevisionButton.disabled = false;
+  }
 }
 
 function scheduleSave(delay = 240) {
@@ -572,6 +604,8 @@ document.querySelector("#export-png-button").addEventListener("click", () => {
   }, "image/png");
 });
 
+saveRevisionButton.addEventListener("click", saveNotebookRevision);
+
 document.querySelector("#diagnostics-button").addEventListener("click", () => {
   const stats = documentStats(inkDocument);
   const values = [
@@ -585,6 +619,8 @@ document.querySelector("#diagnostics-button").addEventListener("click", () => {
     ["Pointer Events", "PointerEvent" in window ? "مدعومة" : "غير مدعومة"],
     ["ضغط القلم", pressureObserved ? "تم رصده" : "لم يُرصد بعد"],
     ["التخزين", storageMode],
+    ["Notebook Core", notebookDemo ? "متصل" : "غير متصل"],
+    ["نسخ Ink", String(notebookRevisionCount)],
     ["Online", navigator.onLine ? "نعم" : "لا"],
     ["User agent", navigator.userAgent],
   ];
@@ -624,6 +660,27 @@ async function boot() {
     console.error(error);
     inkDocument = createDocument();
     setSaveState("تخزين جديد", "ready");
+  }
+  try {
+    notebookDemo = await openBrowserNotebookDemo({
+      documentWidth: DOCUMENT_WIDTH,
+      documentHeight: DOCUMENT_HEIGHT,
+    });
+    notebookRevisionCount = await notebookDemo.revisionCount();
+    if (inkDocument.strokes.length === 0) {
+      const restored = await notebookDemo.restoreLatest();
+      if (restored?.strokes.length) {
+        inkDocument.strokes = restored.strokes;
+        inkDocument.updatedAt = Date.now();
+        showToast(`استُعيدت نسخة Notebook رقم ${restored.revision.revisionNumber}`);
+        scheduleSave(0);
+      }
+    }
+    updateNotebookState();
+    saveRevisionButton.disabled = false;
+  } catch (error) {
+    console.error("Notebook Core", error);
+    updateNotebookState("الرسم متاح · Notebook غير متصل");
   }
   updateUndoButtons();
   updateStats();

@@ -4,19 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
     <meta name="theme-color" content="#17251f" />
-    <meta name="description" content="Studio5 P0 - اختبار القلم والحفظ والاستعادة على MatePad" />
+    <meta name="description" content="Studio5 - تجربة Notebook والحفظ والاستعادة على MatePad" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="stylesheet" href="./styles.css" />
-    <title>Studio5 P0 - Ink Lab</title>
+    <title>Studio5 - Notebook Ink Lab</title>
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">STUDIO5 · TECHNICAL GATE 0</p>
-          <h1>مختبر القلم والاستعادة</h1>
+          <p class="eyebrow">STUDIO5 · NOTEBOOK GATE</p>
+          <h1>دفتر الرسم المحلي</h1>
         </div>
         <div class="status-cluster" aria-live="polite">
+          <span id="notebook-state" class="notebook-state">جارٍ فتح الدفتر…</span>
+          <button id="save-revision-button" class="primary-button" type="button" disabled>
+            حفظ نسخة
+          </button>
           <span id="save-state" class="save-state" data-state="ready">جاهز</span>
           <button id="diagnostics-button" class="text-button" type="button">التشخيص</button>
         </div>

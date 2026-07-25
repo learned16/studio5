@@ -5,12 +5,16 @@ const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "
 const dist = join(root, "dist");
 const assets = join(dist, "assets");
 const server = join(dist, "server");
+const coreSource = join(root, "..", "..", "packages", "studio5-core", "src");
+const coreAssets = join(assets, "core");
 const files = [
   "index.html",
   "styles.css",
   "app.mjs",
   "ink-core.mjs",
   "storage.mjs",
+  "notebook-bridge.mjs",
+  "core-runtime.mjs",
   "sw.js",
   "manifest.webmanifest",
 ];
@@ -22,6 +26,7 @@ for (const file of files) {
   await access(join(root, file));
   await cp(join(root, file), join(assets, file));
 }
+await cp(coreSource, coreAssets, { recursive: true });
 await cp(join(root, "worker", "index.mjs"), join(server, "index.js"));
 
 const html = await readFile(join(assets, "index.html"), "utf8");
@@ -29,4 +34,6 @@ if (!html.includes("ink-canvas") || !html.includes("app.mjs")) {
   throw new Error("Build verification failed: canvas entrypoint missing");
 }
 await access(join(server, "index.js"));
-console.log(`Verified static worker build: ${files.length} assets + server entrypoint`);
+await access(join(coreAssets, "academic-repository.mjs"));
+await access(join(coreAssets, "ink-format.mjs"));
+console.log(`Verified static worker build: ${files.length} assets + Studio5 Core + server entrypoint`);
