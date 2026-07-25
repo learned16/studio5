@@ -14,6 +14,7 @@ import {
   reviseTask,
 } from "./model.mjs";
 import { CoreRelationError, CoreStore } from "./store.mjs";
+import { buildTodayQuery } from "./today-query.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -336,6 +337,19 @@ export class AcademicRepository {
     return this.#read((store) => (
       store.get("tasks", assertStableId(taskId, "task"))
     ));
+  }
+
+  queryToday(options = {}) {
+    if (!options || typeof options !== "object" || Array.isArray(options)) {
+      throw new TypeError("Today query options must be an object");
+    }
+    return this.#read((store) => {
+      const now = Object.hasOwn(options, "now") ? options.now : this.#now();
+      return buildTodayQuery(
+        store.exportSnapshot(now),
+        { ...options, now },
+      );
+    });
   }
 
   exportSnapshot() {

@@ -5,6 +5,7 @@ const modules = await Promise.all([
   import("../src/store.mjs"),
   import("../src/local-database.mjs"),
   import("../src/indexeddb-driver.mjs"),
+  import("../src/today-query.mjs"),
   import("../src/academic-repository.mjs"),
 ]);
 
@@ -28,6 +29,7 @@ const requiredExports = [
   ["CoreStore", "CoreRelationError"],
   ["CoreLocalDatabase", "CorePersistenceError", "CoreRecoveryError"],
   ["IndexedDbCoreDriver", "INDEXED_DB_VERSION"],
+  ["buildTodayQuery"],
   ["AcademicRepository", "AcademicRepositoryRecoveryRequiredError"],
 ];
 
