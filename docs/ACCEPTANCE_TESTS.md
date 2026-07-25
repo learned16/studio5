@@ -21,6 +21,7 @@
 - [x] واجهة Notebook تعرض Revisions وتفتح معاينة قراءة فقط وتحمي المسودة الحالية قبل استعادة نسخة قديمة. (`P2-GATE-002`, 15/15 demo tests)
 - [x] Lecture Capture Core يتحول في Closeout إلى Resolution مرتبطة ولا يكتمل مع Captures مفتوحة. (`P3-LF-001`, 63/63 tests)
 - [x] تحويل Capture إلى Task ذري وقابل لإعادة المحاولة، وLecture Inbox مشتق لا يغير البيانات. (`P3-LF-002`, 69/69 tests)
+- [x] واجهة Capture مستقلة تحفظ الأنواع الخمسة محلياً وتعرض آخر النقاط وInbox count من دون لمس Ink. (`P3-LF-003`, 4/4 UI + 69/69 Core + 15/15 Ink)
 - [ ] Backup ثم Restore يعيد الملفات والملاحظات والرسومات مع تحقق العدّ/الـmanifest.
 - [x] كل Migration منفذة حتى Schema v5 تملك اختباراً ومسار Recovery مفهوم. (`P2-CORE-001` إلى `P3-LF-001`)
 

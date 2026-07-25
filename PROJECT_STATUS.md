@@ -61,7 +61,7 @@
 | P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DEPLOYED V5 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | DONE - 63/63 + 15/15 REGRESSION | `packages/studio5-core/**` ووثائق المهمة والحالة |
 | P3-LF-002 | تحويل Capture إلى Task ذري + Lecture Inbox | `codex/p3-capture-task-inbox` | Codex | DONE - 69/69 + 15/15 REGRESSION | `lecture-inbox.mjs` وRepository والاختبارات ووثائق المهمة |
-| P3-LF-003 | واجهة Lecture Capture السريعة المستقلة | `codex/p3-lecture-capture-ui` | Codex | IN PROGRESS | `prototype/p3-lecture-capture-web/**` ووثائق المهمة والحالة |
+| P3-LF-003 | واجهة Lecture Capture السريعة المستقلة | `codex/p3-lecture-capture-ui` | Codex | DONE - DEPLOYED V1 - 4/4 + 69/69 + 15/15 | `prototype/p3-lecture-capture-web/**` ووثائق المهمة والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -75,10 +75,9 @@
 
 ## القادم بعد المهمة الحالية
 
-1. P3-LF-003: واجهة Capture السريعة، بفرع مستقل بعد ثبات العقود.
-2. P3-LF-004: واجهة Closeout، بفرع مستقل.
-3. Search وFavorites/Recent وPDF تبقى دفعات لاحقة منفصلة داخل Phase 3.
-4. يبقى Gate جهاز MatePad للمرحلة الثانية قابلاً للإصلاح في فرع Phase 2 من دون لمس Lecture Flow.
+1. P3-LF-004: واجهة Closeout، بفرع مستقل.
+2. Search وFavorites/Recent وPDF تبقى دفعات لاحقة منفصلة داخل Phase 3.
+3. يبقى Gate جهاز MatePad للمرحلة الثانية قابلاً للإصلاح في فرع Phase 2 من دون لمس Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -119,3 +118,4 @@
 | 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 يعرض تاريخ النسخ والمعاينة والاستعادة الآمنة؛ 15/15 و54/54 وBuild ناجحة، وبقي فحص التدفق على الجهاز |
 | 2026-07-25 | P3-LF-001 | P3-LF-002 | Schema v5 وLecture Capture/Closeout/Resolution رُفعت بفرع مستقل؛ 63/63 Core و15/15 Ink regression ناجحة |
 | 2026-07-25 | P3-LF-002 | P3-LF-003 | التحويل الذري إلى Task وLecture Inbox رُفعا بفرع مستقل؛ 69/69 Core و15/15 Ink regression ناجحة |
+| 2026-07-25 | P3-LF-003 | المستخدم/MatePad | واجهة Capture مستقلة منشورة بخصوصية على Sites؛ الأنواع الخمسة والحفظ المحلي وInbox count تعمل، 4/4 + 69/69 + 15/15 ناجحة |
