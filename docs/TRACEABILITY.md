@@ -27,7 +27,7 @@
 | `S5-DATA-003` | File intake + hash + duplicate + immutable original | P2-CORE-006 | DONE | 44/44 + `docs/tasks/P2-CORE-006.md` |
 | `S5-FR-004` | Notebook basics وربط InkDocument بالسياق | P2-CORE-007 | DONE | 54/54 + `docs/tasks/P2-CORE-007.md` |
 | `S5-FR-004-GATE` | ربط واجهة Ink بـNotebook Core على المتصفح والجهاز | P2-GATE-001 | DEPLOYED / DEVICE PENDING | 15/15 + Build + Sites v4؛ تجربة MatePad معلقة |
-| `S5-FR-004-HISTORY` | عرض Ink Revisions ومعاينتها واستعادتها بأمان | P2-GATE-002 | IMPLEMENTED / DEPLOY PENDING | قائمة محلية + معاينة قراءة فقط + حماية المسودة قبل الاستعادة |
+| `S5-FR-004-HISTORY` | عرض Ink Revisions ومعاينتها واستعادتها بأمان | P2-GATE-002 | DEPLOYED / DEVICE PENDING | 15/15 + 54/54 + Build + Sites v5؛ قائمة محلية ومعاينة قراءة فقط وحماية المسودة |
 | `S5-FR-005` | Lecture Capture وCloseout وInbox | Phase 3 | BACKLOG CURRENT YEAR | لم ينفذ |
 | `S5-DATA-004` | Backup/Restore/Full Export | Phase 4 | BACKLOG CURRENT YEAR | لم ينفذ |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |

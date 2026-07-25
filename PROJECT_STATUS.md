@@ -58,7 +58,7 @@
 | P2-CORE-006 | FileArtifact intake وHash وImmutable original | `codex/p2-file-artifact-intake` | Codex | DONE - 44/44 TESTS | نماذج الملفات، Schema v3، content store، Repository، الاختبارات والوثائق |
 | P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | DONE - 54/54 TESTS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
 | P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DEPLOYED V4 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
-| P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | IMPLEMENTED 15/15 - DEPLOY PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
+| P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DEPLOYED V5 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -111,3 +111,4 @@
 | 2026-07-25 | P2-CORE-006 | P2-CORE-007 | Schema v3 وإدخال ملفات محلي immutable مع SHA-256 وdedup وRecovery، 44/44 ناجحة |
 | 2026-07-25 | P2-CORE-007 | Demo/Gate | Notebook وInkDocument وRevision history ضمن Schema v4، 54/54 ناجحة؛ واجهة MatePad هي الخطوة التالية |
 | 2026-07-25 | P2-GATE-001 | المستخدم/MatePad | Demo v4 منشور على رابط Studio5 الخاص؛ 15/15 وBuild ناجحة، وبقي اختبار القلم والاستعادة والنسخ على الجهاز |
+| 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 يعرض تاريخ النسخ والمعاينة والاستعادة الآمنة؛ 15/15 و54/54 وBuild ناجحة، وبقي فحص التدفق على الجهاز |

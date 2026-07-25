@@ -52,3 +52,14 @@
 ## Rollback
 
 إزالة واجهة قائمة النسخ وواجهتي `listRevisions/loadRevision` فقط. تبقى كل Revisions وبيانات IndexedDB كما هي ولا يجري حذف أي بيانات.
+
+## دليل التنفيذ
+
+- Commit التنفيذ: `f63aaa4`.
+- اختبارات Demo: `15/15` ناجحة.
+- اختبارات Studio5 Core: `54/54` ناجحة.
+- Lint وType Check وBuild: ناجحة.
+- فرع المهمة مرفوع إلى GitHub من دون دمج `main`.
+- نُشر Sites الإصدار `v5` بنجاح على:
+  `https://studio5-ink-lab.lharithl.chatgpt.site`.
+- بقي Gate يدوي على MatePad: حفظ نسختين، فتح القائمة، معاينة نسخة، الرجوع، ثم الاستعادة الآمنة.
