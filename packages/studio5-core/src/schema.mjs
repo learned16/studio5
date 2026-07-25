@@ -1,0 +1,89 @@
+export const CORE_SCHEMA_VERSION = 1;
+
+export const COLLECTIONS = Object.freeze([
+  "academicYears",
+  "semesters",
+  "capabilityPacks",
+  "subjectProfiles",
+  "subjects",
+]);
+
+function emptyEntities() {
+  return Object.fromEntries(COLLECTIONS.map((collection) => [collection, []]));
+}
+
+export function createEmptySnapshot(now = Date.now()) {
+  return {
+    schemaVersion: CORE_SCHEMA_VERSION,
+    exportedAt: new Date(now).toISOString(),
+    entities: emptyEntities(),
+  };
+}
+
+function migrateVersion0(input, now) {
+  const entities = emptyEntities();
+  const source = input?.entities && typeof input.entities === "object"
+    ? input.entities
+    : input;
+  for (const collection of COLLECTIONS) {
+    entities[collection] = Array.isArray(source?.[collection])
+      ? structuredClone(source[collection])
+      : [];
+  }
+  return {
+    schemaVersion: 1,
+    exportedAt: input?.exportedAt ?? new Date(now).toISOString(),
+    entities,
+  };
+}
+
+const MIGRATIONS = new Map([
+  [0, migrateVersion0],
+]);
+
+export class CoreMigrationError extends Error {
+  constructor(message, options = {}) {
+    super(message, options);
+    this.name = "CoreMigrationError";
+  }
+}
+
+export function validateSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    throw new CoreMigrationError("Core snapshot must be an object");
+  }
+  if (snapshot.schemaVersion !== CORE_SCHEMA_VERSION) {
+    throw new CoreMigrationError(
+      `Expected core schema ${CORE_SCHEMA_VERSION}, received ${snapshot.schemaVersion}`,
+    );
+  }
+  if (!snapshot.entities || typeof snapshot.entities !== "object") {
+    throw new CoreMigrationError("Core snapshot entities are missing");
+  }
+  for (const collection of COLLECTIONS) {
+    if (!Array.isArray(snapshot.entities[collection])) {
+      throw new CoreMigrationError(`Core collection ${collection} must be an array`);
+    }
+  }
+  return snapshot;
+}
+
+export function migrateSnapshot(input, now = Date.now()) {
+  if (!input || typeof input !== "object") return createEmptySnapshot(now);
+  let current = structuredClone(input);
+  let version = Number.isInteger(current.schemaVersion) ? current.schemaVersion : 0;
+  if (version > CORE_SCHEMA_VERSION) {
+    throw new CoreMigrationError(
+      `Core schema ${version} is newer than supported schema ${CORE_SCHEMA_VERSION}`,
+    );
+  }
+  while (version < CORE_SCHEMA_VERSION) {
+    const migration = MIGRATIONS.get(version);
+    if (!migration) {
+      throw new CoreMigrationError(`No migration registered from core schema ${version}`);
+    }
+    current = migration(current, now);
+    version = current.schemaVersion;
+  }
+  return validateSnapshot(current);
+}
