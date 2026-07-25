@@ -54,7 +54,7 @@
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 | DOCS-SOP-001 | دمج SOP وحزمة التعاون وتنظيف الملفات المضغوطة | `codex/docs-collaboration-sop` | Codex | DONE - DOCS CHECK + 19/19 + 12/12 | وثائق التعاون والحالة فقط |
 | P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
-| P2-CORE-005 | Today query engine محلي | `codex/p2-today-query-engine` | Codex | IN PROGRESS | `today-query.mjs`, Repository، اختبارات Today، وثائق المهمة والحالة |
+| P2-CORE-005 | Today query engine محلي | `codex/p2-today-query-engine` | Codex | DONE - 33/33 TESTS | `today-query.mjs`, Repository، اختبارات Today، وثائق المهمة والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -68,10 +68,9 @@
 
 ## القادم بعد المهمة الحالية
 
-1. `P2-CORE-005`: Today query engine يعمل دون شبكة.
-2. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
-3. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
-4. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
+1. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
+2. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
+3. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -105,3 +104,4 @@
 | 2026-07-25 | P2-CORE-003 | P2-CORE-004 | Academic Repository وFilters وRecovery guard رُفعت، 19/19 اختبارات ناجحة |
 | 2026-07-25 | DOCS-SOP-001 | P2-CORE-004 | SOP وTraceability وتعليمات التعاون رُتبت، أزيلت الحزمة المضغوطة، ورفع الفرع |
 | 2026-07-25 | P2-CORE-004 | P2-CORE-005 | Schema v2 وSchedule/Lecture/Task وFilters وTask lifecycle رُفعت، 27/27 ناجحة |
+| 2026-07-25 | P2-CORE-005 | P2-CORE-006 | Today query محلي مع Agenda وتصنيف المهام وحدود توقيت صريحة، 33/33 ناجحة |

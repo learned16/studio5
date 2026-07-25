@@ -67,3 +67,16 @@
 ## Rollback
 
 إعادة Commit المهمة تزيل محرك القراءة فقط. لا توجد Migration أو بيانات جديدة تحتاج Rollback.
+
+## Evidence
+
+- `git diff --check`: ناجح.
+- Syntax/Lint: ناجح.
+- Module contract/type check: ناجح.
+- Unit/Integration tests: `33/33` ناجحة.
+- اختبارات Today الجديدة: `6/6` ناجحة.
+- Offset وحدود منتصف الليل وعدم تعديل Snapshot وإعادة فتح Repository: ناجحة.
+- Schema بقي في الإصدار 2 من دون Migration.
+- Commit: `21b34f6 feat: add local today query engine`.
+- Push: ناجح على `codex/p2-today-query-engine`.
+- الحالة: `DONE` من دون دمج إلى `main`.
