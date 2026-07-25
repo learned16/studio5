@@ -1,0 +1,10 @@
+{
+  "name": "Studio5 P0 Ink Lab",
+  "short_name": "Studio5 P0",
+  "description": "اختبار القلم والحفظ والاستعادة على MatePad",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f0e7",
+  "theme_color": "#17251f",
+  "orientation": "landscape"
+}

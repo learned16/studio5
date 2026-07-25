@@ -1,0 +1,5 @@
+.pnpm-store/
+node_modules/
+prototype/**/dist/
+prototype/**/.wrangler/
+tmp/
