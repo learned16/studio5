@@ -10,8 +10,9 @@
 - Versioned snapshots.
 - Migration registry.
 - Store محلي في الذاكرة لاختبار العلاقات والتصدير.
+- IndexedDB adapter مع Journal وTransaction ذرية وRecovery.
 
-IndexedDB والواجهة والجدول وToday تأتي في مهام مستقلة.
+الواجهة والجدول وToday تأتي في مهام مستقلة.
 
 ## التحقق
 

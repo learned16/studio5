@@ -3,6 +3,8 @@ const modules = await Promise.all([
   import("../src/model.mjs"),
   import("../src/schema.mjs"),
   import("../src/store.mjs"),
+  import("../src/local-database.mjs"),
+  import("../src/indexeddb-driver.mjs"),
 ]);
 
 const requiredExports = [
@@ -16,6 +18,8 @@ const requiredExports = [
   ],
   ["CORE_SCHEMA_VERSION", "createEmptySnapshot", "migrateSnapshot", "validateSnapshot"],
   ["CoreStore", "CoreRelationError"],
+  ["CoreLocalDatabase", "CorePersistenceError", "CoreRecoveryError"],
+  ["IndexedDbCoreDriver", "INDEXED_DB_VERSION"],
 ];
 
 for (let index = 0; index < modules.length; index += 1) {

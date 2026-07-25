@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-25  
 المرحلة الحالية: `Phase 2 - Core`  
-الفرع النشط لهذه المرحلة: `codex/phase2-core-foundation`
+الفرع النشط لهذه المرحلة: `codex/p2-core-indexeddb`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -50,6 +50,7 @@
 | Work ID | المهمة | الفرع | المالك | الحالة | الملفات المحجوزة |
 |---|---|---|---|---|---|
 | P2-CORE-001 | أساس نموذج Studio5 Core وSchema v1 والمهاجرات | `codex/phase2-core-foundation` | Codex | DONE - 7/7 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-001.md`, ملفات الحالة |
+| P2-CORE-002 | قاعدة بيانات IndexedDB محلية وRecovery | `codex/p2-core-indexeddb` | Codex | VERIFIED 14/14 - BROWSER PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-002.md`, ملفات الحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -63,13 +64,12 @@
 
 ## القادم بعد المهمة الحالية
 
-1. `P2-CORE-002`: Local database adapter باستخدام IndexedDB مع transaction وrecovery.
-2. `P2-CORE-003`: Repository APIs للسنوات والفصول والمواد وSubject Profiles.
-3. `P2-CORE-004`: Schedule وLecture وTask domain.
-4. `P2-CORE-005`: Today query engine يعمل دون شبكة.
-5. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
-6. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
-7. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
+1. `P2-CORE-003`: Repository APIs للسنوات والفصول والمواد وSubject Profiles.
+2. `P2-CORE-004`: Schedule وLecture وTask domain.
+3. `P2-CORE-005`: Today query engine يعمل دون شبكة.
+4. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
+5. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
+6. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة
 
