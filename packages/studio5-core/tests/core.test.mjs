@@ -115,9 +115,13 @@ test("schema version 0 migrates forward without losing collections", () => {
   assert.deepEqual(migrated.entities.scheduleEntries, []);
   assert.deepEqual(migrated.entities.lectures, []);
   assert.deepEqual(migrated.entities.tasks, []);
+  assert.deepEqual(migrated.entities.fileArtifacts, []);
+  assert.deepEqual(migrated.entities.fileHashes, []);
+  assert.deepEqual(migrated.entities.fileVersions, []);
+  assert.deepEqual(migrated.entities.artifactLinks, []);
 });
 
-test("schema version 1 migrates to version 2 without losing academic data", () => {
+test("schema version 1 migrates to version 3 without losing academic data", () => {
   const fixture = academicFixture();
   const versionOne = {
     schemaVersion: 1,
@@ -131,11 +135,41 @@ test("schema version 1 migrates to version 2 without losing academic data", () =
     },
   };
   const migrated = migrateSnapshot(versionOne, 10);
-  assert.equal(migrated.schemaVersion, 2);
+  assert.equal(migrated.schemaVersion, 3);
   assert.deepEqual(migrated.entities.subjects, [fixture.subject]);
   assert.deepEqual(migrated.entities.scheduleEntries, []);
   assert.deepEqual(migrated.entities.lectures, []);
   assert.deepEqual(migrated.entities.tasks, []);
+  assert.deepEqual(migrated.entities.fileArtifacts, []);
+});
+
+test("schema version 2 migrates to version 3 without losing planning data", () => {
+  const fixture = academicFixture();
+  const task = createTask({
+    subjectId: fixture.subject.id,
+    title: "مهمة محفوظة",
+    now: 20,
+  });
+  const versionTwo = {
+    schemaVersion: 2,
+    exportedAt: "2026-07-25T00:00:00.000Z",
+    entities: {
+      academicYears: [fixture.year],
+      semesters: [fixture.semester],
+      capabilityPacks: [fixture.capability],
+      subjectProfiles: [fixture.profile],
+      subjects: [fixture.subject],
+      scheduleEntries: [],
+      lectures: [],
+      tasks: [task],
+    },
+  };
+  const migrated = migrateSnapshot(versionTwo, 30);
+  assert.equal(migrated.schemaVersion, 3);
+  assert.deepEqual(migrated.entities.tasks, [task]);
+  assert.deepEqual(migrated.entities.fileHashes, []);
+  assert.deepEqual(migrated.entities.fileVersions, []);
+  assert.deepEqual(migrated.entities.artifactLinks, []);
 });
 
 test("planning models validate time, status, priority, and task revisions", () => {

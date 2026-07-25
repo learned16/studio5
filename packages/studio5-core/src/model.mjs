@@ -81,6 +81,14 @@ function timestamps(now) {
 export const LECTURE_STATUSES = Object.freeze(["planned", "completed", "cancelled"]);
 export const TASK_STATUSES = Object.freeze(["todo", "in-progress", "done", "cancelled"]);
 export const TASK_PRIORITIES = Object.freeze(["low", "normal", "high", "urgent"]);
+export const FILE_SOURCE_TYPES = Object.freeze(["upload", "import"]);
+export const ARTIFACT_LINK_TARGET_KINDS = Object.freeze(["subject", "lecture", "task"]);
+export const ARTIFACT_LINK_ROLES = Object.freeze([
+  "attachment",
+  "source",
+  "reference",
+  "submission",
+]);
 
 function uniqueStableIds(values, kind) {
   return [...new Set((values ?? []).map((value) => assertStableId(value, kind)))];
@@ -321,5 +329,105 @@ export function reviseTask(task, changes, now = Date.now()) {
     status,
     completedAt: status === "done" ? (task.completedAt ?? updatedAt) : null,
     updatedAt,
+  };
+}
+
+export function createFileArtifact({
+  id = createStableId("file-artifact"),
+  displayName,
+  originalName = displayName,
+  sourceType = "upload",
+  now = Date.now(),
+}) {
+  return {
+    kind: "file-artifact",
+    id: assertStableId(id, "file-artifact"),
+    displayName: requiredText(displayName, "displayName"),
+    originalName: requiredText(originalName, "originalName"),
+    sourceType: oneOf(sourceType, FILE_SOURCE_TYPES, "sourceType"),
+    archivedAt: null,
+    ...timestamps(now),
+  };
+}
+
+export function createFileHash({
+  id = createStableId("file-hash"),
+  algorithm = "sha-256",
+  digest,
+  now = Date.now(),
+}) {
+  const normalizedAlgorithm = requiredText(algorithm, "algorithm").toLowerCase();
+  if (normalizedAlgorithm !== "sha-256") {
+    throw new TypeError("algorithm must be sha-256");
+  }
+  const normalizedDigest = requiredText(digest, "digest").toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(normalizedDigest)) {
+    throw new TypeError("digest must be a 64-character SHA-256 hex value");
+  }
+  return {
+    kind: "file-hash",
+    id: assertStableId(id, "file-hash"),
+    algorithm: normalizedAlgorithm,
+    digest: normalizedDigest,
+    ...timestamps(now),
+  };
+}
+
+export function createFileVersion({
+  id = createStableId("file-version"),
+  artifactId,
+  fileHashId,
+  versionNumber,
+  mediaType = "application/octet-stream",
+  byteSize,
+  storageKey,
+  originalModifiedAt = null,
+  now = Date.now(),
+}) {
+  const normalizedVersion = Number(versionNumber);
+  if (!Number.isInteger(normalizedVersion) || normalizedVersion < 1) {
+    throw new TypeError("versionNumber must be a positive integer");
+  }
+  const normalizedByteSize = Number(byteSize);
+  if (!Number.isSafeInteger(normalizedByteSize) || normalizedByteSize < 0) {
+    throw new TypeError("byteSize must be a non-negative safe integer");
+  }
+  return {
+    kind: "file-version",
+    id: assertStableId(id, "file-version"),
+    artifactId: assertStableId(artifactId, "file-artifact"),
+    fileHashId: assertStableId(fileHashId, "file-hash"),
+    versionNumber: normalizedVersion,
+    mediaType: requiredText(mediaType, "mediaType").toLowerCase(),
+    byteSize: normalizedByteSize,
+    storageKey: requiredText(storageKey, "storageKey"),
+    originalModifiedAt: optionalInstant(originalModifiedAt, "originalModifiedAt"),
+    ...timestamps(now),
+  };
+}
+
+export function createArtifactLink({
+  id = createStableId("artifact-link"),
+  artifactId,
+  targetKind,
+  targetId,
+  role = "attachment",
+  label = null,
+  now = Date.now(),
+}) {
+  const normalizedTargetKind = oneOf(
+    targetKind,
+    ARTIFACT_LINK_TARGET_KINDS,
+    "targetKind",
+  );
+  return {
+    kind: "artifact-link",
+    id: assertStableId(id, "artifact-link"),
+    artifactId: assertStableId(artifactId, "file-artifact"),
+    targetKind: normalizedTargetKind,
+    targetId: assertStableId(targetId, normalizedTargetKind),
+    role: oneOf(role, ARTIFACT_LINK_ROLES, "role"),
+    label: optionalText(label),
+    ...timestamps(now),
   };
 }

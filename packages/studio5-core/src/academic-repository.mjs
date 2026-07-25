@@ -4,7 +4,11 @@ import {
   TASK_PRIORITIES,
   TASK_STATUSES,
   createAcademicYear,
+  createArtifactLink,
   createCapabilityPack,
+  createFileArtifact,
+  createFileHash,
+  createFileVersion,
   createLecture,
   createScheduleEntry,
   createSemester,
@@ -15,6 +19,11 @@ import {
 } from "./model.mjs";
 import { CoreRelationError, CoreStore } from "./store.mjs";
 import { buildTodayQuery } from "./today-query.mjs";
+import {
+  assertFileContentStore,
+  prepareFileIntake,
+  sha256Hex,
+} from "./file-intake.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -71,6 +80,7 @@ export class AcademicRepositoryRecoveryRequiredError extends Error {
 
 export class AcademicRepository {
   #database;
+  #fileContentStore;
   #now;
   #store = null;
   #initialized = false;
@@ -78,7 +88,10 @@ export class AcademicRepository {
   #operationQueue = Promise.resolve();
   #lastLoad = null;
 
-  constructor(localDatabase, { now = Date.now } = {}) {
+  constructor(localDatabase, {
+    now = Date.now,
+    fileContentStore = null,
+  } = {}) {
     if (!localDatabase
       || typeof localDatabase.load !== "function"
       || typeof localDatabase.save !== "function") {
@@ -87,6 +100,9 @@ export class AcademicRepository {
     if (typeof now !== "function") throw new TypeError("now must be a function");
     this.#database = localDatabase;
     this.#now = now;
+    this.#fileContentStore = fileContentStore
+      ? assertFileContentStore(fileContentStore)
+      : null;
   }
 
   #enqueue(operation) {
@@ -189,6 +205,10 @@ export class AcademicRepository {
 
   createTask(input) {
     return this.#create("tasks", createTask, input);
+  }
+
+  linkArtifact(input) {
+    return this.#create("artifactLinks", createArtifactLink, input);
   }
 
   updateTask(taskId, changes) {
@@ -337,6 +357,206 @@ export class AcademicRepository {
     return this.#read((store) => (
       store.get("tasks", assertStableId(taskId, "task"))
     ));
+  }
+
+  async #prepareAndQueueFile(input, artifactId = null) {
+    if (!this.#fileContentStore) {
+      throw new TypeError("File intake requires a fileContentStore");
+    }
+    const prepared = await prepareFileIntake(input);
+    return this.#enqueue(async () => {
+      await this.#initializeUnlocked();
+      if (this.#needsRecovery) {
+        throw new AcademicRepositoryRecoveryRequiredError();
+      }
+
+      const working = new CoreStore(this.#store.exportSnapshot(this.#now()));
+      const hashes = working.list("fileHashes");
+      let fileHash = hashes.find((candidate) => (
+        candidate.algorithm === prepared.algorithm
+        && candidate.digest === prepared.digest
+      )) ?? null;
+      const versionsForHash = fileHash
+        ? working.list("fileVersions")
+          .filter((version) => version.fileHashId === fileHash.id)
+        : [];
+
+      if (!artifactId && versionsForHash.length > 0) {
+        const duplicateVersion = versionsForHash
+          .sort((left, right) => left.versionNumber - right.versionNumber)[0];
+        const duplicateArtifact = working.get(
+          "fileArtifacts",
+          duplicateVersion.artifactId,
+        );
+        await this.#fileContentStore.putIfAbsent(
+          prepared.storageKey,
+          prepared.bytes,
+          { mediaType: prepared.mediaType, now: this.#now() },
+        );
+        return {
+          status: "duplicate",
+          artifact: duplicateArtifact,
+          version: duplicateVersion,
+          fileHash,
+        };
+      }
+
+      let artifact;
+      let versionNumber = 1;
+      if (artifactId) {
+        const normalizedArtifactId = assertStableId(artifactId, "file-artifact");
+        artifact = working.get("fileArtifacts", normalizedArtifactId);
+        if (!artifact) {
+          throw new CoreRelationError(`Cannot version missing file artifact: ${normalizedArtifactId}`);
+        }
+        const artifactVersions = working.list("fileVersions")
+          .filter((version) => version.artifactId === normalizedArtifactId)
+          .sort((left, right) => left.versionNumber - right.versionNumber);
+        const matching = fileHash
+          ? artifactVersions.find((version) => version.fileHashId === fileHash.id)
+          : null;
+        if (matching) {
+          await this.#fileContentStore.putIfAbsent(
+            prepared.storageKey,
+            prepared.bytes,
+            { mediaType: prepared.mediaType, now: this.#now() },
+          );
+          return {
+            status: "duplicate",
+            artifact,
+            version: matching,
+            fileHash,
+          };
+        }
+        versionNumber = (artifactVersions.at(-1)?.versionNumber ?? 0) + 1;
+      }
+
+      await this.#fileContentStore.putIfAbsent(
+        prepared.storageKey,
+        prepared.bytes,
+        { mediaType: prepared.mediaType, now: this.#now() },
+      );
+
+      const operationNow = this.#now();
+      if (!fileHash) {
+        fileHash = createFileHash({
+          algorithm: prepared.algorithm,
+          digest: prepared.digest,
+          now: operationNow,
+        });
+        working.add("fileHashes", fileHash);
+      }
+      if (!artifact) {
+        artifact = createFileArtifact({
+          displayName: prepared.displayName,
+          originalName: prepared.originalName,
+          sourceType: prepared.sourceType,
+          now: operationNow,
+        });
+        working.add("fileArtifacts", artifact);
+      }
+      const version = createFileVersion({
+        artifactId: artifact.id,
+        fileHashId: fileHash.id,
+        versionNumber,
+        mediaType: prepared.mediaType,
+        byteSize: prepared.byteSize,
+        storageKey: prepared.storageKey,
+        originalModifiedAt: prepared.originalModifiedAt,
+        now: operationNow,
+      });
+      working.add("fileVersions", version);
+
+      try {
+        await this.#database.save(working.exportSnapshot(this.#now()));
+      } catch (error) {
+        this.#needsRecovery = true;
+        throw error;
+      }
+      this.#store = working;
+      return structuredClone({
+        status: "created",
+        artifact,
+        version,
+        fileHash,
+      });
+    });
+  }
+
+  ingestFile(input) {
+    return this.#prepareAndQueueFile(input);
+  }
+
+  addFileVersion(artifactId, input) {
+    return this.#prepareAndQueueFile(input, artifactId);
+  }
+
+  listFileArtifacts() {
+    return this.#read((store) => store.list("fileArtifacts"));
+  }
+
+  getFileArtifact(artifactId) {
+    return this.#read((store) => (
+      store.get("fileArtifacts", assertStableId(artifactId, "file-artifact"))
+    ));
+  }
+
+  listFileVersions({ artifactId = null, fileHashId = null } = {}) {
+    return this.#read((store) => {
+      if (artifactId) assertStableId(artifactId, "file-artifact");
+      if (fileHashId) assertStableId(fileHashId, "file-hash");
+      return store.list("fileVersions")
+        .filter((version) => (
+          (!artifactId || version.artifactId === artifactId)
+          && (!fileHashId || version.fileHashId === fileHashId)
+        ))
+        .sort((left, right) => left.versionNumber - right.versionNumber);
+    });
+  }
+
+  listArtifactLinks({
+    artifactId = null,
+    targetKind = null,
+    targetId = null,
+  } = {}) {
+    return this.#read((store) => {
+      if (artifactId) assertStableId(artifactId, "file-artifact");
+      if (targetId && !targetKind) {
+        throw new TypeError("targetId filter requires targetKind");
+      }
+      if (targetKind && !["subject", "lecture", "task"].includes(targetKind)) {
+        throw new TypeError("Unsupported artifact link targetKind");
+      }
+      if (targetId) assertStableId(targetId, targetKind);
+      return store.list("artifactLinks").filter((link) => (
+        (!artifactId || link.artifactId === artifactId)
+        && (!targetKind || link.targetKind === targetKind)
+        && (!targetId || link.targetId === targetId)
+      ));
+    });
+  }
+
+  async getFileContent(fileVersionId) {
+    if (!this.#fileContentStore) {
+      throw new TypeError("File content access requires a fileContentStore");
+    }
+    const version = await this.#read((store) => (
+      store.get("fileVersions", assertStableId(fileVersionId, "file-version"))
+    ));
+    if (!version) return null;
+    const content = await this.#fileContentStore.get(version.storageKey);
+    if (!content) return null;
+    if (content.byteSize !== version.byteSize) {
+      throw new CoreRelationError(`Stored content size mismatch for ${version.id}`);
+    }
+    const fileHash = await this.#read((store) => (
+      store.get("fileHashes", version.fileHashId)
+    ));
+    const digest = await sha256Hex(content.bytes);
+    if (!fileHash || digest !== fileHash.digest) {
+      throw new CoreRelationError(`Stored content hash mismatch for ${version.id}`);
+    }
+    return content;
   }
 
   queryToday(options = {}) {

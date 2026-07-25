@@ -18,6 +18,10 @@
 - فلاتر Schedule/Lecture/Task وتحديث حالة المهمة عبر نفس Repository المحمي بالـJournal.
 - Today query محلي يجمع Agenda ويصنف المهام المتأخرة والمستحقة والمكتملة.
 - حدود Today تستخدم تاريخاً محلياً وUTC offset صريحاً؛ لا يوجد توقيت مثبت داخل Core.
+- FileArtifact وFileVersion وFileHash وArtifactLink ضمن Schema v3.
+- SHA-256 وcontent-addressed storage وكشف Duplicate قبل إنشاء سجل جديد.
+- IndexedDB منفصل لمحتوى الملفات حتى لا تصبح الـbytes الكبيرة جزءاً من Snapshot.
+- الإصدارات والـHash والأصل Immutable؛ Version جديدة لا تستبدل القديمة.
 
 واجهة Today تأتي في مهمة مستقلة؛ المحرك الحالي يعيد بيانات مشتقة فقط ولا يضيف تخزيناً جديداً.
 

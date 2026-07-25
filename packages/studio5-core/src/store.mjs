@@ -10,7 +10,18 @@ const COLLECTION_KIND = Object.freeze({
   scheduleEntries: "schedule-entry",
   lectures: "lecture",
   tasks: "task",
+  fileArtifacts: "file-artifact",
+  fileHashes: "file-hash",
+  fileVersions: "file-version",
+  artifactLinks: "artifact-link",
 });
+
+const IMMUTABLE_COLLECTIONS = new Set([
+  "fileArtifacts",
+  "fileHashes",
+  "fileVersions",
+  "artifactLinks",
+]);
 
 function clone(value) {
   return structuredClone(value);
@@ -101,6 +112,68 @@ export class CoreStore {
         }
       }
     }
+    if (collection === "fileHashes") {
+      const duplicate = [...this.#collection("fileHashes").values()]
+        .find((hash) => (
+          hash.algorithm === entity.algorithm
+          && hash.digest === entity.digest
+          && hash.id !== entity.id
+        ));
+      if (duplicate) {
+        throw new CoreRelationError(
+          `Duplicate file hash digest: ${entity.algorithm}:${entity.digest}`,
+        );
+      }
+    }
+    if (collection === "fileVersions") {
+      this.#assertExists("fileArtifacts", entity.artifactId, "fileVersion.artifactId");
+      this.#assertExists("fileHashes", entity.fileHashId, "fileVersion.fileHashId");
+      const hash = this.get("fileHashes", entity.fileHashId);
+      if (entity.storageKey !== `${hash.algorithm.replace("-", "")}/${hash.digest}`) {
+        throw new CoreRelationError(
+          "fileVersion.storageKey must be derived from fileVersion.fileHashId",
+        );
+      }
+      const duplicateVersion = [...this.#collection("fileVersions").values()]
+        .find((version) => (
+          version.artifactId === entity.artifactId
+          && version.versionNumber === entity.versionNumber
+          && version.id !== entity.id
+        ));
+      if (duplicateVersion) {
+        throw new CoreRelationError(
+          `Duplicate file version number ${entity.versionNumber} for ${entity.artifactId}`,
+        );
+      }
+    }
+    if (collection === "artifactLinks") {
+      this.#assertExists("fileArtifacts", entity.artifactId, "artifactLink.artifactId");
+      const targets = {
+        subject: "subjects",
+        lecture: "lectures",
+        task: "tasks",
+      };
+      const targetCollection = targets[entity.targetKind];
+      if (!targetCollection) {
+        throw new CoreRelationError(
+          `Unsupported artifactLink.targetKind: ${entity.targetKind}`,
+        );
+      }
+      this.#assertExists(targetCollection, entity.targetId, "artifactLink.targetId");
+      const duplicateLink = [...this.#collection("artifactLinks").values()]
+        .find((link) => (
+          link.artifactId === entity.artifactId
+          && link.targetKind === entity.targetKind
+          && link.targetId === entity.targetId
+          && link.role === entity.role
+          && link.id !== entity.id
+        ));
+      if (duplicateLink) {
+        throw new CoreRelationError(
+          `Duplicate artifact link for ${entity.artifactId} and ${entity.targetId}`,
+        );
+      }
+    }
   }
 
   add(collection, entity) {
@@ -129,6 +202,9 @@ export class CoreStore {
     }
     const expectedKind = COLLECTION_KIND[collection];
     const records = this.#collection(collection);
+    if (IMMUTABLE_COLLECTIONS.has(collection)) {
+      throw new CoreRelationError(`Immutable core collection cannot be replaced: ${collection}`);
+    }
     assertStableId(entity.id, expectedKind);
     if (entity.kind !== expectedKind) {
       throw new TypeError(`Expected ${expectedKind} entity in ${collection}`);

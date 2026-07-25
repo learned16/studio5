@@ -38,6 +38,17 @@
 - المهام تصنف إلى متأخرة، مستحقة اليوم، بلا موعد، ومكتملة اليوم.
 - كل نتيجة تحتفظ بـStable IDs وسياق المادة المشتق للعرض، من دون نسخ السياق داخل التخزين.
 
+## Schema v3 - Files and Artifacts
+
+- `FileArtifact`: الهوية المنطقية للملف واسمه الأصلي واسم العرض ومصدر الإدخال.
+- `FileHash`: SHA-256 فريد لكل محتوى؛ لا يعتمد على الاسم أو المسار.
+- `FileVersion`: يرتبط بـArtifact وHash، ويحمل رقم النسخة والنوع والحجم ومفتاح التخزين.
+- `ArtifactLink`: يربط Artifact حالياً بـSubject أوLecture أوTask عبر Stable IDs.
+- المحتوى الفعلي يُخزن منفصلاً بعنوان `sha256/<digest>` ولا يدخل Snapshot.
+- رفع bytes مطابقة يعيد Duplicate؛ إضافة Version متعمدة تحفظ السجل السابق.
+- FileArtifact وFileHash وFileVersion وArtifactLink سجلات غير قابلة للاستبدال في هذه المرحلة.
+- Migration v2 -> v3 تضيف Collections الجديدة فارغة وتحفظ Academic وPlanning وToday كما هي.
+
 ## Migrations
 
 1. رقم schema محلي واضح.
