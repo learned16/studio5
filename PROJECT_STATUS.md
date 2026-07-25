@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-25  
-المرحلة الحالية: `Phase 2 - Core`  
-الفرع النشط: `codex/p2-revision-history-ui`
+المرحلة الحالية: `Phase 3 - Lecture Flow`
+الفرع النشط: `codex/p3-lecture-capture-domain`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -59,6 +59,7 @@
 | P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | DONE - 54/54 TESTS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
 | P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DEPLOYED V4 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DEPLOYED V5 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
+| P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | VERIFIED 63/63 + 15/15 - PUSH PENDING | `packages/studio5-core/**` ووثائق المهمة والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -72,8 +73,8 @@
 
 ## القادم بعد المهمة الحالية
 
-1. إكمال Demo مرحلي يربط P0 Ink بـNotebook Core على MatePad.
-2. قرار Go/No-Go قبل بدء Phase 3: Lecture Capture وCloseout.
+1. تنفيذ P3-LF-001 كوحدة مستقلة: Capture وCloseout وMigration v5.
+2. يبقى Gate جهاز MatePad للمرحلة الثانية قابلاً للإصلاح في فرع Phase 2 من دون لمس Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة
 

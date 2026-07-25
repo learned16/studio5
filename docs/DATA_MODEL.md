@@ -62,6 +62,19 @@
 - قراءة Ink تتحقق من الحجم والـSHA-256 وDocument ID قبل تسليم المحتوى.
 - Migration v3 -> v4 تضيف Notebook/Ink Collections وتحفظ بيانات v0-v3 كما هي.
 
+## Schema v5 - Lecture Flow
+
+- `LectureCapture`: حدث سريع immutable مرتبط بـLecture عبر Stable ID، ويحمل النوع والنص ووقت الالتقاط.
+- الأنواع العامة لا تعتمد على اسم المادة: `understanding-gap`, `important`, `assignment`,
+  `professor-question`, `professor-feedback`.
+- `LectureCloseout`: جلسة واحدة لكل Lecture، تبدأ `in-progress` وتصبح `completed` بعد تنظيم كل Captures.
+- `CaptureResolution`: قرار immutable واحد لكل Capture يربطه بالـCloseout، ونتيجته:
+  `task`, `review`, `inbox`, `answered`, أو `dismissed`.
+- نتيجة `task` تحتاج Task موجودة من Lecture نفسها؛ لا يسمح بربط مهمة من مادة أو محاضرة أخرى.
+- Migration v4 -> v5 تضيف `lectureCaptures`, `lectureCloseouts`, `captureResolutions` فارغة وتحفظ
+  كل بيانات Academic/Planning/Files/Notebook/Ink كما هي.
+- الواجهة وPDF وSearch وInbox projection تبقى وحدات لاحقة ولا تدخل في Schema v5 هذه.
+
 ## Migrations
 
 1. رقم schema محلي واضح.

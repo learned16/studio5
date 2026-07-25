@@ -17,6 +17,9 @@ const COLLECTION_KIND = Object.freeze({
   notebooks: "notebook",
   inkDocuments: "ink-document",
   inkRevisions: "ink-revision",
+  lectureCaptures: "lecture-capture",
+  lectureCloseouts: "lecture-closeout",
+  captureResolutions: "capture-resolution",
 });
 
 const IMMUTABLE_COLLECTIONS = new Set([
@@ -25,6 +28,8 @@ const IMMUTABLE_COLLECTIONS = new Set([
   "fileVersions",
   "artifactLinks",
   "inkRevisions",
+  "lectureCaptures",
+  "captureResolutions",
 ]);
 
 function clone(value) {
@@ -220,6 +225,60 @@ export class CoreStore {
         throw new CoreRelationError(
           `Duplicate ink content for ${entity.inkDocumentId}`,
         );
+      }
+    }
+    if (collection === "lectureCaptures") {
+      this.#assertExists("lectures", entity.lectureId, "lectureCapture.lectureId");
+    }
+    if (collection === "lectureCloseouts") {
+      this.#assertExists("lectures", entity.lectureId, "lectureCloseout.lectureId");
+      const duplicate = [...this.#collection("lectureCloseouts").values()]
+        .find((closeout) => (
+          closeout.lectureId === entity.lectureId
+          && closeout.id !== entity.id
+        ));
+      if (duplicate) {
+        throw new CoreRelationError(
+          `Lecture already has a closeout: ${entity.lectureId}`,
+        );
+      }
+    }
+    if (collection === "captureResolutions") {
+      this.#assertExists(
+        "lectureCaptures",
+        entity.captureId,
+        "captureResolution.captureId",
+      );
+      this.#assertExists(
+        "lectureCloseouts",
+        entity.closeoutId,
+        "captureResolution.closeoutId",
+      );
+      const capture = this.get("lectureCaptures", entity.captureId);
+      const closeout = this.get("lectureCloseouts", entity.closeoutId);
+      if (capture.lectureId !== closeout.lectureId) {
+        throw new CoreRelationError(
+          "captureResolution capture and closeout must belong to the same lecture",
+        );
+      }
+      const duplicate = [...this.#collection("captureResolutions").values()]
+        .find((resolution) => (
+          resolution.captureId === entity.captureId
+          && resolution.id !== entity.id
+        ));
+      if (duplicate) {
+        throw new CoreRelationError(
+          `Lecture capture is already resolved: ${entity.captureId}`,
+        );
+      }
+      if (entity.taskId) {
+        this.#assertExists("tasks", entity.taskId, "captureResolution.taskId");
+        const task = this.get("tasks", entity.taskId);
+        if (task.lectureId !== capture.lectureId) {
+          throw new CoreRelationError(
+            "captureResolution.taskId must belong to the capture lecture",
+          );
+        }
       }
     }
   }

@@ -28,6 +28,15 @@ import {
   sha256Hex,
 } from "./file-intake.mjs";
 import { parseInkSnapshot, prepareInkSnapshot } from "./ink-format.mjs";
+import {
+  CAPTURE_RESOLUTION_OUTCOMES,
+  LECTURE_CAPTURE_KINDS,
+  LECTURE_CLOSEOUT_STATUSES,
+  completeLectureCloseout as completeCloseoutModel,
+  createCaptureResolution,
+  createLectureCapture,
+  createLectureCloseout,
+} from "./lecture-flow.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -79,6 +88,17 @@ export class AcademicRepositoryRecoveryRequiredError extends Error {
   constructor() {
     super("Academic repository requires recovery before another write");
     this.name = "AcademicRepositoryRecoveryRequiredError";
+  }
+}
+
+export class LectureCloseoutIncompleteError extends Error {
+  constructor(closeoutId, unresolvedCaptureIds) {
+    super(
+      `Lecture closeout ${closeoutId} has ${unresolvedCaptureIds.length} unresolved capture(s)`,
+    );
+    this.name = "LectureCloseoutIncompleteError";
+    this.closeoutId = closeoutId;
+    this.unresolvedCaptureIds = structuredClone(unresolvedCaptureIds);
   }
 }
 
@@ -221,6 +241,64 @@ export class AcademicRepository {
 
   createInkDocument(input) {
     return this.#create("inkDocuments", createInkDocument, input);
+  }
+
+  createLectureCapture(input) {
+    return this.#create("lectureCaptures", createLectureCapture, input);
+  }
+
+  startLectureCloseout(lectureId, input = {}) {
+    return this.#mutate((working) => {
+      const normalizedLectureId = assertStableId(lectureId, "lecture");
+      const existing = working.list("lectureCloseouts")
+        .find((closeout) => closeout.lectureId === normalizedLectureId);
+      if (existing) {
+        return { status: "existing", closeout: existing };
+      }
+      const closeout = createLectureCloseout(withDefaultNow({
+        ...input,
+        lectureId: normalizedLectureId,
+      }, this.#now()));
+      working.add("lectureCloseouts", closeout);
+      return { status: "created", closeout };
+    });
+  }
+
+  resolveLectureCapture(captureId, input) {
+    return this.#mutate((working) => {
+      const resolution = createCaptureResolution(withDefaultNow({
+        ...input,
+        captureId: assertStableId(captureId, "lecture-capture"),
+      }, this.#now()));
+      working.add("captureResolutions", resolution);
+      return resolution;
+    });
+  }
+
+  completeLectureCloseout(closeoutId, input = {}) {
+    return this.#mutate((working) => {
+      const normalizedCloseoutId = assertStableId(closeoutId, "lecture-closeout");
+      const closeout = working.get("lectureCloseouts", normalizedCloseoutId);
+      if (!closeout) {
+        throw new CoreRelationError(`Cannot complete missing lecture closeout: ${closeoutId}`);
+      }
+      if (closeout.status === "completed") return closeout;
+      const captureIds = working.list("lectureCaptures")
+        .filter((capture) => capture.lectureId === closeout.lectureId)
+        .map(({ id }) => id);
+      const resolvedIds = new Set(
+        working.list("captureResolutions")
+          .filter((resolution) => resolution.closeoutId === closeout.id)
+          .map(({ captureId }) => captureId),
+      );
+      const unresolved = captureIds.filter((id) => !resolvedIds.has(id));
+      if (unresolved.length > 0) {
+        throw new LectureCloseoutIncompleteError(closeout.id, unresolved);
+      }
+      const completed = completeCloseoutModel(closeout, input, this.#now());
+      working.replace("lectureCloseouts", completed);
+      return completed;
+    });
   }
 
   updateTask(taskId, changes) {
@@ -369,6 +447,68 @@ export class AcademicRepository {
     return this.#read((store) => (
       store.get("tasks", assertStableId(taskId, "task"))
     ));
+  }
+
+  listLectureCaptures({
+    lectureId = null,
+    kind = null,
+  } = {}) {
+    return this.#read((store) => {
+      if (lectureId) assertStableId(lectureId, "lecture");
+      const normalizedKind = optionalFilterValue(
+        kind,
+        LECTURE_CAPTURE_KINDS,
+        "kind",
+      );
+      return store.list("lectureCaptures")
+        .filter((capture) => (
+          (!lectureId || capture.lectureId === lectureId)
+          && (!normalizedKind || capture.captureKind === normalizedKind)
+        ))
+        .sort((left, right) => (
+          left.capturedAt.localeCompare(right.capturedAt)
+          || left.id.localeCompare(right.id)
+        ));
+    });
+  }
+
+  listLectureCloseouts({
+    lectureId = null,
+    status = null,
+  } = {}) {
+    return this.#read((store) => {
+      if (lectureId) assertStableId(lectureId, "lecture");
+      const normalizedStatus = optionalFilterValue(
+        status,
+        LECTURE_CLOSEOUT_STATUSES,
+        "status",
+      );
+      return store.list("lectureCloseouts").filter((closeout) => (
+        (!lectureId || closeout.lectureId === lectureId)
+        && (!normalizedStatus || closeout.status === normalizedStatus)
+      ));
+    });
+  }
+
+  listCaptureResolutions({
+    captureId = null,
+    closeoutId = null,
+    outcome = null,
+  } = {}) {
+    return this.#read((store) => {
+      if (captureId) assertStableId(captureId, "lecture-capture");
+      if (closeoutId) assertStableId(closeoutId, "lecture-closeout");
+      const normalizedOutcome = optionalFilterValue(
+        outcome,
+        CAPTURE_RESOLUTION_OUTCOMES,
+        "outcome",
+      );
+      return store.list("captureResolutions").filter((resolution) => (
+        (!captureId || resolution.captureId === captureId)
+        && (!closeoutId || resolution.closeoutId === closeoutId)
+        && (!normalizedOutcome || resolution.outcome === normalizedOutcome)
+      ));
+    });
   }
 
   async #prepareAndQueueFile(input, artifactId = null) {

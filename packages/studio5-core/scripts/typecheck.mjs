@@ -9,6 +9,7 @@ const modules = await Promise.all([
   import("../src/indexeddb-file-content-store.mjs"),
   import("../src/ink-format.mjs"),
   import("../src/today-query.mjs"),
+  import("../src/lecture-flow.mjs"),
   import("../src/academic-repository.mjs"),
 ]);
 
@@ -48,7 +49,20 @@ const requiredExports = [
   ["IndexedDbFileContentStore", "FILE_CONTENT_DB_VERSION", "FILE_CONTENT_STORE"],
   ["prepareInkSnapshot", "parseInkSnapshot"],
   ["buildTodayQuery"],
-  ["AcademicRepository", "AcademicRepositoryRecoveryRequiredError"],
+  [
+    "createLectureCapture",
+    "createLectureCloseout",
+    "completeLectureCloseout",
+    "createCaptureResolution",
+    "LECTURE_CAPTURE_KINDS",
+    "LECTURE_CLOSEOUT_STATUSES",
+    "CAPTURE_RESOLUTION_OUTCOMES",
+  ],
+  [
+    "AcademicRepository",
+    "AcademicRepositoryRecoveryRequiredError",
+    "LectureCloseoutIncompleteError",
+  ],
 ];
 
 for (let index = 0; index < modules.length; index += 1) {

@@ -124,7 +124,7 @@ test("schema version 0 migrates forward without losing collections", () => {
   assert.deepEqual(migrated.entities.inkRevisions, []);
 });
 
-test("schema version 1 migrates to version 4 without losing academic data", () => {
+test("schema version 1 migrates to current without losing academic data", () => {
   const fixture = academicFixture();
   const versionOne = {
     schemaVersion: 1,
@@ -138,7 +138,7 @@ test("schema version 1 migrates to version 4 without losing academic data", () =
     },
   };
   const migrated = migrateSnapshot(versionOne, 10);
-  assert.equal(migrated.schemaVersion, 4);
+  assert.equal(migrated.schemaVersion, CORE_SCHEMA_VERSION);
   assert.deepEqual(migrated.entities.subjects, [fixture.subject]);
   assert.deepEqual(migrated.entities.scheduleEntries, []);
   assert.deepEqual(migrated.entities.lectures, []);
@@ -146,7 +146,7 @@ test("schema version 1 migrates to version 4 without losing academic data", () =
   assert.deepEqual(migrated.entities.fileArtifacts, []);
 });
 
-test("schema version 2 migrates to version 4 without losing planning data", () => {
+test("schema version 2 migrates to current without losing planning data", () => {
   const fixture = academicFixture();
   const task = createTask({
     subjectId: fixture.subject.id,
@@ -168,14 +168,14 @@ test("schema version 2 migrates to version 4 without losing planning data", () =
     },
   };
   const migrated = migrateSnapshot(versionTwo, 30);
-  assert.equal(migrated.schemaVersion, 4);
+  assert.equal(migrated.schemaVersion, CORE_SCHEMA_VERSION);
   assert.deepEqual(migrated.entities.tasks, [task]);
   assert.deepEqual(migrated.entities.fileHashes, []);
   assert.deepEqual(migrated.entities.fileVersions, []);
   assert.deepEqual(migrated.entities.artifactLinks, []);
 });
 
-test("schema version 3 migrates to version 4 without losing file metadata", () => {
+test("schema version 3 migrates to current without losing file metadata", () => {
   const versionThree = {
     schemaVersion: 3,
     exportedAt: "2026-07-25T00:00:00.000Z",
@@ -195,11 +195,43 @@ test("schema version 3 migrates to version 4 without losing file metadata", () =
     },
   };
   const migrated = migrateSnapshot(versionThree, 40);
-  assert.equal(migrated.schemaVersion, 4);
+  assert.equal(migrated.schemaVersion, CORE_SCHEMA_VERSION);
   assert.deepEqual(migrated.entities.fileArtifacts, []);
   assert.deepEqual(migrated.entities.notebooks, []);
   assert.deepEqual(migrated.entities.inkDocuments, []);
   assert.deepEqual(migrated.entities.inkRevisions, []);
+});
+
+test("schema version 4 migrates to version 5 without losing notebook data", () => {
+  const versionFour = {
+    schemaVersion: 4,
+    exportedAt: "2026-07-25T00:00:00.000Z",
+    entities: {
+      academicYears: [],
+      semesters: [],
+      capabilityPacks: [],
+      subjectProfiles: [],
+      subjects: [],
+      scheduleEntries: [],
+      lectures: [],
+      tasks: [],
+      fileArtifacts: [],
+      fileHashes: [],
+      fileVersions: [],
+      artifactLinks: [],
+      notebooks: [],
+      inkDocuments: [],
+      inkRevisions: [],
+    },
+  };
+  const migrated = migrateSnapshot(versionFour, 50);
+  assert.equal(migrated.schemaVersion, 5);
+  assert.deepEqual(migrated.entities.notebooks, []);
+  assert.deepEqual(migrated.entities.inkDocuments, []);
+  assert.deepEqual(migrated.entities.inkRevisions, []);
+  assert.deepEqual(migrated.entities.lectureCaptures, []);
+  assert.deepEqual(migrated.entities.lectureCloseouts, []);
+  assert.deepEqual(migrated.entities.captureResolutions, []);
 });
 
 test("planning models validate time, status, priority, and task revisions", () => {

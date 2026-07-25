@@ -25,8 +25,10 @@
 - Notebook مرتبط بـSubject وبـLecture اختيارياً عبر Stable IDs.
 - InkDocument وInkRevision ضمن Schema v4، مع تاريخ نسخ immutable لكل حفظ متعمد.
 - Ink JSON حتمي ومخزن بعنوان SHA-256 مع كشف Duplicate وتحقق من التلف عند القراءة.
+- Lecture Flow ضمن ملف Domain مستقل وSchema v5: Capture سريع، Closeout واحد لكل محاضرة، وResolution ثابت لكل Capture.
+- لا يكتمل Closeout قبل تنظيم كل Captures، ونتيجة `task` لا تقبل إلا مهمة من المحاضرة نفسها.
 
-واجهة Today تأتي في مهمة مستقلة؛ المحرك الحالي يعيد بيانات مشتقة فقط ولا يضيف تخزيناً جديداً.
+واجهات Lecture Capture وCloseout وInbox تأتي في دفعات مستقلة؛ هذه الحزمة توفر العقود المحلية فقط.
 
 ## التحقق
 
