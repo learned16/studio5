@@ -56,7 +56,7 @@
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 | DOCS-SOP-001 | دمج SOP وحزمة التعاون وتنظيف الملفات المضغوطة | `codex/docs-collaboration-sop` | Codex | DONE - DOCS CHECK + 19/19 + 12/12 | وثائق التعاون والحالة فقط |
 | P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
-| GATE0-DEVICE-RESULTS | توثيق نتائج MatePad واقتراح ADR-008 | `codex/gate0-device-results` | Codex | IN PROGRESS - DOCS ONLY | وثائق Gate 0 والقرارات والحالة |
+| GATE0-DEVICE-RESULTS | توثيق نتائج MatePad واقتراح ADR-008 | `codex/gate0-device-results` | Codex | DONE - DEVICE PASS / ADR NEEDS DECISION | وثائق Gate 0 والقرارات والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
