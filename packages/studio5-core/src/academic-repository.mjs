@@ -9,7 +9,10 @@ import {
   createFileArtifact,
   createFileHash,
   createFileVersion,
+  createInkDocument,
+  createInkRevision,
   createLecture,
+  createNotebook,
   createScheduleEntry,
   createSemester,
   createSubject,
@@ -24,6 +27,7 @@ import {
   prepareFileIntake,
   sha256Hex,
 } from "./file-intake.mjs";
+import { parseInkSnapshot, prepareInkSnapshot } from "./ink-format.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -209,6 +213,14 @@ export class AcademicRepository {
 
   linkArtifact(input) {
     return this.#create("artifactLinks", createArtifactLink, input);
+  }
+
+  createNotebook(input) {
+    return this.#create("notebooks", createNotebook, input);
+  }
+
+  createInkDocument(input) {
+    return this.#create("inkDocuments", createInkDocument, input);
   }
 
   updateTask(taskId, changes) {
@@ -557,6 +569,143 @@ export class AcademicRepository {
       throw new CoreRelationError(`Stored content hash mismatch for ${version.id}`);
     }
     return content;
+  }
+
+  saveInkRevision(inkDocumentId, input) {
+    if (!this.#fileContentStore) {
+      return Promise.reject(new TypeError("Ink revision requires a fileContentStore"));
+    }
+    const normalizedDocumentId = assertStableId(inkDocumentId, "ink-document");
+    return prepareInkSnapshot({
+      ...input,
+      documentId: normalizedDocumentId,
+    }).then((prepared) => this.#enqueue(async () => {
+      await this.#initializeUnlocked();
+      if (this.#needsRecovery) {
+        throw new AcademicRepositoryRecoveryRequiredError();
+      }
+
+      const working = new CoreStore(this.#store.exportSnapshot(this.#now()));
+      const inkDocument = working.get("inkDocuments", normalizedDocumentId);
+      if (!inkDocument) {
+        throw new CoreRelationError(`Cannot revise missing ink document: ${normalizedDocumentId}`);
+      }
+      let fileHash = working.list("fileHashes").find((candidate) => (
+        candidate.algorithm === prepared.algorithm
+        && candidate.digest === prepared.digest
+      )) ?? null;
+      const revisions = working.list("inkRevisions")
+        .filter((revision) => revision.inkDocumentId === normalizedDocumentId)
+        .sort((left, right) => left.revisionNumber - right.revisionNumber);
+      const duplicate = fileHash
+        ? revisions.find((revision) => revision.fileHashId === fileHash.id)
+        : null;
+
+      await this.#fileContentStore.putIfAbsent(
+        prepared.storageKey,
+        prepared.bytes,
+        { mediaType: "application/vnd.studio5.ink+json", now: this.#now() },
+      );
+      if (duplicate) {
+        return {
+          status: "duplicate",
+          inkDocument,
+          revision: duplicate,
+          fileHash,
+        };
+      }
+
+      const operationNow = this.#now();
+      if (!fileHash) {
+        fileHash = createFileHash({
+          algorithm: prepared.algorithm,
+          digest: prepared.digest,
+          now: operationNow,
+        });
+        working.add("fileHashes", fileHash);
+      }
+      const revision = createInkRevision({
+        inkDocumentId: normalizedDocumentId,
+        fileHashId: fileHash.id,
+        revisionNumber: (revisions.at(-1)?.revisionNumber ?? 0) + 1,
+        byteSize: prepared.byteSize,
+        storageKey: prepared.storageKey,
+        strokeCount: prepared.strokeCount,
+        pointCount: prepared.pointCount,
+        layerCount: prepared.layerCount,
+        now: operationNow,
+      });
+      working.add("inkRevisions", revision);
+
+      try {
+        await this.#database.save(working.exportSnapshot(this.#now()));
+      } catch (error) {
+        this.#needsRecovery = true;
+        throw error;
+      }
+      this.#store = working;
+      return structuredClone({
+        status: "created",
+        inkDocument,
+        revision,
+        fileHash,
+      });
+    }));
+  }
+
+  listNotebooks({ subjectId = null, lectureId = null } = {}) {
+    return this.#read((store) => {
+      if (subjectId) assertStableId(subjectId, "subject");
+      if (lectureId) assertStableId(lectureId, "lecture");
+      return store.list("notebooks").filter((notebook) => (
+        (!subjectId || notebook.subjectId === subjectId)
+        && (!lectureId || notebook.lectureId === lectureId)
+      ));
+    });
+  }
+
+  listInkDocuments({ notebookId = null } = {}) {
+    return this.#read((store) => {
+      if (notebookId) assertStableId(notebookId, "notebook");
+      return store.list("inkDocuments").filter((document) => (
+        !notebookId || document.notebookId === notebookId
+      ));
+    });
+  }
+
+  listInkRevisions({ inkDocumentId = null } = {}) {
+    return this.#read((store) => {
+      if (inkDocumentId) assertStableId(inkDocumentId, "ink-document");
+      return store.list("inkRevisions")
+        .filter((revision) => (
+          !inkDocumentId || revision.inkDocumentId === inkDocumentId
+        ))
+        .sort((left, right) => left.revisionNumber - right.revisionNumber);
+    });
+  }
+
+  async getInkRevisionContent(inkRevisionId) {
+    if (!this.#fileContentStore) {
+      throw new TypeError("Ink content access requires a fileContentStore");
+    }
+    const revision = await this.#read((store) => (
+      store.get("inkRevisions", assertStableId(inkRevisionId, "ink-revision"))
+    ));
+    if (!revision) return null;
+    const content = await this.#fileContentStore.get(revision.storageKey);
+    if (!content) return null;
+    if (content.byteSize !== revision.byteSize) {
+      throw new CoreRelationError(`Stored ink size mismatch for ${revision.id}`);
+    }
+    const fileHash = await this.#read((store) => (
+      store.get("fileHashes", revision.fileHashId)
+    ));
+    const digest = await sha256Hex(content.bytes);
+    if (!fileHash || digest !== fileHash.digest) {
+      throw new CoreRelationError(`Stored ink hash mismatch for ${revision.id}`);
+    }
+    const snapshot = parseInkSnapshot(content.bytes, revision.inkDocumentId);
+    return { ...content, snapshot };
   }
 
   queryToday(options = {}) {

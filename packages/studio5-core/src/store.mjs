@@ -14,6 +14,9 @@ const COLLECTION_KIND = Object.freeze({
   fileHashes: "file-hash",
   fileVersions: "file-version",
   artifactLinks: "artifact-link",
+  notebooks: "notebook",
+  inkDocuments: "ink-document",
+  inkRevisions: "ink-revision",
 });
 
 const IMMUTABLE_COLLECTIONS = new Set([
@@ -21,6 +24,7 @@ const IMMUTABLE_COLLECTIONS = new Set([
   "fileHashes",
   "fileVersions",
   "artifactLinks",
+  "inkRevisions",
 ]);
 
 function clone(value) {
@@ -171,6 +175,50 @@ export class CoreStore {
       if (duplicateLink) {
         throw new CoreRelationError(
           `Duplicate artifact link for ${entity.artifactId} and ${entity.targetId}`,
+        );
+      }
+    }
+    if (collection === "notebooks") {
+      this.#assertExists("subjects", entity.subjectId, "notebook.subjectId");
+      if (entity.lectureId) {
+        this.#assertExists("lectures", entity.lectureId, "notebook.lectureId");
+        const lecture = this.get("lectures", entity.lectureId);
+        if (lecture.subjectId !== entity.subjectId) {
+          throw new CoreRelationError(
+            "notebook.lectureId must belong to notebook.subjectId",
+          );
+        }
+      }
+    }
+    if (collection === "inkDocuments") {
+      this.#assertExists("notebooks", entity.notebookId, "inkDocument.notebookId");
+    }
+    if (collection === "inkRevisions") {
+      this.#assertExists("inkDocuments", entity.inkDocumentId, "inkRevision.inkDocumentId");
+      this.#assertExists("fileHashes", entity.fileHashId, "inkRevision.fileHashId");
+      const hash = this.get("fileHashes", entity.fileHashId);
+      if (entity.storageKey !== `${hash.algorithm.replace("-", "")}/${hash.digest}`) {
+        throw new CoreRelationError(
+          "inkRevision.storageKey must be derived from inkRevision.fileHashId",
+        );
+      }
+      const revisions = [...this.#collection("inkRevisions").values()];
+      if (revisions.some((revision) => (
+        revision.inkDocumentId === entity.inkDocumentId
+        && revision.revisionNumber === entity.revisionNumber
+        && revision.id !== entity.id
+      ))) {
+        throw new CoreRelationError(
+          `Duplicate ink revision number ${entity.revisionNumber} for ${entity.inkDocumentId}`,
+        );
+      }
+      if (revisions.some((revision) => (
+        revision.inkDocumentId === entity.inkDocumentId
+        && revision.fileHashId === entity.fileHashId
+        && revision.id !== entity.id
+      ))) {
+        throw new CoreRelationError(
+          `Duplicate ink content for ${entity.inkDocumentId}`,
         );
       }
     }

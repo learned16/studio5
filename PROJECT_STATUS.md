@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-25  
 المرحلة الحالية: `Phase 2 - Core`  
-الفرع النشط: `codex/p2-file-artifact-intake`
+الفرع النشط: `codex/p2-notebook-basics`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -56,6 +56,7 @@
 | P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
 | P2-CORE-005 | Today query engine محلي | `codex/p2-today-query-engine` | Codex | DONE - 33/33 TESTS | `today-query.mjs`, Repository، اختبارات Today، وثائق المهمة والحالة |
 | P2-CORE-006 | FileArtifact intake وHash وImmutable original | `codex/p2-file-artifact-intake` | Codex | DONE - 44/44 TESTS | نماذج الملفات، Schema v3، content store، Repository، الاختبارات والوثائق |
+| P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | IN PROGRESS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -69,7 +70,7 @@
 
 ## القادم بعد المهمة الحالية
 
-1. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
+1. إكمال `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
 2. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة

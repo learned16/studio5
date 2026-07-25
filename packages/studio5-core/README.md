@@ -22,6 +22,9 @@
 - SHA-256 وcontent-addressed storage وكشف Duplicate قبل إنشاء سجل جديد.
 - IndexedDB منفصل لمحتوى الملفات حتى لا تصبح الـbytes الكبيرة جزءاً من Snapshot.
 - الإصدارات والـHash والأصل Immutable؛ Version جديدة لا تستبدل القديمة.
+- Notebook مرتبط بـSubject وبـLecture اختيارياً عبر Stable IDs.
+- InkDocument وInkRevision ضمن Schema v4، مع تاريخ نسخ immutable لكل حفظ متعمد.
+- Ink JSON حتمي ومخزن بعنوان SHA-256 مع كشف Duplicate وتحقق من التلف عند القراءة.
 
 واجهة Today تأتي في مهمة مستقلة؛ المحرك الحالي يعيد بيانات مشتقة فقط ولا يضيف تخزيناً جديداً.
 

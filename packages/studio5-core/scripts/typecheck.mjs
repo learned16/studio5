@@ -7,6 +7,7 @@ const modules = await Promise.all([
   import("../src/indexeddb-driver.mjs"),
   import("../src/file-intake.mjs"),
   import("../src/indexeddb-file-content-store.mjs"),
+  import("../src/ink-format.mjs"),
   import("../src/today-query.mjs"),
   import("../src/academic-repository.mjs"),
 ]);
@@ -33,6 +34,11 @@ const requiredExports = [
     "FILE_SOURCE_TYPES",
     "ARTIFACT_LINK_TARGET_KINDS",
     "ARTIFACT_LINK_ROLES",
+    "createNotebook",
+    "createInkDocument",
+    "createInkRevision",
+    "NOTEBOOK_TEMPLATES",
+    "INK_FORMAT_VERSION",
   ],
   ["CORE_SCHEMA_VERSION", "createEmptySnapshot", "migrateSnapshot", "validateSnapshot"],
   ["CoreStore", "CoreRelationError"],
@@ -40,6 +46,7 @@ const requiredExports = [
   ["IndexedDbCoreDriver", "INDEXED_DB_VERSION"],
   ["sha256Hex", "prepareFileIntake", "assertFileContentStore"],
   ["IndexedDbFileContentStore", "FILE_CONTENT_DB_VERSION", "FILE_CONTENT_STORE"],
+  ["prepareInkSnapshot", "parseInkSnapshot"],
   ["buildTodayQuery"],
   ["AcademicRepository", "AcademicRepositoryRecoveryRequiredError"],
 ];

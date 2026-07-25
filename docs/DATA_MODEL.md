@@ -49,6 +49,19 @@
 - FileArtifact وFileHash وFileVersion وArtifactLink سجلات غير قابلة للاستبدال في هذه المرحلة.
 - Migration v2 -> v3 تضيف Collections الجديدة فارغة وتحفظ Academic وPlanning وToday كما هي.
 
+## Schema v4 - Notebook and Ink
+
+- `Notebook`: يرتبط بـSubject، وبـLecture اختيارياً بشرط أن تكون من المادة نفسها.
+- قوالب Notebook بيانات عامة: `blank`, `lined`, `grid`, `dots`, `isometric`,
+  `engineering`؛ لا تعتمد على أسماء مواد.
+- `InkDocument`: هوية صفحة/مساحة الرسم داخل Notebook مع أبعاد ووحدة و`formatVersion`.
+- `InkRevision`: سجل immutable لكل حفظ متعمد، مرتبط بـInkDocument وFileHash ويحمل رقم
+  revision وعدد الطبقات والخطوط والنقاط.
+- محتوى Ink JSON منفصل عن Snapshot، يطبع بترتيب حتمي ويحفظ بعنوان `sha256/<digest>`.
+- حفظ المحتوى نفسه مرة ثانية يعيد Duplicate؛ الحفظ المختلف ينشئ Revision جديدة ويحفظ القديمة.
+- قراءة Ink تتحقق من الحجم والـSHA-256 وDocument ID قبل تسليم المحتوى.
+- Migration v3 -> v4 تضيف Notebook/Ink Collections وتحفظ بيانات v0-v3 كما هي.
+
 ## Migrations
 
 1. رقم schema محلي واضح.

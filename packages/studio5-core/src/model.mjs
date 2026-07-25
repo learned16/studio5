@@ -89,6 +89,15 @@ export const ARTIFACT_LINK_ROLES = Object.freeze([
   "reference",
   "submission",
 ]);
+export const NOTEBOOK_TEMPLATES = Object.freeze([
+  "blank",
+  "lined",
+  "grid",
+  "dots",
+  "isometric",
+  "engineering",
+]);
+export const INK_FORMAT_VERSION = 1;
 
 function uniqueStableIds(values, kind) {
   return [...new Set((values ?? []).map((value) => assertStableId(value, kind)))];
@@ -428,6 +437,95 @@ export function createArtifactLink({
     targetId: assertStableId(targetId, normalizedTargetKind),
     role: oneOf(role, ARTIFACT_LINK_ROLES, "role"),
     label: optionalText(label),
+    ...timestamps(now),
+  };
+}
+
+export function createNotebook({
+  id = createStableId("notebook"),
+  subjectId,
+  lectureId = null,
+  title,
+  template = "blank",
+  now = Date.now(),
+}) {
+  return {
+    kind: "notebook",
+    id: assertStableId(id, "notebook"),
+    subjectId: assertStableId(subjectId, "subject"),
+    lectureId: optionalStableId(lectureId, "lecture"),
+    title: requiredText(title, "title"),
+    template: oneOf(template, NOTEBOOK_TEMPLATES, "template"),
+    ...timestamps(now),
+  };
+}
+
+export function createInkDocument({
+  id = createStableId("ink-document"),
+  notebookId,
+  title,
+  width,
+  height,
+  unit = "px",
+  formatVersion = INK_FORMAT_VERSION,
+  now = Date.now(),
+}) {
+  const normalizedWidth = Number(width);
+  const normalizedHeight = Number(height);
+  const normalizedFormatVersion = Number(formatVersion);
+  if (!Number.isFinite(normalizedWidth) || normalizedWidth <= 0) {
+    throw new TypeError("width must be a positive finite number");
+  }
+  if (!Number.isFinite(normalizedHeight) || normalizedHeight <= 0) {
+    throw new TypeError("height must be a positive finite number");
+  }
+  if (normalizedFormatVersion !== INK_FORMAT_VERSION) {
+    throw new TypeError(`formatVersion must be ${INK_FORMAT_VERSION}`);
+  }
+  return {
+    kind: "ink-document",
+    id: assertStableId(id, "ink-document"),
+    notebookId: assertStableId(notebookId, "notebook"),
+    title: requiredText(title, "title"),
+    width: normalizedWidth,
+    height: normalizedHeight,
+    unit: requiredText(unit, "unit").toLowerCase(),
+    formatVersion: normalizedFormatVersion,
+    ...timestamps(now),
+  };
+}
+
+export function createInkRevision({
+  id = createStableId("ink-revision"),
+  inkDocumentId,
+  fileHashId,
+  revisionNumber,
+  byteSize,
+  storageKey,
+  strokeCount,
+  pointCount,
+  layerCount,
+  now = Date.now(),
+}) {
+  const positiveInteger = (value, field, { allowZero = false } = {}) => {
+    const normalized = Number(value);
+    const minimum = allowZero ? 0 : 1;
+    if (!Number.isSafeInteger(normalized) || normalized < minimum) {
+      throw new TypeError(`${field} must be an integer >= ${minimum}`);
+    }
+    return normalized;
+  };
+  return {
+    kind: "ink-revision",
+    id: assertStableId(id, "ink-revision"),
+    inkDocumentId: assertStableId(inkDocumentId, "ink-document"),
+    fileHashId: assertStableId(fileHashId, "file-hash"),
+    revisionNumber: positiveInteger(revisionNumber, "revisionNumber"),
+    byteSize: positiveInteger(byteSize, "byteSize", { allowZero: true }),
+    storageKey: requiredText(storageKey, "storageKey"),
+    strokeCount: positiveInteger(strokeCount, "strokeCount", { allowZero: true }),
+    pointCount: positiveInteger(pointCount, "pointCount", { allowZero: true }),
+    layerCount: positiveInteger(layerCount, "layerCount"),
     ...timestamps(now),
   };
 }
