@@ -1,6 +1,6 @@
-export const CORE_SCHEMA_VERSION = 1;
+export const CORE_SCHEMA_VERSION = 2;
 
-export const COLLECTIONS = Object.freeze([
+const COLLECTIONS_V1 = Object.freeze([
   "academicYears",
   "semesters",
   "capabilityPacks",
@@ -8,8 +8,15 @@ export const COLLECTIONS = Object.freeze([
   "subjects",
 ]);
 
-function emptyEntities() {
-  return Object.fromEntries(COLLECTIONS.map((collection) => [collection, []]));
+export const COLLECTIONS = Object.freeze([
+  ...COLLECTIONS_V1,
+  "scheduleEntries",
+  "lectures",
+  "tasks",
+]);
+
+function emptyEntities(collections = COLLECTIONS) {
+  return Object.fromEntries(collections.map((collection) => [collection, []]));
 }
 
 export function createEmptySnapshot(now = Date.now()) {
@@ -21,11 +28,11 @@ export function createEmptySnapshot(now = Date.now()) {
 }
 
 function migrateVersion0(input, now) {
-  const entities = emptyEntities();
+  const entities = emptyEntities(COLLECTIONS_V1);
   const source = input?.entities && typeof input.entities === "object"
     ? input.entities
     : input;
-  for (const collection of COLLECTIONS) {
+  for (const collection of COLLECTIONS_V1) {
     entities[collection] = Array.isArray(source?.[collection])
       ? structuredClone(source[collection])
       : [];
@@ -37,8 +44,23 @@ function migrateVersion0(input, now) {
   };
 }
 
+function migrateVersion1(input, now) {
+  const entities = emptyEntities();
+  for (const collection of COLLECTIONS_V1) {
+    entities[collection] = Array.isArray(input?.entities?.[collection])
+      ? structuredClone(input.entities[collection])
+      : [];
+  }
+  return {
+    schemaVersion: 2,
+    exportedAt: input?.exportedAt ?? new Date(now).toISOString(),
+    entities,
+  };
+}
+
 const MIGRATIONS = new Map([
   [0, migrateVersion0],
+  [1, migrateVersion1],
 ]);
 
 export class CoreMigrationError extends Error {

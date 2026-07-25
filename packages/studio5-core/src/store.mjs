@@ -7,6 +7,9 @@ const COLLECTION_KIND = Object.freeze({
   capabilityPacks: "capability-pack",
   subjectProfiles: "subject-profile",
   subjects: "subject",
+  scheduleEntries: "schedule-entry",
+  lectures: "lecture",
+  tasks: "task",
 });
 
 function clone(value) {
@@ -67,6 +70,37 @@ export class CoreStore {
         this.#assertExists("capabilityPacks", id, "subject.capabilityPackIds");
       }
     }
+    if (collection === "scheduleEntries") {
+      this.#assertExists("subjects", entity.subjectId, "scheduleEntry.subjectId");
+    }
+    if (collection === "lectures") {
+      this.#assertExists("subjects", entity.subjectId, "lecture.subjectId");
+      if (entity.scheduleEntryId) {
+        this.#assertExists(
+          "scheduleEntries",
+          entity.scheduleEntryId,
+          "lecture.scheduleEntryId",
+        );
+        const scheduleEntry = this.get("scheduleEntries", entity.scheduleEntryId);
+        if (scheduleEntry.subjectId !== entity.subjectId) {
+          throw new CoreRelationError(
+            "lecture.scheduleEntryId must belong to lecture.subjectId",
+          );
+        }
+      }
+    }
+    if (collection === "tasks") {
+      if (entity.subjectId) {
+        this.#assertExists("subjects", entity.subjectId, "task.subjectId");
+      }
+      if (entity.lectureId) {
+        this.#assertExists("lectures", entity.lectureId, "task.lectureId");
+        const lecture = this.get("lectures", entity.lectureId);
+        if (!entity.subjectId || lecture.subjectId !== entity.subjectId) {
+          throw new CoreRelationError("task.lectureId must belong to task.subjectId");
+        }
+      }
+    }
   }
 
   add(collection, entity) {
@@ -83,6 +117,24 @@ export class CoreStore {
       if (existing.has(entity.id)) {
         throw new CoreRelationError(`Duplicate core entity ID: ${entity.id}`);
       }
+    }
+    this.#validateRelations(collection, entity);
+    records.set(entity.id, clone(entity));
+    return clone(entity);
+  }
+
+  replace(collection, entity) {
+    if (!entity || typeof entity !== "object") {
+      throw new TypeError("Core entity must be an object");
+    }
+    const expectedKind = COLLECTION_KIND[collection];
+    const records = this.#collection(collection);
+    assertStableId(entity.id, expectedKind);
+    if (entity.kind !== expectedKind) {
+      throw new TypeError(`Expected ${expectedKind} entity in ${collection}`);
+    }
+    if (!records.has(entity.id)) {
+      throw new CoreRelationError(`Cannot replace missing ${collection} entity: ${entity.id}`);
     }
     this.#validateRelations(collection, entity);
     records.set(entity.id, clone(entity));

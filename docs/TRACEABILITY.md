@@ -22,7 +22,7 @@
 | `S5-DATA-001` | Stable IDs وSchema ومهاجرات | P2-CORE-001 | DONE | 7/7 tests |
 | `S5-DATA-002` | IndexedDB + Journal + Recovery | P2-CORE-002 | IMPLEMENTED | 14/14؛ Browser smoke المحلي معلق |
 | `S5-FR-001` | Repository عام للسنوات والفصول والمواد | P2-CORE-003 | DONE | 19/19 tests |
-| `S5-FR-002` | Schedule + Lecture + Task domain | P2-CORE-004 | PLANNED | ملف المهمة القادم |
+| `S5-FR-002` | Schedule + Lecture + Task domain | P2-CORE-004 | IN PROGRESS | `docs/tasks/P2-CORE-004.md` |
 | `S5-FR-003` | Today query engine يعمل دون شبكة | P2-CORE-005 | PLANNED | لم ينفذ |
 | `S5-DATA-003` | File intake + hash + duplicate + immutable original | P2-CORE-006 | PLANNED | لم ينفذ |
 | `S5-FR-004` | Notebook basics وربط InkDocument بالسياق | P2-CORE-007 | PLANNED | لم ينفذ |

@@ -12,8 +12,12 @@
 - Store محلي في الذاكرة لاختبار العلاقات والتصدير.
 - IndexedDB adapter مع Journal وTransaction ذرية وRecovery.
 - Academic Repository بواجهات عامة للسنوات والفصول والمواد وملفات المواد.
+- ScheduleEntry أسبوعي عام مرتبط بالمادة.
+- Lecture occurrence مؤرخة ويمكن ربطها بموعد أسبوعي.
+- Task عامة أو مرتبطة بالمادة والمحاضرة، مع status وpriority وdue date.
+- فلاتر Schedule/Lecture/Task وتحديث حالة المهمة عبر نفس Repository المحمي بالـJournal.
 
-الواجهة والجدول وToday تأتي في مهام مستقلة.
+الواجهات وToday تأتي في مهام مستقلة.
 
 ## التحقق
 

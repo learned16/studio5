@@ -4,9 +4,13 @@ import { createStableId, isStableId } from "../src/ids.mjs";
 import {
   createAcademicYear,
   createCapabilityPack,
+  createLecture,
+  createScheduleEntry,
   createSemester,
   createSubject,
   createSubjectProfile,
+  createTask,
+  reviseTask,
 } from "../src/model.mjs";
 import {
   CORE_SCHEMA_VERSION,
@@ -108,6 +112,123 @@ test("schema version 0 migrates forward without losing collections", () => {
   assert.equal(migrated.schemaVersion, CORE_SCHEMA_VERSION);
   assert.deepEqual(migrated.entities.academicYears, [year]);
   assert.deepEqual(migrated.entities.subjects, []);
+  assert.deepEqual(migrated.entities.scheduleEntries, []);
+  assert.deepEqual(migrated.entities.lectures, []);
+  assert.deepEqual(migrated.entities.tasks, []);
+});
+
+test("schema version 1 migrates to version 2 without losing academic data", () => {
+  const fixture = academicFixture();
+  const versionOne = {
+    schemaVersion: 1,
+    exportedAt: "2026-07-25T00:00:00.000Z",
+    entities: {
+      academicYears: [fixture.year],
+      semesters: [fixture.semester],
+      capabilityPacks: [fixture.capability],
+      subjectProfiles: [fixture.profile],
+      subjects: [fixture.subject],
+    },
+  };
+  const migrated = migrateSnapshot(versionOne, 10);
+  assert.equal(migrated.schemaVersion, 2);
+  assert.deepEqual(migrated.entities.subjects, [fixture.subject]);
+  assert.deepEqual(migrated.entities.scheduleEntries, []);
+  assert.deepEqual(migrated.entities.lectures, []);
+  assert.deepEqual(migrated.entities.tasks, []);
+});
+
+test("planning models validate time, status, priority, and task revisions", () => {
+  const fixture = academicFixture();
+  const schedule = createScheduleEntry({
+    subjectId: fixture.subject.id,
+    dayOfWeek: 1,
+    startTime: "09:00",
+    endTime: "10:30",
+    now: 10,
+  });
+  const lecture = createLecture({
+    subjectId: fixture.subject.id,
+    scheduleEntryId: schedule.id,
+    title: "محاضرة",
+    startsAt: "2026-09-07T09:00:00+03:00",
+    endsAt: "2026-09-07T10:30:00+03:00",
+    now: 11,
+  });
+  const task = createTask({
+    subjectId: fixture.subject.id,
+    lectureId: lecture.id,
+    title: "مهمة",
+    priority: "high",
+    dueAt: "2026-09-08T12:00:00+03:00",
+    now: 12,
+  });
+  const revised = reviseTask(task, { status: "done" }, 13);
+
+  assert.equal(schedule.dayOfWeek, 1);
+  assert.equal(lecture.startsAt, "2026-09-07T06:00:00.000Z");
+  assert.equal(revised.status, "done");
+  assert.equal(revised.createdAt, task.createdAt);
+  assert.equal(revised.completedAt, revised.updatedAt);
+  assert.throws(
+    () => createScheduleEntry({
+      subjectId: fixture.subject.id,
+      dayOfWeek: 8,
+      startTime: "09:00",
+      endTime: "10:00",
+    }),
+    /dayOfWeek/,
+  );
+  assert.throws(
+    () => createScheduleEntry({
+      subjectId: fixture.subject.id,
+      dayOfWeek: 1,
+      startTime: "10:00",
+      endTime: "09:00",
+    }),
+    /startTime must precede/,
+  );
+  assert.throws(
+    () => createLecture({
+      subjectId: fixture.subject.id,
+      title: "محاضرة",
+      startsAt: "2026-09-07T09:00:00+03:00",
+      endsAt: "2026-09-07T10:00:00+03:00",
+      status: "delayed",
+    }),
+    /status/,
+  );
+  assert.throws(
+    () => createLecture({
+      subjectId: fixture.subject.id,
+      title: "وقت محلي غامض",
+      startsAt: "2026-09-07T09:00:00",
+      endsAt: "2026-09-07T10:00:00",
+    }),
+    /explicit timezone/,
+  );
+  assert.throws(
+    () => createScheduleEntry({
+      subjectId: fixture.subject.id,
+      dayOfWeek: 1,
+      startTime: "09:00",
+      endTime: "10:00",
+      effectiveFrom: "2026-02-31",
+    }),
+    /effectiveFrom/,
+  );
+  assert.throws(
+    () => createTask({ title: "مهمة", priority: "critical" }),
+    /priority/,
+  );
+  assert.throws(
+    () => createTask({ title: "مهمة", status: "waiting" }),
+    /status/,
+  );
+  assert.throws(
+    () => reviseTask(task, { subjectId: fixture.subject.id }, 14),
+    /cannot be changed/,
+  );
 });
 
 test("future schemas fail clearly instead of being opened unsafely", () => {

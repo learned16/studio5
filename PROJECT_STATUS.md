@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-25  
 المرحلة الحالية: `Phase 2 - Core`  
-آخر فرع توثيق مكتمل: `codex/docs-collaboration-sop`
+الفرع النشط: `codex/p2-schedule-lecture-task`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -53,6 +53,7 @@
 | P2-CORE-002 | قاعدة بيانات IndexedDB محلية وRecovery | `codex/p2-core-indexeddb` | Codex | IMPLEMENTED 14/14 - BROWSER PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-002.md`, ملفات الحالة |
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 | DOCS-SOP-001 | دمج SOP وحزمة التعاون وتنظيف الملفات المضغوطة | `codex/docs-collaboration-sop` | Codex | DONE - DOCS CHECK + 19/19 + 12/12 | وثائق التعاون والحالة فقط |
+| P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | VERIFIED 27/27 - PENDING PUSH | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

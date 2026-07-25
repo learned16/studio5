@@ -7,6 +7,7 @@ import {
   CoreRecoveryError,
 } from "../src/local-database.mjs";
 import { CoreStore } from "../src/store.mjs";
+import { CORE_SCHEMA_VERSION } from "../src/schema.mjs";
 import { MemoryCoreDriver } from "./helpers/memory-driver.mjs";
 
 function snapshotWithYear(now = 10) {
@@ -95,8 +96,9 @@ test("version 0 snapshots migrate before being persisted", async () => {
   const driver = new MemoryCoreDriver();
   const database = new CoreLocalDatabase(driver, { now: () => 50 });
   await database.save({ academicYears: [], semesters: [] });
-  assert.equal(driver.snapshot.snapshot.schemaVersion, 1);
+  assert.equal(driver.snapshot.snapshot.schemaVersion, CORE_SCHEMA_VERSION);
   assert.deepEqual(driver.snapshot.snapshot.entities.subjects, []);
+  assert.deepEqual(driver.snapshot.snapshot.entities.tasks, []);
 });
 
 test("concurrent saves are serialized and keep the latest requested snapshot", async () => {

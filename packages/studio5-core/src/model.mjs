@@ -11,18 +11,76 @@ function optionalText(value) {
   return String(value).trim() || null;
 }
 
+function optionalStableId(value, kind) {
+  if (value === null || value === undefined || value === "") return null;
+  return assertStableId(value, kind);
+}
+
 function normalizedDate(value, field) {
   const text = requiredText(value, field);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(text) || Number.isNaN(Date.parse(`${text}T00:00:00Z`))) {
+  const parsed = new Date(`${text}T00:00:00Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)
+    || Number.isNaN(parsed.getTime())
+    || parsed.toISOString().slice(0, 10) !== text) {
     throw new TypeError(`${field} must use YYYY-MM-DD`);
   }
   return text;
+}
+
+function optionalDate(value, field) {
+  if (value === null || value === undefined || value === "") return null;
+  return normalizedDate(value, field);
+}
+
+function normalizedInstant(value, field) {
+  const text = requiredText(value, field);
+  const hasExplicitZone = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/
+    .test(text);
+  const milliseconds = Date.parse(text);
+  if (!hasExplicitZone || Number.isNaN(milliseconds)) {
+    throw new TypeError(`${field} must be a valid date-time with an explicit timezone`);
+  }
+  return new Date(milliseconds).toISOString();
+}
+
+function optionalInstant(value, field) {
+  if (value === null || value === undefined || value === "") return null;
+  return normalizedInstant(value, field);
+}
+
+function normalizedTime(value, field) {
+  const text = requiredText(value, field);
+  const match = /^(\d{2}):(\d{2})$/.exec(text);
+  if (!match || Number(match[1]) > 23 || Number(match[2]) > 59) {
+    throw new TypeError(`${field} must use HH:mm`);
+  }
+  return text;
+}
+
+function normalizedWeekday(value) {
+  const day = Number(value);
+  if (!Number.isInteger(day) || day < 1 || day > 7) {
+    throw new TypeError("dayOfWeek must be an integer from 1 to 7");
+  }
+  return day;
+}
+
+function oneOf(value, allowed, field) {
+  const normalized = requiredText(value, field);
+  if (!allowed.includes(normalized)) {
+    throw new TypeError(`${field} must be one of: ${allowed.join(", ")}`);
+  }
+  return normalized;
 }
 
 function timestamps(now) {
   const iso = new Date(now).toISOString();
   return { createdAt: iso, updatedAt: iso };
 }
+
+export const LECTURE_STATUSES = Object.freeze(["planned", "completed", "cancelled"]);
+export const TASK_STATUSES = Object.freeze(["todo", "in-progress", "done", "cancelled"]);
+export const TASK_PRIORITIES = Object.freeze(["low", "normal", "high", "urgent"]);
 
 function uniqueStableIds(values, kind) {
   return [...new Set((values ?? []).map((value) => assertStableId(value, kind)))];
@@ -140,5 +198,128 @@ export function createSubject({
     capabilityPackIds: uniqueStableIds(capabilityPackIds, "capability-pack"),
     archivedAt: null,
     ...timestamps(now),
+  };
+}
+
+export function createScheduleEntry({
+  id = createStableId("schedule-entry"),
+  subjectId,
+  dayOfWeek,
+  startTime,
+  endTime,
+  effectiveFrom = null,
+  effectiveUntil = null,
+  location = null,
+  now = Date.now(),
+}) {
+  const start = normalizedTime(startTime, "startTime");
+  const end = normalizedTime(endTime, "endTime");
+  if (start >= end) throw new RangeError("Schedule startTime must precede endTime");
+  const from = optionalDate(effectiveFrom, "effectiveFrom");
+  const until = optionalDate(effectiveUntil, "effectiveUntil");
+  if (from && until && from > until) {
+    throw new RangeError("Schedule effectiveFrom must precede effectiveUntil");
+  }
+  return {
+    kind: "schedule-entry",
+    id: assertStableId(id, "schedule-entry"),
+    subjectId: assertStableId(subjectId, "subject"),
+    dayOfWeek: normalizedWeekday(dayOfWeek),
+    startTime: start,
+    endTime: end,
+    effectiveFrom: from,
+    effectiveUntil: until,
+    location: optionalText(location),
+    ...timestamps(now),
+  };
+}
+
+export function createLecture({
+  id = createStableId("lecture"),
+  subjectId,
+  scheduleEntryId = null,
+  title,
+  startsAt,
+  endsAt,
+  status = "planned",
+  now = Date.now(),
+}) {
+  const start = normalizedInstant(startsAt, "startsAt");
+  const end = normalizedInstant(endsAt, "endsAt");
+  if (start >= end) throw new RangeError("Lecture startsAt must precede endsAt");
+  return {
+    kind: "lecture",
+    id: assertStableId(id, "lecture"),
+    subjectId: assertStableId(subjectId, "subject"),
+    scheduleEntryId: optionalStableId(scheduleEntryId, "schedule-entry"),
+    title: requiredText(title, "title"),
+    startsAt: start,
+    endsAt: end,
+    status: oneOf(status, LECTURE_STATUSES, "status"),
+    ...timestamps(now),
+  };
+}
+
+export function createTask({
+  id = createStableId("task"),
+  subjectId = null,
+  lectureId = null,
+  title,
+  notes = null,
+  dueAt = null,
+  priority = "normal",
+  status = "todo",
+  now = Date.now(),
+}) {
+  const normalizedSubjectId = optionalStableId(subjectId, "subject");
+  const normalizedLectureId = optionalStableId(lectureId, "lecture");
+  if (normalizedLectureId && !normalizedSubjectId) {
+    throw new TypeError("Task lectureId requires subjectId");
+  }
+  const normalizedStatus = oneOf(status, TASK_STATUSES, "status");
+  const time = timestamps(now);
+  return {
+    kind: "task",
+    id: assertStableId(id, "task"),
+    subjectId: normalizedSubjectId,
+    lectureId: normalizedLectureId,
+    title: requiredText(title, "title"),
+    notes: optionalText(notes),
+    dueAt: optionalInstant(dueAt, "dueAt"),
+    priority: oneOf(priority, TASK_PRIORITIES, "priority"),
+    status: normalizedStatus,
+    completedAt: normalizedStatus === "done" ? time.createdAt : null,
+    ...time,
+  };
+}
+
+export function reviseTask(task, changes, now = Date.now()) {
+  if (!task || task.kind !== "task") throw new TypeError("reviseTask requires a task");
+  assertStableId(task.id, "task");
+  if (!changes || typeof changes !== "object" || Array.isArray(changes)) {
+    throw new TypeError("Task changes must be an object");
+  }
+  const allowed = new Set(["title", "notes", "dueAt", "priority", "status"]);
+  const keys = Object.keys(changes);
+  if (keys.length === 0) throw new TypeError("Task changes cannot be empty");
+  for (const key of keys) {
+    if (!allowed.has(key)) throw new TypeError(`Task field cannot be changed: ${key}`);
+  }
+
+  const status = Object.hasOwn(changes, "status")
+    ? oneOf(changes.status, TASK_STATUSES, "status")
+    : task.status;
+  const updatedAt = new Date(now).toISOString();
+  return {
+    ...structuredClone(task),
+    title: Object.hasOwn(changes, "title") ? requiredText(changes.title, "title") : task.title,
+    notes: Object.hasOwn(changes, "notes") ? optionalText(changes.notes) : task.notes,
+    dueAt: Object.hasOwn(changes, "dueAt") ? optionalInstant(changes.dueAt, "dueAt") : task.dueAt,
+    priority: Object.hasOwn(changes, "priority")
+      ? oneOf(changes.priority, TASK_PRIORITIES, "priority")
+      : task.priority,
+    status,
+    completedAt: status === "done" ? (task.completedAt ?? updatedAt) : null,
+    updatedAt,
   };
 }
