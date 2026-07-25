@@ -1,2 +1,21 @@
-# Archmax
-Personal study and drawing system for Architecture and Building Technology Engineering
+# Studio5
+
+Studio5 هو نظام دراسة ورسم شخصي لطالب هندسة تقنيات العمارة والبناء. تبنى النسخة الحالية للسنة الأولى فقط، فوق Core دائم يتيح إضافة السنوات اللاحقة عبر بيانات وModules ومهاجرات، لا عبر إعادة بناء التطبيق.
+
+المرجع السلطوي: [`Studio5_Year_One_Work_Handoff_AR-1(1).pdf`](./Studio5_Year_One_Work_Handoff_AR-1(1).pdf).
+
+## الحالة الحالية
+
+هذه مرحلة **Project Foundation**: وثائق، قرارات، معايير قبول وخارطة تنفيذ. لا يحتوي هذا الفرع على كود تطبيق أو Prototype جديد.
+
+## حدود النسخة الحالية
+
+- سنة أولى فقط، لمستخدم واحد.
+- الدراسة، الملفات، PDF/Notebook/Ink، المهام، Today، النسخ الاحتياطي والتصدير، وDrawing Coach Lite.
+- لا سنوات 2-5، ولا AI Council، ولا Desktop Companion أو تكاملات CAD/BIM أو مزامنة متعددة الأجهزة معقدة.
+
+## البداية الصحيحة للتنفيذ
+
+أول مهمة برمجية مقترحة هي Prototype معزول للقلم والحفظ والاستعادة على HUAWEI MatePad 11.5 PaperMatte. لا يدخل PDF أو AI أو المواد فيه إلا إذا أثبتت الحاجة التقنية ذلك مسبقاً.
+
+راجع [AGENTS.md](./AGENTS.md) قبل أي تعديل، ثم وثائق `docs/`.
