@@ -49,7 +49,7 @@
 
 | Work ID | المهمة | الفرع | المالك | الحالة | الملفات المحجوزة |
 |---|---|---|---|---|---|
-| P2-CORE-001 | أساس نموذج Studio5 Core وSchema v1 والمهاجرات | `codex/phase2-core-foundation` | Codex | VERIFIED / PUSH PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-001.md`, ملفات الحالة |
+| P2-CORE-001 | أساس نموذج Studio5 Core وSchema v1 والمهاجرات | `codex/phase2-core-foundation` | Codex | DONE - 7/7 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-001.md`, ملفات الحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -98,3 +98,4 @@
 |---|---|---|---|
 | 2026-07-25 | P0 | Phase 2 | قبول سلوك التحريك والممحاة من المستخدم، مع بقاء اختبارات الجهاز الطويلة |
 | 2026-07-25 | Codex | وكلاء Phase 2 | بدء P2-CORE-001 ووضع بروتوكول التنسيق المشترك |
+| 2026-07-25 | P2-CORE-001 | P2-CORE-002 | Core Schema v1 وStable IDs والعلاقات والمهاجرات رُفعت، 7/7 اختبارات ناجحة |
