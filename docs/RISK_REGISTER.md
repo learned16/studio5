@@ -3,7 +3,7 @@
 | الخطر | الأثر | التخفيف | بوابة القرار |
 |---|---|---|---|
 | Scope explosion | تأخير وفشل الاعتمادية | Scope Freeze وBacklog وChange Control | كل milestone |
-| اختيار Stack قبل اختبار القلم | تجربة رسم سيئة أو إعادة بناء | P0 إلزامي على MatePad | قبل Core |
+| تراجع أداء Stack بعد نجاح Prototype | تجربة رسم سيئة عند توسع PDF/Notebook | Gate 0 ناجح + حدود Ink مستقلة + Hardening ومحفزات ADR-008 | قبل اعتماد ADR وعند كل Demo |
 | فقد بيانات Ink | خسارة عمل الطالب | Autosave + journal + crash drills + export | P0 وHardening |
 | Core مثبت على مواد سنة أولى | إعادة بناء لاحقة | IDs + Profiles + Packs + migrations | مراجعة معمارية |
 | AI dependency | تعطيل الدراسة وكلفة | Local flows أولاً وProvider abstraction وحدود إنفاق لاحقة | قبل AI |

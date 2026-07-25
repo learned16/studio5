@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-25  
 المرحلة الحالية: `Phase 2 - Core`  
-الفرع النشط: `codex/p2-schedule-lecture-task`
+الفرع النشط: `codex/gate0-device-results`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -36,14 +36,16 @@
   `https://studio5-ink-lab.lharithl.chatgpt.site`
 - التحقق الآلي الحالي: 12/12 اختباراً ناجحاً، Build وType Check وBrowser smoke ناجحة.
 
-## عمل P0 المتبقي على الجهاز الحقيقي
+## نتيجة Gate 0 على الجهاز الحقيقي
 
-- قياس ضغط قلم Huawei وتسجيل النتيجة.
-- Force Kill من نظام MatePad ثم التحقق من آخر محاولة.
-- جلسة رسم 15 دقيقة وقياس الراحة والتأخير.
-- تجربة بيانات كبيرة تقارب 1000 stroke.
+- ضغط قلم Huawei: PASS.
+- Palm rejection والممحاة المقطعية بعد الإصلاح: PASS.
+- Force Kill + Recovery: PASS بلا فقد.
+- جلسة رسم 15 دقيقة: PASS بلا تأخير ملحوظ.
+- قرابة 1000 stroke: PASS للحفظ وإعادة الفتح.
 
-هذه اختبارات Gate باقية، لكنها لا تمنع بناء أجزاء Core المحايدة عن تقنية الواجهة.
+الاختبارات الوظيفية مغلقة. توصية Web/PWA في `ADR-008` تنتظر موافقة المستخدم قبل
+تسجيلها `Adopted`.
 
 ## العمل الجاري الآن
 
@@ -54,6 +56,7 @@
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 | DOCS-SOP-001 | دمج SOP وحزمة التعاون وتنظيف الملفات المضغوطة | `codex/docs-collaboration-sop` | Codex | DONE - DOCS CHECK + 19/19 + 12/12 | وثائق التعاون والحالة فقط |
 | P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
+| GATE0-DEVICE-RESULTS | توثيق نتائج MatePad واقتراح ADR-008 | `codex/gate0-device-results` | Codex | IN PROGRESS - DOCS ONLY | وثائق Gate 0 والقرارات والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -104,3 +107,4 @@
 | 2026-07-25 | P2-CORE-003 | P2-CORE-004 | Academic Repository وFilters وRecovery guard رُفعت، 19/19 اختبارات ناجحة |
 | 2026-07-25 | DOCS-SOP-001 | P2-CORE-004 | SOP وTraceability وتعليمات التعاون رُتبت، أزيلت الحزمة المضغوطة، ورفع الفرع |
 | 2026-07-25 | P2-CORE-004 | P2-CORE-005 | Schema v2 وSchedule/Lecture/Task وFilters وTask lifecycle رُفعت، 27/27 ناجحة |
+| 2026-07-25 | MatePad Gate 0 | ADR-008 | نجحت اختبارات الضغط وRecovery و15 دقيقة و1000 stroke؛ توصية Web/PWA تنتظر موافقة المستخدم |
