@@ -66,5 +66,7 @@ Notebook مرتبط بسياق أكاديمي، وأن المستخدم يستط
 - Lint وType Check وBuild: ناجحة.
 - فحص خادم التطوير: `index`, `core-runtime`, و`academic-repository` أعادت HTTP 200.
 - الفرع مرفوع إلى GitHub من دون دمج `main`.
-- الحالة ليست `DONE` بعد: رفع حزمة المصدر إلى مخزن Sites والنشر الإنتاجي يحتاجان موافقة
-  المستخدم الصريحة، ثم تبقى تجربة MatePad الحقيقية.
+- نُشر Sites الإصدار `v4` بنجاح على:
+  `https://studio5-ink-lab.lharithl.chatgpt.site`.
+- الحالة ليست `DONE` بعد: تبقى تجربة MatePad الحقيقية للقلم، Force Kill، حفظ Revision
+  مطابقة/مختلفة، وإعادة الفتح.
