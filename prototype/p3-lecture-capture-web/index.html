@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#16352d">
+    <meta name="description" content="مختبر الالتقاط السريع للمحاضرات في Studio5">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Studio5 — التقاط المحاضرة</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-mark" aria-hidden="true">S5</div>
+        <div class="brand-copy">
+          <p class="eyebrow">STUDIO5 · LECTURE FLOW</p>
+          <h1>التقاط المحاضرة</h1>
+        </div>
+        <div class="connection-pill" id="connection-pill">
+          <span class="connection-dot"></span>
+          <span id="connection-label">محلي</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="lecture-context" aria-labelledby="lecture-title">
+          <div>
+            <p class="section-kicker">السياق الحالي</p>
+            <h2 id="lecture-title">جاري تجهيز المحاضرة…</h2>
+            <p id="lecture-subject" class="muted">Studio5 Core</p>
+          </div>
+          <div class="context-meta">
+            <span>حفظ تلقائي محلي</span>
+            <span aria-hidden="true">•</span>
+            <span>لا يحتاج إنترنت</span>
+          </div>
+        </section>
+
+        <section class="capture-card" aria-labelledby="capture-heading">
+          <div class="capture-heading-row">
+            <div>
+              <p class="section-kicker">التقاط سريع</p>
+              <h2 id="capture-heading">شنو تريد تحفظ؟</h2>
+            </div>
+            <div class="inbox-badge" aria-label="عدد النقاط غير المنظمة">
+              <span id="inbox-count">0</span>
+              <small>تنتظر التنظيم</small>
+            </div>
+          </div>
+
+          <div class="capture-types" id="capture-types" role="radiogroup" aria-label="نوع الالتقاط">
+            <button class="capture-type is-selected" type="button" role="radio" aria-checked="true" data-kind="understanding-gap">
+              <span class="type-icon">؟</span>
+              <span>ما فهمت</span>
+            </button>
+            <button class="capture-type" type="button" role="radio" aria-checked="false" data-kind="important">
+              <span class="type-icon">!</span>
+              <span>مهم</span>
+            </button>
+            <button class="capture-type" type="button" role="radio" aria-checked="false" data-kind="assignment">
+              <span class="type-icon">✓</span>
+              <span>تكليف</span>
+            </button>
+            <button class="capture-type" type="button" role="radio" aria-checked="false" data-kind="professor-question">
+              <span class="type-icon">س</span>
+              <span>سؤال للأستاذ</span>
+            </button>
+            <button class="capture-type" type="button" role="radio" aria-checked="false" data-kind="professor-feedback">
+              <span class="type-icon">د</span>
+              <span>ملاحظة أستاذ</span>
+            </button>
+          </div>
+
+          <form id="capture-form">
+            <label class="sr-only" for="capture-text">نص النقطة</label>
+            <textarea
+              id="capture-text"
+              rows="4"
+              maxlength="1200"
+              placeholder="اكتب النقطة بسرعة… مثلاً: ما فهمت ليش تغيرت الإشارة بهذه الخطوة"
+              required
+            ></textarea>
+            <div class="form-footer">
+              <p id="save-hint">تُحفظ كما كتبتها، والتنظيم يصير بعد المحاضرة.</p>
+              <button class="primary-button" id="save-capture" type="submit">
+                <span>احفظ النقطة</span>
+                <kbd>Ctrl ↵</kbd>
+              </button>
+            </div>
+          </form>
+          <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="recent-section" aria-labelledby="recent-heading">
+          <div class="recent-heading-row">
+            <div>
+              <p class="section-kicker">ذاكرة المحاضرة</p>
+              <h2 id="recent-heading">آخر ما التقطته</h2>
+            </div>
+            <span class="count-label" id="capture-count">0 نقاط</span>
+          </div>
+          <div id="empty-state" class="empty-state">
+            <div class="empty-symbol" aria-hidden="true">＋</div>
+            <h3>بعد ما سجلت أي نقطة</h3>
+            <p>اختار النوع، اكتب بسرعة، وخلي التنظيم لمرحلة Closeout القادمة.</p>
+          </div>
+          <ol id="capture-list" class="capture-list" aria-live="polite"></ol>
+        </section>
+      </main>
+
+      <footer>
+        <p>هذه واجهة Capture مستقلة. لا تغيّر نسخة الرسم ولا تضيف AI أو PDF.</p>
+      </footer>
+    </div>
+
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

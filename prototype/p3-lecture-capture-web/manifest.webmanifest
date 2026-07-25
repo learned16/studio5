@@ -1,0 +1,11 @@
+{
+  "name": "Studio5 Lecture Capture",
+  "short_name": "S5 Capture",
+  "description": "التقاط سريع لنقاط المحاضرة مع حفظ محلي",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f0e7",
+  "theme_color": "#16352d"
+}
