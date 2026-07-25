@@ -59,7 +59,7 @@
 | P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | DONE - 54/54 TESTS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
 | P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DEPLOYED V4 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DEPLOYED V5 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
-| P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | VERIFIED 63/63 + 15/15 - PUSH PENDING | `packages/studio5-core/**` ووثائق المهمة والحالة |
+| P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | DONE - 63/63 + 15/15 REGRESSION | `packages/studio5-core/**` ووثائق المهمة والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -73,8 +73,11 @@
 
 ## القادم بعد المهمة الحالية
 
-1. تنفيذ P3-LF-001 كوحدة مستقلة: Capture وCloseout وMigration v5.
-2. يبقى Gate جهاز MatePad للمرحلة الثانية قابلاً للإصلاح في فرع Phase 2 من دون لمس Lecture Flow.
+1. P3-LF-002: تحويل Capture إلى Task بصورة ذرية + Inbox projection محلي، بفرع مستقل.
+2. P3-LF-003: واجهة Capture السريعة، بفرع مستقل بعد ثبات العقود.
+3. P3-LF-004: واجهة Closeout، بفرع مستقل.
+4. Search وFavorites/Recent وPDF تبقى دفعات لاحقة منفصلة داخل Phase 3.
+5. يبقى Gate جهاز MatePad للمرحلة الثانية قابلاً للإصلاح في فرع Phase 2 من دون لمس Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -113,3 +116,4 @@
 | 2026-07-25 | P2-CORE-007 | Demo/Gate | Notebook وInkDocument وRevision history ضمن Schema v4، 54/54 ناجحة؛ واجهة MatePad هي الخطوة التالية |
 | 2026-07-25 | P2-GATE-001 | المستخدم/MatePad | Demo v4 منشور على رابط Studio5 الخاص؛ 15/15 وBuild ناجحة، وبقي اختبار القلم والاستعادة والنسخ على الجهاز |
 | 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 يعرض تاريخ النسخ والمعاينة والاستعادة الآمنة؛ 15/15 و54/54 وBuild ناجحة، وبقي فحص التدفق على الجهاز |
+| 2026-07-25 | P3-LF-001 | P3-LF-002 | Schema v5 وLecture Capture/Closeout/Resolution رُفعت بفرع مستقل؛ 63/63 Core و15/15 Ink regression ناجحة |
