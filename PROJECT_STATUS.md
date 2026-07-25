@@ -53,7 +53,7 @@
 | P2-CORE-002 | قاعدة بيانات IndexedDB محلية وRecovery | `codex/p2-core-indexeddb` | Codex | IMPLEMENTED 14/14 - BROWSER PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-002.md`, ملفات الحالة |
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 | DOCS-SOP-001 | دمج SOP وحزمة التعاون وتنظيف الملفات المضغوطة | `codex/docs-collaboration-sop` | Codex | DONE - DOCS CHECK + 19/19 + 12/12 | وثائق التعاون والحالة فقط |
-| P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | VERIFIED 27/27 - PENDING PUSH | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
+| P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -67,11 +67,10 @@
 
 ## القادم بعد المهمة الحالية
 
-1. `P2-CORE-004`: Schedule وLecture وTask domain.
-2. `P2-CORE-005`: Today query engine يعمل دون شبكة.
-3. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
-4. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
-5. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
+1. `P2-CORE-005`: Today query engine يعمل دون شبكة.
+2. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
+3. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
+4. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -104,3 +103,4 @@
 | 2026-07-25 | P2-CORE-002 | P2-CORE-003 | IndexedDB وJournal وRecovery رُفعت، 14/14 اختبارات ناجحة، Browser smoke معلّق |
 | 2026-07-25 | P2-CORE-003 | P2-CORE-004 | Academic Repository وFilters وRecovery guard رُفعت، 19/19 اختبارات ناجحة |
 | 2026-07-25 | DOCS-SOP-001 | P2-CORE-004 | SOP وTraceability وتعليمات التعاون رُتبت، أزيلت الحزمة المضغوطة، ورفع الفرع |
+| 2026-07-25 | P2-CORE-004 | P2-CORE-005 | Schema v2 وSchedule/Lecture/Task وFilters وTask lifecycle رُفعت، 27/27 ناجحة |

@@ -83,4 +83,6 @@
 - Reopen/Recovery/Concurrent writes: ناجحة.
 - Browser IndexedDB smoke: لم يُعد تشغيله في هذه الدفعة؛ لا توجد واجهة، واختبار المتصفح المحلي السابق ما
   يزال مقيدًا ببيئة المتصفح.
-- Commit/Push: بانتظار الرفع.
+- Commit: `c98b162 feat: add schedule lecture and task domain`.
+- Push: ناجح على `codex/p2-schedule-lecture-task`.
+- الحالة: `DONE` من دون دمج إلى `main`.
