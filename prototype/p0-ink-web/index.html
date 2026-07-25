@@ -21,6 +21,9 @@
           <button id="save-revision-button" class="primary-button" type="button" disabled>
             حفظ نسخة
           </button>
+          <button id="revision-history-button" class="text-button" type="button" disabled>
+            النسخ
+          </button>
           <span id="save-state" class="save-state" data-state="ready">جاهز</span>
           <button id="diagnostics-button" class="text-button" type="button">التشخيص</button>
         </div>
@@ -66,6 +69,20 @@
 
       <section class="workspace" aria-label="مساحة اختبار القلم">
         <canvas id="ink-canvas" aria-label="لوحة الرسم التجريبية"></canvas>
+        <aside id="revision-preview-bar" class="revision-preview-bar" hidden aria-live="polite">
+          <div>
+            <strong id="revision-preview-title">معاينة نسخة</strong>
+            <span>المعاينة للقراءة فقط ولن تغيّر رسمك.</span>
+          </div>
+          <div class="preview-actions">
+            <button id="restore-preview-button" class="primary-button" type="button">
+              استعادة هذه النسخة
+            </button>
+            <button id="close-preview-button" class="text-button" type="button">
+              رجوع للرسم
+            </button>
+          </div>
+        </aside>
         <div class="canvas-hint" id="canvas-hint">
           <strong>ابدأ بالقلم.</strong>
           راحة اليد لا تحرك اللوحة. التحريك والتكبير باللمس يعملان فقط بعد اختيار «تحريك».
@@ -95,6 +112,22 @@
           اختبار Force Kill يتم بإغلاق المتصفح من شاشة التطبيقات الحديثة، ثم فتح الرابط من جديد والتحقق من رجوع آخر خط.
         </p>
       </form>
+    </dialog>
+
+    <dialog id="revision-history-dialog">
+      <section class="dialog-card revision-dialog-card">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">INK REVISION HISTORY</p>
+            <h2>نسخ الرسم المحفوظة</h2>
+          </div>
+          <button id="close-revision-history-button" class="icon-button" type="button" aria-label="إغلاق">×</button>
+        </div>
+        <p class="dialog-note">
+          هذه نسخ ثابتة لا تتغير. اضغط «معاينة» لفتح أي نسخة بدون التأثير على رسمك الحالي.
+        </p>
+        <div id="revision-history-list" class="revision-history-list" aria-live="polite"></div>
+      </section>
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>

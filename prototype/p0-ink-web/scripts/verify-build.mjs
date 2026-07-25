@@ -30,7 +30,11 @@ await cp(coreSource, coreAssets, { recursive: true });
 await cp(join(root, "worker", "index.mjs"), join(server, "index.js"));
 
 const html = await readFile(join(assets, "index.html"), "utf8");
-if (!html.includes("ink-canvas") || !html.includes("app.mjs")) {
+if (!html.includes("ink-canvas")
+  || !html.includes("app.mjs")
+  || !html.includes("revision-history-button")
+  || !html.includes("revision-history-dialog")
+  || !html.includes("revision-preview-bar")) {
   throw new Error("Build verification failed: canvas entrypoint missing");
 }
 await access(join(server, "index.js"));

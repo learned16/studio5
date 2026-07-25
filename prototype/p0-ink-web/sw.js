@@ -1,4 +1,4 @@
-const CACHE_NAME = "studio5-notebook-gate-v3";
+const CACHE_NAME = "studio5-notebook-gate-v4";
 const ASSETS = [
   "./",
   "./index.html",

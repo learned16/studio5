@@ -81,13 +81,22 @@ test("demo saves changed revisions, rejects duplicate history, and restores late
   const first = await demo.save([stroke(1)]);
   const duplicate = await demo.save([stroke(1)]);
   const second = await demo.save([stroke(20)]);
+  const revisions = await demo.listRevisions();
+  const firstLoaded = await demo.loadRevision(first.revision.id);
   const restored = await demo.restoreLatest();
 
   assert.equal(first.status, "created");
   assert.equal(duplicate.status, "duplicate");
   assert.equal(second.revisionCount, 2);
   assert.equal(await demo.revisionCount(), 2);
+  assert.deepEqual(
+    revisions.map(({ revisionNumber }) => revisionNumber),
+    [1, 2],
+  );
+  assert.equal(firstLoaded.revision.id, first.revision.id);
+  assert.equal(firstLoaded.strokes[0].id, "stroke-1");
   assert.equal(restored.strokes[0].id, "stroke-20");
   assert.equal(restored.strokes[0].layerId, "layer-1");
   assert.deepEqual(restored.strokes[0].points, stroke(20).points);
+  assert.equal(await demo.loadRevision("ink-revision_00000000-0000-4000-8000-000000000000"), null);
 });

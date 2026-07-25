@@ -236,6 +236,53 @@ input:focus-visible {
   cursor: grabbing;
 }
 
+#ink-canvas[data-preview="true"] {
+  cursor: not-allowed;
+}
+
+.revision-preview-bar {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  inset-inline: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(230, 177, 122, 0.75);
+  border-radius: 14px;
+  background: rgba(23, 37, 31, 0.95);
+  box-shadow: var(--shadow);
+  color: white;
+}
+
+.revision-preview-bar[hidden] {
+  display: none;
+}
+
+.revision-preview-bar div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.revision-preview-bar span {
+  color: #dce5df;
+  font-size: 0.8rem;
+}
+
+.preview-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.revision-preview-bar .text-button {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: white;
+}
+
 .canvas-hint {
   position: absolute;
   inset-inline-start: 18px;
@@ -313,6 +360,47 @@ dialog::backdrop {
   line-height: 1.7;
 }
 
+.revision-dialog-card {
+  max-height: min(760px, calc(100dvh - 36px));
+  overflow: auto;
+}
+
+.revision-history-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.revision-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+}
+
+.revision-card-info {
+  display: grid;
+  gap: 5px;
+}
+
+.revision-card-meta {
+  color: #66726b;
+  font-size: 0.82rem;
+}
+
+.revision-empty,
+.revision-loading {
+  padding: 28px 16px;
+  border: 1px dashed #cbc3b6;
+  border-radius: 14px;
+  color: #66726b;
+  text-align: center;
+}
+
 .toast {
   position: fixed;
   z-index: 9;
@@ -358,5 +446,20 @@ dialog::backdrop {
     left: 10px;
     bottom: 10px;
     max-width: none;
+  }
+
+  .revision-preview-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .preview-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .revision-card {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

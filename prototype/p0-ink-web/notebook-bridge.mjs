@@ -109,11 +109,27 @@ export async function createNotebookDemo(repository, options = {}) {
     });
   }
 
+  async function loadRevision(revisionId) {
+    const revision = (await revisions()).find(({ id }) => id === revisionId);
+    if (!revision) return null;
+    const content = await repository.getInkRevisionContent(revision.id);
+    return content
+      ? {
+        revision,
+        strokes: structuredClone(content.snapshot.strokes),
+      }
+      : null;
+  }
+
   return {
     ...context,
     async revisionCount() {
       return (await revisions()).length;
     },
+    async listRevisions() {
+      return structuredClone(await revisions());
+    },
+    loadRevision,
     async save(strokes) {
       const result = await repository.saveInkRevision(context.inkDocument.id, {
         strokes: structuredClone(strokes ?? []),
@@ -127,13 +143,7 @@ export async function createNotebookDemo(repository, options = {}) {
       const available = await revisions();
       const latest = available.at(-1);
       if (!latest) return null;
-      const content = await repository.getInkRevisionContent(latest.id);
-      return content
-        ? {
-          revision: latest,
-          strokes: structuredClone(content.snapshot.strokes),
-        }
-        : null;
+      return loadRevision(latest.id);
     },
   };
 }

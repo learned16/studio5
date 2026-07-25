@@ -35,6 +35,11 @@ const diagnosticsDialog = document.querySelector("#diagnostics-dialog");
 const diagnosticsList = document.querySelector("#diagnostics-list");
 const notebookState = document.querySelector("#notebook-state");
 const saveRevisionButton = document.querySelector("#save-revision-button");
+const revisionHistoryButton = document.querySelector("#revision-history-button");
+const revisionHistoryDialog = document.querySelector("#revision-history-dialog");
+const revisionHistoryList = document.querySelector("#revision-history-list");
+const revisionPreviewBar = document.querySelector("#revision-preview-bar");
+const revisionPreviewTitle = document.querySelector("#revision-preview-title");
 
 let inkDocument = createDocument();
 let tool = "pen";
@@ -58,6 +63,7 @@ let storageMode = "جارٍ الفحص";
 let dragging = false;
 let notebookDemo = null;
 let notebookRevisionCount = 0;
+let revisionPreview = null;
 
 function cloneStrokes() {
   return structuredClone(inkDocument.strokes);
@@ -84,6 +90,7 @@ function updateUndoButtons() {
 }
 
 function undo() {
+  if (revisionPreview) return;
   if (!history.length) return;
   future.push(cloneStrokes());
   restoreStrokes(history.pop());
@@ -91,6 +98,7 @@ function undo() {
 }
 
 function redo() {
+  if (revisionPreview) return;
   if (!future.length) return;
   history.push(cloneStrokes());
   restoreStrokes(future.pop());
@@ -114,7 +122,7 @@ function updateNotebookState(message = null) {
 }
 
 async function saveNotebookRevision() {
-  if (!notebookDemo) return;
+  if (!notebookDemo || revisionPreview) return;
   saveRevisionButton.disabled = true;
   updateNotebookState("جارٍ تثبيت النسخة…");
   try {
@@ -136,6 +144,7 @@ async function saveNotebookRevision() {
 }
 
 function scheduleSave(delay = 240) {
+  if (revisionPreview) return;
   window.clearTimeout(saveTimer);
   setSaveState("جارٍ الحفظ…", "saving");
   saveTimer = window.setTimeout(async () => {
@@ -157,6 +166,166 @@ function scheduleSave(delay = 240) {
       storageState.textContent = "التخزين: فشل";
     }
   }, delay);
+}
+
+function setPreviewControlsDisabled(disabled) {
+  const selectors = [
+    "[data-tool]",
+    "#width-control",
+    "#color-control",
+    "#touch-draw-toggle",
+    "#undo-button",
+    "#redo-button",
+    "#clear-button",
+    "#save-revision-button",
+    "#revision-history-button",
+  ];
+  for (const element of document.querySelectorAll(selectors.join(","))) {
+    element.disabled = disabled;
+  }
+  if (!disabled) {
+    saveRevisionButton.disabled = !notebookDemo;
+    revisionHistoryButton.disabled = !notebookDemo;
+    updateUndoButtons();
+  }
+}
+
+function leaveRevisionPreview({ keepPreviewStrokes = false } = {}) {
+  if (!revisionPreview) return null;
+  const preview = revisionPreview;
+  revisionPreview = null;
+  if (!keepPreviewStrokes) {
+    inkDocument.strokes = structuredClone(preview.draftStrokes);
+    history = structuredClone(preview.history);
+    future = structuredClone(preview.future);
+  }
+  canvas.dataset.preview = "false";
+  revisionPreviewBar.hidden = true;
+  setPreviewControlsDisabled(false);
+  updateStats();
+  updateUndoButtons();
+  scheduleRender();
+  return preview;
+}
+
+async function previewRevision(revisionId) {
+  if (!notebookDemo) return;
+  try {
+    window.clearTimeout(saveTimer);
+    inkDocument.updatedAt = Date.now();
+    storageMode = await saveDocument(inkDocument);
+    clearJournal();
+    const loaded = await notebookDemo.loadRevision(revisionId);
+    if (!loaded) {
+      showToast("تعذر العثور على هذه النسخة");
+      return;
+    }
+    revisionPreview = {
+      revision: loaded.revision,
+      strokes: structuredClone(loaded.strokes),
+      draftStrokes: cloneStrokes(),
+      history: structuredClone(history),
+      future: structuredClone(future),
+    };
+    inkDocument.strokes = structuredClone(loaded.strokes);
+    revisionPreviewTitle.textContent = `معاينة النسخة ${loaded.revision.revisionNumber}`;
+    revisionPreviewBar.hidden = false;
+    canvas.dataset.preview = "true";
+    setPreviewControlsDisabled(true);
+    updateStats();
+    scheduleRender();
+    revisionHistoryDialog.close();
+  } catch (error) {
+    console.error(error);
+    showToast("فشل فتح النسخة أو تعذر التحقق من سلامتها");
+  }
+}
+
+async function restorePreviewRevision() {
+  if (!revisionPreview || !notebookDemo) return;
+  const preview = revisionPreview;
+  const restoreButton = document.querySelector("#restore-preview-button");
+  restoreButton.disabled = true;
+  try {
+    const protectedDraft = await notebookDemo.save(preview.draftStrokes);
+    notebookRevisionCount = protectedDraft.revisionCount;
+    leaveRevisionPreview({ keepPreviewStrokes: true });
+    history = [...preview.history, structuredClone(preview.draftStrokes)];
+    if (history.length > 60) history.shift();
+    future = [];
+    inkDocument.strokes = structuredClone(preview.strokes);
+    inkDocument.updatedAt = Date.now();
+    updateNotebookState();
+    updateStats();
+    updateUndoButtons();
+    scheduleRender();
+    scheduleSave(0);
+    showToast(`تمت استعادة النسخة ${preview.revision.revisionNumber} وحماية رسمك السابق`);
+  } catch (error) {
+    console.error(error);
+    showToast("لم تتم الاستعادة؛ بقي رسمك الحالي والنسخة المختارة بدون تغيير");
+  } finally {
+    restoreButton.disabled = false;
+  }
+}
+
+function formatRevisionDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "وقت غير متاح";
+  return new Intl.DateTimeFormat("ar-IQ", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+async function openRevisionHistory() {
+  if (!notebookDemo) return;
+  revisionHistoryList.replaceChildren();
+  const loading = document.createElement("p");
+  loading.className = "revision-loading";
+  loading.textContent = "جارٍ تحميل النسخ…";
+  revisionHistoryList.append(loading);
+  revisionHistoryDialog.showModal();
+  try {
+    const revisions = [...await notebookDemo.listRevisions()].reverse();
+    revisionHistoryList.replaceChildren();
+    if (!revisions.length) {
+      const empty = document.createElement("p");
+      empty.className = "revision-empty";
+      empty.textContent = "لا توجد نسخ محفوظة بعد. ارسم ثم اضغط «حفظ نسخة».";
+      revisionHistoryList.append(empty);
+      return;
+    }
+    for (const revision of revisions) {
+      const card = document.createElement("article");
+      card.className = "revision-card";
+      const info = document.createElement("div");
+      info.className = "revision-card-info";
+      const title = document.createElement("strong");
+      title.textContent = `النسخة ${revision.revisionNumber}`;
+      const date = document.createElement("span");
+      date.className = "revision-card-meta";
+      date.textContent = formatRevisionDate(revision.createdAt);
+      const stats = document.createElement("span");
+      stats.className = "revision-card-meta";
+      stats.textContent = `${revision.strokeCount} خط · ${revision.pointCount} نقطة`;
+      info.append(title, date, stats);
+      const previewButton = document.createElement("button");
+      previewButton.className = "primary-button";
+      previewButton.type = "button";
+      previewButton.textContent = "معاينة";
+      previewButton.addEventListener("click", () => previewRevision(revision.id));
+      card.append(info, previewButton);
+      revisionHistoryList.append(card);
+    }
+  } catch (error) {
+    console.error(error);
+    revisionHistoryList.replaceChildren();
+    const failure = document.createElement("p");
+    failure.className = "revision-empty";
+    failure.textContent = "تعذر فتح قائمة النسخ. رسمك والنسخ المحفوظة لم تتغير.";
+    revisionHistoryList.append(failure);
+  }
 }
 
 function fitDocument() {
@@ -437,6 +606,10 @@ function continuePinch() {
 }
 
 canvas.addEventListener("pointerdown", (event) => {
+  if (revisionPreview) {
+    showToast("هذه معاينة للقراءة فقط؛ ارجع للرسم أو استعد النسخة");
+    return;
+  }
   const intent = pointerIntent({
     tool,
     pointerType: event.pointerType,
@@ -561,6 +734,7 @@ document.querySelector("#zoom-out-button").addEventListener("click", () => zoomA
 document.querySelector("#fit-button").addEventListener("click", fitDocument);
 
 document.querySelector("#clear-button").addEventListener("click", () => {
+  if (revisionPreview) return;
   if (!inkDocument.strokes.length) return;
   if (!window.confirm("هل تريد مسح كل الخطوط؟ يمكن التراجع بعد المسح.")) return;
   pushHistory();
@@ -605,6 +779,19 @@ document.querySelector("#export-png-button").addEventListener("click", () => {
 });
 
 saveRevisionButton.addEventListener("click", saveNotebookRevision);
+revisionHistoryButton.addEventListener("click", openRevisionHistory);
+document.querySelector("#close-revision-history-button").addEventListener(
+  "click",
+  () => revisionHistoryDialog.close(),
+);
+document.querySelector("#close-preview-button").addEventListener(
+  "click",
+  () => leaveRevisionPreview(),
+);
+document.querySelector("#restore-preview-button").addEventListener(
+  "click",
+  restorePreviewRevision,
+);
 
 document.querySelector("#diagnostics-button").addEventListener("click", () => {
   const stats = documentStats(inkDocument);
@@ -678,6 +865,7 @@ async function boot() {
     }
     updateNotebookState();
     saveRevisionButton.disabled = false;
+    revisionHistoryButton.disabled = false;
   } catch (error) {
     console.error("Notebook Core", error);
     updateNotebookState("الرسم متاح · Notebook غير متصل");
