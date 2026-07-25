@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-25  
 المرحلة الحالية: `Phase 2 - Core`  
-الفرع النشط لهذه المرحلة: `codex/p2-core-indexeddb`
+الفرع النشط لهذه المرحلة: `codex/p2-academic-repository`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -50,7 +50,8 @@
 | Work ID | المهمة | الفرع | المالك | الحالة | الملفات المحجوزة |
 |---|---|---|---|---|---|
 | P2-CORE-001 | أساس نموذج Studio5 Core وSchema v1 والمهاجرات | `codex/phase2-core-foundation` | Codex | DONE - 7/7 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-001.md`, ملفات الحالة |
-| P2-CORE-002 | قاعدة بيانات IndexedDB محلية وRecovery | `codex/p2-core-indexeddb` | Codex | VERIFIED 14/14 - BROWSER PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-002.md`, ملفات الحالة |
+| P2-CORE-002 | قاعدة بيانات IndexedDB محلية وRecovery | `codex/p2-core-indexeddb` | Codex | IMPLEMENTED 14/14 - BROWSER PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-002.md`, ملفات الحالة |
+| P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | VERIFIED 19/19 - PUSH PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -64,12 +65,11 @@
 
 ## القادم بعد المهمة الحالية
 
-1. `P2-CORE-003`: Repository APIs للسنوات والفصول والمواد وSubject Profiles.
-2. `P2-CORE-004`: Schedule وLecture وTask domain.
-3. `P2-CORE-005`: Today query engine يعمل دون شبكة.
-4. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
-5. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
-6. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
+1. `P2-CORE-004`: Schedule وLecture وTask domain.
+2. `P2-CORE-005`: Today query engine يعمل دون شبكة.
+3. `P2-CORE-006`: FileArtifact intake وhash وكشف التكرار وعدم تعديل الأصل.
+4. `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
+5. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -99,3 +99,4 @@
 | 2026-07-25 | P0 | Phase 2 | قبول سلوك التحريك والممحاة من المستخدم، مع بقاء اختبارات الجهاز الطويلة |
 | 2026-07-25 | Codex | وكلاء Phase 2 | بدء P2-CORE-001 ووضع بروتوكول التنسيق المشترك |
 | 2026-07-25 | P2-CORE-001 | P2-CORE-002 | Core Schema v1 وStable IDs والعلاقات والمهاجرات رُفعت، 7/7 اختبارات ناجحة |
+| 2026-07-25 | P2-CORE-002 | P2-CORE-003 | IndexedDB وJournal وRecovery رُفعت، 14/14 اختبارات ناجحة، Browser smoke معلّق |

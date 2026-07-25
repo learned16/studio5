@@ -11,6 +11,7 @@
 - Migration registry.
 - Store محلي في الذاكرة لاختبار العلاقات والتصدير.
 - IndexedDB adapter مع Journal وTransaction ذرية وRecovery.
+- Academic Repository بواجهات عامة للسنوات والفصول والمواد وملفات المواد.
 
 الواجهة والجدول وToday تأتي في مهام مستقلة.
 
