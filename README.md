@@ -10,6 +10,9 @@ Studio5 هو نظام دراسة ورسم شخصي لطالب هندسة تقن�
 
 الحالة الدقيقة والمنجز والجاري والقادم موجودة في [`PROJECT_STATUS.md`](./PROJECT_STATUS.md). يجب على أي وكيل برمجي قراءته قبل العمل.
 
+نقطة البداية لأي وكيل جديد هي [`AR_HERE_START.md`](./AR_HERE_START.md)، وإجراء العمل المتكرر موجود في
+[`docs/STUDIO5_SOP.md`](./docs/STUDIO5_SOP.md).
+
 ## حدود النسخة الحالية
 
 - سنة أولى فقط، لمستخدم واحد.
@@ -23,3 +26,11 @@ Studio5 هو نظام دراسة ورسم شخصي لطالب هندسة تقن�
 المصدر: [`prototype/p0-ink-web/`](./prototype/p0-ink-web/).
 
 راجع [AGENTS.md](./AGENTS.md) قبل أي تعديل، ثم وثائق `docs/`.
+
+## التعاون والمراجعة
+
+- `PROJECT_STATUS.md`: الحقيقة التشغيلية الحالية.
+- `docs/tasks/`: نطاق كل دفعة ونتائجها.
+- `docs/TRACEABILITY.md`: ربط المتطلبات بالمهام والأدلة.
+- `CLAUDE.md`: تعليمات المراجع المستقل.
+- `.github/PULL_REQUEST_TEMPLATE.md`: تقرير الدمج والمخاطر والـRollback.
