@@ -10,6 +10,7 @@ const modules = await Promise.all([
   import("../src/ink-format.mjs"),
   import("../src/today-query.mjs"),
   import("../src/lecture-flow.mjs"),
+  import("../src/lecture-inbox.mjs"),
   import("../src/academic-repository.mjs"),
 ]);
 
@@ -58,6 +59,7 @@ const requiredExports = [
     "LECTURE_CLOSEOUT_STATUSES",
     "CAPTURE_RESOLUTION_OUTCOMES",
   ],
+  ["buildLectureInbox"],
   [
     "AcademicRepository",
     "AcademicRepositoryRecoveryRequiredError",

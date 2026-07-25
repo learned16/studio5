@@ -20,6 +20,7 @@
 - [x] Notebook Core يربط InkDocument بالسياق ويحفظ Revisions مستقلة مع فحص التلف. (`P2-CORE-007`, 54/54 tests)
 - [x] واجهة Notebook تعرض Revisions وتفتح معاينة قراءة فقط وتحمي المسودة الحالية قبل استعادة نسخة قديمة. (`P2-GATE-002`, 15/15 demo tests)
 - [x] Lecture Capture Core يتحول في Closeout إلى Resolution مرتبطة ولا يكتمل مع Captures مفتوحة. (`P3-LF-001`, 63/63 tests)
+- [x] تحويل Capture إلى Task ذري وقابل لإعادة المحاولة، وLecture Inbox مشتق لا يغير البيانات. (`P3-LF-002`, 69/69 tests)
 - [ ] Backup ثم Restore يعيد الملفات والملاحظات والرسومات مع تحقق العدّ/الـmanifest.
 - [x] كل Migration منفذة حتى Schema v5 تملك اختباراً ومسار Recovery مفهوم. (`P2-CORE-001` إلى `P3-LF-001`)
 

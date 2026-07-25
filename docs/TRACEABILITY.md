@@ -29,7 +29,8 @@
 | `S5-FR-004-GATE` | ربط واجهة Ink بـNotebook Core على المتصفح والجهاز | P2-GATE-001 | DEPLOYED / DEVICE PENDING | 15/15 + Build + Sites v4؛ تجربة MatePad معلقة |
 | `S5-FR-004-HISTORY` | عرض Ink Revisions ومعاينتها واستعادتها بأمان | P2-GATE-002 | DEPLOYED / DEVICE PENDING | 15/15 + 54/54 + Build + Sites v5؛ قائمة محلية ومعاينة قراءة فقط وحماية المسودة |
 | `S5-FR-005A` | Lecture Capture وCloseout domain محلي | P3-LF-001 | DONE | Schema v5 + 63/63 Core + 15/15 Ink regression + `0381049` |
-| `S5-FR-005B` | Inbox وSearch وFavorites/Recent وواجهات Lecture Flow | Phase 3 | BACKLOG CURRENT YEAR | دفعات مستقلة بعد P3-LF-001 |
+| `S5-FR-005B` | تحويل Capture إلى Task + Lecture Inbox محلي | P3-LF-002 | VERIFIED / PUSH PENDING | 69/69 Core + 15/15 Ink regression؛ لا Schema جديد |
+| `S5-FR-005C` | Search وFavorites/Recent وواجهات Lecture Flow | Phase 3 | BACKLOG CURRENT YEAR | دفعات مستقلة بعد P3-LF-002 |
 | `S5-DATA-004` | Backup/Restore/Full Export | Phase 4 | BACKLOG CURRENT YEAR | لم ينفذ |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |
 | `S5-FR-007` | Understanding Rescue | Year One | BACKLOG CURRENT YEAR | المواصفة في `UNDERSTANDING_RESCUE.md` |

@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-25  
 المرحلة الحالية: `Phase 3 - Lecture Flow`
-الفرع النشط: `codex/p3-lecture-capture-domain`
+الفرع النشط: `codex/p3-capture-task-inbox`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -60,6 +60,7 @@
 | P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DEPLOYED V4 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DEPLOYED V5 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | DONE - 63/63 + 15/15 REGRESSION | `packages/studio5-core/**` ووثائق المهمة والحالة |
+| P3-LF-002 | تحويل Capture إلى Task ذري + Lecture Inbox | `codex/p3-capture-task-inbox` | Codex | VERIFIED 69/69 + 15/15 - PUSH PENDING | `lecture-inbox.mjs` وRepository والاختبارات ووثائق المهمة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

@@ -37,6 +37,7 @@ import {
   createLectureCapture,
   createLectureCloseout,
 } from "./lecture-flow.mjs";
+import { buildLectureInbox as buildLectureInboxProjection } from "./lecture-inbox.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -275,6 +276,91 @@ export class AcademicRepository {
     });
   }
 
+  resolveLectureCaptureAsTask(captureId, taskInput = {}) {
+    if (!taskInput || typeof taskInput !== "object" || Array.isArray(taskInput)) {
+      throw new TypeError("Capture task input must be an object");
+    }
+    const allowedTaskInput = new Set([
+      "title",
+      "notes",
+      "dueAt",
+      "priority",
+      "resolutionNote",
+    ]);
+    for (const key of Object.keys(taskInput)) {
+      if (!allowedTaskInput.has(key)) {
+        throw new TypeError(`Capture task field is not allowed: ${key}`);
+      }
+    }
+    return this.#mutate((working) => {
+      const normalizedCaptureId = assertStableId(captureId, "lecture-capture");
+      const capture = working.get("lectureCaptures", normalizedCaptureId);
+      if (!capture) {
+        throw new CoreRelationError(`Cannot resolve missing lecture capture: ${captureId}`);
+      }
+      const existingResolution = working.list("captureResolutions")
+        .find((resolution) => resolution.captureId === capture.id);
+      if (existingResolution) {
+        if (existingResolution.outcome !== "task" || !existingResolution.taskId) {
+          throw new CoreRelationError(
+            `Lecture capture is already resolved as ${existingResolution.outcome}`,
+          );
+        }
+        const existingTask = working.get("tasks", existingResolution.taskId);
+        if (!existingTask) {
+          throw new CoreRelationError(
+            `Capture resolution references missing task: ${existingResolution.taskId}`,
+          );
+        }
+        return {
+          status: "existing",
+          task: existingTask,
+          resolution: existingResolution,
+        };
+      }
+      const closeout = working.list("lectureCloseouts")
+        .find((candidate) => candidate.lectureId === capture.lectureId);
+      if (!closeout) {
+        throw new CoreRelationError(
+          `Lecture capture requires an active closeout before task conversion: ${capture.id}`,
+        );
+      }
+      if (closeout.status !== "in-progress") {
+        throw new CoreRelationError(
+          `Cannot resolve a capture through completed closeout: ${closeout.id}`,
+        );
+      }
+      const lecture = working.get("lectures", capture.lectureId);
+      if (!lecture) {
+        throw new CoreRelationError(`Cannot resolve capture with missing lecture: ${capture.id}`);
+      }
+      const task = createTask({
+        subjectId: lecture.subjectId,
+        lectureId: lecture.id,
+        title: taskInput.title ?? capture.text,
+        notes: taskInput.notes ?? null,
+        dueAt: taskInput.dueAt ?? null,
+        priority: taskInput.priority ?? "normal",
+        now: this.#now(),
+      });
+      working.add("tasks", task);
+      const resolution = createCaptureResolution({
+        captureId: capture.id,
+        closeoutId: closeout.id,
+        outcome: "task",
+        taskId: task.id,
+        note: taskInput.resolutionNote ?? null,
+        now: this.#now(),
+      });
+      working.add("captureResolutions", resolution);
+      return {
+        status: "created",
+        task,
+        resolution,
+      };
+    });
+  }
+
   completeLectureCloseout(closeoutId, input = {}) {
     return this.#mutate((working) => {
       const normalizedCloseoutId = assertStableId(closeoutId, "lecture-closeout");
@@ -509,6 +595,21 @@ export class AcademicRepository {
         && (!normalizedOutcome || resolution.outcome === normalizedOutcome)
       ));
     });
+  }
+
+  buildLectureInbox({
+    lectureId = null,
+    subjectId = null,
+  } = {}) {
+    return this.#read((store) => buildLectureInboxProjection({
+      captures: store.list("lectureCaptures"),
+      resolutions: store.list("captureResolutions"),
+      lectures: store.list("lectures"),
+      subjects: store.list("subjects"),
+    }, {
+      lectureId,
+      subjectId,
+    }));
   }
 
   async #prepareAndQueueFile(input, artifactId = null) {

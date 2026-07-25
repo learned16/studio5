@@ -27,6 +27,8 @@
 - Ink JSON حتمي ومخزن بعنوان SHA-256 مع كشف Duplicate وتحقق من التلف عند القراءة.
 - Lecture Flow ضمن ملف Domain مستقل وSchema v5: Capture سريع، Closeout واحد لكل محاضرة، وResolution ثابت لكل Capture.
 - لا يكتمل Closeout قبل تنظيم كل Captures، ونتيجة `task` لا تقبل إلا مهمة من المحاضرة نفسها.
+- تحويل Capture إلى Task ذري: Task وResolution تُحفظان معاً، وإعادة المحاولة بعد Recovery لا تكرر المهمة.
+- Lecture Inbox مشتق محلياً ويعرض Captures غير المنظمة أو المحفوظة عمداً في Inbox بلا Collection إضافية.
 
 واجهات Lecture Capture وCloseout وInbox تأتي في دفعات مستقلة؛ هذه الحزمة توفر العقود المحلية فقط.
 
