@@ -62,4 +62,6 @@
 - P0 build/lint/type contract/tests: ناجحة، `12/12`.
 - فحص `files.zip`: أُزيل من مساحة العمل بعد دمج المحتوى المفيد.
 - لا توجد تغييرات داخل `packages/` أو `prototype/`.
-- الرفع إلى GitHub: بانتظار Commit وPush.
+- Commit الرئيسي: `2b0a5f7 docs: integrate collaboration SOP`.
+- الرفع إلى GitHub: ناجح على `codex/docs-collaboration-sop`.
+- الحالة: `DONE`، من دون دمج إلى `main`.
