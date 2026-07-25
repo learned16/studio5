@@ -114,6 +114,17 @@ export function writeDeleteJournal(documentId, strokeIds) {
   localStorage.setItem(JOURNAL_KEY, JSON.stringify(entry));
 }
 
+export function writeSnapshotJournal(documentId, strokes) {
+  const entry = {
+    schemaVersion: 1,
+    type: "snapshot",
+    documentId,
+    savedAt: Date.now(),
+    strokes: structuredClone(strokes),
+  };
+  localStorage.setItem(JOURNAL_KEY, JSON.stringify(entry));
+}
+
 export function clearJournal() {
   localStorage.removeItem(JOURNAL_KEY);
 }

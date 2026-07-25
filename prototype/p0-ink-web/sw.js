@@ -1,4 +1,4 @@
-const CACHE_NAME = "studio5-p0-v1";
+const CACHE_NAME = "studio5-p0-v2";
 const ASSETS = [
   "./",
   "./index.html",

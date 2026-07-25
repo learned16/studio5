@@ -6,8 +6,9 @@ Prototype معزول لاختبار القلم والحفظ والاستعادة
 
 - قلم وممحاة.
 - ضغط القلم عند توفره.
-- منع الرسم باللمس افتراضياً لدعم Palm rejection.
-- Pan وPinch Zoom وأزرار Zoom/Fit.
+- تجاهل لمس راحة اليد أثناء القلم والممحاة؛ Pan وPinch Zoom يعملان فقط بأداة «تحريك».
+- ممحاة مقطعية تمسح الجزء الملامس فقط من الخط المتصل.
+- أزرار Zoom/Fit.
 - Autosave في IndexedDB مع LocalStorage fallback.
 - Emergency journal لاستعادة stroke غير المكتمل بعد الإغلاق.
 - Undo/Redo.

@@ -5,16 +5,17 @@ import {
   createDocument,
   createStroke,
   documentStats,
+  eraseStrokeAt,
   exportManifest,
+  pointerIntent,
   pointToDocument,
-  strokeHits,
   widthForPoint,
 } from "./ink-core.mjs";
 import {
   clearJournal,
   loadDocument,
   saveDocument,
-  writeDeleteJournal,
+  writeSnapshotJournal,
   writeStrokeJournal,
 } from "./storage.mjs";
 
@@ -333,14 +334,17 @@ function finishStroke() {
 
 function eraseAt(event) {
   const point = canvasPoint(event);
-  const radius = 18 / viewport.scale;
-  const removed = inkDocument.strokes
-    .filter((stroke) => strokeHits(stroke, point, radius))
-    .map((stroke) => stroke.id);
-  if (!removed.length) return false;
-  const ids = new Set(removed);
-  inkDocument.strokes = inkDocument.strokes.filter((stroke) => !ids.has(stroke.id));
-  writeDeleteJournal(inkDocument.id, removed);
+  const radius = 12 / viewport.scale;
+  let changed = false;
+  const nextStrokes = [];
+  for (const stroke of inkDocument.strokes) {
+    const fragments = eraseStrokeAt(stroke, point, radius);
+    if (fragments.length !== 1 || fragments[0] !== stroke) changed = true;
+    nextStrokes.push(...fragments);
+  }
+  if (!changed) return false;
+  inkDocument.strokes = nextStrokes;
+  writeSnapshotJournal(inkDocument.id, inkDocument.strokes);
   updateStats();
   scheduleRender();
   return true;
@@ -400,17 +404,17 @@ function continuePinch() {
   scheduleRender();
 }
 
-function cancelTouchStrokeForPinch() {
-  if (!currentStroke || currentStroke.pointerType !== "touch") return;
-  inkDocument.strokes = inkDocument.strokes.filter((stroke) => stroke.id !== currentStroke.id);
-  currentStroke = null;
-  activeDrawPointer = null;
-  history.pop();
-  updateUndoButtons();
-  updateStats();
-}
-
 canvas.addEventListener("pointerdown", (event) => {
+  const intent = pointerIntent({
+    tool,
+    pointerType: event.pointerType,
+    allowTouchDrawing,
+  });
+  if (intent === "ignore") return;
+  if (intent !== "navigate" && activeDrawPointer !== null) {
+    return;
+  }
+
   canvas.setPointerCapture(event.pointerId);
   activePointers.set(event.pointerId, {
     x: event.clientX,
@@ -418,22 +422,16 @@ canvas.addEventListener("pointerdown", (event) => {
     type: event.pointerType,
   });
 
-  if (event.pointerType === "touch" && touchEntries().length >= 2) {
-    cancelTouchStrokeForPinch();
-    activePanPointer = null;
-    beginPinch();
-    return;
-  }
-
-  if (event.pointerType === "touch" && !allowTouchDrawing) {
+  if (intent === "navigate") {
+    if (event.pointerType === "touch" && touchEntries().length >= 2) {
+      activePanPointer = null;
+      beginPinch();
+      return;
+    }
     beginPan(event);
     return;
   }
-  if (tool === "hand") {
-    beginPan(event);
-    return;
-  }
-  if (tool === "eraser") {
+  if (intent === "erase") {
     pushHistory();
     eraseAt(event);
     activeDrawPointer = event.pointerId;
@@ -450,11 +448,11 @@ canvas.addEventListener("pointermove", (event) => {
       type: event.pointerType,
     });
   }
-  if (pinch) {
+  if (tool === "hand" && pinch) {
     continuePinch();
     return;
   }
-  if (activePanPointer === event.pointerId) {
+  if (tool === "hand" && activePanPointer === event.pointerId) {
     continuePan(event);
     return;
   }
@@ -518,7 +516,11 @@ document.querySelector("#color-control").addEventListener("input", (event) => {
 });
 document.querySelector("#touch-draw-toggle").addEventListener("change", (event) => {
   allowTouchDrawing = event.target.checked;
-  showToast(allowTouchDrawing ? "تم تفعيل الرسم بالإصبع" : "اللمس للتحريك والتكبير فقط");
+  showToast(
+    allowTouchDrawing
+      ? "تم تفعيل الرسم بالإصبع"
+      : "راحة اليد لن تحرك اللوحة؛ اختر «تحريك» عند الحاجة",
+  );
 });
 document.querySelector("#undo-button").addEventListener("click", undo);
 document.querySelector("#redo-button").addEventListener("click", redo);
@@ -530,9 +532,8 @@ document.querySelector("#clear-button").addEventListener("click", () => {
   if (!inkDocument.strokes.length) return;
   if (!window.confirm("هل تريد مسح كل الخطوط؟ يمكن التراجع بعد المسح.")) return;
   pushHistory();
-  const removed = inkDocument.strokes.map((stroke) => stroke.id);
   inkDocument.strokes = [];
-  writeDeleteJournal(inkDocument.id, removed);
+  writeSnapshotJournal(inkDocument.id, inkDocument.strokes);
   updateStats();
   scheduleRender();
   scheduleSave(0);

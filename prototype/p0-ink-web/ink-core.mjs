@@ -61,6 +61,13 @@ export function pointToDocument(clientPoint, viewport, rect) {
   };
 }
 
+export function pointerIntent({ tool, pointerType, allowTouchDrawing }) {
+  if (tool === "hand") return "navigate";
+  if (pointerType === "touch" && !allowTouchDrawing) return "ignore";
+  if (tool === "eraser") return "erase";
+  return "draw";
+}
+
 export function widthForPoint(stroke, point) {
   return stroke.baseWidth * (0.38 + pressureOrDefault(point.pressure) * 1.12);
 }
@@ -90,6 +97,63 @@ export function strokeHits(stroke, point, radius) {
     }
   }
   return false;
+}
+
+function interpolatePoint(start, end, ratio) {
+  return {
+    x: start.x + (end.x - start.x) * ratio,
+    y: start.y + (end.y - start.y) * ratio,
+    pressure: pressureOrDefault(
+      pressureOrDefault(start.pressure) + (
+        pressureOrDefault(end.pressure) - pressureOrDefault(start.pressure)
+      ) * ratio,
+    ),
+    time: Number(start.time || 0) + (Number(end.time || 0) - Number(start.time || 0)) * ratio,
+  };
+}
+
+function resampleStrokePoints(points, maximumGap) {
+  if (points.length < 2) return structuredClone(points);
+  const sampled = [structuredClone(points[0])];
+  for (let index = 1; index < points.length; index += 1) {
+    const start = points[index - 1];
+    const end = points[index];
+    const distance = Math.hypot(end.x - start.x, end.y - start.y);
+    const steps = Math.max(1, Math.ceil(distance / maximumGap));
+    for (let step = 1; step <= steps; step += 1) {
+      sampled.push(interpolatePoint(start, end, step / steps));
+    }
+  }
+  return sampled;
+}
+
+export function eraseStrokeAt(stroke, point, radius) {
+  if (!stroke.points.length || radius <= 0 || !strokeHits(stroke, point, radius)) {
+    return [stroke];
+  }
+
+  const sampled = resampleStrokePoints(stroke.points, Math.max(0.75, radius / 3));
+  const fragments = [];
+  let current = [];
+
+  for (const sample of sampled) {
+    const erased = Math.hypot(sample.x - point.x, sample.y - point.y) <= radius;
+    if (erased) {
+      if (current.length) {
+        fragments.push(current);
+        current = [];
+      }
+      continue;
+    }
+    current.push(sample);
+  }
+  if (current.length) fragments.push(current);
+
+  return fragments.map((points) => ({
+    ...stroke,
+    id: createId("stroke"),
+    points,
+  }));
 }
 
 export function migrateDocument(input) {
@@ -123,6 +187,10 @@ export function mergePendingOperation(document, journal) {
   if (journal.type === "delete" && Array.isArray(journal.strokeIds)) {
     const removed = new Set(journal.strokeIds);
     next.strokes = next.strokes.filter((stroke) => !removed.has(stroke.id));
+  }
+
+  if (journal.type === "snapshot" && Array.isArray(journal.strokes)) {
+    next.strokes = structuredClone(journal.strokes);
   }
 
   next.updatedAt = Math.max(Number(next.updatedAt || 0), Number(journal.savedAt || 0));
