@@ -32,6 +32,9 @@ const hint = document.querySelector("#canvas-hint");
 const toast = document.querySelector("#toast");
 const diagnosticsDialog = document.querySelector("#diagnostics-dialog");
 const diagnosticsList = document.querySelector("#diagnostics-list");
+const appShell = document.querySelector(".app-shell");
+const focusModeButton = document.querySelector("#focus-mode-button");
+const FOCUS_MODE_STORAGE_KEY = "studio5:p0:focus-mode";
 
 let inkDocument = createDocument();
 let tool = "pen";
@@ -129,7 +132,7 @@ function scheduleSave(delay = 240) {
 
 function fitDocument() {
   const rect = canvas.getBoundingClientRect();
-  const padding = 34;
+  const padding = appShell.classList.contains("is-focus-mode") ? 8 : 12;
   viewport.scale = Math.min(
     (rect.width - padding * 2) / DOCUMENT_WIDTH,
     (rect.height - padding * 2) / DOCUMENT_HEIGHT,
@@ -138,6 +141,23 @@ function fitDocument() {
   viewport.y = (rect.height - DOCUMENT_HEIGHT * viewport.scale) / 2;
   updateZoom();
   scheduleRender();
+}
+
+function applyFocusMode(enabled, { persist = true } = {}) {
+  appShell.classList.toggle("is-focus-mode", enabled);
+  focusModeButton.setAttribute("aria-pressed", String(enabled));
+  focusModeButton.textContent = enabled ? "إظهار الواجهة" : "توسيع الرسم";
+  if (persist) {
+    try {
+      localStorage.setItem(FOCUS_MODE_STORAGE_KEY, String(enabled));
+    } catch {
+      // وضع التركيز تحسين واجهة فقط؛ لا يجب أن يؤثر فشل التخزين في الرسم.
+    }
+  }
+  requestAnimationFrame(() => {
+    resizeCanvas();
+    fitDocument();
+  });
 }
 
 function updateZoom() {
@@ -527,6 +547,14 @@ document.querySelector("#redo-button").addEventListener("click", redo);
 document.querySelector("#zoom-in-button").addEventListener("click", () => zoomAt(1.18));
 document.querySelector("#zoom-out-button").addEventListener("click", () => zoomAt(0.84));
 document.querySelector("#fit-button").addEventListener("click", fitDocument);
+focusModeButton.addEventListener("click", () => {
+  applyFocusMode(!appShell.classList.contains("is-focus-mode"));
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && appShell.classList.contains("is-focus-mode")) {
+    applyFocusMode(false);
+  }
+});
 
 document.querySelector("#clear-button").addEventListener("click", () => {
   if (!inkDocument.strokes.length) return;
@@ -628,6 +656,11 @@ async function boot() {
   updateUndoButtons();
   updateStats();
   canvas.dataset.tool = tool;
+  try {
+    applyFocusMode(localStorage.getItem(FOCUS_MODE_STORAGE_KEY) === "true", { persist: false });
+  } catch {
+    applyFocusMode(false, { persist: false });
+  }
   resizeCanvas();
   fitDocument();
   storageState.textContent = `التخزين: ${storageMode}`;
