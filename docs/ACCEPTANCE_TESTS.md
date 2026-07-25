@@ -17,6 +17,7 @@
 - [ ] يمكن إنشاء Year/Semester/Subject دون اعتماد داخلي على اسم مادة.
 - [ ] يعمل Today والمهام والمحاضرات والدفاتر من دون شبكة.
 - [x] File intake لا يبدل الأصل بلا موافقة ويكشف التكرار بالـhash. (`P2-CORE-006`, 44/44 tests)
+- [x] Notebook Core يربط InkDocument بالسياق ويحفظ Revisions مستقلة مع فحص التلف. (`P2-CORE-007`, 54/54 tests)
 - [ ] Lecture Capture يتحول في Closeout إلى عناصر منظمة مرتبطة.
 - [ ] Backup ثم Restore يعيد الملفات والملاحظات والرسومات مع تحقق العدّ/الـmanifest.
 - [x] كل Migration منفذة حتى Schema v3 تملك اختباراً ومسار فشل مفهوم. (`P2-CORE-001` إلى `P2-CORE-006`)

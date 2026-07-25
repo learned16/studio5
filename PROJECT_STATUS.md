@@ -56,7 +56,7 @@
 | P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
 | P2-CORE-005 | Today query engine محلي | `codex/p2-today-query-engine` | Codex | DONE - 33/33 TESTS | `today-query.mjs`, Repository، اختبارات Today، وثائق المهمة والحالة |
 | P2-CORE-006 | FileArtifact intake وHash وImmutable original | `codex/p2-file-artifact-intake` | Codex | DONE - 44/44 TESTS | نماذج الملفات، Schema v3، content store، Repository، الاختبارات والوثائق |
-| P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | IN PROGRESS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
+| P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | DONE - 54/54 TESTS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -70,8 +70,8 @@
 
 ## القادم بعد المهمة الحالية
 
-1. إكمال `P2-CORE-007`: Notebook basics وربط InkDocument بالمواد والمحاضرات.
-2. Demo مرحلي على MatePad وقرار Go/No-Go قبل Lecture Flow.
+1. Demo مرحلي يربط P0 Ink بـNotebook Core على MatePad.
+2. قرار Go/No-Go قبل بدء Phase 3: Lecture Capture وCloseout.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -107,3 +107,4 @@
 | 2026-07-25 | P2-CORE-004 | P2-CORE-005 | Schema v2 وSchedule/Lecture/Task وFilters وTask lifecycle رُفعت، 27/27 ناجحة |
 | 2026-07-25 | P2-CORE-005 | P2-CORE-006 | Today query محلي مع Agenda وتصنيف المهام وحدود توقيت صريحة، 33/33 ناجحة |
 | 2026-07-25 | P2-CORE-006 | P2-CORE-007 | Schema v3 وإدخال ملفات محلي immutable مع SHA-256 وdedup وRecovery، 44/44 ناجحة |
+| 2026-07-25 | P2-CORE-007 | Demo/Gate | Notebook وInkDocument وRevision history ضمن Schema v4، 54/54 ناجحة؛ واجهة MatePad هي الخطوة التالية |
