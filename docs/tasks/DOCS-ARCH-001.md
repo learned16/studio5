@@ -48,6 +48,9 @@
 
 ## دليل التحقق الحالي
 
-- الحالة: `IN PROGRESS`.
+- الحالة: `DONE`.
 - الفرع: `codex/docs-experimental-modularity-policy`.
-
+- `git diff --check`: ناجح.
+- فحص وجود الملفات والعلامات السلطوية: ناجح (`6 files`, `4 markers`).
+- لا يوجد تغيير كود أو Schema أو بيانات.
+- الفرع مرفوع إلى GitHub، ولا يوجد Merge إلى `main`.

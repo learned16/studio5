@@ -62,7 +62,7 @@
 | P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | DONE - 63/63 + 15/15 REGRESSION | `packages/studio5-core/**` ووثائق المهمة والحالة |
 | P3-LF-002 | تحويل Capture إلى Task ذري + Lecture Inbox | `codex/p3-capture-task-inbox` | Codex | DONE - 69/69 + 15/15 REGRESSION | `lecture-inbox.mjs` وRepository والاختبارات ووثائق المهمة |
 | P3-LF-003 | واجهة Lecture Capture السريعة المستقلة | `codex/p3-lecture-capture-ui` | Codex | DONE - DEPLOYED V1 - 4/4 + 69/69 + 15/15 | `prototype/p3-lecture-capture-web/**` ووثائق المهمة والحالة |
-| DOCS-ARCH-001 | سياسة فصل التجارب وقابلية استبدالها | `codex/docs-experimental-modularity-policy` | Codex | IN PROGRESS | قواعد الوكلاء وقرارات المعمارية وSOP والحالة |
+| DOCS-ARCH-001 | سياسة فصل التجارب وقابلية استبدالها | `codex/docs-experimental-modularity-policy` | Codex | DONE - DOCS CHECK | قواعد الوكلاء وقرارات المعمارية وSOP والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -120,3 +120,4 @@
 | 2026-07-25 | P3-LF-001 | P3-LF-002 | Schema v5 وLecture Capture/Closeout/Resolution رُفعت بفرع مستقل؛ 63/63 Core و15/15 Ink regression ناجحة |
 | 2026-07-25 | P3-LF-002 | P3-LF-003 | التحويل الذري إلى Task وLecture Inbox رُفعا بفرع مستقل؛ 69/69 Core و15/15 Ink regression ناجحة |
 | 2026-07-25 | P3-LF-003 | المستخدم/MatePad | واجهة Capture مستقلة منشورة بخصوصية على Sites؛ الأنواع الخمسة والحفظ المحلي وInbox count تعمل، 4/4 + 69/69 + 15/15 ناجحة |
+| 2026-07-26 | المستخدم | كل الوكلاء | اعتماد سياسة دائمة: كل واجهة قبل الدوام تجربة منفصلة قابلة للاستبدال أو التقاعد بلا فقد بيانات أو هدم بقية Studio5 |
