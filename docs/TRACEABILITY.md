@@ -24,7 +24,7 @@
 | `S5-FR-001` | Repository عام للسنوات والفصول والمواد | P2-CORE-003 | DONE | 19/19 tests |
 | `S5-FR-002` | Schedule + Lecture + Task domain | P2-CORE-004 | DONE | 27/27 + `docs/tasks/P2-CORE-004.md` |
 | `S5-FR-003` | Today query engine يعمل دون شبكة | P2-CORE-005 | DONE | 33/33 + `docs/tasks/P2-CORE-005.md` |
-| `S5-DATA-003` | File intake + hash + duplicate + immutable original | P2-CORE-006 | IN PROGRESS | `docs/tasks/P2-CORE-006.md` |
+| `S5-DATA-003` | File intake + hash + duplicate + immutable original | P2-CORE-006 | DONE | 44/44 + `docs/tasks/P2-CORE-006.md` |
 | `S5-FR-004` | Notebook basics وربط InkDocument بالسياق | P2-CORE-007 | PLANNED | لم ينفذ |
 | `S5-FR-005` | Lecture Capture وCloseout وInbox | Phase 3 | BACKLOG CURRENT YEAR | لم ينفذ |
 | `S5-DATA-004` | Backup/Restore/Full Export | Phase 4 | BACKLOG CURRENT YEAR | لم ينفذ |
