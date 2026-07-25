@@ -44,8 +44,7 @@
 - جلسة رسم 15 دقيقة: PASS بلا تأخير ملحوظ.
 - قرابة 1000 stroke: PASS للحفظ وإعادة الفتح.
 
-الاختبارات الوظيفية مغلقة. توصية Web/PWA في `ADR-008` تنتظر موافقة المستخدم قبل
-تسجيلها `Adopted`.
+الاختبارات الوظيفية مغلقة، واعتمد المستخدم Web/PWA لنسخة السنة الأولى في `ADR-008`.
 
 ## العمل الجاري الآن
 
@@ -56,7 +55,7 @@
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 | DOCS-SOP-001 | دمج SOP وحزمة التعاون وتنظيف الملفات المضغوطة | `codex/docs-collaboration-sop` | Codex | DONE - DOCS CHECK + 19/19 + 12/12 | وثائق التعاون والحالة فقط |
 | P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
-| GATE0-DEVICE-RESULTS | توثيق نتائج MatePad واقتراح ADR-008 | `codex/gate0-device-results` | Codex | DONE - DEVICE PASS / ADR NEEDS DECISION | وثائق Gate 0 والقرارات والحالة |
+| GATE0-DEVICE-RESULTS | توثيق نتائج MatePad واعتماد ADR-008 | `codex/gate0-device-results` | Codex | DONE - DEVICE PASS / ADR ADOPTED | وثائق Gate 0 والقرارات والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -108,3 +107,4 @@
 | 2026-07-25 | DOCS-SOP-001 | P2-CORE-004 | SOP وTraceability وتعليمات التعاون رُتبت، أزيلت الحزمة المضغوطة، ورفع الفرع |
 | 2026-07-25 | P2-CORE-004 | P2-CORE-005 | Schema v2 وSchedule/Lecture/Task وFilters وTask lifecycle رُفعت، 27/27 ناجحة |
 | 2026-07-25 | MatePad Gate 0 | ADR-008 | نجحت اختبارات الضغط وRecovery و15 دقيقة و1000 stroke؛ توصية Web/PWA تنتظر موافقة المستخدم |
+| 2026-07-25 | المستخدم | ADR-008 | اعتماد Web/PWA لواجهة السنة الأولى ومحرك Ink الحالي مع محفزات إعادة التقييم |

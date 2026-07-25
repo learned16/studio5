@@ -6,7 +6,7 @@
 | D-002 | Core دائم وتوسع بمهاجرات/Profiles/Packs | Adopted | §8-9 |
 | D-003 | أول كود هو Prototype Ink/Recovery على MatePad | Adopted | §13, §17 |
 | D-004 | لا AI Council أو Desktop Companion أو CAD/BIM الآن | Deferred | §7 |
-| D-005 | اكتمل Prototype والجهاز؛ توصية Web/PWA موثقة في ADR-008 وتنتظر اعتماد المستخدم | Needs user decision | ADR-008 + Gate 0 device results |
+| D-005 | اعتماد Web/PWA لواجهة السنة الأولى ومحرك Ink الحالي مع محفزات إعادة تقييم موثقة | Adopted | موافقة المستخدم + ADR-008 + Gate 0 |
 | D-006 | لا تغيير صامت للميزات | Adopted | §0, §19 |
 | D-007 | وافق المستخدم على بدء البناء والانتقال إلى Core مع بقاء اختبارات MatePad الطويلة معلقة | Adopted | قرار مستخدم لاحق + PROJECT_STATUS |
 | D-008 | يجوز بناء Domains محايدة عن واجهة Ink قبل إغلاق Gate الجهاز، ولا يجوز إعلان Ink نهائياً | Adopted | P0 handoff |
@@ -37,4 +37,4 @@
 - **السبب:** نجاح الضغط وPalm rejection والممحاة وRecovery وجلسة 15 دقيقة وقرابة 1000 stroke على MatePad الحقيقي.
 - **الأثر:** استمرار البناء فوق Prototype مثبت، مع بقاء Core والبيانات منفصلة وقابلة للترقية.
 - **البدائل:** Kotlin/Native، Flutter، أو Native wrapper لاحقاً.
-- **القرار المطلوب:** موافقة المستخدم الصريحة على `ADR-008` قبل تغيير الحالة إلى `Adopted`.
+- **القرار:** Approved بموافقة المستخدم الصريحة بتاريخ 2026-07-25؛ أصبحت `ADR-008` بحالة `Adopted`.

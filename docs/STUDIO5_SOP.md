@@ -113,8 +113,8 @@
 - جلسة رسم 15 دقيقة: PASS بلا تأخير ملحوظ.
 - ما يقارب 1000 stroke: PASS للحفظ وإعادة الفتح.
 
-الدليل الكامل في `docs/tasks/P0-INK-WEB-TEST-REPORT.md`. توصية التقنية في `ADR-008`
-تنتظر موافقة المستخدم، والقياسات الكمية التفصيلية تبقى ضمن Hardening.
+الدليل الكامل في `docs/tasks/P0-INK-WEB-TEST-REPORT.md`. اعتمد المستخدم توصية
+Web/PWA في `ADR-008`، والقياسات الكمية التفصيلية تبقى ضمن Hardening.
 
 ## 10. Academic Safe Mode
 
