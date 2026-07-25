@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-07-25  
+آخر تحديث: 2026-07-26
 المرحلة الحالية: `Phase 3 - Lecture Flow`
-الفرع النشط: `codex/p3-lecture-capture-ui`
+الفرع النشط: `codex/docs-experimental-modularity-policy`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -62,6 +62,7 @@
 | P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | DONE - 63/63 + 15/15 REGRESSION | `packages/studio5-core/**` ووثائق المهمة والحالة |
 | P3-LF-002 | تحويل Capture إلى Task ذري + Lecture Inbox | `codex/p3-capture-task-inbox` | Codex | DONE - 69/69 + 15/15 REGRESSION | `lecture-inbox.mjs` وRepository والاختبارات ووثائق المهمة |
 | P3-LF-003 | واجهة Lecture Capture السريعة المستقلة | `codex/p3-lecture-capture-ui` | Codex | DONE - DEPLOYED V1 - 4/4 + 69/69 + 15/15 | `prototype/p3-lecture-capture-web/**` ووثائق المهمة والحالة |
+| DOCS-ARCH-001 | سياسة فصل التجارب وقابلية استبدالها | `codex/docs-experimental-modularity-policy` | Codex | IN PROGRESS | قواعد الوكلاء وقرارات المعمارية وSOP والحالة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
