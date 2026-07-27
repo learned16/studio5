@@ -171,6 +171,30 @@ button {
   align-items: center;
 }
 
+.capture-heading-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.closeout-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 14px;
+  border: 1px solid var(--green);
+  border-radius: 14px;
+  color: var(--green);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
+.closeout-link:hover {
+  color: white;
+  background: var(--green);
+}
+
 .capture-card h2,
 .recent-section h2 {
   font-size: clamp(1.3rem, 3vw, 1.8rem);
@@ -483,6 +507,11 @@ footer {
 
   .capture-heading-row {
     align-items: start;
+  }
+
+  .capture-heading-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
   }
 
   .inbox-badge {

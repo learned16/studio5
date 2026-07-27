@@ -4,10 +4,13 @@ const files = [
   "app.mjs",
   "lecture-demo.mjs",
   "core-runtime.mjs",
+  "closeout/app.mjs",
+  "closeout/closeout-bridge.mjs",
+  "closeout/runtime.mjs",
 ];
 for (const file of files) {
   const source = await readFile(new URL(`../${file}`, import.meta.url), "utf8");
-  if (!source.startsWith("import") && file !== "lecture-demo.mjs") {
+  if (!source.startsWith("import") && !["lecture-demo.mjs", "closeout/closeout-bridge.mjs"].includes(file)) {
     throw new Error(`${file}: expected ES module imports`);
   }
   if (source.includes("\t")) {
