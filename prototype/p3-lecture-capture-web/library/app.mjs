@@ -9,6 +9,8 @@ import {
 const elements = {
   uploadForm: document.querySelector("#upload-form"),
   pdfFile: document.querySelector("#pdf-file"),
+  pdfPickerLabel: document.querySelector("#pdf-picker-label"),
+  uploadSubmit: document.querySelector("#upload-submit"),
   uploadStatus: document.querySelector("#upload-status"),
   fileCount: document.querySelector("#file-count"),
   fileList: document.querySelector("#file-list"),
@@ -39,6 +41,30 @@ const state = {
 function setStatus(message, tone = "normal") {
   elements.uploadStatus.textContent = message;
   elements.uploadStatus.dataset.tone = tone;
+}
+
+function formattedFileSize(size) {
+  if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function updateFileSelection() {
+  const file = elements.pdfFile.files?.[0] ?? null;
+  if (!file) {
+    elements.pdfPickerLabel.textContent = "اختر PDF من الجهاز";
+    elements.uploadSubmit.disabled = true;
+    return;
+  }
+  try {
+    validatePdfFile(file);
+    elements.pdfPickerLabel.textContent = `${file.name} — ${formattedFileSize(file.size)}`;
+    elements.uploadSubmit.disabled = false;
+    setStatus("الملف جاهز للحفظ في المكتبة.");
+  } catch (error) {
+    elements.pdfPickerLabel.textContent = file.name || "ملف غير صالح";
+    elements.uploadSubmit.disabled = true;
+    setStatus(error.message || "تعذر اختيار PDF", "error");
+  }
 }
 
 function button(label, className, handler) {
@@ -241,6 +267,7 @@ elements.uploadForm.addEventListener("submit", async (event) => {
     const entry = state.files.find(({ artifact }) => artifact.id === result.artifact.id);
     if (entry) await openPdf(entry);
     elements.uploadForm.reset();
+    updateFileSelection();
     setStatus(
       result.status === "duplicate"
         ? "هذا الملف موجود؛ فتحت النسخة المحفوظة."
@@ -252,6 +279,7 @@ elements.uploadForm.addEventListener("submit", async (event) => {
   }
 });
 
+elements.pdfFile.addEventListener("change", updateFileSelection);
 elements.noteForm.addEventListener("input", saveDraft);
 elements.noteForm.addEventListener("submit", async (event) => {
   event.preventDefault();

@@ -32,11 +32,22 @@
             </div>
           </div>
           <form id="upload-form">
-            <label class="file-picker">
-              <input id="pdf-file" type="file" accept="application/pdf,.pdf" required>
-              <span>اختر PDF</span>
+            <label class="file-picker" for="pdf-file">
+              <input
+                id="pdf-file"
+                type="file"
+                accept="application/pdf,.pdf"
+                aria-describedby="pdf-picker-help"
+                required
+              >
+              <span id="pdf-picker-label" class="file-picker-copy">اختر PDF من الجهاز</span>
             </label>
-            <button class="primary" type="submit">حفظ في المكتبة</button>
+            <small id="pdf-picker-help" class="picker-help">
+              بعد الاختيار راح يظهر اسم الملف هنا قبل الحفظ.
+            </small>
+            <button id="upload-submit" class="primary" type="submit" disabled>
+              حفظ في المكتبة
+            </button>
           </form>
           <p id="upload-status" class="status" role="status"></p>
         </section>
