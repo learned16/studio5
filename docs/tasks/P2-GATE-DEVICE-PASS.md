@@ -51,7 +51,7 @@
 
 ## دليل التحقق الحالي
 
-- الحالة: `VERIFIED - PUSH PENDING`.
+- الحالة: `DONE - 8/8 DEVICE PASS / VERIFIED / PUSHED`.
 - الفرع: `codex/p2-notebook-revision-device-pass`.
 - نتيجة المستخدم: البنود الثمانية كلها `PASS`.
 - Studio5 Core: `54/54 PASS`.
@@ -59,3 +59,5 @@
 - Core وInk Lint/Type Check: `PASS`.
 - Static worker build: `PASS`.
 - فحص تعارضات Markdown: `PASS`.
+- الفرع مرفوع إلى `origin/codex/p2-notebook-revision-device-pass`.
+- لا يوجد Merge إلى `main`.

@@ -1,7 +1,7 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-27
-المرحلة الحالية: `Phase 2 - Notebook/Revisions Device Gate Closure`
+المرحلة الحالية: `Phase 2 Complete - Phase 3 Continues Separately`
 الفرع النشط: `codex/p2-notebook-revision-device-pass`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
@@ -62,7 +62,7 @@
 | P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DONE - MATEPAD PASS | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DONE - MATEPAD PASS | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P2-GATE-RECONCILIATION | توحيد Gate 0 وإعداد اختبار Notebook/Revisions | `codex/p2-gate-reconciliation` | Codex | DONE - MERGED HISTORY / VERIFIED | وثائق Gate 0 والقرارات والحالة وتقرير اختبار MatePad |
-| P2-GATE-DEVICE-PASS | إغلاق بوابة Notebook/Revisions على MatePad | `codex/p2-notebook-revision-device-pass` | Codex | IN PROGRESS | تقرير الجهاز والحالة والتتبع والقرارات |
+| P2-GATE-DEVICE-PASS | إغلاق بوابة Notebook/Revisions على MatePad | `codex/p2-notebook-revision-device-pass` | Codex | DONE - 8/8 DEVICE PASS | تقرير الجهاز والحالة والتتبع والقرارات |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -76,9 +76,10 @@
 
 ## القادم بعد المهمة الحالية
 
-1. تثبيت ورفع نتيجة بوابة الجهاز على فرعها المستقل.
-2. Phase 2 لا تملك Gate وظيفية معلقة بعد هذا الإغلاق.
-3. يستمر Phase 3 في فروعه ووحداته المستقلة؛ لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
+1. Phase 2 لا تملك Gate وظيفية معلقة بعد هذا الإغلاق.
+2. يستمر Phase 3 من فرعه المستقل `codex/p3-lecture-closeout-ui`.
+3. تُحمل نتيجة هذه البوابة إلى خط Phase 3 عند بدء مهمته التالية، من دون خلط كود المرحلتين.
+4. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
 
 ## المراحل اللاحقة المحفوظة
 
