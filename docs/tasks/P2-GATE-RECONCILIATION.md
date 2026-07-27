@@ -57,6 +57,15 @@
 
 ## دليل التحقق الحالي
 
-- الحالة: `IN PROGRESS`.
+- الحالة: `VERIFIED - PUSH PENDING`.
 - الفرع: `codex/p2-gate-reconciliation`.
-
+- تاريخ `codex/gate0-device-results` دخل كـMerge حقيقي فوق أحدث خط Phase 2.
+- فحص تعارضات Markdown: لا توجد conflict markers.
+- Studio5 Core: `54/54 PASS`.
+- Ink/Notebook Demo: `15/15 PASS`.
+- Core Type Check: `PASS`.
+- Core Lint/Syntax: `PASS`.
+- Ink Type Check: `PASS`.
+- Ink Lint/Syntax: `PASS`.
+- Static worker build: `PASS`.
+- بوابة MatePad الخاصة بـNotebook/Revisions: `PENDING USER TEST`.

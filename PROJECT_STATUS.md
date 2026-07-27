@@ -36,14 +36,15 @@
   `https://studio5-ink-lab.lharithl.chatgpt.site`
 - التحقق الآلي الحالي: 12/12 اختباراً ناجحاً، Build وType Check وBrowser smoke ناجحة.
 
-## عمل P0 المتبقي على الجهاز الحقيقي
+## نتيجة Gate 0 على الجهاز الحقيقي
 
-- قياس ضغط قلم Huawei وتسجيل النتيجة.
-- Force Kill من نظام MatePad ثم التحقق من آخر محاولة.
-- جلسة رسم 15 دقيقة وقياس الراحة والتأخير.
-- تجربة بيانات كبيرة تقارب 1000 stroke.
+- ضغط قلم Huawei: PASS.
+- Palm rejection والممحاة المقطعية بعد الإصلاح: PASS.
+- Force Kill + Recovery: PASS بلا فقد.
+- جلسة رسم 15 دقيقة: PASS بلا تأخير ملحوظ.
+- قرابة 1000 stroke: PASS للحفظ وإعادة الفتح.
 
-هذه اختبارات Gate باقية، لكنها لا تمنع بناء أجزاء Core المحايدة عن تقنية الواجهة.
+الاختبارات الوظيفية مغلقة، واعتمد المستخدم Web/PWA لنسخة السنة الأولى في `ADR-008`.
 
 ## العمل الجاري الآن
 
@@ -54,6 +55,7 @@
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
 | DOCS-SOP-001 | دمج SOP وحزمة التعاون وتنظيف الملفات المضغوطة | `codex/docs-collaboration-sop` | Codex | DONE - DOCS CHECK + 19/19 + 12/12 | وثائق التعاون والحالة فقط |
 | P2-CORE-004 | Schedule وLecture وTask domain + Schema v2 | `codex/p2-schedule-lecture-task` | Codex | DONE - 27/27 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-004.md`, ملفات الحالة |
+| GATE0-DEVICE-RESULTS | توثيق نتائج MatePad واعتماد ADR-008 | `codex/gate0-device-results` | Codex | DONE - DEVICE PASS / ADR ADOPTED | وثائق Gate 0 والقرارات والحالة |
 | P2-CORE-005 | Today query engine محلي | `codex/p2-today-query-engine` | Codex | DONE - 33/33 TESTS | `today-query.mjs`, Repository، اختبارات Today، وثائق المهمة والحالة |
 | P2-CORE-006 | FileArtifact intake وHash وImmutable original | `codex/p2-file-artifact-intake` | Codex | DONE - 44/44 TESTS | نماذج الملفات، Schema v3، content store، Repository، الاختبارات والوثائق |
 | P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | DONE - 54/54 TESTS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
@@ -73,8 +75,9 @@
 
 ## القادم بعد المهمة الحالية
 
-1. إكمال Demo مرحلي يربط P0 Ink بـNotebook Core على MatePad.
-2. قرار Go/No-Go قبل بدء Phase 3: Lecture Capture وCloseout.
+1. ينفذ المستخدم سيناريو `docs/tasks/P2-NOTEBOOK-REVISION-MATEPAD-TEST-REPORT.md` على MatePad.
+2. عند نجاح البنود الثمانية، تُغلق بوابتا P2-GATE-001 وP2-GATE-002 وتُحدّث الأدلة.
+3. يبقى بدء Phase 3: Lecture Capture وCloseout ممنوعاً حتى صدور نتيجة بوابة الجهاز الجديدة.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -101,15 +104,17 @@
 
 | التاريخ | من | إلى | النتيجة |
 |---|---|---|---|
-| 2026-07-25 | P0 | Phase 2 | قبول سلوك التحريك والممحاة من المستخدم، مع بقاء اختبارات الجهاز الطويلة |
+| 2026-07-25 | P0 | Phase 2 | قبول سلوك التحريك والممحاة من المستخدم؛ كانت اختبارات الجهاز الطويلة معلقة وقت هذا التسليم ثم أُغلقت لاحقاً |
 | 2026-07-25 | Codex | وكلاء Phase 2 | بدء P2-CORE-001 ووضع بروتوكول التنسيق المشترك |
 | 2026-07-25 | P2-CORE-001 | P2-CORE-002 | Core Schema v1 وStable IDs والعلاقات والمهاجرات رُفعت، 7/7 اختبارات ناجحة |
 | 2026-07-25 | P2-CORE-002 | P2-CORE-003 | IndexedDB وJournal وRecovery رُفعت، 14/14 اختبارات ناجحة، Browser smoke معلّق |
 | 2026-07-25 | P2-CORE-003 | P2-CORE-004 | Academic Repository وFilters وRecovery guard رُفعت، 19/19 اختبارات ناجحة |
 | 2026-07-25 | DOCS-SOP-001 | P2-CORE-004 | SOP وTraceability وتعليمات التعاون رُتبت، أزيلت الحزمة المضغوطة، ورفع الفرع |
 | 2026-07-25 | P2-CORE-004 | P2-CORE-005 | Schema v2 وSchedule/Lecture/Task وFilters وTask lifecycle رُفعت، 27/27 ناجحة |
+| 2026-07-25 | MatePad Gate 0 | ADR-008 | نجحت اختبارات الضغط وRecovery و15 دقيقة و1000 stroke؛ اعتمد المستخدم Web/PWA |
 | 2026-07-25 | P2-CORE-005 | P2-CORE-006 | Today query محلي مع Agenda وتصنيف المهام وحدود توقيت صريحة، 33/33 ناجحة |
 | 2026-07-25 | P2-CORE-006 | P2-CORE-007 | Schema v3 وإدخال ملفات محلي immutable مع SHA-256 وdedup وRecovery، 44/44 ناجحة |
 | 2026-07-25 | P2-CORE-007 | Demo/Gate | Notebook وInkDocument وRevision history ضمن Schema v4، 54/54 ناجحة؛ واجهة MatePad هي الخطوة التالية |
 | 2026-07-25 | P2-GATE-001 | المستخدم/MatePad | Demo v4 منشور على رابط Studio5 الخاص؛ 15/15 وBuild ناجحة، وبقي اختبار القلم والاستعادة والنسخ على الجهاز |
 | 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 يعرض تاريخ النسخ والمعاينة والاستعادة الآمنة؛ 15/15 و54/54 وBuild ناجحة، وبقي فحص التدفق على الجهاز |
+| 2026-07-27 | Gate 0 + أحدث Phase 2 | P2-GATE-RECONCILIATION | توحيد تاريخ Gate 0 المعتمد مع خط Notebook/Revisions؛ بوابة Notebook/Revisions فقط ما زالت تنتظر MatePad |

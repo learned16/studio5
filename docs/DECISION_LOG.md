@@ -6,12 +6,13 @@
 | D-002 | Core دائم وتوسع بمهاجرات/Profiles/Packs | Adopted | §8-9 |
 | D-003 | أول كود هو Prototype Ink/Recovery على MatePad | Adopted | §13, §17 |
 | D-004 | لا AI Council أو Desktop Companion أو CAD/BIM الآن | Deferred | §7 |
-| D-005 | لا اختيار Stack قبل Prototype | Open technical decision | §8, §17 |
+| D-005 | اعتماد Web/PWA لواجهة السنة الأولى ومحرك Ink الحالي مع محفزات إعادة تقييم موثقة | Adopted | موافقة المستخدم + ADR-008 + Gate 0 |
 | D-006 | لا تغيير صامت للميزات | Adopted | §0, §19 |
-| D-007 | وافق المستخدم على بدء البناء والانتقال إلى Core مع بقاء اختبارات MatePad الطويلة معلقة | Adopted | قرار مستخدم لاحق + PROJECT_STATUS |
-| D-008 | يجوز بناء Domains محايدة عن واجهة Ink قبل إغلاق Gate الجهاز، ولا يجوز إعلان Ink نهائياً | Adopted | P0 handoff |
+| D-007 | وافق المستخدم وقتها على بدء Core بينما كانت اختبارات MatePad الطويلة معلقة؛ أُغلقت لاحقاً في Gate 0 | Historical / Superseded by Gate 0 | قرار مستخدم لاحق + PROJECT_STATUS |
+| D-008 | سُمح ببناء Domains محايدة عن Ink قبل إغلاق Gate الجهاز؛ انتهى القيد بعد اعتماد ADR-008 | Historical / Completed | P0 handoff + ADR-008 |
 | D-009 | الحزمة الواردة وSOP مصادر تنظيمية، ولا تتقدم على المرجع السلطوي أو قرار مستخدم أحدث | Adopted | DOCS-SOP-001 |
 | D-010 | لا تفرض Guard skills خارجية قبل التحقق منها؛ الاختبارات والمراجعة هي الأساس | Adopted | DOCS-SOP-001 |
+| D-011 | Gate 0 الأصلي مكتمل ومعتمد، لكن P2-GATE-001/002 يملكان بوابة MatePad مستقلة للـNotebook/Revisions | Adopted | قرار المستخدم 2026-07-27 + P2-GATE-RECONCILIATION |
 
 ## Change control template
 
@@ -30,3 +31,11 @@
 - **الأثر:** تحسين تعاون عدة وكلاء من دون تغيير كود التطبيق أو نطاق السنة الأولى.
 - **البدائل:** نسخ الحزمة كما هي، أو إبقاؤها مضغوطة. رُفضا بسبب التعارض والازدواجية.
 - **القرار:** Approved بطلب المستخدم: “اعمل طريقتك بس لا تخلي الملف مضغوط رتبه”.
+
+### CL-002 - نتيجة Gate 0 وتوصية Stack
+
+- **التغيير المقترح:** اعتماد Web/PWA لواجهة السنة الأولى ومحرك Ink الحالي.
+- **السبب:** نجاح الضغط وPalm rejection والممحاة وRecovery وجلسة 15 دقيقة وقرابة 1000 stroke على MatePad الحقيقي.
+- **الأثر:** استمرار البناء فوق Prototype مثبت، مع بقاء Core والبيانات منفصلة وقابلة للترقية.
+- **البدائل:** Kotlin/Native، Flutter، أو Native wrapper لاحقاً.
+- **القرار:** Approved بموافقة المستخدم الصريحة بتاريخ 2026-07-25؛ أصبحت `ADR-008` بحالة `Adopted`.
