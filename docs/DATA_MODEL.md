@@ -75,6 +75,18 @@
   كل بيانات Academic/Planning/Files/Notebook/Ink كما هي.
 - الواجهة وPDF وSearch وInbox projection تبقى وحدات لاحقة ولا تدخل في Schema v5 هذه.
 
+## Schema v6 - Search Markers
+
+- `ResourceMarker`
+  - `id`
+  - `targetKind`
+  - `targetId`
+  - `isFavorite`
+  - `favoriteAt`
+  - `lastOpenedAt`
+
+`ResourceMarker` حالة شخصية عامة لمورد موجود في Core. لا ينسخ عنوان المورد ولا يثبت اسم مادة، ويقبل فقط الأنواع المدعومة بعلاقة Stable ID صحيحة. البحث نفسه Projection مشتق من Snapshot ولا يغير البيانات. فهرسة نص PDF الكامل ليست ضمن Schema v6؛ ستأتي عبر Artifact مشتق منفصل حتى يبقى الأصل immutable.
+
 ## Migrations
 
 1. رقم schema محلي واضح.

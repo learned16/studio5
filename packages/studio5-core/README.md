@@ -29,8 +29,9 @@
 - لا يكتمل Closeout قبل تنظيم كل Captures، ونتيجة `task` لا تقبل إلا مهمة من المحاضرة نفسها.
 - تحويل Capture إلى Task ذري: Task وResolution تُحفظان معاً، وإعادة المحاولة بعد Recovery لا تكرر المهمة.
 - Lecture Inbox مشتق محلياً ويعرض Captures غير المنظمة أو المحفوظة عمداً في Inbox بلا Collection إضافية.
+- Search محلي عام يفهرس الموارد المنظمة، مع Favorites/Recent عبر `ResourceMarker` في Schema v6.
 
-واجهات Lecture Capture وCloseout وInbox تأتي في دفعات مستقلة؛ هذه الحزمة توفر العقود المحلية فقط.
+واجهات Lecture Capture وCloseout وInbox وSearch تأتي في دفعات مستقلة؛ هذه الحزمة توفر العقود المحلية فقط.
 
 ## التحقق
 

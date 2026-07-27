@@ -202,7 +202,7 @@ test("schema version 3 migrates to current without losing file metadata", () => 
   assert.deepEqual(migrated.entities.inkRevisions, []);
 });
 
-test("schema version 4 migrates to version 5 without losing notebook data", () => {
+test("schema version 4 migrates to current without losing notebook data", () => {
   const versionFour = {
     schemaVersion: 4,
     exportedAt: "2026-07-25T00:00:00.000Z",
@@ -225,7 +225,7 @@ test("schema version 4 migrates to version 5 without losing notebook data", () =
     },
   };
   const migrated = migrateSnapshot(versionFour, 50);
-  assert.equal(migrated.schemaVersion, 5);
+  assert.equal(migrated.schemaVersion, 6);
   assert.deepEqual(migrated.entities.notebooks, []);
   assert.deepEqual(migrated.entities.inkDocuments, []);
   assert.deepEqual(migrated.entities.inkRevisions, []);

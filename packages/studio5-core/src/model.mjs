@@ -97,6 +97,14 @@ export const NOTEBOOK_TEMPLATES = Object.freeze([
   "isometric",
   "engineering",
 ]);
+export const RESOURCE_TARGET_KINDS = Object.freeze([
+  "subject",
+  "lecture",
+  "task",
+  "file-artifact",
+  "notebook",
+  "lecture-capture",
+]);
 export const INK_FORMAT_VERSION = 1;
 
 function uniqueStableIds(values, kind) {
@@ -527,5 +535,67 @@ export function createInkRevision({
     pointCount: positiveInteger(pointCount, "pointCount", { allowZero: true }),
     layerCount: positiveInteger(layerCount, "layerCount"),
     ...timestamps(now),
+  };
+}
+
+export function createResourceMarker({
+  id = createStableId("resource-marker"),
+  targetKind,
+  targetId,
+  isFavorite = false,
+  favoriteAt = null,
+  lastOpenedAt = null,
+  now = Date.now(),
+}) {
+  const normalizedTargetKind = oneOf(
+    targetKind,
+    RESOURCE_TARGET_KINDS,
+    "targetKind",
+  );
+  const favorite = Boolean(isFavorite);
+  const time = timestamps(now);
+  return {
+    kind: "resource-marker",
+    id: assertStableId(id, "resource-marker"),
+    targetKind: normalizedTargetKind,
+    targetId: assertStableId(targetId, normalizedTargetKind),
+    isFavorite: favorite,
+    favoriteAt: favorite
+      ? (optionalInstant(favoriteAt, "favoriteAt") ?? time.createdAt)
+      : null,
+    lastOpenedAt: optionalInstant(lastOpenedAt, "lastOpenedAt"),
+    ...time,
+  };
+}
+
+export function reviseResourceMarker(marker, changes, now = Date.now()) {
+  if (!marker || marker.kind !== "resource-marker") {
+    throw new TypeError("reviseResourceMarker requires a resource marker");
+  }
+  if (!changes || typeof changes !== "object" || Array.isArray(changes)) {
+    throw new TypeError("Resource marker changes must be an object");
+  }
+  const allowed = new Set(["isFavorite", "lastOpenedAt"]);
+  const keys = Object.keys(changes);
+  if (keys.length === 0) throw new TypeError("Resource marker changes cannot be empty");
+  for (const key of keys) {
+    if (!allowed.has(key)) {
+      throw new TypeError(`Resource marker field cannot be changed: ${key}`);
+    }
+  }
+  const updatedAt = new Date(now).toISOString();
+  const isFavorite = Object.hasOwn(changes, "isFavorite")
+    ? Boolean(changes.isFavorite)
+    : marker.isFavorite;
+  return {
+    ...structuredClone(marker),
+    isFavorite,
+    favoriteAt: isFavorite
+      ? (marker.isFavorite ? marker.favoriteAt : updatedAt)
+      : null,
+    lastOpenedAt: Object.hasOwn(changes, "lastOpenedAt")
+      ? optionalInstant(changes.lastOpenedAt, "lastOpenedAt")
+      : marker.lastOpenedAt,
+    updatedAt,
   };
 }

@@ -20,6 +20,7 @@ const COLLECTION_KIND = Object.freeze({
   lectureCaptures: "lecture-capture",
   lectureCloseouts: "lecture-closeout",
   captureResolutions: "capture-resolution",
+  resourceMarkers: "resource-marker",
 });
 
 const IMMUTABLE_COLLECTIONS = new Set([
@@ -279,6 +280,38 @@ export class CoreStore {
             "captureResolution.taskId must belong to the capture lecture",
           );
         }
+      }
+    }
+    if (collection === "resourceMarkers") {
+      const targetCollections = {
+        subject: "subjects",
+        lecture: "lectures",
+        task: "tasks",
+        "file-artifact": "fileArtifacts",
+        notebook: "notebooks",
+        "lecture-capture": "lectureCaptures",
+      };
+      const targetCollection = targetCollections[entity.targetKind];
+      if (!targetCollection) {
+        throw new CoreRelationError(
+          `Unsupported resourceMarker.targetKind: ${entity.targetKind}`,
+        );
+      }
+      this.#assertExists(
+        targetCollection,
+        entity.targetId,
+        "resourceMarker.targetId",
+      );
+      const duplicate = [...this.#collection("resourceMarkers").values()]
+        .find((marker) => (
+          marker.targetKind === entity.targetKind
+          && marker.targetId === entity.targetId
+          && marker.id !== entity.id
+        ));
+      if (duplicate) {
+        throw new CoreRelationError(
+          `Duplicate resource marker for ${entity.targetKind}:${entity.targetId}`,
+        );
       }
     }
   }

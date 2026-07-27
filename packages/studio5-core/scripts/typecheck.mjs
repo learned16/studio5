@@ -11,6 +11,7 @@ const modules = await Promise.all([
   import("../src/today-query.mjs"),
   import("../src/lecture-flow.mjs"),
   import("../src/lecture-inbox.mjs"),
+  import("../src/library-search.mjs"),
   import("../src/academic-repository.mjs"),
 ]);
 
@@ -41,6 +42,9 @@ const requiredExports = [
     "createInkRevision",
     "NOTEBOOK_TEMPLATES",
     "INK_FORMAT_VERSION",
+    "createResourceMarker",
+    "reviseResourceMarker",
+    "RESOURCE_TARGET_KINDS",
   ],
   ["CORE_SCHEMA_VERSION", "createEmptySnapshot", "migrateSnapshot", "validateSnapshot"],
   ["CoreStore", "CoreRelationError"],
@@ -60,6 +64,12 @@ const requiredExports = [
     "CAPTURE_RESOLUTION_OUTCOMES",
   ],
   ["buildLectureInbox"],
+  [
+    "buildLibraryIndex",
+    "searchLibrary",
+    "listFavoriteResources",
+    "listRecentResources",
+  ],
   [
     "AcademicRepository",
     "AcademicRepositoryRecoveryRequiredError",

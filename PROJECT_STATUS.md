@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-27
 المرحلة الحالية: `Phase 3 - Lecture Flow`
-الفرع النشط: `codex/p3-completion-foundation`
+الفرع النشط: `codex/p3-search-favorites-core`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -69,6 +69,7 @@
 | DOCS-ARCH-001 | سياسة فصل التجارب وقابلية استبدالها | `codex/docs-experimental-modularity-policy` | Codex | DONE - DOCS CHECK | قواعد الوكلاء وقرارات المعمارية وSOP والحالة |
 | P3-LF-004 | واجهة Lecture Closeout المستقلة | `codex/p3-lecture-closeout-ui` | Codex | DONE - DEPLOYED V2 / EXPERIMENTAL | `prototype/p3-lecture-capture-web/closeout/**` وتكامل التنقل والبناء والاختبارات ووثائق المهمة |
 | P3-COMP-001 | توحيد Phase 2 المقبولة مع خط Phase 3 وتثبيت نطاق الإكمال | `codex/p3-completion-foundation` | Codex | DONE - 69/69 + 15/15 + 8/8 | وثائق الحالة والتتبع والقرارات فقط |
+| P3-LF-005 | Search وFavorites/Recent داخل Core | `codex/p3-search-favorites-core` | Codex | DONE - 76/76 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -135,3 +136,4 @@
 | 2026-07-27 | المستخدم | Phase 3 | السماح بإكمال Phase 3 بفروع ووحدات مستقلة، على أن تصل نتيجة بوابة Notebook/Revisions لاحقاً |
 | 2026-07-27 | P3-LF-004 | المستخدم | واجهة Closeout مستقلة نُشرت كنسخة Sites v2؛ 8/8 UI و69/69 Core و15/15 Ink ناجحة، وتنتظر تقييم الاستخدام |
 | 2026-07-27 | P3-COMP-001 | Phase 3 Completion | توحدت نتيجة 8/8 MatePad مع Lecture Flow؛ نجحت اختبارات الرجوع 69/69 Core و15/15 Ink و8/8 Lecture UI |
+| 2026-07-27 | P3-LF-005 | Phase 3 | Search وResourceMarker للمفضلة والحديثة ضمن Schema v6؛ 76/76 Core و15/15 Ink و8/8 Lecture UI ناجحة |

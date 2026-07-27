@@ -13,12 +13,14 @@ import {
   createInkRevision,
   createLecture,
   createNotebook,
+  createResourceMarker,
   createScheduleEntry,
   createSemester,
   createSubject,
   createSubjectProfile,
   createTask,
   reviseTask,
+  reviseResourceMarker,
 } from "./model.mjs";
 import { CoreRelationError, CoreStore } from "./store.mjs";
 import { buildTodayQuery } from "./today-query.mjs";
@@ -38,6 +40,11 @@ import {
   createLectureCloseout,
 } from "./lecture-flow.mjs";
 import { buildLectureInbox as buildLectureInboxProjection } from "./lecture-inbox.mjs";
+import {
+  listFavoriteResources as buildFavoriteResources,
+  listRecentResources as buildRecentResources,
+  searchLibrary as searchLibraryProjection,
+} from "./library-search.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -398,6 +405,59 @@ export class AcademicRepository {
     });
   }
 
+  setResourceFavorite(targetKind, targetId, isFavorite = true) {
+    return this.#mutate((working) => {
+      const normalizedTargetKind = String(targetKind ?? "").trim();
+      const normalizedTargetId = assertStableId(targetId, normalizedTargetKind);
+      const current = working.list("resourceMarkers").find((marker) => (
+        marker.targetKind === normalizedTargetKind
+        && marker.targetId === normalizedTargetId
+      ));
+      if (!current) {
+        const created = createResourceMarker({
+          targetKind: normalizedTargetKind,
+          targetId: normalizedTargetId,
+          isFavorite,
+          now: this.#now(),
+        });
+        working.add("resourceMarkers", created);
+        return created;
+      }
+      const revised = reviseResourceMarker(current, { isFavorite }, this.#now());
+      working.replace("resourceMarkers", revised);
+      return revised;
+    });
+  }
+
+  recordResourceOpened(targetKind, targetId, openedAt = null) {
+    return this.#mutate((working) => {
+      const normalizedTargetKind = String(targetKind ?? "").trim();
+      const normalizedTargetId = assertStableId(targetId, normalizedTargetKind);
+      const instant = openedAt ?? new Date(this.#now()).toISOString();
+      const current = working.list("resourceMarkers").find((marker) => (
+        marker.targetKind === normalizedTargetKind
+        && marker.targetId === normalizedTargetId
+      ));
+      if (!current) {
+        const created = createResourceMarker({
+          targetKind: normalizedTargetKind,
+          targetId: normalizedTargetId,
+          lastOpenedAt: instant,
+          now: this.#now(),
+        });
+        working.add("resourceMarkers", created);
+        return created;
+      }
+      const revised = reviseResourceMarker(
+        current,
+        { lastOpenedAt: instant },
+        this.#now(),
+      );
+      working.replace("resourceMarkers", revised);
+      return revised;
+    });
+  }
+
   listAcademicYears() {
     return this.#read((store) => store.list("academicYears"));
   }
@@ -610,6 +670,31 @@ export class AcademicRepository {
       lectureId,
       subjectId,
     }));
+  }
+
+  searchLibrary(options = {}) {
+    return this.#read((store) => searchLibraryProjection(
+      store.exportSnapshot(this.#now()),
+      options,
+    ));
+  }
+
+  listFavoriteResources(options = {}) {
+    return this.#read((store) => buildFavoriteResources(
+      store.exportSnapshot(this.#now()),
+      options,
+    ));
+  }
+
+  listRecentResources(options = {}) {
+    return this.#read((store) => buildRecentResources(
+      store.exportSnapshot(this.#now()),
+      options,
+    ));
+  }
+
+  listResourceMarkers() {
+    return this.#read((store) => store.list("resourceMarkers"));
   }
 
   async #prepareAndQueueFile(input, artifactId = null) {
