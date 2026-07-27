@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-27
-المرحلة الحالية: `Phase 2 - Notebook/Revisions Device Gate`
-الفرع النشط: `codex/p2-gate-reconciliation`
+المرحلة الحالية: `Phase 2 - Notebook/Revisions Device Gate Closure`
+الفرع النشط: `codex/p2-notebook-revision-device-pass`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -59,9 +59,10 @@
 | P2-CORE-005 | Today query engine محلي | `codex/p2-today-query-engine` | Codex | DONE - 33/33 TESTS | `today-query.mjs`, Repository، اختبارات Today، وثائق المهمة والحالة |
 | P2-CORE-006 | FileArtifact intake وHash وImmutable original | `codex/p2-file-artifact-intake` | Codex | DONE - 44/44 TESTS | نماذج الملفات، Schema v3، content store، Repository، الاختبارات والوثائق |
 | P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | DONE - 54/54 TESTS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
-| P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DEPLOYED V4 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
-| P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DEPLOYED V5 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
+| P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DONE - MATEPAD PASS | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
+| P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DONE - MATEPAD PASS | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P2-GATE-RECONCILIATION | توحيد Gate 0 وإعداد اختبار Notebook/Revisions | `codex/p2-gate-reconciliation` | Codex | DONE - MERGED HISTORY / VERIFIED | وثائق Gate 0 والقرارات والحالة وتقرير اختبار MatePad |
+| P2-GATE-DEVICE-PASS | إغلاق بوابة Notebook/Revisions على MatePad | `codex/p2-notebook-revision-device-pass` | Codex | IN PROGRESS | تقرير الجهاز والحالة والتتبع والقرارات |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -75,9 +76,9 @@
 
 ## القادم بعد المهمة الحالية
 
-1. ينفذ المستخدم سيناريو `docs/tasks/P2-NOTEBOOK-REVISION-MATEPAD-TEST-REPORT.md` على MatePad.
-2. عند نجاح البنود الثمانية، تُغلق بوابتا P2-GATE-001 وP2-GATE-002 وتُحدّث الأدلة.
-3. يبقى بدء Phase 3: Lecture Capture وCloseout ممنوعاً حتى صدور نتيجة بوابة الجهاز الجديدة.
+1. تثبيت ورفع نتيجة بوابة الجهاز على فرعها المستقل.
+2. Phase 2 لا تملك Gate وظيفية معلقة بعد هذا الإغلاق.
+3. يستمر Phase 3 في فروعه ووحداته المستقلة؛ لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -115,6 +116,7 @@
 | 2026-07-25 | P2-CORE-005 | P2-CORE-006 | Today query محلي مع Agenda وتصنيف المهام وحدود توقيت صريحة، 33/33 ناجحة |
 | 2026-07-25 | P2-CORE-006 | P2-CORE-007 | Schema v3 وإدخال ملفات محلي immutable مع SHA-256 وdedup وRecovery، 44/44 ناجحة |
 | 2026-07-25 | P2-CORE-007 | Demo/Gate | Notebook وInkDocument وRevision history ضمن Schema v4، 54/54 ناجحة؛ واجهة MatePad هي الخطوة التالية |
-| 2026-07-25 | P2-GATE-001 | المستخدم/MatePad | Demo v4 منشور على رابط Studio5 الخاص؛ 15/15 وBuild ناجحة، وبقي اختبار القلم والاستعادة والنسخ على الجهاز |
-| 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 يعرض تاريخ النسخ والمعاينة والاستعادة الآمنة؛ 15/15 و54/54 وBuild ناجحة، وبقي فحص التدفق على الجهاز |
-| 2026-07-27 | Gate 0 + أحدث Phase 2 | P2-GATE-RECONCILIATION | توحيد تاريخ Gate 0 المعتمد مع خط Notebook/Revisions؛ بوابة Notebook/Revisions فقط ما زالت تنتظر MatePad |
+| 2026-07-25 | P2-GATE-001 | المستخدم/MatePad | Demo v4 منشور؛ كان اختبار النسخ والاستعادة معلقاً وقت النشر ثم نجح بتاريخ 2026-07-27 |
+| 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 منشور؛ كان فحص تاريخ النسخ معلقاً وقت النشر ثم نجح بتاريخ 2026-07-27 |
+| 2026-07-27 | Gate 0 + أحدث Phase 2 | P2-GATE-RECONCILIATION | توحيد تاريخ Gate 0؛ كانت بوابة Notebook/Revisions تنتظر MatePad وقت المصالحة ثم أُغلقت بنجاح |
+| 2026-07-27 | المستخدم/MatePad | P2-GATE-001/002 | البنود الثمانية للنسخ والمعاينة والرجوع والاستعادة وإعادة الفتح نجحت بلا فقد بيانات |

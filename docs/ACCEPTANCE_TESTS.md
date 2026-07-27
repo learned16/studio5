@@ -22,7 +22,7 @@
 - [ ] Lecture Capture يتحول في Closeout إلى عناصر منظمة مرتبطة.
 - [ ] Backup ثم Restore يعيد الملفات والملاحظات والرسومات مع تحقق العدّ/الـmanifest.
 - [x] كل Migration منفذة حتى Schema v4 تملك اختباراً ومسار فشل مفهوم. (`P2-CORE-001` إلى `P2-CORE-007`)
-- [ ] بوابة MatePad الخاصة بـNotebook/Revisions تحفظ نسختين وتعاين وتستعيد بأمان بلا فقد. (`P2-GATE-001/002`)
+- [x] بوابة MatePad الخاصة بـNotebook/Revisions تحفظ نسختين وتعاين وتستعيد بأمان بلا فقد. (`P2-GATE-001/002`, 8/8 device PASS)
 
 ## Drawing Coach Lite
 

@@ -68,5 +68,7 @@
 - Ink Type Check: `PASS`.
 - Ink Lint/Syntax: `PASS`.
 - Static worker build: `PASS`.
-- بوابة MatePad الخاصة بـNotebook/Revisions: `PENDING USER TEST`.
+- كانت بوابة MatePad الخاصة بـNotebook/Revisions `PENDING USER TEST` وقت إغلاق
+  مهمة المصالحة، ثم أُغلقت بنتيجة `8/8 PASS` في
+  `docs/tasks/P2-GATE-DEVICE-PASS.md`.
 - الفرع مرفوع إلى `origin/codex/p2-gate-reconciliation` ولم يُدمج في `main`.
