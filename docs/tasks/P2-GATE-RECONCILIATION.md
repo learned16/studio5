@@ -57,7 +57,7 @@
 
 ## دليل التحقق الحالي
 
-- الحالة: `VERIFIED - PUSH PENDING`.
+- الحالة: `DONE - MERGED HISTORY / VERIFIED / PUSHED`.
 - الفرع: `codex/p2-gate-reconciliation`.
 - تاريخ `codex/gate0-device-results` دخل كـMerge حقيقي فوق أحدث خط Phase 2.
 - فحص تعارضات Markdown: لا توجد conflict markers.
@@ -69,3 +69,4 @@
 - Ink Lint/Syntax: `PASS`.
 - Static worker build: `PASS`.
 - بوابة MatePad الخاصة بـNotebook/Revisions: `PENDING USER TEST`.
+- الفرع مرفوع إلى `origin/codex/p2-gate-reconciliation` ولم يُدمج في `main`.
