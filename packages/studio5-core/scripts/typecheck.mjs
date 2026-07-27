@@ -12,6 +12,7 @@ const modules = await Promise.all([
   import("../src/lecture-flow.mjs"),
   import("../src/lecture-inbox.mjs"),
   import("../src/library-search.mjs"),
+  import("../src/offline-queue.mjs"),
   import("../src/academic-repository.mjs"),
 ]);
 
@@ -69,6 +70,16 @@ const requiredExports = [
     "searchLibrary",
     "listFavoriteResources",
     "listRecentResources",
+  ],
+  [
+    "createOfflineOperation",
+    "startOfflineOperation",
+    "succeedOfflineOperation",
+    "failOfflineOperation",
+    "conflictOfflineOperation",
+    "retryOfflineOperation",
+    "recoverInterruptedOperation",
+    "OFFLINE_OPERATION_STATUSES",
   ],
   [
     "AcademicRepository",

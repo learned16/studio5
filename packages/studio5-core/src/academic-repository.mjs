@@ -45,6 +45,16 @@ import {
   listRecentResources as buildRecentResources,
   searchLibrary as searchLibraryProjection,
 } from "./library-search.mjs";
+import {
+  OFFLINE_OPERATION_STATUSES,
+  conflictOfflineOperation,
+  createOfflineOperation,
+  failOfflineOperation,
+  recoverInterruptedOperation,
+  retryOfflineOperation,
+  startOfflineOperation,
+  succeedOfflineOperation,
+} from "./offline-queue.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -695,6 +705,118 @@ export class AcademicRepository {
 
   listResourceMarkers() {
     return this.#read((store) => store.list("resourceMarkers"));
+  }
+
+  enqueueOfflineOperation(input) {
+    return this.#mutate((working) => {
+      const candidate = createOfflineOperation(withDefaultNow(input, this.#now()));
+      const existing = working.list("offlineOperations")
+        .find((operation) => operation.idempotencyKey === candidate.idempotencyKey);
+      if (existing) return { status: "existing", operation: existing };
+      working.add("offlineOperations", candidate);
+      return { status: "created", operation: candidate };
+    });
+  }
+
+  claimNextOfflineOperation({ now = null } = {}) {
+    return this.#mutate((working) => {
+      const instant = now
+        ? new Date(now).toISOString()
+        : new Date(this.#now()).toISOString();
+      const candidate = working.list("offlineOperations")
+        .filter((operation) => (
+          operation.status === "pending"
+          && operation.availableAt <= instant
+        ))
+        .sort((left, right) => (
+          left.availableAt.localeCompare(right.availableAt)
+          || left.createdAt.localeCompare(right.createdAt)
+          || left.id.localeCompare(right.id)
+        ))[0] ?? null;
+      if (!candidate) return null;
+      const started = startOfflineOperation(candidate, instant);
+      working.replace("offlineOperations", started);
+      return started;
+    });
+  }
+
+  succeedOfflineOperation(operationId) {
+    return this.#transitionOfflineOperation(
+      operationId,
+      (operation) => succeedOfflineOperation(operation, this.#now()),
+    );
+  }
+
+  failOfflineOperation(operationId, error) {
+    return this.#transitionOfflineOperation(
+      operationId,
+      (operation) => failOfflineOperation(operation, error, this.#now()),
+    );
+  }
+
+  conflictOfflineOperation(operationId, error = {}) {
+    return this.#transitionOfflineOperation(
+      operationId,
+      (operation) => conflictOfflineOperation(operation, error, this.#now()),
+    );
+  }
+
+  retryOfflineOperation(operationId, options = {}) {
+    return this.#transitionOfflineOperation(
+      operationId,
+      (operation) => retryOfflineOperation(operation, options, this.#now()),
+    );
+  }
+
+  recoverInterruptedOfflineOperations() {
+    return this.#mutate((working) => {
+      const recovered = working.list("offlineOperations")
+        .filter((operation) => operation.status === "processing")
+        .map((operation) => {
+          const next = recoverInterruptedOperation(operation, this.#now());
+          working.replace("offlineOperations", next);
+          return next;
+        });
+      return recovered;
+    });
+  }
+
+  #transitionOfflineOperation(operationId, transition) {
+    return this.#mutate((working) => {
+      const id = assertStableId(operationId, "offline-operation");
+      const current = working.get("offlineOperations", id);
+      if (!current) {
+        throw new CoreRelationError(`Cannot transition missing offline operation: ${id}`);
+      }
+      const next = transition(current);
+      working.replace("offlineOperations", next);
+      return next;
+    });
+  }
+
+  listOfflineOperations({ status = null, operationType = null } = {}) {
+    return this.#read((store) => {
+      const normalizedStatus = optionalFilterValue(
+        status,
+        OFFLINE_OPERATION_STATUSES,
+        "status",
+      );
+      const normalizedType = operationType === null || operationType === undefined
+        ? null
+        : String(operationType).trim();
+      if (operationType !== null && operationType !== undefined && !normalizedType) {
+        throw new TypeError("operationType cannot be empty");
+      }
+      return store.list("offlineOperations")
+        .filter((operation) => (
+          (!normalizedStatus || operation.status === normalizedStatus)
+          && (!normalizedType || operation.operationType === normalizedType)
+        ))
+        .sort((left, right) => (
+          left.createdAt.localeCompare(right.createdAt)
+          || left.id.localeCompare(right.id)
+        ));
+    });
   }
 
   async #prepareAndQueueFile(input, artifactId = null) {

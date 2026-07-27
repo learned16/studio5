@@ -87,6 +87,25 @@
 
 `ResourceMarker` حالة شخصية عامة لمورد موجود في Core. لا ينسخ عنوان المورد ولا يثبت اسم مادة، ويقبل فقط الأنواع المدعومة بعلاقة Stable ID صحيحة. البحث نفسه Projection مشتق من Snapshot ولا يغير البيانات. فهرسة نص PDF الكامل ليست ضمن Schema v6؛ ستأتي عبر Artifact مشتق منفصل حتى يبقى الأصل immutable.
 
+## Schema v7 - Offline Operation Queue
+
+- `OfflineOperation`
+  - `id`
+  - `idempotencyKey`
+  - `operationType`
+  - `entityKind`
+  - `entityId`
+  - `payload` metadata
+  - `status`
+  - `attempts`
+  - `availableAt`
+  - `lastAttemptAt`
+  - `completedAt`
+  - `errorCode`
+  - `errorMessage`
+
+الحالات هي `pending`, `processing`, `succeeded`, `failed`, `conflict`. العملية الناجحة أو الفاشلة لا تُحذف تلقائياً. العملية التي بقيت `processing` بعد انقطاع تُستعاد صراحة إلى `pending`. لا يحتوي Payload على bytes الملفات أو Ink، ولا تنفذ هذه الوحدة شبكة أو Sync؛ مزود المزامنة وحل التعارضات في Phase 4.
+
 ## Migrations
 
 1. رقم schema محلي واضح.

@@ -21,6 +21,7 @@ const COLLECTION_KIND = Object.freeze({
   lectureCloseouts: "lecture-closeout",
   captureResolutions: "capture-resolution",
   resourceMarkers: "resource-marker",
+  offlineOperations: "offline-operation",
 });
 
 const IMMUTABLE_COLLECTIONS = new Set([
@@ -311,6 +312,18 @@ export class CoreStore {
       if (duplicate) {
         throw new CoreRelationError(
           `Duplicate resource marker for ${entity.targetKind}:${entity.targetId}`,
+        );
+      }
+    }
+    if (collection === "offlineOperations") {
+      const duplicate = [...this.#collection("offlineOperations").values()]
+        .find((operation) => (
+          operation.idempotencyKey === entity.idempotencyKey
+          && operation.id !== entity.id
+        ));
+      if (duplicate) {
+        throw new CoreRelationError(
+          `Duplicate offline operation idempotency key: ${entity.idempotencyKey}`,
         );
       }
     }

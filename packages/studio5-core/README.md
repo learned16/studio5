@@ -30,6 +30,7 @@
 - تحويل Capture إلى Task ذري: Task وResolution تُحفظان معاً، وإعادة المحاولة بعد Recovery لا تكرر المهمة.
 - Lecture Inbox مشتق محلياً ويعرض Captures غير المنظمة أو المحفوظة عمداً في Inbox بلا Collection إضافية.
 - Search محلي عام يفهرس الموارد المنظمة، مع Favorites/Recent عبر `ResourceMarker` في Schema v6.
+- Offline Operation Queue في Schema v7 مع idempotency وحالات صريحة واستعادة انقطاع، من دون مزود Sync.
 
 واجهات Lecture Capture وCloseout وInbox وSearch تأتي في دفعات مستقلة؛ هذه الحزمة توفر العقود المحلية فقط.
 
