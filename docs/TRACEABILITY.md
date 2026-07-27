@@ -36,7 +36,7 @@
 | `S5-NFR-OFFLINE-001` | Offline Operation Queue دائم وقابل للاستعادة | P3-LF-006 | DONE | Schema v7 + 83/83 Core + 15/15 Ink + 8/8 Lecture UI |
 | `S5-DATA-PDF-001` | PDF immutable مع Note مستقلة مرتبطة بالملف والصفحة | P3-LF-007 | IMPLEMENTED | Schema v8 + 88/88 Core |
 | `S5-FR-005C-LIBRARY` | واجهة PDF/Notes/Search/Favorites/Recent تجريبية | P3-LF-007 | DEPLOYED V3 / DEVICE GATE PENDING | 13/13 UI + Build + 15/15 Ink + Sites v3 |
-| `S5-UX-PDF-PICKER-001` | منتقي PDF يستقبل اللمس مباشرة على MatePad/WebView | P3-LF-008 | IMPLEMENTED / DEPLOY PENDING | 14/14 UI + 88/88 Core + 15/15 Ink |
+| `S5-UX-PDF-PICKER-001` | منتقي PDF يستقبل اللمس مباشرة على MatePad/WebView | P3-LF-008 | DEPLOYED V5 / USER RETEST PENDING | 14/14 UI + 88/88 Core + 15/15 Ink + تحقق الواجهة المنشورة |
 | `S5-FR-005C` | Lecture Flow وSearch وFavorites/Recent وOffline Queue | Phase 3 | IMPLEMENTATION COMPLETE / DEVICE GATE PENDING | جميع الدفعات منشورة؛ ينتظر فقط تقرير `P3-PDF-NOTES-MATEPAD-TEST-REPORT.md` |
 | `S5-DATA-004` | Backup/Restore/Full Export | Phase 4 | BACKLOG CURRENT YEAR | لم ينفذ |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |

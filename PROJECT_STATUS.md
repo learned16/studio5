@@ -72,7 +72,7 @@
 | P3-LF-005 | Search وFavorites/Recent داخل Core | `codex/p3-search-favorites-core` | Codex | DONE - 76/76 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
 | P3-LF-006 | Offline Operation Queue محلي | `codex/p3-offline-operation-queue` | Codex | DONE - 83/83 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
 | P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | DEPLOYED V3 - DEVICE GATE PENDING | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
-| P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | IMPLEMENTED - DEPLOY PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
+| P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -143,3 +143,4 @@
 | 2026-07-27 | P3-LF-006 | Phase 3 | OfflineOperation ضمن Schema v7 مع idempotency واستعادة الانقطاع؛ 83/83 Core وRegression ناجحة |
 | 2026-07-27 | P3-LF-007 | Phase 3 | Note Core وPDF Library المحلية ضمن Schema v8؛ 88/88 Core و13/13 UI و15/15 Ink ناجحة، والنشر هو البوابة التالية |
 | 2026-07-27 | P3-LF-007 | المستخدم/MatePad | نُشرت Sites v3 بنجاح على مسار `/library/`؛ تنفيذ Phase 3 مكتمل وتبقى بوابة PDF/Notes على الجهاز قبل الإغلاق النهائي |
+| 2026-07-27 | P3-LF-008 | المستخدم/MatePad | أُصلح منتقي PDF ليكون هدف لمس مباشر، وتحوّل Cache إلى network-first مع Offline fallback؛ نُشرت Sites v5 وتنتظر إعادة اختبار الجهاز |
