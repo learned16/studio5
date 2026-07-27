@@ -5,10 +5,11 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 
 test("PDF picker is a direct touch target and upload waits for selection", async () => {
-  const [html, css, app] = await Promise.all([
+  const [html, css, app, serviceWorker] = await Promise.all([
     readFile(new URL("library/index.html", root), "utf8"),
     readFile(new URL("library/styles.css", root), "utf8"),
     readFile(new URL("library/app.mjs", root), "utf8"),
+    readFile(new URL("sw.js", root), "utf8"),
   ]);
 
   assert.match(html, /id="pdf-file"[\s\S]*type="file"/);
@@ -19,4 +20,6 @@ test("PDF picker is a direct touch target and upload waits for selection", async
   assert.match(app, /pdfFile\.addEventListener\("change", updateFileSelection\)/);
   assert.match(app, /uploadSubmit\.disabled = false/);
   assert.match(app, /file\.name/);
+  assert.match(serviceWorker, /studio5-p3-capture-v4/);
+  assert.match(serviceWorker, /fetch\(event\.request\)[\s\S]*\.catch\(\(\) => caches\.match/);
 });
