@@ -66,7 +66,7 @@
 | P3-LF-002 | تحويل Capture إلى Task ذري + Lecture Inbox | `codex/p3-capture-task-inbox` | Codex | DONE - 69/69 + 15/15 REGRESSION | `lecture-inbox.mjs` وRepository والاختبارات ووثائق المهمة |
 | P3-LF-003 | واجهة Lecture Capture السريعة المستقلة | `codex/p3-lecture-capture-ui` | Codex | DONE - DEPLOYED V1 - 4/4 + 69/69 + 15/15 | `prototype/p3-lecture-capture-web/**` ووثائق المهمة والحالة |
 | DOCS-ARCH-001 | سياسة فصل التجارب وقابلية استبدالها | `codex/docs-experimental-modularity-policy` | Codex | DONE - DOCS CHECK | قواعد الوكلاء وقرارات المعمارية وSOP والحالة |
-| P3-LF-004 | واجهة Lecture Closeout المستقلة | `codex/p3-lecture-closeout-ui` | Codex | IN PROGRESS | `prototype/p3-lecture-capture-web/closeout/**` وتكامل التنقل والبناء والاختبارات ووثائق المهمة |
+| P3-LF-004 | واجهة Lecture Closeout المستقلة | `codex/p3-lecture-closeout-ui` | Codex | DONE - DEPLOYED V2 / EXPERIMENTAL | `prototype/p3-lecture-capture-web/closeout/**` وتكامل التنقل والبناء والاختبارات ووثائق المهمة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -80,10 +80,10 @@
 
 ## القادم بعد المهمة الحالية
 
-1. إكمال P3-LF-004: واجهة Closeout في فرعها المستقل.
+1. تجربة المستخدم لتدفق Capture ثم Closeout المنشور؛ يبقى شكل الواجهة `Experimental`.
 2. ينفذ المستخدم بالتوازي سيناريو `docs/tasks/P2-NOTEBOOK-REVISION-MATEPAD-TEST-REPORT.md` على MatePad.
 3. عند نجاح اختبار الجهاز، تُغلق P2-GATE-001 وP2-GATE-002 في فرع Phase 2 من دون تعديل Lecture Flow.
-4. Search وFavorites/Recent وPDF تبقى دفعات لاحقة منفصلة داخل Phase 3.
+4. الدفعة البرمجية التالية في Phase 3 تُنشأ بفرع مستقل بعد ملاحظات المستخدم.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -129,3 +129,4 @@
 | 2026-07-25 | P3-LF-003 | المستخدم/MatePad | واجهة Capture مستقلة منشورة بخصوصية على Sites؛ الأنواع الخمسة والحفظ المحلي وInbox count تعمل، 4/4 + 69/69 + 15/15 ناجحة |
 | 2026-07-26 | المستخدم | كل الوكلاء | اعتماد سياسة دائمة: كل واجهة قبل الدوام تجربة منفصلة قابلة للاستبدال أو التقاعد بلا فقد بيانات أو هدم بقية Studio5 |
 | 2026-07-27 | المستخدم | Phase 3 | السماح بإكمال Phase 3 بفروع ووحدات مستقلة، على أن تصل نتيجة بوابة Notebook/Revisions لاحقاً |
+| 2026-07-27 | P3-LF-004 | المستخدم | واجهة Closeout مستقلة نُشرت كنسخة Sites v2؛ 8/8 UI و69/69 Core و15/15 Ink ناجحة، وتنتظر تقييم الاستخدام |
