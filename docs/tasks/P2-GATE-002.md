@@ -62,4 +62,9 @@
 - فرع المهمة مرفوع إلى GitHub من دون دمج `main`.
 - نُشر Sites الإصدار `v5` بنجاح على:
   `https://studio5-ink-lab.lharithl.chatgpt.site`.
-- بقي Gate يدوي على MatePad: حفظ نسختين، فتح القائمة، معاينة نسخة، الرجوع، ثم الاستعادة الآمنة.
+- Gate اليدوي على MatePad: `PASS`.
+- حفظ نسختين، فتح القائمة، المعاينة، الرجوع، والاستعادة الآمنة كلها ناجحة.
+- الإغلاق وإعادة الفتح لم يفقد الرسم أو تاريخ النسخ.
+- الحالة: `DONE - MATEPAD PASS`.
+- دليل الجهاز:
+  `docs/tasks/P2-NOTEBOOK-REVISION-MATEPAD-TEST-REPORT.md`.

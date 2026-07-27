@@ -138,6 +138,9 @@ Web/PWA في `ADR-008`، والقياسات الكمية التفصيلية تب
 والاستعادة الآمنة وفق
 `docs/tasks/P2-NOTEBOOK-REVISION-MATEPAD-TEST-REPORT.md`.
 
+اكتملت هذه البوابة المنفصلة بتاريخ 2026-07-27 بنتيجة `8/8 PASS` بلا فقد بيانات.
+لا يلغي النجاح اختبارات Regression وHardening المستقبلية.
+
 ## 10. Academic Safe Mode
 
 عند اقتراب امتحان أو تسليم مهم:

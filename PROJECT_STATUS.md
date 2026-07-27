@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-27
 المرحلة الحالية: `Phase 3 - Lecture Flow`
-الفرع النشط: `codex/p3-lecture-closeout-ui`
+الفرع النشط: `codex/p3-completion-foundation`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -59,14 +59,16 @@
 | P2-CORE-005 | Today query engine محلي | `codex/p2-today-query-engine` | Codex | DONE - 33/33 TESTS | `today-query.mjs`, Repository، اختبارات Today، وثائق المهمة والحالة |
 | P2-CORE-006 | FileArtifact intake وHash وImmutable original | `codex/p2-file-artifact-intake` | Codex | DONE - 44/44 TESTS | نماذج الملفات، Schema v3، content store، Repository، الاختبارات والوثائق |
 | P2-CORE-007 | Notebook basics وInkDocument revisions | `codex/p2-notebook-basics` | Codex | DONE - 54/54 TESTS | Notebook/Ink models، Schema v4، Repository، الاختبارات والوثائق |
-| P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DEPLOYED V4 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
-| P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DEPLOYED V5 - MATEPAD GATE PENDING | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
+| P2-GATE-001 | ربط P0 Ink بـNotebook Core ونشر Demo | `codex/p2-notebook-demo-gate` | Codex | DONE - MATEPAD PASS | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
+| P2-GATE-002 | شاشة تاريخ نسخ Ink والمعاينة والاستعادة الآمنة | `codex/p2-revision-history-ui` | Codex | DONE - MATEPAD PASS | `prototype/p0-ink-web/**` ووثائق المهمة والحالة |
 | P2-GATE-RECONCILIATION | توحيد Gate 0 وإعداد اختبار Notebook/Revisions | `codex/p2-gate-reconciliation` | Codex | DONE - MERGED HISTORY / VERIFIED | وثائق Gate 0 والقرارات والحالة وتقرير اختبار MatePad |
+| P2-GATE-DEVICE-PASS | إغلاق بوابة Notebook/Revisions على MatePad | `codex/p2-notebook-revision-device-pass` | Codex | DONE - 8/8 DEVICE PASS | تقرير الجهاز والحالة والتتبع والقرارات |
 | P3-LF-001 | Lecture Capture وCloseout domain + Schema v5 | `codex/p3-lecture-capture-domain` | Codex | DONE - 63/63 + 15/15 REGRESSION | `packages/studio5-core/**` ووثائق المهمة والحالة |
 | P3-LF-002 | تحويل Capture إلى Task ذري + Lecture Inbox | `codex/p3-capture-task-inbox` | Codex | DONE - 69/69 + 15/15 REGRESSION | `lecture-inbox.mjs` وRepository والاختبارات ووثائق المهمة |
 | P3-LF-003 | واجهة Lecture Capture السريعة المستقلة | `codex/p3-lecture-capture-ui` | Codex | DONE - DEPLOYED V1 - 4/4 + 69/69 + 15/15 | `prototype/p3-lecture-capture-web/**` ووثائق المهمة والحالة |
 | DOCS-ARCH-001 | سياسة فصل التجارب وقابلية استبدالها | `codex/docs-experimental-modularity-policy` | Codex | DONE - DOCS CHECK | قواعد الوكلاء وقرارات المعمارية وSOP والحالة |
 | P3-LF-004 | واجهة Lecture Closeout المستقلة | `codex/p3-lecture-closeout-ui` | Codex | DONE - DEPLOYED V2 / EXPERIMENTAL | `prototype/p3-lecture-capture-web/closeout/**` وتكامل التنقل والبناء والاختبارات ووثائق المهمة |
+| P3-COMP-001 | توحيد Phase 2 المقبولة مع خط Phase 3 وتثبيت نطاق الإكمال | `codex/p3-completion-foundation` | Codex | DONE - 69/69 + 15/15 + 8/8 | وثائق الحالة والتتبع والقرارات فقط |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -80,10 +82,11 @@
 
 ## القادم بعد المهمة الحالية
 
-1. تجربة المستخدم لتدفق Capture ثم Closeout المنشور؛ يبقى شكل الواجهة `Experimental`.
-2. ينفذ المستخدم بالتوازي سيناريو `docs/tasks/P2-NOTEBOOK-REVISION-MATEPAD-TEST-REPORT.md` على MatePad.
-3. عند نجاح اختبار الجهاز، تُغلق P2-GATE-001 وP2-GATE-002 في فرع Phase 2 من دون تعديل Lecture Flow.
-4. الدفعة البرمجية التالية في Phase 3 تُنشأ بفرع مستقل بعد ملاحظات المستخدم.
+1. إغلاق P3-COMP-001 بعد توحيد التاريخ واختبارات الرجوع.
+2. تنفيذ Search وFavorites/Recent في دفعات Core وواجهة مستقلة.
+3. تنفيذ Offline Queue محلي متين؛ المزامنة السحابية وحل التعارضات يبقيان في Phase 4.
+4. إكمال PDF/Notes وفق قرار Web/PWA ومن دون تعديل الأصول أو خلطه بمحرك Ink.
+5. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -121,12 +124,14 @@
 | 2026-07-25 | P2-CORE-005 | P2-CORE-006 | Today query محلي مع Agenda وتصنيف المهام وحدود توقيت صريحة، 33/33 ناجحة |
 | 2026-07-25 | P2-CORE-006 | P2-CORE-007 | Schema v3 وإدخال ملفات محلي immutable مع SHA-256 وdedup وRecovery، 44/44 ناجحة |
 | 2026-07-25 | P2-CORE-007 | Demo/Gate | Notebook وInkDocument وRevision history ضمن Schema v4، 54/54 ناجحة؛ واجهة MatePad هي الخطوة التالية |
-| 2026-07-25 | P2-GATE-001 | المستخدم/MatePad | Demo v4 منشور على رابط Studio5 الخاص؛ 15/15 وBuild ناجحة، وبقي اختبار القلم والاستعادة والنسخ على الجهاز |
-| 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 يعرض تاريخ النسخ والمعاينة والاستعادة الآمنة؛ 15/15 و54/54 وBuild ناجحة، وبقي فحص التدفق على الجهاز |
-| 2026-07-27 | Gate 0 + أحدث Phase 2 | P2-GATE-RECONCILIATION | توحيد تاريخ Gate 0 المعتمد مع خط Notebook/Revisions؛ بوابة Notebook/Revisions فقط ما زالت تنتظر MatePad |
+| 2026-07-25 | P2-GATE-001 | المستخدم/MatePad | Demo v4 منشور؛ كان اختبار النسخ والاستعادة معلقاً وقت النشر ثم نجح بتاريخ 2026-07-27 |
+| 2026-07-25 | P2-GATE-002 | المستخدم/MatePad | Demo v5 منشور؛ كان فحص تاريخ النسخ معلقاً وقت النشر ثم نجح بتاريخ 2026-07-27 |
+| 2026-07-27 | Gate 0 + أحدث Phase 2 | P2-GATE-RECONCILIATION | توحيد تاريخ Gate 0؛ كانت بوابة Notebook/Revisions تنتظر MatePad وقت المصالحة ثم أُغلقت بنجاح |
+| 2026-07-27 | المستخدم/MatePad | P2-GATE-001/002 | البنود الثمانية للنسخ والمعاينة والرجوع والاستعادة وإعادة الفتح نجحت بلا فقد بيانات |
 | 2026-07-25 | P3-LF-001 | P3-LF-002 | Schema v5 وLecture Capture/Closeout/Resolution رُفعت بفرع مستقل؛ 63/63 Core و15/15 Ink regression ناجحة |
 | 2026-07-25 | P3-LF-002 | P3-LF-003 | التحويل الذري إلى Task وLecture Inbox رُفعا بفرع مستقل؛ 69/69 Core و15/15 Ink regression ناجحة |
 | 2026-07-25 | P3-LF-003 | المستخدم/MatePad | واجهة Capture مستقلة منشورة بخصوصية على Sites؛ الأنواع الخمسة والحفظ المحلي وInbox count تعمل، 4/4 + 69/69 + 15/15 ناجحة |
 | 2026-07-26 | المستخدم | كل الوكلاء | اعتماد سياسة دائمة: كل واجهة قبل الدوام تجربة منفصلة قابلة للاستبدال أو التقاعد بلا فقد بيانات أو هدم بقية Studio5 |
 | 2026-07-27 | المستخدم | Phase 3 | السماح بإكمال Phase 3 بفروع ووحدات مستقلة، على أن تصل نتيجة بوابة Notebook/Revisions لاحقاً |
 | 2026-07-27 | P3-LF-004 | المستخدم | واجهة Closeout مستقلة نُشرت كنسخة Sites v2؛ 8/8 UI و69/69 Core و15/15 Ink ناجحة، وتنتظر تقييم الاستخدام |
+| 2026-07-27 | P3-COMP-001 | Phase 3 Completion | توحدت نتيجة 8/8 MatePad مع Lecture Flow؛ نجحت اختبارات الرجوع 69/69 Core و15/15 Ink و8/8 Lecture UI |

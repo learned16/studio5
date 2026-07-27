@@ -68,5 +68,8 @@ Notebook مرتبط بسياق أكاديمي، وأن المستخدم يستط
 - الفرع مرفوع إلى GitHub من دون دمج `main`.
 - نُشر Sites الإصدار `v4` بنجاح على:
   `https://studio5-ink-lab.lharithl.chatgpt.site`.
-- الحالة ليست `DONE` بعد: تبقى تجربة MatePad الحقيقية للقلم، Force Kill، حفظ Revision
-  مطابقة/مختلفة، وإعادة الفتح.
+- تجربة MatePad الحقيقية: `PASS`.
+- حفظ نسختين وإعادة الفتح بلا فقد: `PASS`.
+- الحالة: `DONE - MATEPAD PASS`.
+- دليل الجهاز:
+  `docs/tasks/P2-NOTEBOOK-REVISION-MATEPAD-TEST-REPORT.md`.
