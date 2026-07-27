@@ -8,6 +8,7 @@ const server = join(dist, "server");
 const coreSource = join(root, "..", "..", "packages", "studio5-core", "src");
 const coreAssets = join(assets, "core");
 const closeoutAssets = join(assets, "closeout");
+const libraryAssets = join(assets, "library");
 const files = [
   "index.html",
   "styles.css",
@@ -27,6 +28,7 @@ for (const file of files) {
 }
 await cp(coreSource, coreAssets, { recursive: true });
 await cp(join(root, "closeout"), closeoutAssets, { recursive: true });
+await cp(join(root, "library"), libraryAssets, { recursive: true });
 await cp(join(root, "worker", "index.mjs"), join(server, "index.js"));
 
 const html = await readFile(join(assets, "index.html"), "utf8");
@@ -47,4 +49,13 @@ if (!closeoutHtml.includes("closeout-list")
   throw new Error("Build verification failed: Lecture Closeout entrypoint missing");
 }
 await access(join(closeoutAssets, "closeout-bridge.mjs"));
-console.log(`Verified Lecture Capture + Closeout build: ${files.length} root assets + isolated Closeout + Studio5 Core`);
+const libraryHtml = await readFile(join(libraryAssets, "index.html"), "utf8");
+if (!libraryHtml.includes("upload-form")
+  || !libraryHtml.includes("pdf-viewer")
+  || !libraryHtml.includes("note-form")
+  || !libraryHtml.includes("resource-list")) {
+  throw new Error("Build verification failed: PDF/Notes Library entrypoint missing");
+}
+await access(join(libraryAssets, "library-demo.mjs"));
+await access(join(libraryAssets, "library-state.mjs"));
+console.log(`Verified Lecture Capture + Closeout + Library build: ${files.length} root assets + isolated routes + Studio5 Core`);

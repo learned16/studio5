@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#173e35">
+    <title>Studio5 - مكتبة PDF والملاحظات</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">STUDIO5 / PHASE 3</p>
+        <h1>مكتبة PDF والملاحظات</h1>
+        <p>ملفك الأصلي يبقى كما هو، والملاحظات تُحفظ منفصلة وقابلة للبحث.</p>
+      </div>
+      <nav aria-label="تجارب المرحلة الثالثة">
+        <a href="../">Capture</a>
+        <a href="../closeout/">Closeout</a>
+        <a class="active" href="./" aria-current="page">Library</a>
+      </nav>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <section class="card upload-card">
+          <div class="section-heading">
+            <span class="step">01</span>
+            <div>
+              <h2>أضف ملزمة</h2>
+              <p>PDF فقط، حتى 50MB، وتبقى محلياً على هذا الجهاز.</p>
+            </div>
+          </div>
+          <form id="upload-form">
+            <label class="file-picker">
+              <input id="pdf-file" type="file" accept="application/pdf,.pdf" required>
+              <span>اختر PDF</span>
+            </label>
+            <button class="primary" type="submit">حفظ في المكتبة</button>
+          </form>
+          <p id="upload-status" class="status" role="status"></p>
+        </section>
+
+        <section class="card files-card">
+          <div class="section-heading compact">
+            <span class="step">02</span>
+            <div>
+              <h2>ملفاتك</h2>
+              <p id="file-count">0 ملف</p>
+            </div>
+          </div>
+          <div id="file-list" class="file-list"></div>
+        </section>
+
+        <section class="card discovery-card">
+          <div class="section-heading compact">
+            <span class="step">03</span>
+            <div>
+              <h2>ابحث وارجع بسرعة</h2>
+              <p>بحث محلي في الملفات والملاحظات وبقية بيانات Core.</p>
+            </div>
+          </div>
+          <label class="search-box">
+            <span>بحث</span>
+            <input id="search-input" type="search" placeholder="مثلاً: نقطة الهروب">
+          </label>
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-view="search" type="button">النتائج</button>
+            <button class="tab" data-view="favorites" type="button">المفضلة</button>
+            <button class="tab" data-view="recent" type="button">الحديثة</button>
+          </div>
+          <div id="resource-list" class="resource-list"></div>
+        </section>
+      </aside>
+
+      <section class="viewer-column">
+        <section class="viewer card">
+          <div class="viewer-bar">
+            <div>
+              <span class="label">الملف المفتوح</span>
+              <strong id="selected-file">لم تختر ملفاً</strong>
+            </div>
+            <div class="viewer-actions">
+              <button id="favorite-file" type="button" disabled>☆ مفضلة</button>
+              <a id="open-external" class="button-link disabled" href="#" target="_blank" rel="noreferrer">فتح منفصل</a>
+            </div>
+          </div>
+          <div id="viewer-empty" class="viewer-empty">
+            <strong>اختر PDF من القائمة</strong>
+            <span>سيظهر هنا، ويبقى متاحاً بعد إعادة تحميل الصفحة.</span>
+          </div>
+          <iframe id="pdf-viewer" title="عارض PDF" hidden></iframe>
+        </section>
+
+        <section class="card note-card">
+          <div class="section-heading">
+            <span class="step">04</span>
+            <div>
+              <h2>ملاحظة مرتبطة بالملف</h2>
+              <p>المسودة تُستعاد بعد Reload حتى قبل الضغط على حفظ.</p>
+            </div>
+          </div>
+          <form id="note-form">
+            <div class="field-row">
+              <label>
+                <span>العنوان</span>
+                <input id="note-title" maxlength="120" placeholder="مثلاً: ملاحظة على المنظور" required>
+              </label>
+              <label class="page-field">
+                <span>الصفحة</span>
+                <input id="note-page" type="number" min="1" inputmode="numeric" placeholder="اختياري">
+              </label>
+            </div>
+            <label>
+              <span>الملاحظة</span>
+              <textarea id="note-body" rows="5" placeholder="اكتب الفكرة أو سؤال الدكتور..." required></textarea>
+            </label>
+            <div class="form-footer">
+              <span id="draft-status">المسودة محفوظة محلياً</span>
+              <button class="primary" type="submit">اعتماد الملاحظة</button>
+            </div>
+          </form>
+          <div id="notes-list" class="notes-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

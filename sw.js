@@ -1,4 +1,4 @@
-const CACHE_NAME = "studio5-p3-capture-v1";
+const CACHE_NAME = "studio5-p3-capture-v3";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -13,13 +13,25 @@ const APP_ASSETS = [
   "./closeout/app.mjs",
   "./closeout/closeout-bridge.mjs",
   "./closeout/runtime.mjs",
+  "./library/",
+  "./library/index.html",
+  "./library/styles.css",
+  "./library/app.mjs",
+  "./library/library-demo.mjs",
+  "./library/library-state.mjs",
+  "./library/runtime.mjs",
   "./core/academic-repository.mjs",
+  "./core/file-intake.mjs",
   "./core/ids.mjs",
   "./core/indexeddb-driver.mjs",
+  "./core/indexeddb-file-content-store.mjs",
+  "./core/ink-format.mjs",
   "./core/lecture-flow.mjs",
   "./core/lecture-inbox.mjs",
+  "./core/library-search.mjs",
   "./core/local-database.mjs",
   "./core/model.mjs",
+  "./core/offline-queue.mjs",
   "./core/schema.mjs",
   "./core/store.mjs",
   "./core/today-query.mjs"
