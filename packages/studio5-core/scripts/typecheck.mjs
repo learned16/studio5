@@ -46,6 +46,8 @@ const requiredExports = [
     "createResourceMarker",
     "reviseResourceMarker",
     "RESOURCE_TARGET_KINDS",
+    "createNote",
+    "reviseNote",
   ],
   ["CORE_SCHEMA_VERSION", "createEmptySnapshot", "migrateSnapshot", "validateSnapshot"],
   ["CoreStore", "CoreRelationError"],

@@ -225,7 +225,7 @@ test("schema version 4 migrates to current without losing notebook data", () => 
     },
   };
   const migrated = migrateSnapshot(versionFour, 50);
-  assert.equal(migrated.schemaVersion, 7);
+  assert.equal(migrated.schemaVersion, 8);
   assert.deepEqual(migrated.entities.notebooks, []);
   assert.deepEqual(migrated.entities.inkDocuments, []);
   assert.deepEqual(migrated.entities.inkRevisions, []);

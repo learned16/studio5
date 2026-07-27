@@ -31,6 +31,7 @@
 - Lecture Inbox مشتق محلياً ويعرض Captures غير المنظمة أو المحفوظة عمداً في Inbox بلا Collection إضافية.
 - Search محلي عام يفهرس الموارد المنظمة، مع Favorites/Recent عبر `ResourceMarker` في Schema v6.
 - Offline Operation Queue في Schema v7 مع idempotency وحالات صريحة واستعادة انقطاع، من دون مزود Sync.
+- Note في Schema v8 مرتبطة اختيارياً بـLecture وFileArtifact/FileVersion ورقم صفحة، مع بقاء الأصل immutable.
 
 واجهات Lecture Capture وCloseout وInbox وSearch تأتي في دفعات مستقلة؛ هذه الحزمة توفر العقود المحلية فقط.
 

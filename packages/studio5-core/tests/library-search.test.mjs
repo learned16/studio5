@@ -85,7 +85,7 @@ test("schema v5 migrates to current without losing lecture-flow entities", () =>
   });
 
   const migrated = migrateSnapshot(v5, 2);
-  assert.equal(migrated.schemaVersion, 7);
+  assert.equal(migrated.schemaVersion, 8);
   assert.equal(migrated.entities.lectureCaptures[0].text, "محفوظ");
   assert.deepEqual(migrated.entities.resourceMarkers, []);
 });

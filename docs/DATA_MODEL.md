@@ -106,6 +106,20 @@
 
 الحالات هي `pending`, `processing`, `succeeded`, `failed`, `conflict`. العملية الناجحة أو الفاشلة لا تُحذف تلقائياً. العملية التي بقيت `processing` بعد انقطاع تُستعاد صراحة إلى `pending`. لا يحتوي Payload على bytes الملفات أو Ink، ولا تنفذ هذه الوحدة شبكة أو Sync؛ مزود المزامنة وحل التعارضات في Phase 4.
 
+## Schema v8 - Notes
+
+- `Note`
+  - `id`
+  - `subjectId`
+  - `lectureId?`
+  - `artifactId?`
+  - `fileVersionId?`
+  - `title`
+  - `body`
+  - `pageNumber?`
+
+الملاحظة تحفظ نصاً مستقلاً عن PDF الأصلي. إذا حملت `fileVersionId` فيجب أن تنتمي النسخة إلى `artifactId` نفسه. علاقات Subject/Lecture/File لا تتغير عند تحرير الملاحظة؛ التعديل يقتصر على العنوان والنص ورقم الصفحة. يمكن فهرسة Note وإضافتها إلى Favorites/Recent عبر Stable ID.
+
 ## Migrations
 
 1. رقم schema محلي واضح.

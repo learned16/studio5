@@ -103,6 +103,7 @@ export const RESOURCE_TARGET_KINDS = Object.freeze([
   "task",
   "file-artifact",
   "notebook",
+  "note",
   "lecture-capture",
 ]);
 export const INK_FORMAT_VERSION = 1;
@@ -597,5 +598,81 @@ export function reviseResourceMarker(marker, changes, now = Date.now()) {
       ? optionalInstant(changes.lastOpenedAt, "lastOpenedAt")
       : marker.lastOpenedAt,
     updatedAt,
+  };
+}
+
+export function createNote({
+  id = createStableId("note"),
+  subjectId,
+  lectureId = null,
+  artifactId = null,
+  fileVersionId = null,
+  title,
+  body,
+  pageNumber = null,
+  now = Date.now(),
+}) {
+  const normalizedArtifactId = optionalStableId(artifactId, "file-artifact");
+  const normalizedFileVersionId = optionalStableId(fileVersionId, "file-version");
+  if (normalizedFileVersionId && !normalizedArtifactId) {
+    throw new TypeError("Note fileVersionId requires artifactId");
+  }
+  const normalizedPageNumber = pageNumber === null
+    || pageNumber === undefined
+    || pageNumber === ""
+    ? null
+    : Number(pageNumber);
+  if (normalizedPageNumber !== null
+    && (!Number.isInteger(normalizedPageNumber) || normalizedPageNumber < 1)) {
+    throw new TypeError("pageNumber must be a positive integer");
+  }
+  return {
+    kind: "note",
+    id: assertStableId(id, "note"),
+    subjectId: assertStableId(subjectId, "subject"),
+    lectureId: optionalStableId(lectureId, "lecture"),
+    artifactId: normalizedArtifactId,
+    fileVersionId: normalizedFileVersionId,
+    title: requiredText(title, "title"),
+    body: requiredText(body, "body"),
+    pageNumber: normalizedPageNumber,
+    ...timestamps(now),
+  };
+}
+
+export function reviseNote(note, changes, now = Date.now()) {
+  if (!note || note.kind !== "note") {
+    throw new TypeError("reviseNote requires a note");
+  }
+  if (!changes || typeof changes !== "object" || Array.isArray(changes)) {
+    throw new TypeError("Note changes must be an object");
+  }
+  const allowed = new Set(["title", "body", "pageNumber"]);
+  const keys = Object.keys(changes);
+  if (keys.length === 0) throw new TypeError("Note changes cannot be empty");
+  for (const key of keys) {
+    if (!allowed.has(key)) throw new TypeError(`Note field cannot be changed: ${key}`);
+  }
+  const nextPageNumber = Object.hasOwn(changes, "pageNumber")
+    ? changes.pageNumber
+    : note.pageNumber;
+  const pageNumber = nextPageNumber === null
+    || nextPageNumber === undefined
+    || nextPageNumber === ""
+    ? null
+    : Number(nextPageNumber);
+  if (pageNumber !== null && (!Number.isInteger(pageNumber) || pageNumber < 1)) {
+    throw new TypeError("pageNumber must be a positive integer");
+  }
+  return {
+    ...structuredClone(note),
+    title: Object.hasOwn(changes, "title")
+      ? requiredText(changes.title, "title")
+      : note.title,
+    body: Object.hasOwn(changes, "body")
+      ? requiredText(changes.body, "body")
+      : note.body,
+    pageNumber,
+    updatedAt: new Date(now).toISOString(),
   };
 }

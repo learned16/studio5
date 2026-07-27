@@ -156,6 +156,26 @@ function buildDocuments(entities) {
       sortAt: notebook.updatedAt,
     });
   }
+  for (const note of entities.notes) {
+    const artifact = note.artifactId
+      ? entities.fileArtifacts.find((item) => item.id === note.artifactId)
+      : null;
+    add({
+      targetKind: "note",
+      targetId: note.id,
+      title: note.title,
+      subtitle: artifact?.displayName ?? subjects.get(note.subjectId)?.title ?? null,
+      subjectIds: [note.subjectId],
+      fields: {
+        title: note.title,
+        body: note.body,
+        subject: subjects.get(note.subjectId)?.title,
+        lecture: note.lectureId ? lectures.get(note.lectureId)?.title : null,
+        artifact: artifact?.displayName,
+      },
+      sortAt: note.updatedAt,
+    });
+  }
   for (const capture of entities.lectureCaptures) {
     const lecture = lectures.get(capture.lectureId);
     add({

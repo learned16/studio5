@@ -13,6 +13,7 @@ import {
   createInkRevision,
   createLecture,
   createNotebook,
+  createNote,
   createResourceMarker,
   createScheduleEntry,
   createSemester,
@@ -21,6 +22,7 @@ import {
   createTask,
   reviseTask,
   reviseResourceMarker,
+  reviseNote,
 } from "./model.mjs";
 import { CoreRelationError, CoreStore } from "./store.mjs";
 import { buildTodayQuery } from "./today-query.mjs";
@@ -415,6 +417,21 @@ export class AcademicRepository {
     });
   }
 
+  createNote(input) {
+    return this.#create("notes", createNote, input);
+  }
+
+  updateNote(noteId, changes) {
+    return this.#mutate((working) => {
+      const id = assertStableId(noteId, "note");
+      const current = working.get("notes", id);
+      if (!current) throw new CoreRelationError(`Cannot update missing note: ${id}`);
+      const revised = reviseNote(current, changes, this.#now());
+      working.replace("notes", revised);
+      return revised;
+    });
+  }
+
   setResourceFavorite(targetKind, targetId, isFavorite = true) {
     return this.#mutate((working) => {
       const normalizedTargetKind = String(targetKind ?? "").trim();
@@ -705,6 +722,37 @@ export class AcademicRepository {
 
   listResourceMarkers() {
     return this.#read((store) => store.list("resourceMarkers"));
+  }
+
+  listNotes({
+    subjectId = null,
+    lectureId = null,
+    artifactId = null,
+    fileVersionId = null,
+  } = {}) {
+    return this.#read((store) => {
+      if (subjectId) assertStableId(subjectId, "subject");
+      if (lectureId) assertStableId(lectureId, "lecture");
+      if (artifactId) assertStableId(artifactId, "file-artifact");
+      if (fileVersionId) assertStableId(fileVersionId, "file-version");
+      return store.list("notes")
+        .filter((note) => (
+          (!subjectId || note.subjectId === subjectId)
+          && (!lectureId || note.lectureId === lectureId)
+          && (!artifactId || note.artifactId === artifactId)
+          && (!fileVersionId || note.fileVersionId === fileVersionId)
+        ))
+        .sort((left, right) => (
+          right.updatedAt.localeCompare(left.updatedAt)
+          || left.id.localeCompare(right.id)
+        ));
+    });
+  }
+
+  getNote(noteId) {
+    return this.#read((store) => (
+      store.get("notes", assertStableId(noteId, "note"))
+    ));
   }
 
   enqueueOfflineOperation(input) {

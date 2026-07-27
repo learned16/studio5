@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-27
 المرحلة الحالية: `Phase 3 - Lecture Flow`
-الفرع النشط: `codex/p3-offline-operation-queue`
+الفرع النشط: `codex/p3-pdf-notes-library`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -71,6 +71,7 @@
 | P3-COMP-001 | توحيد Phase 2 المقبولة مع خط Phase 3 وتثبيت نطاق الإكمال | `codex/p3-completion-foundation` | Codex | DONE - 69/69 + 15/15 + 8/8 | وثائق الحالة والتتبع والقرارات فقط |
 | P3-LF-005 | Search وFavorites/Recent داخل Core | `codex/p3-search-favorites-core` | Codex | DONE - 76/76 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
 | P3-LF-006 | Offline Operation Queue محلي | `codex/p3-offline-operation-queue` | Codex | DONE - 83/83 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
+| P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | IMPLEMENTED - DEPLOY PENDING | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -139,3 +140,4 @@
 | 2026-07-27 | P3-COMP-001 | Phase 3 Completion | توحدت نتيجة 8/8 MatePad مع Lecture Flow؛ نجحت اختبارات الرجوع 69/69 Core و15/15 Ink و8/8 Lecture UI |
 | 2026-07-27 | P3-LF-005 | Phase 3 | Search وResourceMarker للمفضلة والحديثة ضمن Schema v6؛ 76/76 Core و15/15 Ink و8/8 Lecture UI ناجحة |
 | 2026-07-27 | P3-LF-006 | Phase 3 | OfflineOperation ضمن Schema v7 مع idempotency واستعادة الانقطاع؛ 83/83 Core وRegression ناجحة |
+| 2026-07-27 | P3-LF-007 | Phase 3 | Note Core وPDF Library المحلية ضمن Schema v8؛ 88/88 Core و13/13 UI و15/15 Ink ناجحة، والنشر هو البوابة التالية |

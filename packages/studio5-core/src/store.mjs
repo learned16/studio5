@@ -22,6 +22,7 @@ const COLLECTION_KIND = Object.freeze({
   captureResolutions: "capture-resolution",
   resourceMarkers: "resource-marker",
   offlineOperations: "offline-operation",
+  notes: "note",
 });
 
 const IMMUTABLE_COLLECTIONS = new Set([
@@ -290,6 +291,7 @@ export class CoreStore {
         task: "tasks",
         "file-artifact": "fileArtifacts",
         notebook: "notebooks",
+        note: "notes",
         "lecture-capture": "lectureCaptures",
       };
       const targetCollection = targetCollections[entity.targetKind];
@@ -325,6 +327,28 @@ export class CoreStore {
         throw new CoreRelationError(
           `Duplicate offline operation idempotency key: ${entity.idempotencyKey}`,
         );
+      }
+    }
+    if (collection === "notes") {
+      this.#assertExists("subjects", entity.subjectId, "note.subjectId");
+      if (entity.lectureId) {
+        this.#assertExists("lectures", entity.lectureId, "note.lectureId");
+        const lecture = this.get("lectures", entity.lectureId);
+        if (lecture.subjectId !== entity.subjectId) {
+          throw new CoreRelationError("note.lectureId must belong to note.subjectId");
+        }
+      }
+      if (entity.artifactId) {
+        this.#assertExists("fileArtifacts", entity.artifactId, "note.artifactId");
+      }
+      if (entity.fileVersionId) {
+        this.#assertExists("fileVersions", entity.fileVersionId, "note.fileVersionId");
+        const version = this.get("fileVersions", entity.fileVersionId);
+        if (!entity.artifactId || version.artifactId !== entity.artifactId) {
+          throw new CoreRelationError(
+            "note.fileVersionId must belong to note.artifactId",
+          );
+        }
       }
     }
   }

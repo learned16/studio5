@@ -35,7 +35,7 @@ function operationInput(suffix = "1", overrides = {}) {
   };
 }
 
-test("schema v6 migrates to v7 without losing resource markers", () => {
+test("schema v6 migrates to current without losing resource markers", () => {
   const v6 = createEmptySnapshot(1);
   v6.schemaVersion = 6;
   delete v6.entities.offlineOperations;
@@ -52,7 +52,7 @@ test("schema v6 migrates to v7 without losing resource markers", () => {
   });
 
   const migrated = migrateSnapshot(v6, 2);
-  assert.equal(migrated.schemaVersion, 7);
+  assert.equal(migrated.schemaVersion, 8);
   assert.equal(migrated.entities.resourceMarkers.length, 1);
   assert.deepEqual(migrated.entities.offlineOperations, []);
 });

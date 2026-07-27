@@ -1,4 +1,4 @@
-export const CORE_SCHEMA_VERSION = 7;
+export const CORE_SCHEMA_VERSION = 8;
 
 const COLLECTIONS_V1 = Object.freeze([
   "academicYears",
@@ -42,8 +42,15 @@ const COLLECTIONS_V6 = Object.freeze([
   "resourceMarkers",
 ]);
 
-export const COLLECTIONS = Object.freeze([
+const COLLECTIONS_V7 = Object.freeze([
   ...COLLECTIONS_V6,
+  "offlineOperations",
+]);
+
+export const COLLECTIONS = Object.freeze([
+  ...COLLECTIONS_V5,
+  "notes",
+  "resourceMarkers",
   "offlineOperations",
 ]);
 
@@ -147,7 +154,7 @@ function migrateVersion5(input, now) {
 }
 
 function migrateVersion6(input, now) {
-  const entities = emptyEntities();
+  const entities = emptyEntities(COLLECTIONS_V7);
   for (const collection of COLLECTIONS_V6) {
     entities[collection] = Array.isArray(input?.entities?.[collection])
       ? structuredClone(input.entities[collection])
@@ -155,6 +162,20 @@ function migrateVersion6(input, now) {
   }
   return {
     schemaVersion: 7,
+    exportedAt: input?.exportedAt ?? new Date(now).toISOString(),
+    entities,
+  };
+}
+
+function migrateVersion7(input, now) {
+  const entities = emptyEntities();
+  for (const collection of COLLECTIONS_V7) {
+    entities[collection] = Array.isArray(input?.entities?.[collection])
+      ? structuredClone(input.entities[collection])
+      : [];
+  }
+  return {
+    schemaVersion: 8,
     exportedAt: input?.exportedAt ?? new Date(now).toISOString(),
     entities,
   };
@@ -168,6 +189,7 @@ const MIGRATIONS = new Map([
   [4, migrateVersion4],
   [5, migrateVersion5],
   [6, migrateVersion6],
+  [7, migrateVersion7],
 ]);
 
 export class CoreMigrationError extends Error {
