@@ -38,11 +38,11 @@
 | `S5-FR-005C-LIBRARY` | واجهة PDF/Notes/Search/Favorites/Recent تجريبية | P3-LF-007 | DEPLOYED V3 / DEVICE GATE PENDING | 13/13 UI + Build + 15/15 Ink + Sites v3 |
 | `S5-UX-PDF-PICKER-001` | منتقي PDF يستقبل اللمس مباشرة على MatePad/WebView | P3-LF-008 | DEPLOYED V5 / USER RETEST PENDING | 14/14 UI + 88/88 Core + 15/15 Ink + تحقق الواجهة المنشورة |
 | `S5-UX-PDF-PICKER-002` | حقل ملفات نظام أصلي ظاهر ومتوافق مع MIME العام على MatePad | P3-LF-009 | DEPLOYED V6 / DEVICE RETEST PENDING | 14/14 UI + 88/88 Core + 15/15 Ink + Sites v6 |
-| `S5-UX-PDF-VIEWER-001` | عرض PDF داخلي لا يعتمد على عارض WebView مع تنقل وZoom وOffline assets | P3-LF-010 | IMPLEMENTED / DEPLOY PENDING | 16/16 UI + 88/88 Core + 15/15 Ink + Build |
+| `S5-UX-PDF-VIEWER-001` | عرض PDF داخلي لا يعتمد على عارض WebView مع تنقل وZoom وOffline assets | P3-LF-010 | INTEGRATED IN P4 / DEPLOY PENDING | 22/22 UI + 99/99 Core + 15/15 Ink + Build |
 | `S5-FR-005C` | Lecture Flow وSearch وFavorites/Recent وOffline Queue | Phase 3 | IMPLEMENTATION COMPLETE / DEVICE GATE PENDING | جميع الدفعات منشورة؛ ينتظر فقط تقرير `P3-PDF-NOTES-MATEPAD-TEST-REPORT.md` |
 | `S5-DATA-004` | Backup/Restore/Full Export | P4-REL-001 | CORE DONE / UI PENDING | 95/95 Core + 14/14 Phase 3 + 15/15 Ink + `53ccaf5` |
 | `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | DEPLOYED V7 / DEVICE GATE PENDING | 17/17 UI + 95/95 Core + 15/15 Ink + Sites v7 |
-| `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | IN PROGRESS | `docs/tasks/P4-REL-003.md` |
+| `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | IMPLEMENTED / VERIFIED / DEPLOY PENDING | 99/99 Core + 22/22 Phase 3 + 15/15 Ink + Build |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |
 | `S5-FR-007` | Understanding Rescue | Year One | BACKLOG CURRENT YEAR | المواصفة في `UNDERSTANDING_RESCUE.md` |
 | `S5-FR-008` | Project Lite وواجبات وملاحظات الدكتور | Year One | BACKLOG CURRENT YEAR | النموذج موجود في `DATA_MODEL.md` |

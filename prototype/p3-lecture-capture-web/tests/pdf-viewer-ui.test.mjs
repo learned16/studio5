@@ -27,7 +27,7 @@ test("library uses the internal canvas PDF viewer instead of an iframe", async (
   assert.match(viewer, /renderCurrentPage/);
   assert.match(viewer, /MAX_PIXEL_RATIO = 2/);
   assert.match(css, /\.pdf-page-stage\s*\{[\s\S]*overflow:\s*auto/);
-  assert.match(serviceWorker, /studio5-p3-capture-v6/);
+  assert.match(serviceWorker, /studio5-p4-storage-v3/);
   assert.match(serviceWorker, /vendor\/pdfjs\/pdf\.min\.mjs/);
 });
 
