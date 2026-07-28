@@ -8,6 +8,8 @@ const modules = await Promise.all([
   import("../src/file-intake.mjs"),
   import("../src/indexeddb-file-content-store.mjs"),
   import("../src/ink-format.mjs"),
+  import("../src/browser-storage-profile.mjs"),
+  import("../src/browser-storage-migration.mjs"),
   import("../src/today-query.mjs"),
   import("../src/lecture-flow.mjs"),
   import("../src/lecture-inbox.mjs"),
@@ -57,6 +59,19 @@ const requiredExports = [
   ["sha256Hex", "prepareFileIntake", "assertFileContentStore"],
   ["IndexedDbFileContentStore", "FILE_CONTENT_DB_VERSION", "FILE_CONTENT_STORE"],
   ["prepareInkSnapshot", "parseInkSnapshot"],
+  [
+    "BROWSER_STORAGE_PROFILE_VERSION",
+    "CANONICAL_BROWSER_STORAGE_PROFILE",
+    "LEGACY_BROWSER_STORAGE_PROFILES",
+    "assertBrowserStorageProfile",
+    "sameBrowserStorageProfile",
+  ],
+  [
+    "BrowserStorageMigrationConflictError",
+    "createBrowserStorageContext",
+    "migrateRepositoryStorage",
+    "openCanonicalBrowserStorage",
+  ],
   ["buildTodayQuery"],
   [
     "createLectureCapture",

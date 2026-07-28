@@ -185,7 +185,7 @@ elements.reloadApp.addEventListener("click", () => {
 });
 
 async function start() {
-  state.demo = openBrowserReliabilityDemo();
+  state.demo = await openBrowserReliabilityDemo();
   renderSummary(await state.demo.summary());
 }
 

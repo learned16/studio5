@@ -1,4 +1,4 @@
-const CACHE_NAME = "studio5-p4-reliability-v1";
+const CACHE_NAME = "studio5-p4-storage-v2";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const APP_ASSETS = [
   "./app.mjs",
   "./lecture-demo.mjs",
   "./core-runtime.mjs",
+  "./storage-runtime.mjs",
   "./manifest.webmanifest",
   "./closeout/",
   "./closeout/index.html",
@@ -28,6 +29,8 @@ const APP_ASSETS = [
   "./reliability/runtime.mjs",
   "./core/backup.mjs",
   "./core/academic-repository.mjs",
+  "./core/browser-storage-migration.mjs",
+  "./core/browser-storage-profile.mjs",
   "./core/file-intake.mjs",
   "./core/ids.mjs",
   "./core/indexeddb-driver.mjs",

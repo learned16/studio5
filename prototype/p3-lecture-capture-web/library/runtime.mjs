@@ -1,19 +1,7 @@
-import { AcademicRepository } from "../core/academic-repository.mjs";
-import { IndexedDbCoreDriver } from "../core/indexeddb-driver.mjs";
-import { IndexedDbFileContentStore } from "../core/indexeddb-file-content-store.mjs";
-import { CoreLocalDatabase } from "../core/local-database.mjs";
+import { openStudio5BrowserStorage } from "../storage-runtime.mjs";
 import { createLibraryDemo } from "./library-demo.mjs";
 
-export function openBrowserLibraryDemo() {
-  const driver = new IndexedDbCoreDriver({
-    databaseName: "studio5-p3-lecture-capture-core",
-  });
-  const contentStore = new IndexedDbFileContentStore({
-    databaseName: "studio5-p3-library-content",
-  });
-  const database = new CoreLocalDatabase(driver);
-  const repository = new AcademicRepository(database, {
-    fileContentStore: contentStore,
-  });
+export async function openBrowserLibraryDemo() {
+  const { repository } = await openStudio5BrowserStorage();
   return createLibraryDemo(repository);
 }

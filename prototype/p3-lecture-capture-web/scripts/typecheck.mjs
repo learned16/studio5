@@ -4,6 +4,7 @@ const files = [
   "app.mjs",
   "lecture-demo.mjs",
   "core-runtime.mjs",
+  "storage-runtime.mjs",
   "closeout/app.mjs",
   "closeout/closeout-bridge.mjs",
   "closeout/runtime.mjs",
@@ -20,6 +21,7 @@ for (const file of files) {
   if (!source.startsWith("import")
     && ![
       "lecture-demo.mjs",
+      "storage-runtime.mjs",
       "closeout/closeout-bridge.mjs",
       "library/library-state.mjs",
       "reliability/reliability-demo.mjs",
