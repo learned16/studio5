@@ -4,7 +4,7 @@ import test from "node:test";
 
 const root = new URL("../", import.meta.url);
 
-test("PDF picker is a direct touch target and upload waits for selection", async () => {
+test("PDF picker is a visible native control and upload waits for selection", async () => {
   const [html, css, app, serviceWorker] = await Promise.all([
     readFile(new URL("library/index.html", root), "utf8"),
     readFile(new URL("library/styles.css", root), "utf8"),
@@ -13,13 +13,15 @@ test("PDF picker is a direct touch target and upload waits for selection", async
   ]);
 
   assert.match(html, /id="pdf-file"[\s\S]*type="file"/);
+  assert.doesNotMatch(html, /id="pdf-file"[\s\S]{0,180}accept=/);
   assert.match(html, /id="upload-submit"[\s\S]*disabled/);
-  assert.match(css, /\.file-picker input\s*\{[\s\S]*inset:\s*0;/);
-  assert.match(css, /\.file-picker input\s*\{[\s\S]*pointer-events:\s*auto;/);
-  assert.doesNotMatch(css, /\.file-picker input\s*\{[^}]*pointer-events:\s*none;/);
+  assert.match(css, /\.native-file-field input\[type="file"\]\s*\{[\s\S]*position:\s*static;/);
+  assert.match(css, /\.native-file-field input\[type="file"\]\s*\{[\s\S]*opacity:\s*1;/);
+  assert.match(css, /\.native-file-field input\[type="file"\]\s*\{[\s\S]*pointer-events:\s*auto;/);
+  assert.doesNotMatch(css, /\.file-picker input/);
   assert.match(app, /pdfFile\.addEventListener\("change", updateFileSelection\)/);
   assert.match(app, /uploadSubmit\.disabled = false/);
   assert.match(app, /file\.name/);
-  assert.match(serviceWorker, /studio5-p3-capture-v4/);
+  assert.match(serviceWorker, /studio5-p3-capture-v5/);
   assert.match(serviceWorker, /fetch\(event\.request\)[\s\S]*\.catch\(\(\) => caches\.match/);
 });

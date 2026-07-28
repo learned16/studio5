@@ -1,4 +1,4 @@
-const CACHE_NAME = "studio5-p3-capture-v4";
+const CACHE_NAME = "studio5-p3-capture-v5";
 const APP_ASSETS = [
   "./",
   "./index.html",

@@ -32,19 +32,26 @@
             </div>
           </div>
           <form id="upload-form">
-            <label class="file-picker" for="pdf-file">
+            <div class="native-file-field">
+              <label for="pdf-file">ملف PDF من الجهاز</label>
               <input
                 id="pdf-file"
                 type="file"
-                accept="application/pdf,.pdf"
                 aria-describedby="pdf-picker-help"
                 required
               >
-              <span id="pdf-picker-label" class="file-picker-copy">اختر PDF من الجهاز</span>
-            </label>
+              <strong id="pdf-picker-label" class="selected-file-copy">لم يتم اختيار ملف</strong>
+            </div>
             <small id="pdf-picker-help" class="picker-help">
-              بعد الاختيار راح يظهر اسم الملف هنا قبل الحفظ.
+              اضغط زر اختيار الملف الأصلي، ثم اختر PDF. يتحقق Studio5 من النوع والحجم قبل الحفظ.
             </small>
+            <details class="picker-fallback">
+              <summary>إذا ما فتح مدير الملفات</summary>
+              <p>
+                افتح رابط Studio5 نفسه في Huawei Browser أو Chrome. بعض المتصفحات المضمّنة تمنع
+                منتقي ملفات النظام حتى لو كان الحقل صحيحاً.
+              </p>
+            </details>
             <button id="upload-submit" class="primary" type="submit" disabled>
               حفظ في المكتبة
             </button>

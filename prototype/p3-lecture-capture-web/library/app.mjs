@@ -51,8 +51,9 @@ function formattedFileSize(size) {
 function updateFileSelection() {
   const file = elements.pdfFile.files?.[0] ?? null;
   if (!file) {
-    elements.pdfPickerLabel.textContent = "اختر PDF من الجهاز";
+    elements.pdfPickerLabel.textContent = "لم يتم اختيار ملف";
     elements.uploadSubmit.disabled = true;
+    setStatus("");
     return;
   }
   try {
