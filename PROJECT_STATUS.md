@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-28
 المرحلة الحالية: `Phase 4 - Reliability / Backup Core`
-الفرع النشط: `codex/p4-backup-restore-core`
+الفرع النشط: `codex/p4-backup-restore-ui`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -75,6 +75,7 @@
 | P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
+| P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | VERIFIED - 17/17 + REGRESSION / PUSH PENDING | Route `reliability/**` والبناء والاختبارات |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

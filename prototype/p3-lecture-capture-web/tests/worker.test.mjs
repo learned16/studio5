@@ -54,3 +54,21 @@ test("worker routes library directory requests to its isolated index", async () 
   assert.equal(routedPath, "/library/index.html");
   assert.equal(await response.text(), "library");
 });
+
+test("worker routes reliability directory requests to its isolated index", async () => {
+  let routedPath = null;
+  const env = {
+    ASSETS: {
+      fetch(request) {
+        routedPath = new URL(request.url).pathname;
+        return new Response("reliability");
+      },
+    },
+  };
+  const response = await worker.fetch(
+    new Request("https://example.test/reliability/"),
+    env,
+  );
+  assert.equal(routedPath, "/reliability/index.html");
+  assert.equal(await response.text(), "reliability");
+});

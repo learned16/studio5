@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#173e35">
+    <title>Studio5 - النسخ الاحتياطي والاستعادة</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">STUDIO5 / PHASE 4</p>
+        <h1>النسخ الاحتياطي والاستعادة</h1>
+        <p>نسخة كاملة من البيانات وملفات PDF والرسم، مع فحص سلامة قبل الاستعادة.</p>
+      </div>
+      <nav aria-label="التنقل">
+        <a href="../library/">Library</a>
+        <a href="../">Capture</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card overview-card">
+        <div class="section-heading">
+          <span class="step">01</span>
+          <div>
+            <h2>بيانات هذا الجهاز</h2>
+            <p>هذا العدّ من التخزين المحلي للمتصفح الحالي.</p>
+          </div>
+        </div>
+        <div id="current-summary" class="stats" aria-live="polite">
+          <article><strong>—</strong><span>كل السجلات</span></article>
+          <article><strong>—</strong><span>PDF</span></article>
+          <article><strong>—</strong><span>الملاحظات</span></article>
+          <article><strong>—</strong><span>نسخ الرسم</span></article>
+        </div>
+      </section>
+
+      <div class="columns">
+        <section class="card export-card">
+          <div class="section-heading">
+            <span class="step">02</span>
+            <div>
+              <h2>إنشاء نسخة كاملة</h2>
+              <p>يشمل الملف البيانات الأصلية والملفات والرسم المشار إليه.</p>
+            </div>
+          </div>
+          <div class="safe-note">
+            لا يحذف Studio5 أي شيء عند التصدير، ولا يرسل النسخة إلى الإنترنت.
+          </div>
+          <button id="create-backup" class="primary" type="button">
+            تنزيل نسخة احتياطية
+          </button>
+          <p id="export-status" class="status" role="status"></p>
+        </section>
+
+        <section class="card restore-card">
+          <div class="section-heading">
+            <span class="step">03</span>
+            <div>
+              <h2>فحص نسخة واستعادتها</h2>
+              <p>الاختيار والفحص لا يغيران بياناتك.</p>
+            </div>
+          </div>
+
+          <div class="native-file-field">
+            <label for="backup-file">ملف Studio5 من الجهاز</label>
+            <input id="backup-file" type="file" aria-describedby="restore-help">
+            <strong id="selected-backup">لم يتم اختيار ملف</strong>
+          </div>
+          <small id="restore-help">
+            اختر ملفاً ينتهي بـ <code>.studio5-backup.json</code>. لن تتفعل الاستعادة قبل نجاح الفحص.
+          </small>
+
+          <section id="manifest-panel" class="manifest" hidden>
+            <h3>نتيجة الفحص</h3>
+            <dl>
+              <div><dt>تاريخ النسخة</dt><dd id="manifest-date">—</dd></div>
+              <div><dt>Schema</dt><dd id="manifest-schema">—</dd></div>
+              <div><dt>السجلات</dt><dd id="manifest-entities">—</dd></div>
+              <div><dt>المحتوى</dt><dd id="manifest-content">—</dd></div>
+              <div><dt>الحجم</dt><dd id="manifest-size">—</dd></div>
+            </dl>
+          </section>
+
+          <label class="confirmation">
+            <input id="confirm-replace" type="checkbox" disabled>
+            <span>أفهم أن الاستعادة ستستبدل بيانات هذا المتصفح بالنسخة المختارة.</span>
+          </label>
+          <button id="restore-backup" class="danger" type="button" disabled>
+            إنشاء نسخة أمان ثم الاستعادة
+          </button>
+          <p id="restore-status" class="status" role="status"></p>
+          <button id="reload-app" class="secondary" type="button" hidden>
+            إعادة تحميل Studio5 الآن
+          </button>
+
+          <details>
+            <summary>إذا لم يفتح مدير الملفات</summary>
+            <p>افتح الصفحة في Huawei Browser أو Chrome، وسجّل الدخول بنفس حساب ChatGPT.</p>
+          </details>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

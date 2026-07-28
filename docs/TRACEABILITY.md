@@ -40,6 +40,7 @@
 | `S5-UX-PDF-PICKER-002` | حقل ملفات نظام أصلي ظاهر ومتوافق مع MIME العام على MatePad | P3-LF-009 | DEPLOYED V6 / DEVICE RETEST PENDING | 14/14 UI + 88/88 Core + 15/15 Ink + Sites v6 |
 | `S5-FR-005C` | Lecture Flow وSearch وFavorites/Recent وOffline Queue | Phase 3 | IMPLEMENTATION COMPLETE / DEVICE GATE PENDING | جميع الدفعات منشورة؛ ينتظر فقط تقرير `P3-PDF-NOTES-MATEPAD-TEST-REPORT.md` |
 | `S5-DATA-004` | Backup/Restore/Full Export | P4-REL-001 | CORE DONE / UI PENDING | 95/95 Core + 14/14 Phase 3 + 15/15 Ink + `53ccaf5` |
+| `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | VERIFIED / PUSH PENDING | 17/17 UI + 95/95 Core + 15/15 Ink |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |
 | `S5-FR-007` | Understanding Rescue | Year One | BACKLOG CURRENT YEAR | المواصفة في `UNDERSTANDING_RESCUE.md` |
 | `S5-FR-008` | Project Lite وواجبات وملاحظات الدكتور | Year One | BACKLOG CURRENT YEAR | النموذج موجود في `DATA_MODEL.md` |

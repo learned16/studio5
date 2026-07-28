@@ -9,6 +9,7 @@ const coreSource = join(root, "..", "..", "packages", "studio5-core", "src");
 const coreAssets = join(assets, "core");
 const closeoutAssets = join(assets, "closeout");
 const libraryAssets = join(assets, "library");
+const reliabilityAssets = join(assets, "reliability");
 const files = [
   "index.html",
   "styles.css",
@@ -29,6 +30,7 @@ for (const file of files) {
 await cp(coreSource, coreAssets, { recursive: true });
 await cp(join(root, "closeout"), closeoutAssets, { recursive: true });
 await cp(join(root, "library"), libraryAssets, { recursive: true });
+await cp(join(root, "reliability"), reliabilityAssets, { recursive: true });
 await cp(join(root, "worker", "index.mjs"), join(server, "index.js"));
 
 const html = await readFile(join(assets, "index.html"), "utf8");
@@ -58,4 +60,14 @@ if (!libraryHtml.includes("upload-form")
 }
 await access(join(libraryAssets, "library-demo.mjs"));
 await access(join(libraryAssets, "library-state.mjs"));
-console.log(`Verified Lecture Capture + Closeout + Library build: ${files.length} root assets + isolated routes + Studio5 Core`);
+const reliabilityHtml = await readFile(join(reliabilityAssets, "index.html"), "utf8");
+if (!reliabilityHtml.includes("create-backup")
+  || !reliabilityHtml.includes("backup-file")
+  || !reliabilityHtml.includes("confirm-replace")
+  || !reliabilityHtml.includes("restore-backup")) {
+  throw new Error("Build verification failed: Reliability entrypoint missing");
+}
+await access(join(reliabilityAssets, "reliability-demo.mjs"));
+await access(join(reliabilityAssets, "runtime.mjs"));
+await access(join(coreAssets, "backup.mjs"));
+console.log(`Verified Capture + Closeout + Library + Reliability build: ${files.length} root assets + isolated routes + Studio5 Core`);
