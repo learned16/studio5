@@ -22,6 +22,6 @@ test("PDF picker is a visible native control and upload waits for selection", as
   assert.match(app, /pdfFile\.addEventListener\("change", updateFileSelection\)/);
   assert.match(app, /uploadSubmit\.disabled = false/);
   assert.match(app, /file\.name/);
-  assert.match(serviceWorker, /studio5-p3-capture-v5/);
+  assert.match(serviceWorker, /studio5-p3-capture-v6/);
   assert.match(serviceWorker, /fetch\(event\.request\)[\s\S]*\.catch\(\(\) => caches\.match/);
 });

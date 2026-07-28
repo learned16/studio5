@@ -5,6 +5,7 @@ import {
   validatePdfFile,
   writeDraft,
 } from "./library-state.mjs";
+import { createPdfViewer } from "./pdf-viewer.mjs";
 
 const elements = {
   uploadForm: document.querySelector("#upload-form"),
@@ -19,6 +20,15 @@ const elements = {
   openExternal: document.querySelector("#open-external"),
   viewerEmpty: document.querySelector("#viewer-empty"),
   pdfViewer: document.querySelector("#pdf-viewer"),
+  pdfCanvas: document.querySelector("#pdf-canvas"),
+  pdfPageStage: document.querySelector("#pdf-page-stage"),
+  pdfRenderStatus: document.querySelector("#pdf-render-status"),
+  pdfPageLabel: document.querySelector("#pdf-page-label"),
+  pdfPrevious: document.querySelector("#pdf-previous"),
+  pdfNext: document.querySelector("#pdf-next"),
+  pdfZoomOut: document.querySelector("#pdf-zoom-out"),
+  pdfZoomIn: document.querySelector("#pdf-zoom-in"),
+  pdfFit: document.querySelector("#pdf-fit"),
   noteForm: document.querySelector("#note-form"),
   noteTitle: document.querySelector("#note-title"),
   notePage: document.querySelector("#note-page"),
@@ -35,6 +45,7 @@ const state = {
   files: [],
   selected: null,
   objectUrl: null,
+  viewer: null,
   resourceView: "search",
 };
 
@@ -176,12 +187,19 @@ async function openPdf(entry) {
   state.objectUrl = URL.createObjectURL(blob);
   state.selected = entry;
   elements.selectedFile.textContent = entry.artifact.displayName;
-  elements.pdfViewer.src = state.objectUrl;
   elements.pdfViewer.hidden = false;
   elements.viewerEmpty.hidden = true;
   elements.openExternal.href = state.objectUrl;
   elements.openExternal.classList.remove("disabled");
   elements.favoriteFile.disabled = false;
+  try {
+    await state.viewer.open(opened.content.bytes);
+  } catch {
+    setStatus(
+      "الملف محفوظ، لكن تعذر عرضه داخلياً. استخدم فتح منفصل أو التنزيل.",
+      "error",
+    );
+  }
   await refreshFileFavorite();
   await refreshFiles();
   restoreDraft();
@@ -339,9 +357,21 @@ for (const tab of elements.tabs) {
 
 window.addEventListener("beforeunload", () => {
   if (state.objectUrl) URL.revokeObjectURL(state.objectUrl);
+  state.viewer?.destroy();
 });
 
 try {
+  state.viewer = createPdfViewer({
+    canvas: elements.pdfCanvas,
+    stage: elements.pdfPageStage,
+    status: elements.pdfRenderStatus,
+    pageLabel: elements.pdfPageLabel,
+    previousButton: elements.pdfPrevious,
+    nextButton: elements.pdfNext,
+    zoomOutButton: elements.pdfZoomOut,
+    zoomInButton: elements.pdfZoomIn,
+    fitButton: elements.pdfFit,
+  });
   state.demo = await openBrowserLibraryDemo();
   await refreshFiles();
   restoreDraft();

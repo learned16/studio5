@@ -38,6 +38,7 @@
 | `S5-FR-005C-LIBRARY` | واجهة PDF/Notes/Search/Favorites/Recent تجريبية | P3-LF-007 | DEPLOYED V3 / DEVICE GATE PENDING | 13/13 UI + Build + 15/15 Ink + Sites v3 |
 | `S5-UX-PDF-PICKER-001` | منتقي PDF يستقبل اللمس مباشرة على MatePad/WebView | P3-LF-008 | DEPLOYED V5 / USER RETEST PENDING | 14/14 UI + 88/88 Core + 15/15 Ink + تحقق الواجهة المنشورة |
 | `S5-UX-PDF-PICKER-002` | حقل ملفات نظام أصلي ظاهر ومتوافق مع MIME العام على MatePad | P3-LF-009 | DEPLOYED V6 / DEVICE RETEST PENDING | 14/14 UI + 88/88 Core + 15/15 Ink + Sites v6 |
+| `S5-UX-PDF-VIEWER-001` | عرض PDF داخلي لا يعتمد على عارض WebView مع تنقل وZoom وOffline assets | P3-LF-010 | IMPLEMENTED / DEPLOY PENDING | 16/16 UI + 88/88 Core + 15/15 Ink + Build |
 | `S5-FR-005C` | Lecture Flow وSearch وFavorites/Recent وOffline Queue | Phase 3 | IMPLEMENTATION COMPLETE / DEVICE GATE PENDING | جميع الدفعات منشورة؛ ينتظر فقط تقرير `P3-PDF-NOTES-MATEPAD-TEST-REPORT.md` |
 | `S5-DATA-004` | Backup/Restore/Full Export | Phase 4 | BACKLOG CURRENT YEAR | لم ينفذ |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |

@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-28
-المرحلة الحالية: `Phase 3 - Final MatePad Acceptance`
-الفرع النشط: `codex/p3-native-pdf-picker`
+المرحلة الحالية: `Phase 3 - Internal PDF Viewer`
+الفرع النشط: `codex/p3-pdfjs-viewer`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -74,6 +74,7 @@
 | P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | DEPLOYED V3 - DEVICE GATE PENDING | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
 | P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
+| P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | IMPLEMENTED - 16/16 + REGRESSION / DEPLOY PENDING | Adapter العرض وواجهة Library وملفات بناء PDF.js |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

@@ -107,7 +107,21 @@
             <strong>اختر PDF من القائمة</strong>
             <span>سيظهر هنا، ويبقى متاحاً بعد إعادة تحميل الصفحة.</span>
           </div>
-          <iframe id="pdf-viewer" title="عارض PDF" hidden></iframe>
+          <section id="pdf-viewer" class="pdf-renderer" aria-label="عارض PDF الداخلي" hidden>
+            <div class="pdf-toolbar" aria-label="أدوات صفحات PDF">
+              <button id="pdf-previous" type="button" disabled>السابق</button>
+              <output id="pdf-page-label" aria-live="polite">0 / 0</output>
+              <button id="pdf-next" type="button" disabled>التالي</button>
+              <span class="pdf-toolbar-separator" aria-hidden="true"></span>
+              <button id="pdf-zoom-out" type="button" aria-label="تصغير" disabled>−</button>
+              <button id="pdf-fit" type="button" disabled>ملاءمة العرض</button>
+              <button id="pdf-zoom-in" type="button" aria-label="تكبير" disabled>+</button>
+            </div>
+            <div id="pdf-page-stage" class="pdf-page-stage">
+              <canvas id="pdf-canvas" aria-label="صفحة PDF المعروضة"></canvas>
+            </div>
+            <p id="pdf-render-status" class="pdf-render-status" role="status"></p>
+          </section>
         </section>
 
         <section class="card note-card">
