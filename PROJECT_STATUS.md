@@ -75,7 +75,7 @@
 | P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
-| P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | VERIFIED - 17/17 + REGRESSION / PUSH PENDING | Route `reliability/**` والبناء والاختبارات |
+| P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | DEPLOYED V7 - DEVICE GATE PENDING | Route `reliability/**` والبناء والاختبارات |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -89,8 +89,8 @@
 
 ## القادم بعد المهمة الحالية
 
-1. فتح `P4-REL-002` لواجهة Backup/Restore/Export التجريبية في فرع مستقل فوق Core الناجح.
-2. اختبار تنزيل Backup واستعادته على MatePad من دون فقد PDF أو Notes أو Ink.
+1. اختبار تنزيل Backup وفحصه واستعادته على MatePad من دون فقد PDF أو Notes أو Ink.
+2. بعد بوابة الجهاز، فتح `P4-REL-003` للخصوصية والقفل كقدرة مستقلة.
 3. يبقى اختبار منتقي PDF الأصلي وتقرير Library على MatePad بوابة Phase 3 منفصلة.
 4. المزامنة السحابية وحل التعارضات لا يدخلان تلقائياً في هذه الدفعة.
 5. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
