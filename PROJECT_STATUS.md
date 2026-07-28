@@ -73,7 +73,7 @@
 | P3-LF-006 | Offline Operation Queue محلي | `codex/p3-offline-operation-queue` | Codex | DONE - 83/83 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
 | P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | DEPLOYED V3 - DEVICE GATE PENDING | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
 | P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
-| P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | IN PROGRESS | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
+| P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -87,7 +87,7 @@
 
 ## القادم بعد المهمة الحالية
 
-1. تنفيذ تقرير `docs/tasks/P3-PDF-NOTES-MATEPAD-TEST-REPORT.md` على MatePad.
+1. اختبار منتقي PDF الأصلي في Sites v6 على MatePad، ثم تنفيذ تقرير `docs/tasks/P3-PDF-NOTES-MATEPAD-TEST-REPORT.md`.
 2. عند نجاح البنود الأحد عشر بلا فقد بيانات، إغلاق Phase 3 بحالة `DONE / DEVICE PASS`.
 3. بعد موافقة المستخدم على الانتقال، فتح فرع ومهمة مستقلين لأول دفعة من Phase 4.
 4. المزامنة السحابية وحل التعارضات لا يدخلان تلقائياً؛ يبقيان وفق نطاق Phase 4 المعتمد.
