@@ -57,6 +57,7 @@ import {
   startOfflineOperation,
   succeedOfflineOperation,
 } from "./offline-queue.mjs";
+import { createPortableBackup as buildPortableBackup } from "./backup.mjs";
 
 function withDefaultNow(input = {}, now) {
   return Object.hasOwn(input, "now") ? input : { ...input, now };
@@ -1219,5 +1220,17 @@ export class AcademicRepository {
 
   exportSnapshot() {
     return this.#read((store) => store.exportSnapshot(this.#now()));
+  }
+
+  async createPortableBackup() {
+    if (!this.#fileContentStore) {
+      throw new TypeError("Portable backup requires a fileContentStore");
+    }
+    const snapshot = await this.exportSnapshot();
+    return buildPortableBackup({
+      snapshot,
+      contentStore: this.#fileContentStore,
+      now: this.#now(),
+    });
   }
 }

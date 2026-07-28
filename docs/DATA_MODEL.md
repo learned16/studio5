@@ -128,6 +128,25 @@
 4. Backup قبل ترقية عالية الخطورة.
 5. Rollback حيث أمكن، وإلا Recovery export/import موثق.
 
+## Portable Backup v1 - Phase 4
+
+لا يضيف `P4-REL-001` Collection أو يرفع Schema؛ يبقى Snapshot على Schema v8. الحزمة المحمولة
+JSON-safe وتحتوي:
+
+- `format = studio5-portable-backup`.
+- `formatVersion = 1`.
+- `manifest`: وقت الإنشاء، إصدار Core، SHA-256 للـSnapshot، عدّ الكيانات، عدد وحجم المحتوى.
+- `snapshot`: كل Metadata والعلاقات بالـStable IDs.
+- `contents`: bytes كل PDF/File وInk مشار إليه، Base64 ومفهرس بـ`sha256/<digest>`.
+
+يُخزن كل محتوى مرة واحدة حتى إذا أشارت إليه أكثر من نسخة. قبل Restore يُفحص Manifest وSnapshot
+والعلاقات والعدّ والحجم والـSHA-256 ومجموعة Storage Keys كاملة. لا يوجد Merge تلقائي؛ استبدال بيانات
+موجودة يحتاج موافقة صريحة. تُكتب bytes immutable أولاً، ثم يحفظ Snapshot عبر Journal/Recovery الحالي.
+فشل حفظ Snapshot قد يترك bytes غير مرتبطة بأمان لإعادة المحاولة، ولا يحذف بيانات المستخدم.
+
+صيغة JSON/Base64 هي تنسيق الدفعة الأولى الموثوق. الضغط أو Streaming للنسخ الكبيرة يحتاج مهمة لاحقة
+ولا يغير معنى Manifest أو قواعد السلامة.
+
 ## التوسع
 
 السنة الثانية تضيف Profiles/Packs/Entities جديدة بمهاجرات. لا تحذف أو تعيد ترميز بيانات السنة الأولى.

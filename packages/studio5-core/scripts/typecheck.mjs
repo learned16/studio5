@@ -13,6 +13,7 @@ const modules = await Promise.all([
   import("../src/lecture-inbox.mjs"),
   import("../src/library-search.mjs"),
   import("../src/offline-queue.mjs"),
+  import("../src/backup.mjs"),
   import("../src/academic-repository.mjs"),
 ]);
 
@@ -82,6 +83,15 @@ const requiredExports = [
     "retryOfflineOperation",
     "recoverInterruptedOperation",
     "OFFLINE_OPERATION_STATUSES",
+  ],
+  [
+    "PORTABLE_BACKUP_FORMAT",
+    "PORTABLE_BACKUP_VERSION",
+    "BackupValidationError",
+    "BackupRestoreConflictError",
+    "createPortableBackup",
+    "verifyPortableBackup",
+    "restorePortableBackup",
   ],
   [
     "AcademicRepository",

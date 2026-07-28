@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-28
-المرحلة الحالية: `Phase 3 - Final MatePad Acceptance`
-الفرع النشط: `codex/p3-native-pdf-picker`
+المرحلة الحالية: `Phase 4 - Reliability / Backup Core`
+الفرع النشط: `codex/p4-backup-restore-core`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -74,6 +74,7 @@
 | P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | DEPLOYED V3 - DEVICE GATE PENDING | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
 | P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
+| P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | VERIFIED - 95/95 + REGRESSION / PUSH PENDING | `backup.mjs` واختباراته ووثائق المهمة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -87,10 +88,10 @@
 
 ## القادم بعد المهمة الحالية
 
-1. اختبار منتقي PDF الأصلي في Sites v6 على MatePad، ثم تنفيذ تقرير `docs/tasks/P3-PDF-NOTES-MATEPAD-TEST-REPORT.md`.
-2. عند نجاح البنود الأحد عشر بلا فقد بيانات، إغلاق Phase 3 بحالة `DONE / DEVICE PASS`.
-3. بعد موافقة المستخدم على الانتقال، فتح فرع ومهمة مستقلين لأول دفعة من Phase 4.
-4. المزامنة السحابية وحل التعارضات لا يدخلان تلقائياً؛ يبقيان وفق نطاق Phase 4 المعتمد.
+1. فتح `P4-REL-002` لواجهة Backup/Restore/Export التجريبية في فرع مستقل فوق Core الناجح.
+2. اختبار تنزيل Backup واستعادته على MatePad من دون فقد PDF أو Notes أو Ink.
+3. يبقى اختبار منتقي PDF الأصلي وتقرير Library على MatePad بوابة Phase 3 منفصلة.
+4. المزامنة السحابية وحل التعارضات لا يدخلان تلقائياً في هذه الدفعة.
 5. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
 
 ## المراحل اللاحقة المحفوظة
