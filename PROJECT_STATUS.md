@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-28
-المرحلة الحالية: `Phase 4 - Reliability / Backup Core`
-الفرع النشط: `codex/p4-backup-restore-ui`
+المرحلة الحالية: `Phase 4 Reliability + Phase 3 Device Fix`
+الفرع النشط: `codex/sites-p4-pdfjs-source`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -76,6 +76,7 @@
 | P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
 | P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | VERIFIED - 17/17 + REGRESSION / PUSH PENDING | Route `reliability/**` والبناء والاختبارات |
+| P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | IMPLEMENTED - 16/16 + REGRESSION / DEPLOY PENDING | Adapter العرض وواجهة Library وملفات بناء PDF.js |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "studio5-p4-reliability-v1";
+const CACHE_NAME = "studio5-p4-reliability-v2";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -19,6 +19,7 @@ const APP_ASSETS = [
   "./library/app.mjs",
   "./library/library-demo.mjs",
   "./library/library-state.mjs",
+  "./library/pdf-viewer.mjs",
   "./library/runtime.mjs",
   "./reliability/",
   "./reliability/index.html",
@@ -27,6 +28,8 @@ const APP_ASSETS = [
   "./reliability/reliability-demo.mjs",
   "./reliability/runtime.mjs",
   "./core/backup.mjs",
+  "./vendor/pdfjs/pdf.min.mjs",
+  "./vendor/pdfjs/pdf.worker.min.mjs",
   "./core/academic-repository.mjs",
   "./core/file-intake.mjs",
   "./core/ids.mjs",
