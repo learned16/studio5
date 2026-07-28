@@ -10,6 +10,8 @@ const coreAssets = join(assets, "core");
 const closeoutAssets = join(assets, "closeout");
 const libraryAssets = join(assets, "library");
 const reliabilityAssets = join(assets, "reliability");
+const pdfJsSource = join(root, "node_modules", "pdfjs-dist");
+const pdfJsAssets = join(assets, "vendor", "pdfjs");
 const files = [
   "index.html",
   "styles.css",
@@ -32,6 +34,19 @@ await cp(coreSource, coreAssets, { recursive: true });
 await cp(join(root, "closeout"), closeoutAssets, { recursive: true });
 await cp(join(root, "library"), libraryAssets, { recursive: true });
 await cp(join(root, "reliability"), reliabilityAssets, { recursive: true });
+await mkdir(pdfJsAssets, { recursive: true });
+await cp(
+  join(pdfJsSource, "legacy", "build", "pdf.min.mjs"),
+  join(pdfJsAssets, "pdf.min.mjs"),
+);
+await cp(
+  join(pdfJsSource, "legacy", "build", "pdf.worker.min.mjs"),
+  join(pdfJsAssets, "pdf.worker.min.mjs"),
+);
+await cp(join(pdfJsSource, "LICENSE"), join(pdfJsAssets, "LICENSE"));
+for (const directory of ["cmaps", "standard_fonts", "wasm", "iccs", "image_decoders"]) {
+  await cp(join(pdfJsSource, directory), join(pdfJsAssets, directory), { recursive: true });
+}
 await cp(join(root, "worker", "index.mjs"), join(server, "index.js"));
 
 const html = await readFile(join(assets, "index.html"), "utf8");
@@ -73,4 +88,7 @@ if (!reliabilityHtml.includes("create-backup")
 await access(join(reliabilityAssets, "reliability-demo.mjs"));
 await access(join(reliabilityAssets, "runtime.mjs"));
 await access(join(coreAssets, "backup.mjs"));
-console.log(`Verified Capture + Closeout + Library + Reliability build: ${files.length} root assets + isolated routes + Studio5 Core`);
+await access(join(libraryAssets, "pdf-viewer.mjs"));
+await access(join(pdfJsAssets, "pdf.min.mjs"));
+await access(join(pdfJsAssets, "pdf.worker.min.mjs"));
+console.log(`Verified Capture + Closeout + Library + PDF.js + Reliability build: ${files.length} root assets + isolated routes + Studio5 Core`);

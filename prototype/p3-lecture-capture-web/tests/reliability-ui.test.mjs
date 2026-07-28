@@ -28,7 +28,7 @@ test("Reliability UI keeps restore locked until file verification and confirmati
   assert.match(app, /inspectBackup\(bundle\)/);
   assert.match(app, /confirmReplace\.checked/);
   assert.match(app, /studio5-before-restore/);
-  assert.match(serviceWorker, /studio5-p4-storage-v2/);
+  assert.match(serviceWorker, /studio5-p4-storage-v3/);
   assert.match(serviceWorker, /\.\/reliability\/index\.html/);
 });
 
