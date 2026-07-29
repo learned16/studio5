@@ -15,6 +15,7 @@ const files = [
   "reliability/app.mjs",
   "reliability/reliability-demo.mjs",
   "reliability/runtime.mjs",
+  "scripts/verify-static-preview.mjs",
 ];
 for (const file of files) {
   const source = await readFile(new URL(`../${file}`, import.meta.url), "utf8");

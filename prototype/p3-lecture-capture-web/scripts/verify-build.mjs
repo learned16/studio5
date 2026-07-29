@@ -14,6 +14,7 @@ const pdfJsSource = join(root, "node_modules", "pdfjs-dist");
 const pdfJsAssets = join(assets, "vendor", "pdfjs");
 const files = [
   "index.html",
+  "404.html",
   "styles.css",
   "app.mjs",
   "lecture-demo.mjs",
@@ -55,6 +56,11 @@ if (!html.includes("capture-form")
   || !html.includes("capture-list")
   || !html.includes("app.mjs")) {
   throw new Error("Build verification failed: Lecture Capture entrypoint missing");
+}
+const notFoundHtml = await readFile(join(assets, "404.html"), "utf8");
+if (!notFoundHtml.includes("الصفحة غير موجودة")
+  || !notFoundHtml.includes('href="/"')) {
+  throw new Error("Build verification failed: Cloudflare 404 document missing or invalid");
 }
 await access(join(server, "index.js"));
 await access(join(coreAssets, "academic-repository.mjs"));
