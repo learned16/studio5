@@ -52,7 +52,7 @@
 | `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@3fbc776` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
 | `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DOCUMENTED / NOT DEPLOYED | `PREVIEW_DEPLOYMENT_AR.md` |
 | `S5-PREVIEW-002` | فحص حزمة P3 الساكنة وحدود Cloudflare والمسارات والأصول قبل الربط | P4-PREVIEW-001 | CODE + PR CI PASS / NOT DEPLOYED / DEVICE GATE PENDING | PR #3: GitHub Actions 3/3 على Node 22؛ 250 ملفاً؛ أكبر ملف 1,304,896 bytes؛ 4/4 routes HTTP 200؛ `404.html`؛ PDF/SW same-origin contracts PASS |
-| `S5-PREVIEW-003` | إعداد Workers Static Assets وWorkers Builds بإصدار Wrangler مثبت وفحص بلا نشر | P4-WORKERS-PREVIEW-001 | LOCAL PASS / PR CI PENDING / NOT DEPLOYED | Wrangler 4.114.0؛ `wrangler deploy --dry-run` قرأ Static Assets وخرج بلا نشر؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
+| `S5-PREVIEW-003` | إعداد Workers Static Assets وWorkers Builds بإصدار Wrangler مثبت وفحص بلا نشر | P4-WORKERS-PREVIEW-001 | LOCAL + PR CI PASS / NOT DEPLOYED | PR #4: GitHub Actions 4/4؛ Wrangler 4.114.0؛ `wrangler deploy --dry-run` قرأ Static Assets وخرج بلا نشر؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

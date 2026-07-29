@@ -64,7 +64,7 @@
 
 ## الحالة
 
-`LOCAL PASS / PR CI PENDING / SETUP ONLY / NOT DEPLOYED`.
+`LOCAL + PR CI PASS / SETUP ONLY / NOT DEPLOYED`.
 
 التحقق المحلي:
 
@@ -74,3 +74,4 @@
 - Static Preview: `PASS`، وعدد الملفات `250`، والمسار المجهول يرجع `404.html`.
 - Wrangler: الإصدار `4.114.0`، وأمر `wrangler deploy --dry-run` نجح وقرأ مجلد
   `prototype/p3-lecture-capture-web/dist/assets` من دون تنفيذ نشر.
+- GitHub Actions: الوظائف الأربع `4/4` ناجحة داخل PR #4.

@@ -81,7 +81,7 @@
 | P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | CODE + PR CI PASS - 100/100 + 15/15 + 22/22 / DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
 | PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | READY FOR USER REVIEW - DOCS 9/9 + CI POLICY 7/7 + PR CI 3/3 | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
 | P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | CODE + PR CI PASS / PAGES OPTION SUPERSEDED / NOT DEPLOYED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
-| P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds بلا نشر | `chore/workers-static-preview` | Codex | LOCAL PASS / PR CI PENDING / NOT DEPLOYED | Wrangler 4.114.0؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS + Wrangler dry-run PASS |
+| P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds بلا نشر | `chore/workers-static-preview` | Codex | LOCAL + PR CI PASS / NOT DEPLOYED | PR #4: GitHub Actions 4/4؛ Wrangler 4.114.0؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS + Wrangler dry-run PASS |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
