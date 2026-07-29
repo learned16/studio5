@@ -19,6 +19,8 @@
 - `.node-version`
 - `.github/workflows/ci.yml`
 - `prototype/p3-lecture-capture-web/package.json`
+- `prototype/p3-lecture-capture-web/404.html`
+- `prototype/p3-lecture-capture-web/scripts/verify-build.mjs`
 - `prototype/p3-lecture-capture-web/scripts/typecheck.mjs`
 - `prototype/p3-lecture-capture-web/scripts/verify-static-preview.mjs`
 - `docs/PREVIEW_DEPLOYMENT_AR.md`
@@ -46,7 +48,7 @@
 
 1. يوجد فحص قابل للتكرار يبني P3 ثم يتحقق من حزمة `dist/assets`.
 2. المسارات `/` و`/closeout/` و`/library/` و`/reliability/` ترجع HTTP 200 من خادم ساكن محلي.
-3. مسار غير موجود يرجع 404 ولا يوجد SPA fallback صامت.
+3. توجد `404.html` في جذر Build output؛ مسار غير موجود يرجع محتواها مع HTTP 404 ولا يرجع الصفحة الرئيسية.
 4. PDF worker يُخدم من نفس origin وتنجح مراجع الأصول المحلية.
 5. عقد تسجيل Service Worker على localhost موجود وملفه قابل للتحميل.
 6. لا يوجد ملف أكبر من 25 MiB ولا أكثر من 20,000 ملف.
@@ -66,6 +68,7 @@
 - نجاح CI لا يثبت سلوك PDF/IndexedDB/Backup على MatePad.
 - كل Preview له origin وبيانات محلية مستقلة.
 - تغيّر Cloudflare Dashboard أو حدود الخطة مستقبلاً يحتاج إعادة مراجعة الوثيقة.
+- حذف `404.html` يجعل Cloudflare Pages يطبّق SPA fallback الافتراضي، لذلك وجودها جزء من عقد المعاينة.
 
 ## Rollback / Recovery
 
@@ -81,10 +84,10 @@
 - P0 Ink: `15/15 PASS` مع Build ناجح.
 - P3: `22/22 PASS` مع lint وtypecheck وBuild ناجحة.
 - Static Preview: `PASS`.
-- الملفات: `249 / 20,000`.
+- الملفات: `250 / 20,000`.
 - أكبر ملف: `vendor/pdfjs/pdf.worker.min.mjs` بحجم `1,304,896` bytes.
 - المسارات: `/` و`/closeout/` و`/library/` و`/reliability/` كلها HTTP 200.
-- المسار غير الموجود: HTTP 404، بلا SPA fallback.
+- المسار غير الموجود: HTTP 404 مع محتوى `dist/assets/404.html`، وليس الصفحة الرئيسية.
 - PDF worker: same-origin وHTTP 200.
 - Service Worker: عقد التسجيل على localhost same-origin وملف `sw.js` يرجع HTTP 200.
 - المراجع المحلية المكسورة: `0`.

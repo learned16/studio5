@@ -80,8 +80,9 @@ prototype/p3-lecture-capture-web/dist/assets/
 
 أما `dist/server/index.js` فهو مدخل اختياري ولا تحتاجه الاستضافة الثابتة الحالية.
 
-`preview:verify` يبني الحزمة ثم يفحصها بخادم HTTP ساكن محلي. يتحقق من المسارات الفعلية، و404 للمسار
-غير الموجود، وPDF worker وService Worker من نفس origin، والمراجع المحلية، وحد 25 MiB للملف الواحد،
+`preview:verify` يبني الحزمة ثم يفحصها بخادم HTTP ساكن محلي. يتحقق من المسارات الفعلية، ووجود
+`404.html` في جذر Build output وإرجاعها مع HTTP 404 لأي مسار مجهول بدلاً من الصفحة الرئيسية،
+وPDF worker وService Worker من نفس origin، والمراجع المحلية، وحد 25 MiB للملف الواحد،
 وحد 20,000 ملف لخطة Cloudflare Pages المجانية، وعدم تسرب ملفات محلية أو أسرار معروفة.
 
 ## إعداد Cloudflare Pages الدقيق عند الربط لاحقاً
@@ -133,7 +134,9 @@ prototype/p3-lecture-capture-web/dist/assets/
 
 | العنصر | الحالة الحالية |
 |---|---|
-| SPA fallback | غير مطلوب حالياً؛ المسارات `closeout/` و`library/` و`reliability/` تحتوي `index.html` فعلياً |
+| SPA fallback | معطّل بوجود `404.html` في جذر Build output؛ هذا يمنع Cloudflare Pages من تطبيق SPA fallback الافتراضي |
+| المسارات المعروفة | `/` و`closeout/` و`library/` و`reliability/` تعتمد ملفات `index.html` حقيقية |
+| المسارات المجهولة | يجب أن ترجع محتوى `404.html` مع HTTP 404، لا الصفحة الرئيسية |
 | Base path | الأصول وروابط PWA نسبية؛ يفضل النشر على جذر domain/preview لا داخل subpath ثابت |
 | Service Worker | موجود، ويجب أن يُخدم عبر HTTPS وبـscope جذر المعاينة |
 | IndexedDB | يعمل من static hosting؛ البيانات محلية لكل origin ولا تنتقل بين روابط Preview المختلفة |

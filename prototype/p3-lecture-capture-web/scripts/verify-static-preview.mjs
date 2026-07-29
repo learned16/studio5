@@ -129,8 +129,8 @@ function createStaticServer() {
       }
       const metadata = await stat(absolute).catch(() => null);
       if (!metadata?.isFile()) {
-        response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-        response.end("Not found");
+        response.writeHead(404, { "content-type": "text/html; charset=utf-8" });
+        response.end(await readFile(join(assetsRoot, "404.html")));
         return;
       }
       response.writeHead(200, { "content-type": contentType(absolute) });
@@ -151,6 +151,9 @@ if (files.length > CLOUDFLARE_FREE_FILE_LIMIT) {
 
 let largest = { path: "", size: -1 };
 const knownAssets = new Set(files.map(outputPath));
+if (!knownAssets.has("404.html")) {
+  fail("404.html is missing from the build output root");
+}
 const sensitiveFiles = [];
 const exposedSecrets = [];
 const brokenReferences = [];
@@ -189,6 +192,11 @@ if (sensitiveFiles.length > 0) fail(`sensitive/local files found: ${sensitiveFil
 if (exposedSecrets.length > 0) fail(`possible secrets found: ${exposedSecrets.join(", ")}`);
 if (brokenReferences.length > 0) fail(`broken local references:\n${brokenReferences.join("\n")}`);
 
+const homeHtml = await readFile(join(assetsRoot, "index.html"), "utf8");
+const notFoundHtml = await readFile(join(assetsRoot, "404.html"), "utf8");
+if (notFoundHtml === homeHtml) {
+  fail("404.html must not contain the home page document");
+}
 const rootApp = await readFile(join(assetsRoot, "app.mjs"), "utf8");
 const libraryViewer = await readFile(join(assetsRoot, "library", "pdf-viewer.mjs"), "utf8");
 const serviceWorkerMatch = rootApp.match(/serviceWorker\.register\(\s*["']([^"']+)["']/);
@@ -219,6 +227,13 @@ try {
   if (missingResponse.status !== 404) {
     fail(`missing route returned ${missingResponse.status}; SPA fallback must stay disabled`);
   }
+  const missingBody = await missingResponse.text();
+  if (missingBody !== notFoundHtml) {
+    fail("missing route did not return the root 404.html document");
+  }
+  if (missingBody === homeHtml) {
+    fail("missing route returned the home page instead of 404.html");
+  }
 
   const pdfWorkerUrl = new URL(
     pdfWorkerMatch[1],
@@ -247,6 +262,7 @@ try {
   console.log(`LARGEST_FILE_BYTES=${largest.size}`);
   console.log(`ROUTES_200=${routeResults.join(",")}`);
   console.log(`UNKNOWN_ROUTE_STATUS=${missingResponse.status}`);
+  console.log("UNKNOWN_ROUTE_DOCUMENT=404.html");
   console.log(`PDF_WORKER_URL=${pdfWorkerUrl.pathname}`);
   console.log("PDF_WORKER_SAME_ORIGIN=true");
   console.log(`SERVICE_WORKER_URL=${serviceWorkerUrl.pathname}`);
