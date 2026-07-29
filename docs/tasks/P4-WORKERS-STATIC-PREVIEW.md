@@ -22,7 +22,6 @@
 - `.github/workflows/ci.yml`
 - `package.json`
 - `pnpm-lock.yaml`
-- `pnpm-workspace.yaml`
 - `wrangler.jsonc`
 - `docs/PREVIEW_DEPLOYMENT_AR.md`
 - `docs/tasks/P4-WORKERS-STATIC-PREVIEW.md`
