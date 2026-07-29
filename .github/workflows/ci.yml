@@ -59,8 +59,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
-        with:
-          version: 10
       - uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -71,3 +69,20 @@ jobs:
       - run: pnpm run typecheck
       - run: pnpm test
       - run: pnpm run preview:verify
+
+  worker-static-assets:
+    name: Cloudflare Worker Static Assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            prototype/p3-lecture-capture-web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --dir prototype/p3-lecture-capture-web install --frozen-lockfile
+      - run: pnpm run worker:verify
