@@ -49,8 +49,9 @@
 | `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | V9 FROZEN REFERENCE / DEVICE GATE PENDING | 22/22 UI + 100/100 Core + 15/15 Ink؛ MatePad pending |
 | `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | CODE VERIFIED / DEVICE GATE PENDING | 100/100 Core + 22/22 Phase 3 + 15/15 Ink + Build |
 | `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | CODE + PR CI PASS / DEVICE GATE PENDING | Node 22: 100/100 Core + 15/15 Ink + 22/22 P3 + Builds؛ GitHub 3/3 |
-| `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@2f5196c` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
+| `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@3fbc776` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
 | `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DOCUMENTED / NOT DEPLOYED | `PREVIEW_DEPLOYMENT_AR.md` |
+| `S5-PREVIEW-002` | فحص حزمة P3 الساكنة وحدود Cloudflare والمسارات والأصول قبل الربط | P4-PREVIEW-001 | LOCAL PASS / PR CI PENDING / NOT DEPLOYED | 249 ملفاً؛ أكبر ملف 1,304,896 bytes؛ 4/4 routes HTTP 200؛ 404 بلا fallback؛ PDF/SW same-origin contracts PASS |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

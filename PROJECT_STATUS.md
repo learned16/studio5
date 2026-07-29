@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-29
-المرحلة الحالية: `Pre-Phase 5 Foundation`
-الفرع النشط: `chore/pre-phase5-foundation`
+المرحلة الحالية: `Phase 4 Preview Readiness`
+الفرع النشط: `chore/cloudflare-preview-readiness`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -80,6 +80,7 @@
 | P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | CODE VERIFIED / V9 FROZEN REFERENCE / DEVICE GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
 | P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | CODE + PR CI PASS - 100/100 + 15/15 + 22/22 / DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
 | PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | READY FOR USER REVIEW - DOCS 9/9 + CI POLICY 7/7 + PR CI 3/3 | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
+| P4-PREVIEW-001 | تجهيز Build ساكن وفحص Cloudflare Pages المرتبط بـGitHub | `chore/cloudflare-preview-readiness` | Codex | LOCAL PASS / PR CI PENDING / NOT DEPLOYED | Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

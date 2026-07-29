@@ -23,6 +23,8 @@ prototype/p3-lecture-capture-web
 ## متطلبات البناء
 
 - Node.js 22.
+- pnpm 10.
+- ملف الجذر `.node-version` يثبت Node على الإصدار `22`.
 - P3 يستخدم `pnpm-lock.yaml` الملتزم في Git؛ يجب استخدام
   `pnpm install --frozen-lockfile`.
 - لا توجد متغيرات بيئة أو أسرار مطلوبة للبناء الحالي.
@@ -61,7 +63,7 @@ prototype/p0-ink-web/dist/
 ```text
 cd prototype/p3-lecture-capture-web
 pnpm install --frozen-lockfile
-pnpm run build
+pnpm run preview:verify
 ```
 
 الناتج:
@@ -77,6 +79,55 @@ prototype/p3-lecture-capture-web/dist/assets/
 ```
 
 أما `dist/server/index.js` فهو مدخل اختياري ولا تحتاجه الاستضافة الثابتة الحالية.
+
+`preview:verify` يبني الحزمة ثم يفحصها بخادم HTTP ساكن محلي. يتحقق من المسارات الفعلية، و404 للمسار
+غير الموجود، وPDF worker وService Worker من نفس origin، والمراجع المحلية، وحد 25 MiB للملف الواحد،
+وحد 20,000 ملف لخطة Cloudflare Pages المجانية، وعدم تسرب ملفات محلية أو أسرار معروفة.
+
+## إعداد Cloudflare Pages الدقيق عند الربط لاحقاً
+
+هذه القيم تُدخل يدوياً في Cloudflare Dashboard بعد موافقة المستخدم. هذه المهمة لا تنشئ المشروع ولا تسجل
+الدخول ولا تربط GitHub:
+
+| الحقل | القيمة |
+|---|---|
+| Product | Workers & Pages → Create application → Pages → Connect to Git |
+| Git provider | GitHub |
+| Repository | `learned16/studio5` |
+| Production branch | `develop` |
+| Framework preset | `None` |
+| Root directory | جذر المستودع `/` |
+| Build command | `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run preview:verify` |
+| Build output directory | `prototype/p3-lecture-capture-web/dist/assets` |
+| Build system version | Latest / V3 |
+| Production branch deployments | Enabled لـ`develop` فقط |
+| Preview deployments | Enabled لجميع فروع وPull Requests داخل المستودع نفسه |
+| Environment variable | `NODE_VERSION=22` |
+| Environment variable | `PNPM_VERSION=10` |
+
+### لماذا هذه القيم؟
+
+- `GitHub`: حتى يبني Cloudflare الـcommit/SHA الموجود فعلياً في المستودع، لا نسخة منسوخة يدوياً.
+- `develop`: هو فرع التجميع الحالي؛ `main` لا يُستخدم لنشر هذه المعاينة.
+- `None`: المشروع Build ساكن مخصص وليس Framework يحتاج preset.
+- جذر المستودع: أمر البناء يعتمد على مسارات `packages/studio5-core` و`prototype/` معاً.
+- `preview:verify`: يمنع رفع حزمة ناقصة أو ذات مسارات/أصول مكسورة.
+- `dist/assets`: هو الناتج الساكن فقط؛ `dist/server` ليس مطلوباً في Pages.
+- V3 وNode 22 وpnpm 10: تمنع اختلاف بيئة Cloudflare عن CI والـlockfile.
+- PR previews: تعطي كل فرع/PR رابطاً مرتبطاً بالـcommit من دون تغيير Production.
+
+لا نستخدم في الإعداد الحالي:
+
+- `main` كـProduction branch.
+- Direct Upload أو Wrangler.
+- Custom Domain.
+- Cloudflare Access.
+- Functions أو أسرار أو API tokens.
+- ChatGPT Sites.
+
+كل رابط Preview وbranch alias وProduction URL هو origin متصفح مستقل. لذلك IndexedDB وCache Storage
+وService Worker وبيانات PDF/Notes/Ink المخزنة محلياً لا تنتقل تلقائياً بين الروابط. يجب إجراء بوابة MatePad
+على رابط واحد محدد وتسجيل SHA والرابط في تقرير الاختبار.
 
 ## تدقيق الاستضافة الثابتة
 
@@ -106,7 +157,7 @@ prototype/p3-lecture-capture-web/dist/assets/
 - production branch يحدد إلى `develop` مؤقتاً أو يعطّل Production إذا أردنا
   previews فقط.
 - build command:
-  `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run build`
+  `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run preview:verify`
 - output directory:
   `prototype/p3-lecture-capture-web/dist/assets`
 - Preview لجميع Pull Requests القادمة من المستودع نفسه.
