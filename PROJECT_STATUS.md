@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-29
-المرحلة الحالية: `Phase 4 - Hardening Review`
-الفرع النشط: `codex/p4-hardening-review`
+المرحلة الحالية: `Pre-Phase 5 Foundation`
+الفرع النشط: `chore/pre-phase5-foundation`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -77,8 +77,9 @@
 | P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | DEPLOYED WITH P4 V9 - 22/22 + REGRESSION / DEVICE RETEST PENDING | Adapter العرض وواجهة Library وملفات بناء PDF.js |
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
 | P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | DEPLOYED V7 - DEVICE GATE PENDING | Route `reliability/**` والبناء والاختبارات |
-| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | DEPLOYED V9 - 99/99 + 22/22 + 15/15 / DEVICE GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
-| P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | LOCAL VERIFIED - 100/100 + 15/15 + 22/22 / DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
+| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | CODE VERIFIED / V9 FROZEN REFERENCE / DEVICE GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
+| P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | CODE + PR CI PASS - 100/100 + 15/15 + 22/22 / DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
+| PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | LOCAL VERIFIED - DOCS 9/9 + CI POLICY 7/7 / PR CI PENDING | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -92,11 +93,11 @@
 
 ## القادم بعد المهمة الحالية
 
-1. تنفيذ `docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md` على MatePad.
-2. لا تُغلق Phase 4 ولا تبدأ Phase 5 قبل نجاح PDF/Migration/Backup/Restore/Reopen بلا فقد أو تكرار.
-3. يبقى موقع Ink Lab القديم ذا أصل مختلف؛ نقله يتطلب Export/Import صريحاً ولا يُحذف تلقائياً.
-4. GitHub وفروعه هي المصدر الوحيد؛ Sites v9 مرجع مجمّد بلا تحديثات جديدة.
-5. يبقى اختبار منتقي PDF الأصلي وتقرير Library على MatePad بوابة Phase 3 منفصلة.
+1. إعداد Preview يبني commit من GitHub مباشرة بعد موافقة المستخدم.
+2. تنفيذ `docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md` على MatePad من ذلك Preview.
+3. لا تُغلق Phase 4 ولا تبدأ Phase 5 قبل نجاح PDF/Migration/Backup/Restore/Reopen بلا فقد أو تكرار.
+4. مواقع Sites القديمة مجمدة؛ لا تُستخدم للقبول ولا تُنقل بياناتها إلا Export/Import صريحاً.
+5. GitHub وفروعه هي المصدر الوحيد للكود.
 6. المزامنة السحابية وحل التعارضات لا يدخلان تلقائياً في هذه الدفعة.
 7. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
 
@@ -105,7 +106,7 @@
 - Phase 3: Lecture Capture وCloseout وInbox وSearch وFavorites/Recent.
 - Phase 4: Backup/Restore/Export وPrivacy/Lock وRecovery.
 - Phase 5: Drawing Coach Lite.
-- Phase 6: Hardening واختبارات الجهاز وRelease Candidate.
+- Phase 6: التكامل النهائي وHardening واختبارات الجهاز وRelease Candidate.
 
 خارج النطاق الحالي: سنوات 2-5، AI Council، Desktop Companion، التحكم بالكمبيوتر، CAD/BIM، والمزامنة المعقدة متعددة الأجهزة.
 

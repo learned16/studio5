@@ -2,14 +2,21 @@ name: Phase 4 checks
 
 on:
   pull_request:
+    branches:
+      - develop
+      - main
   push:
     branches:
+      - develop
       - main
-      - codex/p4-storage-consolidation
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   studio5-core:

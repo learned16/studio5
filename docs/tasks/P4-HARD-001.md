@@ -28,7 +28,7 @@
 - `packages/studio5-core/src/backup.mjs`
 - `packages/studio5-core/tests/backup.test.mjs`
 - `.github/workflows/ci.yml`
-- `docs/WEB_BUILD.md`
+- `docs/PREVIEW_DEPLOYMENT_AR.md`
 - `docs/tasks/P4-HARD-001.md`
 - `docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md`
 - `PROJECT_STATUS.md`
@@ -63,7 +63,7 @@
 - `prototype/p0-ink-web/dist/`
 - `prototype/p3-lecture-capture-web/dist/`
 
-التفاصيل والأوامر في `docs/WEB_BUILD.md`.
+التفاصيل والأوامر في `docs/PREVIEW_DEPLOYMENT_AR.md`.
 
 ## البوابة المتبقية
 
