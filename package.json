@@ -1,0 +1,14 @@
+{
+  "name": "studio5-workers",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "worker:assets:build": "pnpm --dir prototype/p3-lecture-capture-web run build",
+    "worker:config:check": "wrangler deploy --dry-run",
+    "worker:verify": "pnpm run worker:assets:build && pnpm run worker:config:check"
+  },
+  "devDependencies": {
+    "wrangler": "4.114.0"
+  }
+}

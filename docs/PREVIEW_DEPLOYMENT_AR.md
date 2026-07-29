@@ -5,6 +5,7 @@
 - مستودع GitHub وفروعه هما المصدر الوحيد للكود والتاريخ.
 - ChatGPT Sites متوقف؛ النسخة القديمة تبقى مرجعاً مجمداً ولا تُستخدم للاختبار
   أو القبول ولا تستقبل أي تحديث.
+- الخيار الحالي هو `Cloudflare Workers Static Assets + Workers Builds`، وليس Cloudflare Pages.
 - لا يوجد نشر خارجي ضمن هذه المهمة.
 - أي Preview لاحق يجب أن يبني commit موجوداً في GitHub مباشرة، لا نسخة منسوخة
   يدوياً ولا branch مخصصاً لمزود الاستضافة.
@@ -83,26 +84,23 @@ prototype/p3-lecture-capture-web/dist/assets/
 `preview:verify` يبني الحزمة ثم يفحصها بخادم HTTP ساكن محلي. يتحقق من المسارات الفعلية، ووجود
 `404.html` في جذر Build output وإرجاعها مع HTTP 404 لأي مسار مجهول بدلاً من الصفحة الرئيسية،
 وPDF worker وService Worker من نفس origin، والمراجع المحلية، وحد 25 MiB للملف الواحد،
-وحد 20,000 ملف لخطة Cloudflare Pages المجانية، وعدم تسرب ملفات محلية أو أسرار معروفة.
+وحد 20,000 ملف لخطة Workers Free، وعدم تسرب ملفات محلية أو أسرار معروفة.
 
-## إعداد Cloudflare Pages الدقيق عند الربط لاحقاً
+## إعداد Cloudflare Workers Builds الدقيق عند الربط لاحقاً
 
 هذه القيم تُدخل يدوياً في Cloudflare Dashboard بعد موافقة المستخدم. هذه المهمة لا تنشئ المشروع ولا تسجل
 الدخول ولا تربط GitHub:
 
 | الحقل | القيمة |
 |---|---|
-| Product | Workers & Pages → Create application → Pages → Connect to Git |
-| Git provider | GitHub |
+| Product | Workers & Pages → Create application → Import a repository |
 | Repository | `learned16/studio5` |
 | Production branch | `develop` |
-| Framework preset | `None` |
 | Root directory | جذر المستودع `/` |
-| Build command | `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run preview:verify` |
-| Build output directory | `prototype/p3-lecture-capture-web/dist/assets` |
-| Build system version | Latest / V3 |
-| Production branch deployments | Enabled لـ`develop` فقط |
-| Preview deployments | Enabled لجميع فروع وPull Requests داخل المستودع نفسه |
+| Build command | `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run build` |
+| Production deploy command | `npx wrangler deploy` |
+| Non-production deploy command | `npx wrangler versions upload` |
+| Builds for non-production branches | Enabled |
 | Environment variable | `NODE_VERSION=22` |
 | Environment variable | `PNPM_VERSION=10` |
 
@@ -110,17 +108,17 @@ prototype/p3-lecture-capture-web/dist/assets/
 
 - `GitHub`: حتى يبني Cloudflare الـcommit/SHA الموجود فعلياً في المستودع، لا نسخة منسوخة يدوياً.
 - `develop`: هو فرع التجميع الحالي؛ `main` لا يُستخدم لنشر هذه المعاينة.
-- `None`: المشروع Build ساكن مخصص وليس Framework يحتاج preset.
 - جذر المستودع: أمر البناء يعتمد على مسارات `packages/studio5-core` و`prototype/` معاً.
-- `preview:verify`: يمنع رفع حزمة ناقصة أو ذات مسارات/أصول مكسورة.
-- `dist/assets`: هو الناتج الساكن فقط؛ `dist/server` ليس مطلوباً في Pages.
-- V3 وNode 22 وpnpm 10: تمنع اختلاف بيئة Cloudflare عن CI والـlockfile.
-- PR previews: تعطي كل فرع/PR رابطاً مرتبطاً بالـcommit من دون تغيير Production.
+- `pnpm run build`: ينشئ `dist/assets` ويتحقق من المداخل و`404.html` قبل أمر Wrangler.
+- `wrangler deploy`: يرفع إصدار فرع `develop` ويرقّيه إلى Production عند تفعيل الربط لاحقاً.
+- `wrangler versions upload`: يرفع إصدار معاينة للفروع غير الإنتاجية من دون ترقيته إلى Production.
+- Wrangler مثبت في `package.json` بإصدار صريح، لذلك `npx` داخل Workers Builds يستخدم النسخة المحلية.
+- Node 22 وpnpm 10 يمنعان اختلاف بيئة Workers Builds عن CI والـlockfile.
 
 لا نستخدم في الإعداد الحالي:
 
 - `main` كـProduction branch.
-- Direct Upload أو Wrangler.
+- Cloudflare Pages أو Direct Upload.
 - Custom Domain.
 - Cloudflare Access.
 - Functions أو أسرار أو API tokens.
@@ -134,9 +132,11 @@ prototype/p3-lecture-capture-web/dist/assets/
 
 | العنصر | الحالة الحالية |
 |---|---|
-| SPA fallback | معطّل بوجود `404.html` في جذر Build output؛ هذا يمنع Cloudflare Pages من تطبيق SPA fallback الافتراضي |
+| Static Assets | `wrangler.jsonc` يخدم `prototype/p3-lecture-capture-web/dist/assets` مباشرة بلا Worker script |
+| SPA fallback | غير مستخدم؛ `not_found_handling: 404-page` يعيد أقرب `404.html` مع HTTP 404 |
 | المسارات المعروفة | `/` و`closeout/` و`library/` و`reliability/` تعتمد ملفات `index.html` حقيقية |
 | المسارات المجهولة | يجب أن ترجع محتوى `404.html` مع HTTP 404، لا الصفحة الرئيسية |
+| HTML handling | `auto-trailing-slash` لخدمة ملفات `index.html` داخل المجلدات بصيغة URL الطبيعية |
 | Base path | الأصول وروابط PWA نسبية؛ يفضل النشر على جذر domain/preview لا داخل subpath ثابت |
 | Service Worker | موجود، ويجب أن يُخدم عبر HTTPS وبـscope جذر المعاينة |
 | IndexedDB | يعمل من static hosting؛ البيانات محلية لكل origin ولا تنتقل بين روابط Preview المختلفة |
@@ -149,28 +149,28 @@ prototype/p3-lecture-capture-web/dist/assets/
 
 | الخيار | PR Preview | رابط branch ثابت | ملاءمة الحالة الحالية | الملاحظة |
 |---|---|---|---|---|
-| Cloudflare Pages | نعم | نعم، branch alias | الأفضل | Git integration مباشر، build من branch، ولا يحتاج server runtime |
+| Cloudflare Workers Static Assets + Workers Builds | نعم، عبر Versions | نعم | المعتمد حالياً | Git integration مباشر، أصول ساكنة بلا Worker script، ونسخة Wrangler مثبتة |
 | Vercel | نعم | نعم | مناسب | يمكنه نشر static output، لكنه أوسع من حاجة المشروع الحالية |
 | GitHub Pages | ليس افتراضياً لكل PR | فرع/بيئة واحدة غالباً | أضعف | يحتاج workflow إضافياً وإدارة base path للـrepository subpath |
 
 ## التوصية
 
-التوصية عند موافقة المستخدم لاحقاً هي **Cloudflare Pages مع Git integration**:
+التوصية عند موافقة المستخدم لاحقاً هي **Cloudflare Workers Static Assets مع Workers Builds**:
 
-- production branch يحدد إلى `develop` مؤقتاً أو يعطّل Production إذا أردنا
-  previews فقط.
+- production branch يحدد إلى `develop`.
 - build command:
-  `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run preview:verify`
-- output directory:
-  `prototype/p3-lecture-capture-web/dist/assets`
-- Preview لجميع Pull Requests القادمة من المستودع نفسه.
+  `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run build`
+- production deploy command: `npx wrangler deploy`.
+- non-production deploy command: `npx wrangler versions upload`.
+- Builds for non-production branches: Enabled.
 - لا ربط ولا نشر قبل موافقة المستخدم وبعد نجاح Device Gate المطلوب.
 
 مراجع المزود:
 
-- https://developers.cloudflare.com/pages/configuration/git-integration/
-- https://developers.cloudflare.com/pages/configuration/preview-deployments/
-- https://vercel.com/docs/git
+- https://developers.cloudflare.com/workers/static-assets/
+- https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/
+- https://developers.cloudflare.com/workers/ci-cd/builds/configuration/
+- https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/
 
 ## فحوصات القبول عند الربط لاحقاً
 
