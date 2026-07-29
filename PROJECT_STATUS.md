@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-07-28
-المرحلة الحالية: `Phase 4 - Reliability / Backup Core`
-الفرع النشط: `codex/p4-storage-consolidation`
+آخر تحديث: 2026-07-29
+المرحلة الحالية: `Phase 4 - Hardening Review`
+الفرع النشط: `codex/p4-hardening-review`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -78,6 +78,7 @@
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
 | P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | DEPLOYED V7 - DEVICE GATE PENDING | Route `reliability/**` والبناء والاختبارات |
 | P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | DEPLOYED V9 - 99/99 + 22/22 + 15/15 / DEVICE GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
+| P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | LOCAL VERIFIED - 100/100 + 15/15 + 22/22 / DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -91,10 +92,10 @@
 
 ## القادم بعد المهمة الحالية
 
-1. اختبار انتقال بيانات Phase 3 المنشورة في `P4-REL-003` على MatePad من دون فقد PDF أو Notes.
-2. اختبار تنزيل Backup وفحصه واستعادته على MatePad من دون فقد PDF أو Notes أو Ink.
+1. تنفيذ `docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md` على MatePad.
+2. لا تُغلق Phase 4 ولا تبدأ Phase 5 قبل نجاح PDF/Migration/Backup/Restore/Reopen بلا فقد أو تكرار.
 3. يبقى موقع Ink Lab القديم ذا أصل مختلف؛ نقله يتطلب Export/Import صريحاً ولا يُحذف تلقائياً.
-4. بعد نجاح بوابة التخزين والجهاز، فتح الخصوصية والقفل كقدرة مستقلة.
+4. GitHub وفروعه هي المصدر الوحيد؛ Sites v9 مرجع مجمّد بلا تحديثات جديدة.
 5. يبقى اختبار منتقي PDF الأصلي وتقرير Library على MatePad بوابة Phase 3 منفصلة.
 6. المزامنة السحابية وحل التعارضات لا يدخلان تلقائياً في هذه الدفعة.
 7. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.

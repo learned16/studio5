@@ -9,6 +9,7 @@ import {
   verifyPortableBackup,
 } from "../src/backup.mjs";
 import { AcademicRepository } from "../src/academic-repository.mjs";
+import { sha256Hex } from "../src/file-intake.mjs";
 import { CoreLocalDatabase, CorePersistenceError } from "../src/local-database.mjs";
 import { COLLECTIONS } from "../src/schema.mjs";
 import { MemoryCoreDriver } from "./helpers/memory-driver.mjs";
@@ -115,6 +116,22 @@ function totalEntities(snapshot) {
   );
 }
 
+function canonicalValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, canonicalValue(value[key])]),
+    );
+  }
+  return value;
+}
+
+function canonicalBytes(value) {
+  return new TextEncoder().encode(JSON.stringify(canonicalValue(value)));
+}
+
 test("empty portable backup is valid and has a complete manifest", async () => {
   const { repository } = repositoryFixture();
   const backup = await repository.createPortableBackup();
@@ -176,6 +193,51 @@ test("verification detects changed snapshot, content, and manifest", async () =>
     () => verifyPortableBackup(changedManifest),
     /content totals mismatch/,
   );
+
+  const changedCount = structuredClone(backup);
+  changedCount.manifest.entityCounts.academicYears += 1;
+  await assert.rejects(
+    () => verifyPortableBackup(changedCount),
+    /count mismatch/,
+  );
+
+  const missingCollection = structuredClone(backup);
+  delete missingCollection.manifest.entityCounts.notes;
+  await assert.rejects(
+    () => verifyPortableBackup(missingCollection),
+    /collection set does not match snapshot/,
+  );
+
+  const additionalCollection = structuredClone(backup);
+  additionalCollection.manifest.entityCounts.unexpected = 0;
+  await assert.rejects(
+    () => verifyPortableBackup(additionalCollection),
+    /collection set does not match snapshot/,
+  );
+});
+
+test("valid schema 7 backup verifies before migration and returns schema 8", async () => {
+  const { repository } = repositoryFixture();
+  await createCompleteFixture(repository);
+  const backup = await repository.createPortableBackup();
+  const legacy = structuredClone(backup);
+
+  legacy.snapshot.schemaVersion = 7;
+  delete legacy.snapshot.entities.notes;
+  legacy.manifest.coreSchemaVersion = 7;
+  legacy.manifest.entityCounts = Object.fromEntries(
+    Object.entries(legacy.snapshot.entities)
+      .map(([collection, entries]) => [collection, entries.length]),
+  );
+  legacy.manifest.snapshotSha256 = await sha256Hex(
+    canonicalBytes(legacy.snapshot),
+  );
+
+  const verified = await verifyPortableBackup(legacy);
+
+  assert.equal(verified.manifest.coreSchemaVersion, 7);
+  assert.equal(verified.snapshot.schemaVersion, 8);
+  assert.deepEqual(verified.snapshot.entities.notes, []);
 });
 
 test("restore to empty storage preserves entities, relations, PDF, and Ink bytes", async () => {

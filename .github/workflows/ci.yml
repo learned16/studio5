@@ -1,0 +1,66 @@
+name: Phase 4 checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - codex/p4-storage-consolidation
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  studio5-core:
+    name: Studio5 Core
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/studio5-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  ink-web:
+    name: P0 Ink Web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototype/p0-ink-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  lecture-capture-web:
+    name: P3 Lecture Capture Web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototype/p3-lecture-capture-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: prototype/p3-lecture-capture-web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm run typecheck
+      - run: pnpm test
+      - run: pnpm run build

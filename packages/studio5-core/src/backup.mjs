@@ -111,11 +111,56 @@ function entityCounts(snapshot) {
   );
 }
 
+function assertOriginalSnapshotShape(snapshot) {
+  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
+    throw new BackupValidationError("Backup core snapshot must be an object");
+  }
+  if (!snapshot.entities
+    || typeof snapshot.entities !== "object"
+    || Array.isArray(snapshot.entities)) {
+    throw new BackupValidationError("Backup core snapshot entities are missing");
+  }
+
+  const collections = Object.keys(snapshot.entities);
+  if (collections.some((collection) => !COLLECTIONS.includes(collection))) {
+    throw new BackupValidationError(
+      "Backup snapshot contains an unknown collection",
+    );
+  }
+
+  for (const collection of collections) {
+    if (!Array.isArray(snapshot.entities[collection])) {
+      throw new BackupValidationError(
+        `Backup snapshot collection ${collection} must be an array`,
+      );
+    }
+  }
+}
+
+function originalEntityCounts(snapshot) {
+  return Object.fromEntries(
+    Object.keys(snapshot.entities).map((collection) => [
+      collection,
+      snapshot.entities[collection].length,
+    ]),
+  );
+}
+
 function compareEntityCounts(actual, expected) {
   if (!expected || typeof expected !== "object" || Array.isArray(expected)) {
     throw new BackupValidationError("Backup manifest entityCounts are missing");
   }
-  for (const collection of COLLECTIONS) {
+  const actualCollections = Object.keys(actual).sort();
+  const expectedCollections = Object.keys(expected).sort();
+  if (actualCollections.length !== expectedCollections.length
+    || actualCollections.some(
+      (collection, index) => collection !== expectedCollections[index],
+    )) {
+    throw new BackupValidationError(
+      "Backup manifest collection set does not match snapshot",
+    );
+  }
+  for (const collection of actualCollections) {
     if (!Number.isInteger(expected[collection])
       || expected[collection] < 0
       || expected[collection] !== actual[collection]) {
@@ -123,9 +168,6 @@ function compareEntityCounts(actual, expected) {
         `Backup manifest count mismatch for ${collection}`,
       );
     }
-  }
-  if (Object.keys(expected).some((collection) => !COLLECTIONS.includes(collection))) {
-    throw new BackupValidationError("Backup manifest contains an unknown collection");
   }
 }
 
@@ -271,16 +313,18 @@ export async function createPortableBackup({
 export async function verifyPortableBackup(bundle) {
   assertBundleShape(bundle);
   validInstant(bundle.manifest.createdAt, "manifest.createdAt");
-  const normalized = normalizeSnapshot(bundle.snapshot);
+  assertOriginalSnapshotShape(bundle.snapshot);
   if (bundle.manifest.coreSchemaVersion !== bundle.snapshot?.schemaVersion) {
     throw new BackupValidationError("Backup manifest schema version mismatch");
   }
-  const snapshotSha256 = await sha256Hex(canonicalBytes(normalized));
+  const snapshotSha256 = await sha256Hex(canonicalBytes(bundle.snapshot));
   if (bundle.manifest.snapshotSha256 !== snapshotSha256) {
     throw new BackupValidationError("Backup snapshot digest mismatch");
   }
-  compareEntityCounts(entityCounts(normalized), bundle.manifest.entityCounts);
+  const originalCounts = originalEntityCounts(bundle.snapshot);
+  compareEntityCounts(originalCounts, bundle.manifest.entityCounts);
 
+  const normalized = normalizeSnapshot(bundle.snapshot);
   const references = referencedContent(normalized);
   const entries = new Map();
   let totalBytes = 0;
