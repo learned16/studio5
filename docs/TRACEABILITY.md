@@ -13,6 +13,11 @@
 | `S5-QA` | جودة واختبارات |
 | `S5-UX` | تجربة استخدام وإتاحة |
 | `S5-AI` | تكامل AI اختياري؛ ليس أساس الدراسة |
+| `S5-GIT` | إدارة الفروع والمراجعة والتاريخ |
+| `S5-PREVIEW` | بناء ومعاينة مرتبطة مباشرة بـGitHub |
+| `S5-NATIVE` | حدود تسمح بتغليف Native مستقبلاً |
+| `S5-DC-SPEC` | مواصفة Drawing Coach قبل التنفيذ |
+| `S5-P6-SPEC` | مواصفة التكامل والإصدار النهائي |
 
 ## التتبع الحالي
 
@@ -43,7 +48,12 @@
 | `S5-DATA-004` | Backup/Restore/Full Export | P4-HARD-001 | CORE HARDENED / DEVICE GATE PENDING | 100/100 Core + Schema 7→8 regression |
 | `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | V9 FROZEN REFERENCE / DEVICE GATE PENDING | 22/22 UI + 100/100 Core + 15/15 Ink؛ MatePad pending |
 | `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | CODE VERIFIED / DEVICE GATE PENDING | 100/100 Core + 22/22 Phase 3 + 15/15 Ink + Build |
-| `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | LOCAL VERIFIED / PR CI PENDING | Node 22: 100/100 Core + 15/15 Ink + 22/22 P3 + Builds |
+| `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | CODE + PR CI PASS / DEVICE GATE PENDING | Node 22: 100/100 Core + 15/15 Ink + 22/22 P3 + Builds؛ GitHub 3/3 |
+| `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@2f5196c` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
+| `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DOCUMENTED / NOT DEPLOYED | `PREVIEW_DEPLOYMENT_AR.md` |
+| `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
+| `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
+| `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |
 | `S5-FR-007` | Understanding Rescue | Year One | BACKLOG CURRENT YEAR | المواصفة في `UNDERSTANDING_RESCUE.md` |
 | `S5-FR-008` | Project Lite وواجبات وملاحظات الدكتور | Year One | BACKLOG CURRENT YEAR | النموذج موجود في `DATA_MODEL.md` |
