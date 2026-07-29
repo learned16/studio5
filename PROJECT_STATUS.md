@@ -79,7 +79,7 @@
 | P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | DEPLOYED V7 - DEVICE GATE PENDING | Route `reliability/**` والبناء والاختبارات |
 | P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | CODE VERIFIED / V9 FROZEN REFERENCE / DEVICE GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
 | P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | CODE + PR CI PASS - 100/100 + 15/15 + 22/22 / DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
-| PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | LOCAL VERIFIED - DOCS 9/9 + CI POLICY 7/7 / PR CI PENDING | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
+| PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | READY FOR USER REVIEW - DOCS 9/9 + CI POLICY 7/7 + PR CI 3/3 | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
