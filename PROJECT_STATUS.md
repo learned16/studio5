@@ -74,10 +74,10 @@
 | P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | DEPLOYED V3 - DEVICE GATE PENDING | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
 | P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
-| P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | INTEGRATED IN P4 - 22/22 + REGRESSION / DEPLOY PENDING | Adapter العرض وواجهة Library وملفات بناء PDF.js |
+| P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | DEPLOYED WITH P4 V9 - 22/22 + REGRESSION / DEVICE RETEST PENDING | Adapter العرض وواجهة Library وملفات بناء PDF.js |
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
 | P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | DEPLOYED V7 - DEVICE GATE PENDING | Route `reliability/**` والبناء والاختبارات |
-| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | IMPLEMENTED - 99/99 + 22/22 + 15/15 / DEPLOY PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
+| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | DEPLOYED V9 - 99/99 + 22/22 + 15/15 / DEVICE GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -91,7 +91,7 @@
 
 ## القادم بعد المهمة الحالية
 
-1. نشر `P4-REL-003` ثم اختبار انتقال بيانات Phase 3 على MatePad من دون فقد PDF أو Notes.
+1. اختبار انتقال بيانات Phase 3 المنشورة في `P4-REL-003` على MatePad من دون فقد PDF أو Notes.
 2. اختبار تنزيل Backup وفحصه واستعادته على MatePad من دون فقد PDF أو Notes أو Ink.
 3. يبقى موقع Ink Lab القديم ذا أصل مختلف؛ نقله يتطلب Export/Import صريحاً ولا يُحذف تلقائياً.
 4. بعد نجاح بوابة التخزين والجهاز، فتح الخصوصية والقفل كقدرة مستقلة.
