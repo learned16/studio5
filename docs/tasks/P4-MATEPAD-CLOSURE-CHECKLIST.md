@@ -1,17 +1,22 @@
 # Phase 4 — MatePad Closure Checklist
 
-**الموقع الحالي:** `https://studio5-lecture-capture.lharithl.chatgpt.site`
+**GitHub-connected preview URL:** `PENDING`
 
-**النسخة:** Sites v9
+**مصدر النسخة المطلوبة:** Build حقيقي ناتج من branch داخل مستودع GitHub.
 
-**النتيجة:** `PENDING USER DEVICE TEST`
+**النتيجة:** `BLOCKED — GITHUB-CONNECTED PREVIEW PENDING`
+
+لا تُستخدم ChatGPT Sites أو Sites v9 لإغلاق المرحلة الرابعة. يبقى Device Gate
+محجوباً إلى أن تتوفر معاينة مرتبطة مباشرةً بفرع GitHub وتعرض الـcommit المختبر
+نفسه. لا تنشئ هذه المهمة Cloudflare أو Vercel deployment.
 
 نفّذ الاختبار على بيانات تجريبية يمكن استبدالها. لا تستخدم النسخة الوحيدة من ملف
 دراسي مهم في تجربة الاستعادة.
 
 ## قبل البدء
 
-- [ ] افتح الموقع على MatePad نفسه.
+- [ ] تأكد أن رابط المعاينة مرتبط بفرع GitHub ويعرض الـcommit المطلوب اختباره.
+- [ ] افتح GitHub-connected preview على MatePad نفسه.
 - [ ] تأكد أن الاتصال مستقر وقت تنزيل ملف الـBackup.
 - [ ] سجّل عدد ملفات PDF والملاحظات والرسومات الحالية.
 

@@ -43,7 +43,7 @@
 | `S5-DATA-004` | Backup/Restore/Full Export | P4-HARD-001 | CORE HARDENED / DEVICE GATE PENDING | 100/100 Core + Schema 7→8 regression |
 | `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | V9 FROZEN REFERENCE / DEVICE GATE PENDING | 22/22 UI + 100/100 Core + 15/15 Ink؛ MatePad pending |
 | `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | CODE VERIFIED / DEVICE GATE PENDING | 100/100 Core + 22/22 Phase 3 + 15/15 Ink + Build |
-| `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | LOCAL VERIFIED / PR CI PENDING | Node 22: 100/100 Core + 15/15 Ink + 22/22 P3 + Builds |
+| `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | PR CI PASS / DEVICE GATE BLOCKED | Node 22: 100/100 Core + 15/15 Ink + 22/22 P3 + Builds؛ GitHub 3/3 على commit رأس PR الحالي أو الأحدث |
 | `S5-FR-006` | Drawing Coach Lite | Phase 5 | BACKLOG CURRENT YEAR | P0 أساس Ink فقط |
 | `S5-FR-007` | Understanding Rescue | Year One | BACKLOG CURRENT YEAR | المواصفة في `UNDERSTANDING_RESCUE.md` |
 | `S5-FR-008` | Project Lite وواجبات وملاحظات الدكتور | Year One | BACKLOG CURRENT YEAR | النموذج موجود في `DATA_MODEL.md` |

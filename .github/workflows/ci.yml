@@ -5,11 +5,16 @@ on:
   push:
     branches:
       - main
+      - develop
       - codex/p4-storage-consolidation
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: studio5-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   studio5-core:
@@ -19,8 +24,8 @@ jobs:
       run:
         working-directory: packages/studio5-core
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
       - run: npm run lint
@@ -34,8 +39,8 @@ jobs:
       run:
         working-directory: prototype/p0-ink-web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
       - run: npm run lint
@@ -50,11 +55,11 @@ jobs:
       run:
         working-directory: prototype/p3-lecture-capture-web
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: pnpm
