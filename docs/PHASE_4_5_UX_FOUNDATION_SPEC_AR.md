@@ -7,7 +7,10 @@ Phase 4.5 مرحلة تصميم وتجربة استخدام فقط، تقع بي
 موحدة ومناسبة للاستخدام الجامعي اليومي، من دون تغيير Core أو Schema أو التخزين
 أو Backup.
 
-> Current P3 UI is a functional validation prototype, not the final Studio5 product design.
+حالة Phase 4 الحالية:
+`PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`.
+
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
 هذه الوثيقة مواصفة للمراجعة وليست إذناً بكتابة الكود. لا يبدأ التنفيذ قبل موافقة
 المستخدم على بنية المعلومات والتدفقات والشكل العام.
@@ -18,11 +21,17 @@ Phase 4.5 مرحلة تصميم وتجربة استخدام فقط، تقع بي
 2. **المحتوى قبل الزينة:** المادة والمحاضرة والمهمة والملف والمشروع هي المركز.
 3. **Local-first ظاهر ومفهوم:** الحفظ المحلي وحالة Backup يظهران بلا مصطلحات تقنية.
 4. **قلم أولاً على MatePad:** الأهداف اللمسية والمساحات والأدوات تراعي اليد والقلم.
-5. **RTL أصلي:** لا تكون العربية طبقة ترجمة فوق تصميم LTR.
-6. **Progressive disclosure:** تظهر الإجراءات الأساسية أولاً، والتفاصيل عند الطلب.
-7. **قابلية الاستبدال:** الواجهة الجديدة تستهلك عقود Core الحالية ولا تملك منطق
+5. **اتجاه المنتج ثابت:** Product Shell باللغة الإنكليزية، والتطبيق LTR.
+6. **المحتوى متعدد الاتجاهات:** أسماء الملفات والملاحظات ومحتوى المستخدم العربي
+   والمختلط تستخدم كشف اتجاه تلقائياً، من دون تحويل App Shell كله إلى RTL.
+7. **Progressive disclosure:** تظهر الإجراءات الأساسية أولاً، والتفاصيل عند الطلب.
+8. **قابلية الاستبدال:** الواجهة الجديدة تستهلك عقود Core الحالية ولا تملك منطق
    المجال أو مخطط البيانات.
-8. **لا ادعاء كاذب:** لا تعرض الواجهة نجاح حفظ أو Backup أو AI قبل تأكيد النتيجة.
+9. **لا ادعاء كاذب:** لا تعرض الواجهة نجاح حفظ أو Backup أو AI قبل تأكيد النتيجة.
+
+الاتجاه البصري المعتمد هو `Warm Paper Academic Studio`: سطح أكاديمي دافئ وهادئ
+يعطي أولوية للقراءة والرسم والعمل طويل المدة، مع Light/Dark themes مبنيين من
+Design Tokens مشتركة.
 
 ## 3. نطاق Phase 4.5
 
@@ -30,10 +39,11 @@ Phase 4.5 مرحلة تصميم وتجربة استخدام فقط، تقع بي
 
 - بنية المعلومات والتنقل الموحد.
 - App Shell وDesign System.
-- Today وSubjects وLibrary وTasks.
+- `Today / Study / Projects / Practice / Library`.
 - PDF/Notes/Ink Workspace.
-- Settings وBackup/Restore/Export.
-- نقطة دخول Drawing Coach فقط.
+- Settings كوجهة ثانوية وBackup/Restore/Export.
+- Subjects داخل Study.
+- نقطة دخول Drawing Coach داخل Practice فقط.
 - Responsive layout وLight/Dark themes والإتاحة.
 - خطة نقل وظائف P3 الحالية إلى الواجهة الجديدة.
 
@@ -51,31 +61,33 @@ Phase 4.5 مرحلة تصميم وتجربة استخدام فقط، تقع بي
 
 ### المستوى الأول
 
-1. **Today — اليوم**
-2. **Subjects — المواد**
-3. **Library — المكتبة**
-4. **Tasks — المهام**
-5. **Drawing Coach — مدرب الرسم**
-6. **Settings — الإعدادات**
+1. **Today**
+2. **Study**
+3. **Projects**
+4. **Practice**
+5. **Library**
 
-المشاريع والاختبارات والدرجات تظهر ضمن السياق المناسب في السنة الأولى، ولا
-تُضاف الآن كأقسام رئيسية مزدحمة قبل وجود تدفق مكتمل لها.
+Subjects تكون داخل `Study`. Drawing Coach يكون داخل `Practice`. Tasks ليست
+وجهة رئيسية منفصلة؛ تظهر في `Today` وداخل المادة أو المشروع المناسب. Search
+إجراء عام متاح من الـApp Shell، وSettings وجهة ثانوية. عند فتح PDF أو Note أو
+Drawing ينتقل المستخدم إلى Unified Workspace مع الحفاظ على سياق الرجوع.
 
 ### قواعد الربط
 
 - كل Lecture وTask وFile وNote وInk يرتبط بسياق أكاديمي عبر Stable ID.
 - لا تعتمد الشاشة على اسم مادة ثابت؛ تستخدم `SubjectProfile` و`CapabilityPack`.
-- فتح ملف من Today أو Subject أو Library يقود إلى Workspace نفسه مع حفظ سياق الرجوع.
+- فتح ملف من Today أو Study أو Project أو Library يقود إلى Workspace نفسه مع حفظ سياق الرجوع.
+- لا تُحذف `Projects` من التنقل الرئيسي حتى إن كان محتواها في البداية محدوداً.
 - الروابط العميقة تحفظ المسار المنطقي، لا حالة UI مؤقتة غير قابلة للاستعادة.
 
 ## 5. التنقل الرئيسي
 
 ### MatePad Landscape
 
-- Navigation Rail ثابت في اليمين بعرض مضغوط.
-- الأيقونة مع تسمية عربية واضحة؛ لا تعتمد الأيقونة وحدها.
+- Navigation Rail ثابت في اليسار بما يطابق اتجاه LTR.
+- الأيقونة مع تسمية إنكليزية واضحة؛ لا تعتمد الأيقونة وحدها.
 - زر إجراء سريع واحد فقط في موضع ثابت، يتغير حسب السياق.
-- Settings وBackup في أسفل الـRail لتجنب مزاحمة الدراسة اليومية.
+- Settings في أسفل الـRail كوجهة ثانوية لتجنب مزاحمة الدراسة اليومية.
 
 ### MatePad Portrait والهواتف
 
@@ -122,7 +134,7 @@ Today هي الشاشة الافتراضية وتجيب: «شنو أشتغل ه�
 - خطأ قراءة محلي قابل للاستعادة.
 - كثافة عالية مع تجميع حسب «الآن، اليوم، لاحقاً».
 
-## 7. Subjects
+## 7. Study (Subjects)
 
 ### صفحة القائمة
 
@@ -146,7 +158,19 @@ Today هي الشاشة الافتراضية وتجيب: «شنو أشتغل ه�
 - لا تُحسب نسبة إتقان من مشاهدة ملف فقط.
 - لا تخفي المادة القديمة؛ تُؤرشف مع بقاء روابطها وبياناتها.
 
-## 8. Library
+## 8. Projects
+
+`Projects` وجهة رئيسية معتمدة وليست امتداداً اختيارياً للمادة. في Phase 4.5
+يُعرّف تدفق الواجهة فقط، ويستخدم بيانات المشاريع الحالية عند توفرها من Core:
+
+- قائمة المشاريع مع الحالة والموعد والسياق الأكاديمي.
+- فتح المشروع يعرض المهام والملفات والملاحظات وملاحظات الدكتور المرتبطة.
+- Tasks الخاصة بالمشروع تظهر هنا وفي Today، من دون إنشاء نسخ مكررة.
+- فتح ملف أو رسم من المشروع يقود إلى Unified Workspace.
+- Empty state يوضح أن إنشاء المشروع لا يتطلب اختيار مادة ثابتة داخل Core.
+- لا تنفذ Phase 4.5 محرك مشاريع جديداً ولا تغير Schema.
+
+## 9. Library
 
 ### الوظائف
 
@@ -171,7 +195,7 @@ Today هي الشاشة الافتراضية وتجيب: «شنو أشتغل ه�
 - نتيجة بحث فارغة.
 - تعارض أو مهاجرة متوقفة مع رسالة تحافظ على البيانات.
 
-## 9. PDF / Notes / Ink Workspace
+## 10. PDF / Notes / Ink Unified Workspace
 
 Workspace هو السطح المركزي للدراسة، وليس قارئ PDF منفصلاً.
 
@@ -204,15 +228,24 @@ Workspace هو السطح المركزي للدراسة، وليس قارئ PDF 
 
 ### قواعد Ink
 
+- P0 Ink هو Functional Prototype مستقل وغير مضاف حالياً إلى Worker المنشور.
+- لا يعاد استخدام تصميم P0 القديم في المنتج.
+- تُحفظ قدرات المحرك المثبتة: القلم، الضغط، Palm Rejection، الممحاة المقطعية،
+  Autosave، Recovery، والاختبارات.
+- واجهة Ink الجديدة ستُبنى لاحقاً داخل Unified Workspace؛ لا تكتب أو تفصل Ink
+  Engine داخل هذا PR التوثيقي.
 - القلم يرسم، واللمس لا يحرك اللوحة أثناء الرسم.
 - Pan لا يعمل إلا عند اختيار أداة التحريك أو عبر Gesture موثق.
 - الضغط وPalm rejection والممحاة المقطعية يحافظ عليها المحرك الحالي.
 - Ink طبقة مستقلة قابلة للإخفاء والتصدير والاستعادة.
 - Autosave وRecovery يسبقان أي تحسين بصري.
 
-## 10. Tasks
+## 11. Tasks (Contextual)
 
-### القائمة
+### الظهور
+
+- Tasks تظهر في Today وداخل Study/Subject أو Project المرتبط.
+- يمكن فتح عرض شامل من Search أو إجراء ثانوي، لكنه ليس وجهة رئيسية سادسة.
 
 - Today، Upcoming، Overdue، Completed.
 - فلترة حسب Subject ونوع المهمة.
@@ -231,9 +264,9 @@ Workspace هو السطح المركزي للدراسة، وليس قارئ PDF 
 - لا تُحذف المهمة المكتملة تلقائياً.
 - فشل الحفظ يعرض النتيجة الحقيقية ويبقي الإدخال قابلاً للاستعادة.
 
-## 11. Drawing Coach Entry Point
+## 12. Practice / Drawing Coach Entry Point
 
-Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
+Phase 4.5 تنشئ وجهة `Practice` في التنقل، وتضع داخلها نقطة دخول Drawing Coach فقط:
 
 - بطاقة تعريف بالهدف.
 - حالة `Coming after UX approval` أو Feature Flag مغلق.
@@ -242,12 +275,13 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 
 هذه النقطة تمنع إعادة تصميم التنقل عند بدء Phase 5 من دون أن تبدأ تنفيذها مبكراً.
 
-## 12. Settings وBackup
+## 13. Settings وBackup
 
 ### أقسام Settings
 
 - المظهر: Light/Dark/System.
-- اللغة والاتجاه.
+- لغة Product Shell واتجاه LTR ثابتان لهذه النسخة؛ إعدادات عرض محتوى المستخدم
+  تحترم الكشف التلقائي للاتجاه.
 - سلوك القلم والـWorkspace ضمن الخيارات المدعومة فعلياً.
 - التخزين المحلي وحالته.
 - Backup/Restore/Export.
@@ -265,7 +299,7 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 
 لا تغيّر Phase 4.5 صيغة الـBackup أو محرك التحقق أو Migration.
 
-## 13. تصميم MatePad والقلم
+## 14. تصميم MatePad والقلم
 
 - المقاس المرجعي: `HUAWEI MatePad 11.5 PaperMatte`.
 - Landscape هو وضع العمل الثقيل، وPortrait مدعوم للتصفح السريع.
@@ -277,7 +311,7 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 - Toolbars لا تغطي منطقة الرسم أو حافة راحة اليد.
 - استجابة فورية للمؤشر، وحالة الحفظ لا تعطل الرسم.
 
-## 14. Responsive Layout
+## 15. Responsive Layout
 
 | النطاق | السلوك |
 |---|---|
@@ -288,7 +322,7 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 
 الـbreakpoints مرجع أولي ويُثبت بالاختبار البصري، لا بأسماء الأجهزة فقط.
 
-## 15. Light وDark Themes
+## 16. Light وDark Themes
 
 - الوضع الافتراضي يتبع النظام.
 - Light مناسب للقراءة الطويلة والـPDF.
@@ -297,7 +331,7 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 - حالة التركيز والخطأ والنجاح لا تعتمد على اللون وحده.
 - تغيير الثيم لا يعيد تحميل المستند ولا يفقد Draft أو موقع الصفحة.
 
-## 16. Design Tokens
+## 17. Design Tokens
 
 ### الألوان الدلالية
 
@@ -324,9 +358,9 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 ### Typography
 
 - `display`, `title`, `body`, `label`, `caption`.
-- خط عربي واضح يدعم الأرقام والرموز الهندسية.
+- خط Product Shell واضح للإنكليزية، مع fallback عربي واضح يدعم الأرقام والرموز الهندسية.
 - Body لا يقل عن `16px` في المحتوى الدراسي.
-- Line height مريح للنص العربي.
+- Line height مريح للنص الإنكليزي والعربي.
 
 ### الحركة والطبقات
 
@@ -334,7 +368,7 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 - Z-index tokens محددة للـRail وToolbar وSheet وDialog وToast.
 - لا animation تعطل القلم أو Autosave.
 
-## 17. المكونات المشتركة
+## 18. المكونات المشتركة
 
 - `AppShell`
 - `NavigationRail` / `BottomNavigation`
@@ -360,12 +394,12 @@ Phase 4.5 تنشئ مكاناً واضحاً في التنقل فقط:
 - `Skeleton`
 
 كل مكون يملك حالات Default، Hover عند توفره، Focus، Pressed، Disabled، Loading،
-Error، وRTL.
+Error، واتجاه محتوى LTR/RTL التلقائي عند الحاجة.
 
-## 18. Accessibility
+## 19. Accessibility
 
 - الهدف `WCAG 2.2 AA` للواجهة العامة.
-- ترتيب Focus منطقي في RTL.
+- ترتيب Focus منطقي في Product Shell ذي اتجاه LTR.
 - Focus ring واضح ولا يُزال.
 - جميع الأيقونات التفاعلية تملك اسماً نصياً.
 - تباين النصوص والإجراءات يحقق AA.
@@ -374,9 +408,19 @@ Error، وRTL.
 - رسائل الأخطاء مرتبطة بالحقل وتوضح طريقة الإصلاح.
 - حالات النجاح والفشل تُعلن عبر live region باعتدال.
 - لا يعتمد اختيار الأداة أو حالة المهمة على اللون وحده.
-- اختبار قارئ شاشة عربي أساسي على Android عند التنفيذ.
+- اختبار قارئ شاشة إنكليزي، واختبار محتوى مستخدم عربي/مختلط على Android عند التنفيذ.
 
-## 19. نقل الوظائف الحالية بلا إعادة كتابة Core
+## 20. حالة دعم العربية
+
+هذه المواصفة تسجل الحالة ولا تدمج إصلاح العربية داخل PR #5:
+
+- Arabic filenames rendering: implementation saved on a separate local branch.
+- Arabic notes rendering: regression tests prepared separately.
+- Arabic PDF canvas rendering: requires separate device diagnosis.
+
+الفرع المنفصل ليس جزءاً من هذا PR، ولا يجوز ادعاء أن الإصلاح منشور أو مدمج.
+
+## 21. نقل الوظائف الحالية بلا إعادة كتابة Core
 
 ### النهج
 
@@ -403,11 +447,14 @@ Error، وRTL.
 إطفاء Feature Flag يعيد واجهة P3 الوظيفية مع نفس البيانات. لا يحتاج Rollback
 إلى Restore أو Migration لأن Phase 4.5 لا تغير Schema.
 
-## 20. معايير القبول
+## 22. معايير القبول
 
 ### مواصفة التصميم
 
 - [ ] يوافق المستخدم على Information Architecture والتنقل.
+- [ ] التنقل الرئيسي هو `Today / Study / Projects / Practice / Library`.
+- [ ] Product Shell إنكليزي LTR، ومحتوى المستخدم العربي/المختلط يختار اتجاهه تلقائياً.
+- [ ] الاتجاه البصري يطابق `Warm Paper Academic Studio`.
 - [ ] يوافق المستخدم على Wireframes الأساسية قبل التنفيذ.
 - [ ] تُراجع Light/Dark tokens والتباين.
 - [ ] تُراجع مساحات القلم على MatePad.
@@ -438,9 +485,9 @@ Error، وRTL.
 - [ ] Visual regression للحالات الأساسية.
 - [ ] Core وP0 وP3 regression تبقى ناجحة.
 
-## 21. خطة الاختبارات المستقبلية
+## 23. خطة الاختبارات المستقبلية
 
-1. Component tests للحالات والتفاعل وRTL.
+1. Component tests للحالات والتفاعل وLTR shell واتجاه المحتوى التلقائي.
 2. Route integration tests مع Core adapters الحالية.
 3. Functional parity suite بين P3 وPhase 4.5.
 4. Visual regression لأربع نقاط استجابة وLight/Dark.
@@ -449,13 +496,24 @@ Error، وRTL.
 7. Reload، browser close/reopen، وOffline smoke.
 8. اختبار بيانات موجودة مسبقاً للتأكد أن UI الجديد يقرأها بلا Migration.
 
-## 22. القرارات المطلوبة قبل الكود
+## 24. القرارات قبل الكود
 
-1. اعتماد الوجهات الرئيسية الست وترتيبها.
-2. اعتماد Navigation Rail في Landscape وBottom Navigation في Portrait.
-3. اعتماد Workspace ثلاثي المناطق في Landscape.
-4. اعتماد اتجاه الهوية البصرية والألوان الدلالية.
-5. اعتماد استخدام Feature Flag ومسار رجوع إلى P3 أثناء النقل.
+### قرارات اعتمدها المستخدم
+
+1. الوجهات الرئيسية الخمس وترتيبها:
+   `Today / Study / Projects / Practice / Library`.
+2. Subjects داخل Study وDrawing Coach داخل Practice.
+3. Tasks سياقية، Search عام، Settings ثانوية، وWorkspace يفتح للمستند والملاحظة والرسم.
+4. `Warm Paper Academic Studio` هو الاتجاه البصري.
+5. Product Shell إنكليزي LTR، مع اتجاه تلقائي للمحتوى العربي والمختلط.
+6. P0 وP3 Functional Prototypes وليسا التصميم النهائي.
+
+### ما يحتاج مراجعة قبل التنفيذ
+
+1. تفاصيل Navigation Rail في Landscape وBottom Navigation في Portrait.
+2. تفاصيل Unified Workspace في Landscape وPortrait.
+3. Light/Dark tokens والمكونات المشتركة.
+4. استخدام Feature Flag ومسار رجوع إلى P3 أثناء النقل.
 
 حتى تُحسم هذه القرارات تبقى Phase 4.5 بحالة `SPECIFICATION REVIEW`، ولا يبدأ
 أي كود واجهة.

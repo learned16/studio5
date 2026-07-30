@@ -181,8 +181,10 @@ prototype/p3-lecture-capture-web/dist/assets/
 4. تسجيل Service Worker وتحديثه بعد commit جديد.
 5. إنشاء بيانات IndexedDB، إغلاق المعاينة وإعادة فتح نفس الرابط.
 6. التأكد أن Preview لفرع آخر لا يخلط بيانات origin الأول.
-7. بوابة MatePad على Production URL نجحت بتاريخ 2026-07-31.
+7. بوابة PDF/Notes الجزئية على MatePad نجحت بتاريخ 2026-07-31.
+8. Ink داخل Worker وFull Backup/Verify/Restore ورفض النسخة التالفة واختبارات
+   التخزين المنخفض والفشل الآمن ما زالت PENDING.
 
 نجاح المعاينة يثبت التشغيل الوظيفي فقط:
 
-> Current P3 UI is a functional validation prototype, not the final Studio5 product design.
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.

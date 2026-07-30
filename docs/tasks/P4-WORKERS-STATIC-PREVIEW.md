@@ -64,7 +64,7 @@
 
 ## الحالة
 
-`DEPLOYED FROM DEVELOP / DEVICE GATE PASS`.
+`DEPLOYED FROM DEVELOP / PDF-NOTES DEVICE PASS / INK-BACKUP PENDING`.
 
 التحقق المحلي:
 
@@ -77,5 +77,5 @@
 - GitHub Actions: الوظائف الأربع `4/4` ناجحة داخل PR #4.
 - Workers Build `6e7ced6d`: ناجح من `develop@ed1d175`.
 - Production URL: `https://studio5.44trm84.workers.dev/`.
-- MatePad functional gate: PASS بتاريخ 2026-07-31.
+- MatePad PDF/Notes sub-gate: PASS بتاريخ 2026-07-31؛ Ink وFull Backup/Restore PENDING.
 - الواجهة المنشورة Functional Validation Prototype وليست تصميم المنتج النهائي.

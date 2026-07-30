@@ -27,10 +27,13 @@
 - [x] Offline Queue تمنع التكرار، تحفظ حالات التنفيذ، وتستعيد العملية المنقطعة من دون حذف أو شبكة. (`P3-LF-006`, 83/83 Core)
 - [x] Note مرتبطة بـPDF والصفحة من دون تعديل bytes الأصل، وتبقى قابلة للبحث والمفضلة والحديثة. (`P3-LF-007`, 88/88 Core)
 - [x] واجهة Library تحفظ PDF محلياً وتستعيد Draft وتفتح الملف بعد إعادة إنشاء Repository. (`P3-LF-007`, 13/13 UI)
-- [x] Backup ثم Restore يعيد الملفات والملاحظات والرسومات مع تحقق العدّ/الـmanifest. (`P4-HARD-001`, 100/100 Core؛ Phase 4 functional device gate PASS)
+- [x] اختبارات Core الآلية تتحقق من Backup/Restore والعدّ والـmanifest ورفض المحتوى التالف. (`P4-HARD-001`, 100/100 Core)
+- [ ] اختبار MatePad الكامل ينشئ ويفحص ويستعيد Backup ويعيد PDF وNotes وInk وTasks معاً بلا فقد.
+- [ ] MatePad يرفض Backup تالفاً، ويحافظ على البيانات في التخزين المنخفض وحالات الفشل.
 - [x] كل Migration منفذة حتى Schema v8 تملك اختباراً ومسار Recovery مفهوم. (`P2-CORE-001` إلى `P3-LF-007`)
 - [x] بوابة MatePad الخاصة بـNotebook/Revisions تحفظ نسختين وتعاين وتستعيد بأمان بلا فقد. (`P2-GATE-001/002`, 8/8 device PASS)
-- [x] بوابة Phase 4 على MatePad تثبت رفع PDF والتنقل وZoom/Fit width وNotes وإعادة الفتح وبقاء البيانات بلا تكرار. (`P4-MATEPAD-CLOSURE-CHECKLIST`, 2026-07-31)
+- [x] بوابة Phase 4 الجزئية على MatePad تثبت رفع PDF والتنقل وZoom/Fit width وNotes وإعادة الفتح وبقاء PDF/Notes بلا تكرار. (`P4-MATEPAD-CLOSURE-CHECKLIST`, 2026-07-31)
+- [ ] Ink والقلم وPalm Rejection تُختبر داخل Studio5 Worker المنشور.
 
 نجاح القبول الوظيفي لا يعتمد تصميم واجهة P3 كمنتج نهائي. Phase 4.5 مسؤولة عن
 UX Foundation فقط وتستخدم Core والبيانات الحالية كما هي.

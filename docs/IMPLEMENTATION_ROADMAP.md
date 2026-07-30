@@ -20,15 +20,17 @@ PDF/notes بحسب قرار P0، Capture، Closeout، Inbox، Search، Favorites
 
 Backup/Restore/Export، conflicts، privacy/lock، recovery، observability.
 
-**الحالة:** Functional Device Gate PASS على MatePad بتاريخ 2026-07-31. واجهة P3
-الحالية مرجع وظيفي وليست تصميم المنتج النهائي.
+**الحالة:** `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL
+BACKUP/RESTORE PENDING`. واجهتا P3 وP0 مرجعان وظيفيان وليستا تصميم المنتج
+النهائي، وP0 غير مضاف إلى Worker المنشور.
 
 ## Phase 4.5 - UX Foundation
 
-مرحلة تصميم وواجهة فقط: Information Architecture، App Shell، Today، Subjects،
-Library، PDF/Notes/Ink Workspace، Tasks، Settings/Backup، Responsive،
-Light/Dark، Design Tokens، Accessibility، وخطة نقل الوظائف الحالية بلا تغيير
-Core أو Schema أو التخزين.
+مرحلة تصميم وواجهة فقط باتجاه `Warm Paper Academic Studio`: Product Shell
+إنكليزي LTR، ومحتوى المستخدم العربي/المختلط باتجاه تلقائي. التنقل الرئيسي:
+`Today / Study / Projects / Practice / Library`. تشمل Unified Workspace
+وSettings الثانوية وBackup وResponsive وLight/Dark وDesign Tokens وAccessibility،
+وخطة نقل الوظائف الحالية بلا تغيير Core أو Schema أو التخزين.
 
 لا يبدأ الكود قبل مراجعة واعتماد
 `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md`.

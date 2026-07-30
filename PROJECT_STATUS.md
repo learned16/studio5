@@ -1,16 +1,24 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-07-31
-المرحلة الحالية: `Phase 4 Device Gate PASS / Phase 4.5 UX Specification Review`
+المرحلة الحالية: `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`
 الفرع النشط: `codex/p4-device-pass-ux-foundation-spec`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
-> Current P3 UI is a functional validation prototype, not the final Studio5 product design.
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-نجاح الوظائف على MatePad لا يعني اعتماد تصميم واجهة P3. تبقى الواجهة الحالية
-مرجعاً وظيفياً مستقراً، وتنتقل بنية المنتج النهائية إلى مراجعة مواصفة Phase 4.5
-قبل كتابة أي كود جديد.
+نجاح PDF/Notes على MatePad لا يعني إغلاق Phase 4 كلها ولا اعتماد تصميم واجهة P3.
+تبقى P3 مرجعاً وظيفياً، بينما يبقى P0 Ink Prototype مستقلاً وغير مضاف إلى Worker
+المنشور. تنتقل بنية المنتج النهائية إلى مراجعة مواصفة Phase 4.5 قبل كتابة أي كود.
+
+اتجاه المنتج المعتمد هو `Warm Paper Academic Studio`. Product Shell باللغة
+الإنكليزية واتجاه التطبيق LTR، مع دعم اتجاه تلقائي لمحتوى المستخدم العربي
+والمختلط. التنقل الرئيسي: `Today / Study / Projects / Practice / Library`.
+
+حالة دعم العربية المنفصل: تنفيذ عرض أسماء الملفات العربية محفوظ على branch محلي
+مستقل، واختبارات Regression للملاحظات العربية محضرة منفصلة، أما Arabic PDF
+canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه الإصلاحات.
 
 ## ترتيب القراءة لأي وكيل
 
@@ -82,12 +90,12 @@
 | P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DONE - NATIVE PICKER DEVICE PASS | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
 | P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | DONE - NAV/ZOOM/FIT DEVICE PASS | Adapter العرض وواجهة Library وملفات بناء PDF.js |
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
-| P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | FUNCTIONAL DEVICE GATE PASS / UI EXPERIMENTAL | Route `reliability/**` والبناء والاختبارات |
-| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | DONE - DEVICE PASS / NO DUPLICATION | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
-| P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | DONE - CODE + CI + FUNCTIONAL DEVICE PASS | `backup.mjs` واختباراته وCI وChecklist الجهاز |
+| P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | CODE/CI PASS — FULL DEVICE BACKUP/RESTORE PENDING | Route `reliability/**` والبناء والاختبارات |
+| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | PDF/NOTES STORAGE DEVICE PASS — FULL P4 GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
+| P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | CODE + CI PASS — FULL DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
 | PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | READY FOR USER REVIEW - DOCS 9/9 + CI POLICY 7/7 + PR CI 3/3 | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
 | P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | DONE - STATIC BUILD VERIFIED / PAGES SUPERSEDED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
-| P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DONE - DEPLOYED / DEVICE PASS | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال؛ Device Gate PASS |
+| P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
 | P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `codex/p4-device-pass-ux-foundation-spec` | Codex | DOCUMENTATION READY / USER REVIEW REQUIRED | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
 
 ### نتيجة P2-CORE-001 المطلوبة
@@ -103,12 +111,15 @@
 ## القادم بعد المهمة الحالية
 
 1. مراجعة `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` مع المستخدم.
-2. حسم Information Architecture والتنقل وWorkspace والهوية البصرية قبل الكود.
-3. لا يبدأ كود Phase 4.5 أو Phase 5 قبل موافقة المستخدم على المواصفة.
-4. اقتراح Tag `v0.4-phase-4-functional-stable`؛ لا يُنشأ قبل موافقة المستخدم.
-5. تبقى واجهة P3 الحالية مرجعاً وظيفياً ولا تُحذف أو تُعاد كتابتها الآن.
-6. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
-7. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
+2. اعتماد تفاصيل Phase 4.5 حول الاتجاه البصري والتنقل والـUnified Workspace قبل الكود.
+3. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
+   Backup/Verify/Restore بما يشمل PDF وNotes وInk وTasks ورفض النسخة التالفة
+   وسيناريوهات التخزين المنخفض والفشل الآمن.
+4. لا يبدأ كود Phase 4.5 أو Phase 5 قبل موافقة المستخدم على المواصفة.
+5. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
+6. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
+7. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
+8. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -164,5 +175,6 @@
 | 2026-07-27 | P3-LF-007 | المستخدم/MatePad | نُشرت Sites v3 بنجاح على مسار `/library/`؛ تنفيذ Phase 3 مكتمل وتبقى بوابة PDF/Notes على الجهاز قبل الإغلاق النهائي |
 | 2026-07-27 | P3-LF-008 | المستخدم/MatePad | أُصلح منتقي PDF ليكون هدف لمس مباشر، وتحوّل Cache إلى network-first مع Offline fallback؛ نُشرت Sites v5 وتنتظر إعادة اختبار الجهاز |
 | 2026-07-31 | Workers Build | Phase 4 Device Gate | نُشرت `develop@ed1d175` عبر Build `6e7ced6d` على Workers Static Assets |
-| 2026-07-31 | المستخدم/MatePad | Phase 4 | رفع PDF والتنقل وZoom/Fit width والملاحظات وإعادة الفتح وبقاء البيانات بلا تكرار كلها PASS |
+| 2026-07-31 | المستخدم/MatePad | Phase 4 | PDF/Notes sub-gate PASS؛ Ink داخل Worker وFull Backup/Restore وبوابات الفشل الآمن ما زالت PENDING |
 | 2026-07-31 | المستخدم | Phase 4.5 | تصنيف واجهة P3 كإثبات وظيفي فقط وطلب مواصفة UX قبل أي كود أو Phase 5 |
+| 2026-07-31 | المستخدم | Product Direction | `Warm Paper Academic Studio`؛ English LTR shell؛ اتجاه تلقائي للمحتوى العربي/المختلط؛ التنقل `Today / Study / Projects / Practice / Library` |

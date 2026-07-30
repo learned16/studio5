@@ -34,10 +34,15 @@ Studio5 ليس تطبيق ملاحظات عاديًا، ولا قارئ PDF فق
   الاستعادة الآمنة، وإعادة الفتح بلا فقد.
 - Phase 3 مكتملة برمجياً، وPhase 4 اجتازت Core/Ink/P3 regression وGitHub CI.
 - بدأ فرع التوثيق الحالي من `develop@ed1d175`، ولا يُستخدم `main` لبدء Phase 5.
-- Phase 4 Functional Device Gate نجحت على MatePad من Workers Build مرتبط مباشرة
-  بـGitHub. Tag `v0.4-phase-4-functional-stable` مقترح فقط وينتظر موافقة المستخدم.
-- واجهة P3 الحالية Functional Validation Prototype وليست تصميم المنتج النهائي؛
+- نشر Cloudflare من GitHub ناجح، واختبارات PDF/Notes على MatePad ناجحة، لكن الحالة
+  الدقيقة هي:
+  `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`.
+  لا يُنشأ Stable Tag قبل إغلاق البنود المعلقة ومراجعة المستخدم.
+- واجهتا P3 وP0 الحاليتان Functional Prototypes وليستا تصميم المنتج النهائي؛
+  P0 Ink مستقل وغير مضاف إلى Worker المنشور.
   Phase 4.5 مواصفة UI/UX فقط وتنتظر المراجعة قبل أي كود.
+- الاتجاه البصري المعتمد `Warm Paper Academic Studio`، ولغة Product Shell هي
+  English باتجاه LTR، مع اتجاه تلقائي لمحتوى المستخدم العربي والمختلط.
 - ChatGPT Sites متوقف؛ النشر القديم مرجع مجمد وليس مصدر كود أو بيئة قبول.
 - تبقى واجهات التجارب `Experimental` حتى يثبت الاستخدام الجامعي الحقيقي ملاءمتها.
 

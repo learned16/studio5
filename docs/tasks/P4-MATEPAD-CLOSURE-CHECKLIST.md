@@ -11,10 +11,10 @@
 
 **تاريخ النتيجة:** 2026-07-31.
 
-**النتيجة:** `PASS — USER-VERIFIED ON MATEPAD`.
+**النتيجة:** `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`.
 
-أفاد المستخدم صراحةً أن تجربة Phase 4 على MatePad نجحت بالكامل. البنود التي
-ذكرها تفصيلياً في تقريره هي:
+أفاد المستخدم صراحةً بنجاح الجزء الخاص بـPDF/Notes على MatePad. لا تمتد هذه
+الإفادة إلى Ink داخل Worker أو Full Backup/Restore أو اختبارات الفشل الآمن.
 
 | البند | النتيجة |
 |---|---|
@@ -24,9 +24,15 @@
 | إضافة الملاحظات | PASS |
 | Reload وإغلاق المتصفح وإعادة فتحه | PASS |
 | بقاء PDF والملاحظات بلا تكرار | PASS |
+| Ink داخل Studio5 Worker المنشور | PENDING / NOT AVAILABLE |
+| القلم وPalm Rejection داخل Worker | PENDING |
+| Full Backup/Verify/Restore على MatePad | PENDING |
+| استعادة PDF وNotes وInk وTasks معاً | PENDING |
+| رفض Backup تالف على MatePad | PENDING |
+| Low-storage وFailure-safe | PENDING |
 
 هذه النتيجة تعتمد إفادة المستخدم من الجهاز الحقيقي، ولا تضيف قياسات أو خطوات
-تفصيلية لم يذكرها. تبقى الأقسام أدناه كسجل لسيناريو الإغلاق وHardening المستقبلي.
+تفصيلية لم يذكرها. تبقى الأقسام غير المؤشرة أدناه بوابات إلزامية قبل إغلاق Phase 4.
 
 ## قبل البدء
 
@@ -69,6 +75,7 @@
 
 ## Ink والقلم
 
+- [ ] يتوفر Ink داخل Studio5 Worker المنشور؛ P0 الحالي Prototype مستقل وليس جزءاً من Worker.
 - [ ] ارسم بالقلم والممحاة وتأكد أن اللمس لا يرسم أثناء وجود القلم.
 - [ ] تأكد أن Palm rejection يعمل.
 - [ ] احفظ Ink ثم أغلق التطبيق أو المتصفح بالكامل.
@@ -84,16 +91,17 @@
 
 ## التقرير
 
-- [x] `PASS`: أعلن المستخدم نجاح تجربة Phase 4 على MatePad بلا فقد أو تكرار
+- [x] `PARTIAL PASS`: أعلن المستخدم نجاح PDF/Notes على MatePad بلا فقد أو تكرار
   ضمن البنود المسجلة أعلاه.
+- [ ] `FULL PASS`: لا يتحقق إلا بعد نجاح Ink داخل Worker وFull Backup/Verify/Restore
+  ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن.
 - [ ] `FAIL`: اذكر البند، ما ظهر، وهل بقي ملف الـBackup قابلاً للفتح.
-- [x] اقترح Tag `v0.4-phase-4-functional-stable`.
-- [ ] لا تنشئ Tag `v0.4-phase-4-functional-stable` قبل موافقة المستخدم الصريحة.
+- [x] لا تقترح أو تنشئ Stable Tag ما دامت بوابة Phase 4 الكاملة معلقة.
 
 ## تصنيف الواجهة
 
-> Current P3 UI is a functional validation prototype, not the final Studio5 product design.
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-نجاح Device Gate يثبت الوظائف والحفظ على الجهاز، ولا يعتمد الشكل الحالي كواجهة
-المنتج النهائي. مواصفة إعادة تنظيم تجربة الاستخدام موجودة في
+نجاح PDF/Notes الجزئي يثبت هذه الوظائف فقط، ولا يعتمد الشكل الحالي كواجهة المنتج
+النهائية ولا يثبت Ink أو Backup/Restore. مواصفة إعادة تنظيم تجربة الاستخدام موجودة في
 `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md`.

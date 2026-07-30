@@ -2,7 +2,7 @@
 
 ## الحالة
 
-`FUNCTIONAL DEVICE GATE PASS / UX PROTOTYPE NOT FINAL`
+`CODE + CI PASS / PDF-NOTES DEVICE PASS / FULL DEVICE GATE PENDING`
 
 ## الهدف
 
@@ -67,14 +67,15 @@
 
 ## نتيجة بوابة الجهاز
 
-أفاد المستخدم بتاريخ 2026-07-31 أن تجربة Phase 4 نجحت بالكامل على MatePad:
-رفع PDF والتنقل وZoom/Fit width والملاحظات وإعادة التحميل وإغلاق المتصفح وإعادة
-فتحه وبقاء PDF والملاحظات بلا تكرار كلها `PASS`.
+أفاد المستخدم بتاريخ 2026-07-31 بنجاح PDF/Notes على MatePad: رفع PDF والتنقل
+وZoom/Fit width والملاحظات وإعادة التحميل وإغلاق المتصفح وإعادة فتحه وبقاء PDF
+والملاحظات بلا تكرار كلها `PASS`. Ink داخل Worker وFull Backup/Verify/Restore
+ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن ما زالت `PENDING`.
 
-> Current P3 UI is a functional validation prototype, not the final Studio5 product design.
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-تغلق هذه النتيجة البوابة الوظيفية، ولا تبدأ Phase 5. الخطوة التالية هي مراجعة
-مواصفة Phase 4.5 UI/UX فقط.
+لا تغلق هذه النتيجة Phase 4 بالكامل، ولا تبدأ Phase 5. الخطوة التالية هي مراجعة
+مواصفة Phase 4.5 UI/UX وإكمال بوابات الجهاز المعلقة.
 
 ## خارج النطاق
 

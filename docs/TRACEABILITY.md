@@ -45,15 +45,16 @@
 | `S5-UX-PDF-PICKER-001` | منتقي PDF يستقبل اللمس مباشرة على MatePad/WebView | P3-LF-008 | DONE / DEVICE PASS | MatePad PDF upload PASS بتاريخ 2026-07-31 |
 | `S5-UX-PDF-PICKER-002` | حقل ملفات نظام أصلي ظاهر ومتوافق مع MIME العام على MatePad | P3-LF-009 | DONE / DEVICE PASS | MatePad native file selection/upload PASS |
 | `S5-UX-PDF-VIEWER-001` | عرض PDF داخلي لا يعتمد على عارض WebView مع تنقل وZoom وOffline assets | P3-LF-010 | DONE / DEVICE PASS | MatePad navigation + Zoom + Fit width PASS |
-| `S5-FR-005C` | Lecture Flow وSearch وFavorites/Recent وOffline Queue | Phase 3 | FUNCTIONAL DEVICE PASS / UI NOT FINAL | Workers Build `6e7ced6d` + MatePad reload/close/reopen PASS |
-| `S5-DATA-004` | Backup/Restore/Full Export | P4-HARD-001 | CORE HARDENED / FUNCTIONAL DEVICE GATE PASS | 100/100 Core + Schema 7→8 regression + إفادة المستخدم بنجاح Phase 4 بالكامل |
-| `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | FUNCTIONAL DEVICE GATE PASS / UI EXPERIMENTAL | إفادة المستخدم الشاملة لنجاح Phase 4؛ الشكل الحالي غير معتمد للمنتج |
-| `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | DONE / DEVICE PASS | MatePad reload + close/reopen + PDF/Notes persistence بلا تكرار |
-| `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | DONE / CI + FUNCTIONAL DEVICE PASS | Node 22 CI + Workers Build `6e7ced6d` + MatePad PASS بتاريخ 2026-07-31 |
+| `S5-FR-005C` | Lecture Flow وSearch وFavorites/Recent وOffline Queue | Phase 3 | PDF/NOTES DEVICE PASS / UI NOT FINAL | Workers Build `6e7ced6d` + MatePad reload/close/reopen PASS |
+| `S5-DATA-004` | Backup/Restore/Full Export | P4-HARD-001 | CORE HARDENED / DEVICE GATE PENDING | 100/100 Core + Schema 7→8 regression؛ Full MatePad Backup/Restore غير منفذ |
+| `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | DEVICE GATE PENDING / UI EXPERIMENTAL | لا توجد إفادة جهاز عن Full Backup/Verify/Restore |
+| `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | PDF/NOTES DEVICE PASS / FULL GATE PENDING | MatePad reload + close/reopen + PDF/Notes persistence بلا تكرار |
+| `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | CI PASS / PARTIAL DEVICE GATE | Node 22 CI + Workers Build `6e7ced6d` + PDF/Notes MatePad PASS؛ Ink/Backup PENDING |
 | `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@3fbc776` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
 | `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DONE / DEPLOYED FROM DEVELOP | `develop@ed1d175` → Workers Build `6e7ced6d` |
 | `S5-PREVIEW-002` | فحص حزمة P3 الساكنة وحدود Cloudflare والمسارات والأصول قبل الربط | P4-PREVIEW-001 | DONE / STATIC BUILD VERIFIED | PR #3 CI + 404/PDF/SW contracts + Production build PASS |
-| `S5-PREVIEW-003` | إعداد Workers Static Assets وWorkers Builds بإصدار Wrangler مثبت وفحص بلا نشر | P4-WORKERS-PREVIEW-001 | DONE / DEPLOYED / DEVICE PASS | Wrangler 4.114.0 رفع 261 ملفاً؛ Production URL اختُبر على MatePad |
+| `S5-PREVIEW-003` | إعداد Workers Static Assets وWorkers Builds بإصدار Wrangler مثبت وفحص بلا نشر | P4-WORKERS-PREVIEW-001 | DONE / DEPLOYED / PDF-NOTES DEVICE PASS | Wrangler 4.114.0 رفع 261 ملفاً؛ Production URL اختُبر لـPDF/Notes على MatePad |
+| `S5-UX-FOUNDATION-001` | Warm Paper Academic Studio وEnglish LTR shell والتنقل الرئيسي الموحد | P4.5-UX-SPEC-001 | ADOPTED / SPEC REVIEW | `Today / Study / Projects / Practice / Library` + اتجاه تلقائي لمحتوى المستخدم |
 | `S5-UX-FOUNDATION-001` | بنية معلومات وApp Shell وWorkspace موحد مناسب لـMatePad | P4.5-UX-SPEC-001 | SPEC READY / USER REVIEW REQUIRED | `PHASE_4_5_UX_FOUNDATION_SPEC_AR.md`؛ لا كود ولا تغيير بيانات |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
