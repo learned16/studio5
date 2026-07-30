@@ -2,7 +2,7 @@
 
 ## Status
 
-`IN PROGRESS / CHERRY-PICKED TO CURRENT DEVELOP / FULL VERIFICATION PENDING`
+`LOCAL AUTOMATED PASS / CI AND CLOUDFLARE PREVIEW PENDING`
 
 ## Goal
 
@@ -136,3 +136,28 @@ data migration and no stored value transformation to roll back.
   `develop` were retained.
 - Only the Arabic HTML implementation and verification status were added.
 - Arabic PDF.js canvas rendering remains a separate MatePad device verification.
+
+## Verification on `fix/arabic-content-rendering`
+
+Local runtime: Node.js `v24.14.0`. The repository CI remains configured for
+Node.js 22 and must pass after push.
+
+- Studio5 Core: lint PASS، typecheck PASS، tests `100/100`.
+- P0 Ink: lint PASS، typecheck PASS، tests `15/15`، build PASS.
+- P3: lint PASS، typecheck PASS، tests `27/27`.
+- Arabic HTML regressions: `5/5` ضمن P3 `27/27`.
+- Static build and preview verification: PASS، `251` files، `4/4` routes HTTP
+  200، unknown route `404.html`، broken local references `0`، sensitive files `0`.
+- Wrangler `4.114.0` dry-run: PASS، قرأ `262` static assets، no bindings،
+  no deployment.
+- `git diff --check`: PASS.
+- لا تغيير في `packages/**` أو Schema أو Storage أو Backup.
+
+نتيجة الأسطح:
+
+- `Arabic HTML content rendering: automated PASS`
+- `Arabic PDF canvas rendering: MatePad device verification pending`
+
+Current P3 keeps its legacy functional-prototype shell; this task does not
+translate or redesign it. The adopted final product shell remains English LTR,
+and user content receives an isolated automatic RTL/LTR context.

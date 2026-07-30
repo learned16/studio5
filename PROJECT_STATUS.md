@@ -97,7 +97,7 @@ Arabic PDF canvas لم يُثبت بعد ويحتاج اختبار PDF عربي 
 | P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | DONE - STATIC BUILD VERIFIED / PAGES SUPERSEDED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
 | P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
 | P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `codex/p4-device-pass-ux-foundation-spec` | Codex | DOCUMENTATION READY / USER REVIEW REQUIRED | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
-| P4.5-UX-ARABIC-001 | إصلاح اتجاه وعرض المحتوى العربي والمختلط في P3 | `fix/arabic-content-rendering` | Codex | IN PROGRESS — AUTOMATED VERIFICATION PENDING | HTML user content فقط؛ Arabic PDF canvas device verification pending؛ لا Core/Schema/Backup ولا Phase 5 |
+| P4.5-UX-ARABIC-001 | إصلاح اتجاه وعرض المحتوى العربي والمختلط في P3 | `fix/arabic-content-rendering` | Codex | LOCAL PASS — CI/PREVIEW PENDING | HTML: 5/5 Arabic + P3 27/27؛ Core 100/100؛ P0 15/15؛ Static Preview PASS؛ PDF canvas device verification pending |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -179,3 +179,4 @@ Arabic PDF canvas لم يُثبت بعد ويحتاج اختبار PDF عربي 
 | 2026-07-31 | المستخدم/MatePad | Phase 4 | PDF/Notes sub-gate PASS؛ Ink داخل Worker وFull Backup/Restore وبوابات الفشل الآمن ما زالت PENDING |
 | 2026-07-31 | المستخدم | Phase 4.5 | تصنيف واجهة P3 كإثبات وظيفي فقط وطلب مواصفة UX قبل أي كود أو Phase 5 |
 | 2026-07-31 | المستخدم | Product Direction | `Warm Paper Academic Studio`؛ English LTR shell؛ اتجاه تلقائي للمحتوى العربي/المختلط؛ التنقل `Today / Study / Projects / Practice / Library` |
+| 2026-07-31 | P4.5-UX-ARABIC-001 | Arabic HTML | `dir=auto` وnative bidi/shaping بلا تغيير النص؛ 5/5 Arabic regressions و27/27 P3 وStatic Preview وWrangler dry-run PASS؛ PDF canvas MatePad pending |
