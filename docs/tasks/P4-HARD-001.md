@@ -2,7 +2,7 @@
 
 ## الحالة
 
-`LOCAL VERIFIED / READY FOR DEVICE TEST`
+`CODE + CI PASS / PDF-NOTES DEVICE PASS / FULL DEVICE GATE PENDING`
 
 ## الهدف
 
@@ -65,10 +65,17 @@
 
 التفاصيل والأوامر في `docs/PREVIEW_DEPLOYMENT_AR.md`.
 
-## البوابة المتبقية
+## نتيجة بوابة الجهاز
 
-Hardening البرمجي جاهز. لا تُغلق Phase 4 نهائياً ولا تبدأ Phase 5 قبل نجاح
-`docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md` على الجهاز الحقيقي.
+أفاد المستخدم بتاريخ 2026-07-31 بنجاح PDF/Notes على MatePad: رفع PDF والتنقل
+وZoom/Fit width والملاحظات وإعادة التحميل وإغلاق المتصفح وإعادة فتحه وبقاء PDF
+والملاحظات بلا تكرار كلها `PASS`. Ink داخل Worker وFull Backup/Verify/Restore
+ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن ما زالت `PENDING`.
+
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
+
+لا تغلق هذه النتيجة Phase 4 بالكامل، ولا تبدأ Phase 5. الخطوة التالية هي مراجعة
+مواصفة Phase 4.5 UI/UX وإكمال بوابات الجهاز المعلقة.
 
 ## خارج النطاق
 

@@ -22,6 +22,10 @@
 | D-023 | `develop` هو فرع التجميع للمراحل المقبولة؛ أُنشئ من `2f5196c` ولا يبدأ Phase 5 من `main` | Adopted | قرار المستخدم 2026-07-29 + PRE-P5-FOUNDATION-001 |
 | D-024 | المعاينة المستقبلية تُبنى من GitHub لكل branch/PR؛ Cloudflare Pages هو الترشيح الأولي ولا ربط أو نشر قبل الموافقة | Proposed / Documented | `PREVIEW_DEPLOYMENT_AR.md` |
 | D-025 | يبقى الإصدار الأول Web/PWA؛ توثق حدود Native ويؤجل اختيار Capacitor/Tauri إلى بوابة جهاز مستقلة | Adopted | قرار Web/PWA السابق + `NATIVE_READINESS_AR.md` |
+| D-026 | نجاح بوابة PDF/Notes الجزئية على MatePad؛ لا تُغلق Phase 4 حتى نجاح Ink داخل Worker وFull Backup/Restore وبوابات الفشل الآمن | Corrected / Adopted | قرار المستخدم الأحدث 2026-07-31 + P4-MATEPAD-CLOSURE-CHECKLIST |
+| D-027 | Phase 4.5 مرحلة UI/UX ومواصفة أولاً؛ تستخدم Core والبيانات الحالية بلا تغيير ولا يبدأ كودها قبل مراجعة المستخدم | Adopted | قرار المستخدم 2026-07-31 + PHASE_4_5_UX_FOUNDATION_SPEC_AR |
+| D-028 | اتجاه المنتج `Warm Paper Academic Studio`؛ Product Shell إنكليزي LTR مع اتجاه تلقائي للمحتوى العربي/المختلط؛ التنقل `Today / Study / Projects / Practice / Library` | Adopted | قرار المستخدم 2026-07-31 |
+| D-029 | P0 Ink مستقل وغير مضاف إلى Worker؛ نحتفظ بقدرات محركه واختباراته ولا نعيد استخدام تصميمه القديم، وتُبنى واجهته الجديدة لاحقاً داخل Unified Workspace | Adopted | قرار المستخدم 2026-07-31 |
 
 ## Change control template
 
@@ -91,3 +95,19 @@
 - **البدائل:** بدء Phase 5 من `main` أو دمج الفروع القديمة يدوياً؛ رُفضا لأنهما
   يفقدان التاريخ المتكامل أو يعيدان عملاً مستبدلاً.
 - **القرار:** Approved بطلب المستخدم في ملف ما قبل Phase 5.
+
+### CL-008 - تصحيح Phase 4 وفصل النجاح الوظيفي الجزئي عن التصميم
+
+- **التغيير:** تسجيل
+  `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`
+  وتصنيف واجهتي P3 وP0 كـFunctional Prototypes فقط، وإضافة Phase 4.5 للمواصفة
+  والتصميم قبل Phase 5.
+- **السبب:** نجحت على MatePad عمليات رفع PDF والتنقل وZoom/Fit width وإضافة
+  الملاحظات وإعادة التحميل وإغلاق المتصفح وإعادة فتحه وبقاء PDF والملاحظات بلا
+  تكرار، لكن المستخدم رفض اعتماد شكل واجهة الاختبار كمنتج نهائي.
+- **الأثر:** تُحفظ الوظائف والـCore والـSchema والتخزين والـBackup كما هي؛ لا
+  يُدّعى نجاح Ink أو Full Backup/Restore على Worker، ولا يبدأ Phase 5.
+- **البدائل:** اعتماد واجهة P3 نهائياً، أو إعادة كتابة الوظائف مع الواجهة. رُفضا
+  لأن النجاح الوظيفي لا يثبت جودة التصميم، وإعادة كتابة Core ترفع خطر فقد البيانات.
+- **القرار:** Approved بقرار المستخدم الأحدث بتاريخ 2026-07-31. لا يُقترح أو
+  يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.

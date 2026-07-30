@@ -64,7 +64,7 @@
 
 ## الحالة
 
-`LOCAL + PR CI PASS / SETUP ONLY / NOT DEPLOYED`.
+`DEPLOYED FROM DEVELOP / PDF-NOTES DEVICE PASS / INK-BACKUP PENDING`.
 
 التحقق المحلي:
 
@@ -75,3 +75,7 @@
 - Wrangler: الإصدار `4.114.0`، وأمر `wrangler deploy --dry-run` نجح وقرأ مجلد
   `prototype/p3-lecture-capture-web/dist/assets` من دون تنفيذ نشر.
 - GitHub Actions: الوظائف الأربع `4/4` ناجحة داخل PR #4.
+- Workers Build `6e7ced6d`: ناجح من `develop@ed1d175`.
+- Production URL: `https://studio5.44trm84.workers.dev/`.
+- MatePad PDF/Notes sub-gate: PASS بتاريخ 2026-07-31؛ Ink وFull Backup/Restore PENDING.
+- الواجهة المنشورة Functional Validation Prototype وليست تصميم المنتج النهائي.

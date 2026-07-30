@@ -6,7 +6,8 @@
 - ChatGPT Sites متوقف؛ النسخة القديمة تبقى مرجعاً مجمداً ولا تُستخدم للاختبار
   أو القبول ولا تستقبل أي تحديث.
 - الخيار الحالي هو `Cloudflare Workers Static Assets + Workers Builds`، وليس Cloudflare Pages.
-- لا يوجد نشر خارجي ضمن هذه المهمة.
+- نُشرت النسخة الوظيفية من `develop@ed1d175` عبر Workers Build `6e7ced6d` على:
+  `https://studio5.44trm84.workers.dev/`.
 - أي Preview لاحق يجب أن يبني commit موجوداً في GitHub مباشرة، لا نسخة منسوخة
   يدوياً ولا branch مخصصاً لمزود الاستضافة.
 
@@ -97,7 +98,7 @@ prototype/p3-lecture-capture-web/dist/assets/
 | Repository | `learned16/studio5` |
 | Production branch | `develop` |
 | Root directory | جذر المستودع `/` |
-| Build command | `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run build` |
+| Build command | `pnpm install --frozen-lockfile && pnpm --dir prototype/p3-lecture-capture-web install --frozen-lockfile && pnpm run worker:assets:build` |
 | Production deploy command | `npx wrangler deploy` |
 | Non-production deploy command | `npx wrangler versions upload` |
 | Builds for non-production branches | Enabled |
@@ -155,11 +156,11 @@ prototype/p3-lecture-capture-web/dist/assets/
 
 ## التوصية
 
-التوصية عند موافقة المستخدم لاحقاً هي **Cloudflare Workers Static Assets مع Workers Builds**:
+الخيار المعتمد والمنشور حالياً هو **Cloudflare Workers Static Assets مع Workers Builds**:
 
 - production branch يحدد إلى `develop`.
 - build command:
-  `cd prototype/p3-lecture-capture-web && pnpm install --frozen-lockfile && pnpm run build`
+  `pnpm install --frozen-lockfile && pnpm --dir prototype/p3-lecture-capture-web install --frozen-lockfile && pnpm run worker:assets:build`
 - production deploy command: `npx wrangler deploy`.
 - non-production deploy command: `npx wrangler versions upload`.
 - Builds for non-production branches: Enabled.
@@ -180,4 +181,10 @@ prototype/p3-lecture-capture-web/dist/assets/
 4. تسجيل Service Worker وتحديثه بعد commit جديد.
 5. إنشاء بيانات IndexedDB، إغلاق المعاينة وإعادة فتح نفس الرابط.
 6. التأكد أن Preview لفرع آخر لا يخلط بيانات origin الأول.
-7. تنفيذ بوابة MatePad على رابط Preview المعتمد.
+7. بوابة PDF/Notes الجزئية على MatePad نجحت بتاريخ 2026-07-31.
+8. Ink داخل Worker وFull Backup/Verify/Restore ورفض النسخة التالفة واختبارات
+   التخزين المنخفض والفشل الآمن ما زالت PENDING.
+
+نجاح المعاينة يثبت التشغيل الوظيفي فقط:
+
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.

@@ -2,30 +2,52 @@
 
 **مصدر النسخة:** build من commit محدد داخل GitHub.
 
-**النسخة المرجعية البرمجية:** `develop` عند `2f5196c` أو commit أحدث يمر عبر CI.
+**النسخة المختبرة:** `develop@ed1d175`.
 
-**رابط الاختبار:** يضاف بعد إعداد Preview المرتبط بـGitHub أو تشغيل build نفسه
-على شبكة محلية. لا تُستخدم Sites v9 لإغلاق البوابة.
+**رابط الاختبار:**
+`https://studio5.44trm84.workers.dev/`
 
-**النتيجة:** `PENDING GITHUB PREVIEW + USER DEVICE TEST`
+**Cloudflare Build:** `6e7ced6d` — Workers Static Assets deployment ناجح.
 
-نفّذ الاختبار على بيانات تجريبية يمكن استبدالها. لا تستخدم النسخة الوحيدة من ملف
-دراسي مهم في تجربة الاستعادة.
+**تاريخ النتيجة:** 2026-07-31.
+
+**النتيجة:** `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`.
+
+أفاد المستخدم صراحةً بنجاح الجزء الخاص بـPDF/Notes على MatePad. لا تمتد هذه
+الإفادة إلى Ink داخل Worker أو Full Backup/Restore أو اختبارات الفشل الآمن.
+
+| البند | النتيجة |
+|---|---|
+| رفع PDF | PASS |
+| التنقل داخل PDF | PASS |
+| Zoom وFit width | PASS |
+| إضافة الملاحظات | PASS |
+| Reload وإغلاق المتصفح وإعادة فتحه | PASS |
+| بقاء PDF والملاحظات بلا تكرار | PASS |
+| Ink داخل Studio5 Worker المنشور | PENDING / NOT AVAILABLE |
+| القلم وPalm Rejection داخل Worker | PENDING |
+| Full Backup/Verify/Restore على MatePad | PENDING |
+| استعادة PDF وNotes وInk وTasks معاً | PENDING |
+| رفض Backup تالف على MatePad | PENDING |
+| Low-storage وFailure-safe | PENDING |
+
+هذه النتيجة تعتمد إفادة المستخدم من الجهاز الحقيقي، ولا تضيف قياسات أو خطوات
+تفصيلية لم يذكرها. تبقى الأقسام غير المؤشرة أدناه بوابات إلزامية قبل إغلاق Phase 4.
 
 ## قبل البدء
 
-- [ ] افتح الموقع على MatePad نفسه.
-- [ ] سجّل رابط المعاينة وcommit SHA الظاهر في GitHub.
+- [x] افتح الموقع على MatePad نفسه.
+- [x] سجّل رابط المعاينة وcommit SHA الظاهر في GitHub.
 - [ ] تأكد أن الاتصال مستقر وقت تنزيل ملف الـBackup.
 - [ ] سجّل عدد ملفات PDF والملاحظات والرسومات الحالية.
 
 ## PDF وStorage Migration
 
-- [ ] افتح PDF حقيقياً من `/library/`.
-- [ ] تنقّل بين صفحتين على الأقل.
-- [ ] جرّب Zoom In وZoom Out ثم Fit width.
-- [ ] تأكد أن PDF والملاحظات القديمة ظاهرة بعد Storage migration.
-- [ ] أعد تحميل الصفحة وتأكد أن البيانات لم تتكرر.
+- [x] افتح PDF حقيقياً من `/library/`.
+- [x] تنقّل داخل PDF.
+- [x] جرّب Zoom وFit width.
+- [x] تأكد أن PDF والملاحظات ظاهرة بعد إعادة الفتح.
+- [x] أعد تحميل الصفحة وتأكد أن البيانات لم تتكرر.
 - [ ] افتح PDF كبيراً قدر الإمكان وتنقّل بين بدايته ووسطه ونهايته.
 
 ## Backup وRestore
@@ -45,14 +67,15 @@
 
 ## إعادة الفتح وعدم التكرار
 
-- [ ] أغلق الموقع أو التطبيق بالكامل.
-- [ ] افتحه من جديد.
-- [ ] تأكد أن PDF وNotes وInk المستعادة ما زالت موجودة.
-- [ ] أعد تحميل الموقع مرة ثانية لتشغيل مسار migration مرة أخرى.
-- [ ] تأكد أن أعداد البيانات لم تتضاعف ولا توجد نسخ مكررة.
+- [x] أغلق المتصفح بالكامل.
+- [x] افتحه من جديد.
+- [x] تأكد أن PDF وNotes ما زالت موجودة.
+- [x] أعد تحميل الموقع مرة ثانية لتشغيل مسار migration مرة أخرى.
+- [x] تأكد أن البيانات لم تتضاعف ولا توجد نسخ مكررة.
 
 ## Ink والقلم
 
+- [ ] يتوفر Ink داخل Studio5 Worker المنشور؛ P0 الحالي Prototype مستقل وليس جزءاً من Worker.
 - [ ] ارسم بالقلم والممحاة وتأكد أن اللمس لا يرسم أثناء وجود القلم.
 - [ ] تأكد أن Palm rejection يعمل.
 - [ ] احفظ Ink ثم أغلق التطبيق أو المتصفح بالكامل.
@@ -68,6 +91,17 @@
 
 ## التقرير
 
-- [ ] `PASS`: كل البنود نجحت بلا فقد أو تكرار.
+- [x] `PARTIAL PASS`: أعلن المستخدم نجاح PDF/Notes على MatePad بلا فقد أو تكرار
+  ضمن البنود المسجلة أعلاه.
+- [ ] `FULL PASS`: لا يتحقق إلا بعد نجاح Ink داخل Worker وFull Backup/Verify/Restore
+  ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن.
 - [ ] `FAIL`: اذكر البند، ما ظهر، وهل بقي ملف الـBackup قابلاً للفتح.
-- [ ] لا تنشئ Tag `v0.4-phase-4-stable` قبل PASS وموافقة المستخدم.
+- [x] لا تقترح أو تنشئ Stable Tag ما دامت بوابة Phase 4 الكاملة معلقة.
+
+## تصنيف الواجهة
+
+> The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
+
+نجاح PDF/Notes الجزئي يثبت هذه الوظائف فقط، ولا يعتمد الشكل الحالي كواجهة المنتج
+النهائية ولا يثبت Ink أو Backup/Restore. مواصفة إعادة تنظيم تجربة الاستخدام موجودة في
+`docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md`.
