@@ -2,7 +2,7 @@
 
 ## الحالة
 
-`LOCAL VERIFIED / READY FOR DEVICE TEST`
+`FUNCTIONAL DEVICE GATE PASS / UX PROTOTYPE NOT FINAL`
 
 ## الهدف
 
@@ -65,10 +65,16 @@
 
 التفاصيل والأوامر في `docs/PREVIEW_DEPLOYMENT_AR.md`.
 
-## البوابة المتبقية
+## نتيجة بوابة الجهاز
 
-Hardening البرمجي جاهز. لا تُغلق Phase 4 نهائياً ولا تبدأ Phase 5 قبل نجاح
-`docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md` على الجهاز الحقيقي.
+أفاد المستخدم بتاريخ 2026-07-31 أن تجربة Phase 4 نجحت بالكامل على MatePad:
+رفع PDF والتنقل وZoom/Fit width والملاحظات وإعادة التحميل وإغلاق المتصفح وإعادة
+فتحه وبقاء PDF والملاحظات بلا تكرار كلها `PASS`.
+
+> Current P3 UI is a functional validation prototype, not the final Studio5 product design.
+
+تغلق هذه النتيجة البوابة الوظيفية، ولا تبدأ Phase 5. الخطوة التالية هي مراجعة
+مواصفة Phase 4.5 UI/UX فقط.
 
 ## خارج النطاق
 

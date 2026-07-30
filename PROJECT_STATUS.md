@@ -1,10 +1,16 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-07-30
-المرحلة الحالية: `Phase 4 Workers Static Preview Readiness`
-الفرع النشط: `chore/workers-static-preview`
+آخر تحديث: 2026-07-31
+المرحلة الحالية: `Phase 4 Device Gate PASS / Phase 4.5 UX Specification Review`
+الفرع النشط: `codex/p4-device-pass-ux-foundation-spec`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
+
+> Current P3 UI is a functional validation prototype, not the final Studio5 product design.
+
+نجاح الوظائف على MatePad لا يعني اعتماد تصميم واجهة P3. تبقى الواجهة الحالية
+مرجعاً وظيفياً مستقراً، وتنتقل بنية المنتج النهائية إلى مراجعة مواصفة Phase 4.5
+قبل كتابة أي كود جديد.
 
 ## ترتيب القراءة لأي وكيل
 
@@ -71,17 +77,18 @@
 | P3-COMP-001 | توحيد Phase 2 المقبولة مع خط Phase 3 وتثبيت نطاق الإكمال | `codex/p3-completion-foundation` | Codex | DONE - 69/69 + 15/15 + 8/8 | وثائق الحالة والتتبع والقرارات فقط |
 | P3-LF-005 | Search وFavorites/Recent داخل Core | `codex/p3-search-favorites-core` | Codex | DONE - 76/76 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
 | P3-LF-006 | Offline Operation Queue محلي | `codex/p3-offline-operation-queue` | Codex | DONE - 83/83 + REGRESSION PASS | `packages/studio5-core/**` ووثائق المهمة والحالة والتتبع |
-| P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | DEPLOYED V3 - DEVICE GATE PENDING | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
-| P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DEPLOYED V5 - USER RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
-| P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DEPLOYED V6 - DEVICE RETEST PENDING | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
-| P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | DEPLOYED WITH P4 V9 - 22/22 + REGRESSION / DEVICE RETEST PENDING | Adapter العرض وواجهة Library وملفات بناء PDF.js |
+| P3-LF-007 | PDF/Notes + Library UI التجريبية | `codex/p3-pdf-notes-library` | Codex | DONE - DEVICE PASS / UI EXPERIMENTAL | Note Core و`prototype/p3-lecture-capture-web/library/**` ووثائق المهمة |
+| P3-LF-008 | إصلاح منتقي PDF على MatePad/WebView | `codex/p3-pdf-upload-fix` | Codex | DONE - PDF UPLOAD DEVICE PASS | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
+| P3-LF-009 | منتقي ملفات نظام أصلي ظاهر على MatePad | `codex/p3-native-pdf-picker` | Codex | DONE - NATIVE PICKER DEVICE PASS | واجهة رفع المكتبة واختبار التوافق ووثائق المهمة |
+| P3-LF-010 | عارض PDF.js محلي داخل المكتبة | `codex/p3-pdfjs-viewer` | Codex | DONE - NAV/ZOOM/FIT DEVICE PASS | Adapter العرض وواجهة Library وملفات بناء PDF.js |
 | P4-REL-001 | Portable Backup/Restore/Export داخل Core | `codex/p4-backup-restore-core` | Codex | DONE - 95/95 + REGRESSION PASS | `backup.mjs` واختباراته ووثائق المهمة |
-| P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | DEPLOYED V7 - DEVICE GATE PENDING | Route `reliability/**` والبناء والاختبارات |
-| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | CODE VERIFIED / V9 FROZEN REFERENCE / DEVICE GATE PENDING | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
-| P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | CODE + PR CI PASS - 100/100 + 15/15 + 22/22 / DEVICE GATE PENDING | `backup.mjs` واختباراته وCI وChecklist الجهاز |
+| P4-REL-002 | واجهة Backup/Restore/Export التجريبية | `codex/p4-backup-restore-ui` | Codex | FUNCTIONAL DEVICE GATE PASS / UI EXPERIMENTAL | Route `reliability/**` والبناء والاختبارات |
+| P4-REL-003 | توحيد Storage Namespace ومهاجرة أسماء Phase 3 القديمة | `codex/p4-storage-consolidation` | Codex | DONE - DEVICE PASS / NO DUPLICATION | عقد التخزين والمهاجرة وRuntimes مع إبقاء المصدر القديم |
+| P4-HARD-001 | توافق Backup القديم وCI وبوابة إغلاق MatePad | `codex/p4-hardening-review` | Codex | DONE - CODE + CI + FUNCTIONAL DEVICE PASS | `backup.mjs` واختباراته وCI وChecklist الجهاز |
 | PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | READY FOR USER REVIEW - DOCS 9/9 + CI POLICY 7/7 + PR CI 3/3 | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
-| P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | CODE + PR CI PASS / PAGES OPTION SUPERSEDED / NOT DEPLOYED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
-| P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds بلا نشر | `chore/workers-static-preview` | Codex | LOCAL + PR CI PASS / NOT DEPLOYED | PR #4: GitHub Actions 4/4؛ Wrangler 4.114.0؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS + Wrangler dry-run PASS |
+| P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | DONE - STATIC BUILD VERIFIED / PAGES SUPERSEDED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
+| P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DONE - DEPLOYED / DEVICE PASS | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال؛ Device Gate PASS |
+| P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `codex/p4-device-pass-ux-foundation-spec` | Codex | DOCUMENTATION READY / USER REVIEW REQUIRED | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -95,18 +102,19 @@
 
 ## القادم بعد المهمة الحالية
 
-1. إعداد Preview يبني commit من GitHub مباشرة بعد موافقة المستخدم.
-2. تنفيذ `docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md` على MatePad من ذلك Preview.
-3. لا تُغلق Phase 4 ولا تبدأ Phase 5 قبل نجاح PDF/Migration/Backup/Restore/Reopen بلا فقد أو تكرار.
-4. مواقع Sites القديمة مجمدة؛ لا تُستخدم للقبول ولا تُنقل بياناتها إلا Export/Import صريحاً.
-5. GitHub وفروعه هي المصدر الوحيد للكود.
-6. المزامنة السحابية وحل التعارضات لا يدخلان تلقائياً في هذه الدفعة.
+1. مراجعة `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` مع المستخدم.
+2. حسم Information Architecture والتنقل وWorkspace والهوية البصرية قبل الكود.
+3. لا يبدأ كود Phase 4.5 أو Phase 5 قبل موافقة المستخدم على المواصفة.
+4. اقتراح Tag `v0.4-phase-4-functional-stable`؛ لا يُنشأ قبل موافقة المستخدم.
+5. تبقى واجهة P3 الحالية مرجعاً وظيفياً ولا تُحذف أو تُعاد كتابتها الآن.
+6. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
 7. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
 
 ## المراحل اللاحقة المحفوظة
 
 - Phase 3: Lecture Capture وCloseout وInbox وSearch وFavorites/Recent.
 - Phase 4: Backup/Restore/Export وPrivacy/Lock وRecovery.
+- Phase 4.5: UX Foundation وApp Shell ونقل الوظائف الحالية بلا تغيير Core.
 - Phase 5: Drawing Coach Lite.
 - Phase 6: التكامل النهائي وHardening واختبارات الجهاز وRelease Candidate.
 
@@ -155,3 +163,6 @@
 | 2026-07-27 | P3-LF-007 | Phase 3 | Note Core وPDF Library المحلية ضمن Schema v8؛ 88/88 Core و13/13 UI و15/15 Ink ناجحة، والنشر هو البوابة التالية |
 | 2026-07-27 | P3-LF-007 | المستخدم/MatePad | نُشرت Sites v3 بنجاح على مسار `/library/`؛ تنفيذ Phase 3 مكتمل وتبقى بوابة PDF/Notes على الجهاز قبل الإغلاق النهائي |
 | 2026-07-27 | P3-LF-008 | المستخدم/MatePad | أُصلح منتقي PDF ليكون هدف لمس مباشر، وتحوّل Cache إلى network-first مع Offline fallback؛ نُشرت Sites v5 وتنتظر إعادة اختبار الجهاز |
+| 2026-07-31 | Workers Build | Phase 4 Device Gate | نُشرت `develop@ed1d175` عبر Build `6e7ced6d` على Workers Static Assets |
+| 2026-07-31 | المستخدم/MatePad | Phase 4 | رفع PDF والتنقل وZoom/Fit width والملاحظات وإعادة الفتح وبقاء البيانات بلا تكرار كلها PASS |
+| 2026-07-31 | المستخدم | Phase 4.5 | تصنيف واجهة P3 كإثبات وظيفي فقط وطلب مواصفة UX قبل أي كود أو Phase 5 |

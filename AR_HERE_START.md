@@ -33,8 +33,11 @@ Studio5 ليس تطبيق ملاحظات عاديًا، ولا قارئ PDF فق
 - P2 Notebook/Revisions اجتاز اختبار الجهاز: حفظ نسختين، المعاينة، الرجوع،
   الاستعادة الآمنة، وإعادة الفتح بلا فقد.
 - Phase 3 مكتملة برمجياً، وPhase 4 اجتازت Core/Ink/P3 regression وGitHub CI.
-- `develop` هو فرع التجميع الحالي عند `2f5196c`، ولا يُستخدم `main` لبدء Phase 5.
-- Phase 4 تنتظر بوابة MatePad من build مرتبط مباشرة بـGitHub قبل الإغلاق أو Tag.
+- بدأ فرع التوثيق الحالي من `develop@ed1d175`، ولا يُستخدم `main` لبدء Phase 5.
+- Phase 4 Functional Device Gate نجحت على MatePad من Workers Build مرتبط مباشرة
+  بـGitHub. Tag `v0.4-phase-4-functional-stable` مقترح فقط وينتظر موافقة المستخدم.
+- واجهة P3 الحالية Functional Validation Prototype وليست تصميم المنتج النهائي؛
+  Phase 4.5 مواصفة UI/UX فقط وتنتظر المراجعة قبل أي كود.
 - ChatGPT Sites متوقف؛ النشر القديم مرجع مجمد وليس مصدر كود أو بيئة قبول.
 - تبقى واجهات التجارب `Experimental` حتى يثبت الاستخدام الجامعي الحقيقي ملاءمتها.
 

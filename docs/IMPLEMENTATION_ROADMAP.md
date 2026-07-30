@@ -20,6 +20,19 @@ PDF/notes بحسب قرار P0، Capture، Closeout، Inbox، Search، Favorites
 
 Backup/Restore/Export، conflicts، privacy/lock، recovery، observability.
 
+**الحالة:** Functional Device Gate PASS على MatePad بتاريخ 2026-07-31. واجهة P3
+الحالية مرجع وظيفي وليست تصميم المنتج النهائي.
+
+## Phase 4.5 - UX Foundation
+
+مرحلة تصميم وواجهة فقط: Information Architecture، App Shell، Today، Subjects،
+Library، PDF/Notes/Ink Workspace، Tasks، Settings/Backup، Responsive،
+Light/Dark، Design Tokens، Accessibility، وخطة نقل الوظائف الحالية بلا تغيير
+Core أو Schema أو التخزين.
+
+لا يبدأ الكود قبل مراجعة واعتماد
+`docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md`.
+
 ## Phase 5 - Drawing Coach Lite (أسبوعان)
 
 Exercises، attempts، overlay، قياسات بسيطة، ربط بالتقدم.
