@@ -3,6 +3,7 @@ const APP_ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
+  "./user-content.mjs",
   "./app.mjs",
   "./lecture-demo.mjs",
   "./core-runtime.mjs",

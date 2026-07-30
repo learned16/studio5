@@ -1,4 +1,5 @@
 import { openBrowserReliabilityDemo } from "./runtime.mjs";
+import { setUserText } from "../user-content.mjs";
 
 const elements = {
   summary: document.querySelector("#current-summary"),
@@ -124,7 +125,10 @@ elements.backupFile.addEventListener("change", async () => {
     elements.selectedBackup.textContent = "لم يتم اختيار ملف";
     return;
   }
-  elements.selectedBackup.textContent = `${file.name} — ${formattedBytes(file.size)}`;
+  setUserText(
+    elements.selectedBackup,
+    `${file.name} — ${formattedBytes(file.size)}`,
+  );
   setStatus(elements.restoreStatus, "دا أفحص الـManifest والملفات والرسم...");
   try {
     const bundle = JSON.parse(await file.text());

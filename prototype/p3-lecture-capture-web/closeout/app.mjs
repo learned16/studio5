@@ -1,4 +1,5 @@
 import { openBrowserLectureCloseoutDemo } from "./runtime.mjs";
+import { setUserText } from "../user-content.mjs";
 
 const KIND_LABELS = Object.freeze({
   "understanding-gap": "ما فهمت",
@@ -93,7 +94,7 @@ function captureCard(item, closeout) {
 
   const text = document.createElement("p");
   text.className = "capture-text";
-  text.textContent = item.capture.text;
+  setUserText(text, item.capture.text);
 
   const bottom = document.createElement("div");
   bottom.className = "capture-bottom";
@@ -138,8 +139,11 @@ async function render() {
   const remaining = total - resolved;
   const closeout = latestState.closeout;
 
-  lectureTitle.textContent = latestState.lecture.title;
-  lectureSubject.textContent = `${latestState.subject.title} · ${latestState.semester.label}`;
+  setUserText(lectureTitle, latestState.lecture.title);
+  setUserText(
+    lectureSubject,
+    `${latestState.subject.title} · ${latestState.semester.label}`,
+  );
   progressCount.textContent = `${resolved} / ${total}`;
   closeoutList.replaceChildren(
     ...latestState.captures.map((item) => captureCard(item, closeout)),
@@ -160,7 +164,10 @@ async function render() {
   closeoutStatus.classList.toggle("is-active", Boolean(closeout) && !completed);
 
   if (completed) {
-    completedSummary.textContent = closeout.summary || "كل النقاط محسومة ومحفوظة.";
+    setUserText(
+      completedSummary,
+      closeout.summary || "كل النقاط محسومة ومحفوظة.",
+    );
   }
   if (closeout && !completed) {
     completeButton.disabled = remaining > 0 || total === 0 || busy;

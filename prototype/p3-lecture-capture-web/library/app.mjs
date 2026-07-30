@@ -6,6 +6,10 @@ import {
   writeDraft,
 } from "./library-state.mjs";
 import { createPdfViewer } from "./pdf-viewer.mjs";
+import {
+  createUserTextElement,
+  setUserText,
+} from "../user-content.mjs";
 
 const elements = {
   uploadForm: document.querySelector("#upload-form"),
@@ -69,21 +73,28 @@ function updateFileSelection() {
   }
   try {
     validatePdfFile(file);
-    elements.pdfPickerLabel.textContent = `${file.name} — ${formattedFileSize(file.size)}`;
+    setUserText(
+      elements.pdfPickerLabel,
+      `${file.name} — ${formattedFileSize(file.size)}`,
+    );
     elements.uploadSubmit.disabled = false;
     setStatus("الملف جاهز للحفظ في المكتبة.");
   } catch (error) {
-    elements.pdfPickerLabel.textContent = file.name || "ملف غير صالح";
+    setUserText(elements.pdfPickerLabel, file.name || "ملف غير صالح");
     elements.uploadSubmit.disabled = true;
     setStatus(error.message || "تعذر اختيار PDF", "error");
   }
 }
 
-function button(label, className, handler) {
+function button(label, className, handler, { userContent = false } = {}) {
   const node = document.createElement("button");
   node.type = "button";
   node.className = className;
-  node.textContent = label;
+  if (userContent) {
+    node.append(createUserTextElement(document, label));
+  } else {
+    node.textContent = label;
+  }
   node.addEventListener("click", handler);
   return node;
 }
@@ -108,7 +119,12 @@ async function refreshFiles() {
     return;
   }
   for (const entry of state.files) {
-    const node = button(entry.artifact.displayName, "file-item", () => openPdf(entry));
+    const node = button(
+      entry.artifact.displayName,
+      "file-item",
+      () => openPdf(entry),
+      { userContent: true },
+    );
     if (state.selected?.artifact.id === entry.artifact.id) node.classList.add("selected");
     const meta = document.createElement("small");
     meta.textContent = `${Math.max(1, Math.round(entry.version.byteSize / 1024))} KB`;
@@ -153,7 +169,7 @@ async function refreshNotes() {
     const article = document.createElement("article");
     const heading = document.createElement("div");
     const title = document.createElement("strong");
-    title.textContent = note.title;
+    setUserText(title, note.title);
     const favorite = button("☆", "icon-button", async () => {
       const results = await state.demo.repository.searchLibrary({
         query: note.title,
@@ -165,7 +181,7 @@ async function refreshNotes() {
     });
     heading.append(title, favorite);
     const body = document.createElement("p");
-    body.textContent = note.body;
+    setUserText(body, note.body);
     const meta = document.createElement("small");
     meta.textContent = note.pageNumber ? `صفحة ${note.pageNumber}` : "بدون صفحة محددة";
     article.append(heading, body, meta);
@@ -186,7 +202,7 @@ async function openPdf(entry) {
   const blob = new Blob([opened.content.bytes], { type: "application/pdf" });
   state.objectUrl = URL.createObjectURL(blob);
   state.selected = entry;
-  elements.selectedFile.textContent = entry.artifact.displayName;
+  setUserText(elements.selectedFile, entry.artifact.displayName);
   elements.pdfViewer.hidden = false;
   elements.viewerEmpty.hidden = true;
   elements.openExternal.href = state.objectUrl;
@@ -257,9 +273,14 @@ async function refreshResources() {
   }
   for (const item of items) {
     const article = document.createElement("article");
-    const content = button(item.title, "resource-main", () => openResource(item));
+    const content = button(
+      item.title,
+      "resource-main",
+      () => openResource(item),
+      { userContent: true },
+    );
     const meta = document.createElement("small");
-    meta.textContent = item.subtitle || item.targetKind;
+    setUserText(meta, item.subtitle || item.targetKind);
     content.append(meta);
     const favorite = button(item.isFavorite ? "★" : "☆", "icon-button", async () => {
       await state.demo.repository.setResourceFavorite(

@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 
 const files = [
+  "user-content.mjs",
   "app.mjs",
   "lecture-demo.mjs",
   "core-runtime.mjs",
@@ -23,6 +24,7 @@ for (const file of files) {
     && ![
       "lecture-demo.mjs",
       "storage-runtime.mjs",
+      "user-content.mjs",
       "closeout/closeout-bridge.mjs",
       "library/library-state.mjs",
       "reliability/reliability-demo.mjs",

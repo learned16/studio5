@@ -10,6 +10,8 @@
   --mint: #dcebe2;
   --amber: #c88224;
   --shadow: 0 20px 55px rgba(25, 45, 37, 0.1);
+  --user-content-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Noto Sans Arabic", "Noto Naskh Arabic", "Geeza Pro", Tahoma, Arial, sans-serif;
 }
 
 * {
@@ -424,8 +426,19 @@ kbd {
 
 .capture-item p {
   margin: 2px 0 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   line-height: 1.55;
+}
+
+.user-content,
+.user-content-input {
+  min-width: 0;
+  font-family: var(--user-content-font);
+  letter-spacing: normal;
+  text-align: start;
+  unicode-bidi: plaintext;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .capture-item time {

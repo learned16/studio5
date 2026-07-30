@@ -1,4 +1,5 @@
 import { openBrowserLectureCaptureDemo } from "./core-runtime.mjs";
+import { setUserText } from "./user-content.mjs";
 
 const KIND_META = Object.freeze({
   "understanding-gap": {
@@ -73,7 +74,7 @@ function captureItem(capture) {
   badge.textContent = KIND_META[capture.captureKind]?.label ?? capture.captureKind;
 
   const content = document.createElement("p");
-  content.textContent = capture.text;
+  setUserText(content, capture.text);
 
   const time = document.createElement("time");
   time.dateTime = capture.capturedAt;
@@ -153,8 +154,8 @@ async function start() {
   updateConnection();
   try {
     demo = await openBrowserLectureCaptureDemo();
-    lectureTitle.textContent = demo.lecture.title;
-    lectureSubject.textContent = `${demo.subject.title} · ${demo.semester.label}`;
+    setUserText(lectureTitle, demo.lecture.title);
+    setUserText(lectureSubject, `${demo.subject.title} · ${demo.semester.label}`);
     await render();
     selectKind(selectedKind);
     setMessage("جاهز للالتقاط. كل شيء ينحفظ على هذا الجهاز.");

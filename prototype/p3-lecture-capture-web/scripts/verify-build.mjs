@@ -16,6 +16,7 @@ const files = [
   "index.html",
   "404.html",
   "styles.css",
+  "user-content.mjs",
   "app.mjs",
   "lecture-demo.mjs",
   "core-runtime.mjs",
@@ -68,6 +69,7 @@ await access(join(coreAssets, "lecture-flow.mjs"));
 await access(join(coreAssets, "lecture-inbox.mjs"));
 await access(join(coreAssets, "browser-storage-profile.mjs"));
 await access(join(coreAssets, "browser-storage-migration.mjs"));
+await access(join(assets, "user-content.mjs"));
 const closeoutHtml = await readFile(join(closeoutAssets, "index.html"), "utf8");
 if (!closeoutHtml.includes("closeout-list")
   || !closeoutHtml.includes("complete-closeout")

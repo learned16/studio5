@@ -50,6 +50,7 @@
 | `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | DEVICE GATE PENDING / UI EXPERIMENTAL | لا توجد إفادة جهاز عن Full Backup/Verify/Restore |
 | `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | PDF/NOTES DEVICE PASS / FULL GATE PENDING | MatePad reload + close/reopen + PDF/Notes persistence بلا تكرار |
 | `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | CI PASS / PARTIAL DEVICE GATE | Node 22 CI + Workers Build `6e7ced6d` + PDF/Notes MatePad PASS؛ Ink/Backup PENDING |
+| `S5-UX-I18N-001` | عرض محتوى المستخدم العربي والمختلط باتجاه تلقائي من دون تغيير النص الأصلي | P4.5-UX-ARABIC-001 | IN PROGRESS / AUTOMATED VERIFICATION PENDING | HTML content only؛ Arabic PDF canvas MatePad verification pending |
 | `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@3fbc776` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
 | `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DONE / DEPLOYED FROM DEVELOP | `develop@ed1d175` → Workers Build `6e7ced6d` |
 | `S5-PREVIEW-002` | فحص حزمة P3 الساكنة وحدود Cloudflare والمسارات والأصول قبل الربط | P4-PREVIEW-001 | DONE / STATIC BUILD VERIFIED | PR #3 CI + 404/PDF/SW contracts + Production build PASS |

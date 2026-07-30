@@ -12,6 +12,8 @@
   --amber: #f3e6cd;
   --rose: #f4dfdc;
   --shadow: 0 20px 55px rgba(25, 45, 37, 0.1);
+  --user-content-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Noto Sans Arabic", "Noto Naskh Arabic", "Geeza Pro", Tahoma, Arial, sans-serif;
 }
 
 * {
@@ -334,9 +336,20 @@ a {
 
 .capture-text {
   margin: 14px 1px;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   font-size: 1rem;
   line-height: 1.65;
+}
+
+.user-content,
+.user-content-input {
+  min-width: 0;
+  font-family: var(--user-content-font);
+  letter-spacing: normal;
+  text-align: start;
+  unicode-bidi: plaintext;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .capture-bottom {

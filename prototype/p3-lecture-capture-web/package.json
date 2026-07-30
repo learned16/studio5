@@ -8,7 +8,7 @@
     "build": "node scripts/verify-build.mjs",
     "preview:check": "node scripts/verify-static-preview.mjs",
     "preview:verify": "pnpm run build && pnpm run preview:check",
-    "lint": "node --check app.mjs && node --check lecture-demo.mjs && node --check core-runtime.mjs && node --check storage-runtime.mjs && node --check closeout/app.mjs && node --check closeout/closeout-bridge.mjs && node --check closeout/runtime.mjs && node --check library/app.mjs && node --check library/library-demo.mjs && node --check library/library-state.mjs && node --check library/pdf-viewer.mjs && node --check library/runtime.mjs && node --check reliability/app.mjs && node --check reliability/reliability-demo.mjs && node --check reliability/runtime.mjs && node --check scripts/verify-static-preview.mjs && node --check sw.js && node --check worker/index.mjs",
+    "lint": "node --check user-content.mjs && node --check app.mjs && node --check lecture-demo.mjs && node --check core-runtime.mjs && node --check storage-runtime.mjs && node --check closeout/app.mjs && node --check closeout/closeout-bridge.mjs && node --check closeout/runtime.mjs && node --check library/app.mjs && node --check library/library-demo.mjs && node --check library/library-state.mjs && node --check library/pdf-viewer.mjs && node --check library/runtime.mjs && node --check reliability/app.mjs && node --check reliability/reliability-demo.mjs && node --check reliability/runtime.mjs && node --check scripts/verify-static-preview.mjs && node --check sw.js && node --check worker/index.mjs",
     "typecheck": "node scripts/typecheck.mjs",
     "test": "node --test tests/*.test.mjs"
   },

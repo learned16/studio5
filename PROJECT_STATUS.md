@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-07-31
 المرحلة الحالية: `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`
-الفرع النشط: `codex/p4-device-pass-ux-foundation-spec`
+الفرع النشط: `fix/arabic-content-rendering`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -16,9 +16,9 @@
 الإنكليزية واتجاه التطبيق LTR، مع دعم اتجاه تلقائي لمحتوى المستخدم العربي
 والمختلط. التنقل الرئيسي: `Today / Study / Projects / Practice / Library`.
 
-حالة دعم العربية المنفصل: تنفيذ عرض أسماء الملفات العربية محفوظ على branch محلي
-مستقل، واختبارات Regression للملاحظات العربية محضرة منفصلة، أما Arabic PDF
-canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه الإصلاحات.
+إصلاح HTML لأسماء الملفات والملاحظات والمحتوى العربي/المختلط قيد النقل والتحقق
+على هذا الفرع. النص المخزن يبقى كما هو، والـProduct Shell يبقى English LTR.
+Arabic PDF canvas لم يُثبت بعد ويحتاج اختبار PDF عربي حقيقي على MatePad.
 
 ## ترتيب القراءة لأي وكيل
 
@@ -97,6 +97,7 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 | P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | DONE - STATIC BUILD VERIFIED / PAGES SUPERSEDED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
 | P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
 | P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `codex/p4-device-pass-ux-foundation-spec` | Codex | DOCUMENTATION READY / USER REVIEW REQUIRED | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
+| P4.5-UX-ARABIC-001 | إصلاح اتجاه وعرض المحتوى العربي والمختلط في P3 | `fix/arabic-content-rendering` | Codex | IN PROGRESS — AUTOMATED VERIFICATION PENDING | HTML user content فقط؛ Arabic PDF canvas device verification pending؛ لا Core/Schema/Backup ولا Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -110,8 +111,8 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 
 ## القادم بعد المهمة الحالية
 
-1. مراجعة `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` مع المستخدم.
-2. اعتماد تفاصيل Phase 4.5 حول الاتجاه البصري والتنقل والـUnified Workspace قبل الكود.
+1. إكمال تحقق إصلاح HTML للمحتوى العربي والمختلط وفتح PR إلى `develop`.
+2. إبقاء Arabic PDF canvas بحالة MatePad device verification pending حتى اختبار PDF عربي حقيقي.
 3. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
    Backup/Verify/Restore بما يشمل PDF وNotes وInk وTasks ورفض النسخة التالفة
    وسيناريوهات التخزين المنخفض والفشل الآمن.

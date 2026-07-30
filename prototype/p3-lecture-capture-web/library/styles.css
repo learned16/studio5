@@ -9,6 +9,8 @@
   --line: #d7d2c7;
   --muted: #67746f;
   --rust: #a34e2b;
+  --user-content-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Noto Sans Arabic", "Noto Naskh Arabic", "Geeza Pro", Tahoma, Arial, sans-serif;
   background: var(--paper);
   color: #1e2c28;
 }
@@ -143,7 +145,7 @@ input:focus, textarea:focus { outline: 3px solid rgba(40, 90, 74, .16); border-c
 .selected-file-copy {
   color: var(--green);
   font-size: .78rem;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .picker-help {
   color: var(--muted);
@@ -195,8 +197,9 @@ input:focus, textarea:focus { outline: 3px solid rgba(40, 90, 74, .16); border-c
   padding: .72rem;
   background: white;
   color: #21332d;
-  text-align: right;
+  text-align: start;
 }
+.file-item > .user-content, .resource-main > .user-content { flex: 1; }
 .file-item.selected { border-color: var(--green); background: var(--mint); }
 .file-item small, .resource-main small { color: var(--muted); font-size: .72rem; }
 .empty-message { margin: .4rem 0; color: var(--muted); font-size: .82rem; }
@@ -317,6 +320,17 @@ input:focus, textarea:focus { outline: 3px solid rgba(40, 90, 74, .16); border-c
 }
 .notes-list article p { margin: .45rem 0; line-height: 1.6; }
 .notes-list article small { color: var(--muted); }
+
+.user-content,
+.user-content-input {
+  min-width: 0;
+  font-family: var(--user-content-font);
+  letter-spacing: normal;
+  text-align: start;
+  unicode-bidi: plaintext;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
 
 @media (max-width: 900px) {
   .topbar { align-items: flex-start; flex-direction: column; }
