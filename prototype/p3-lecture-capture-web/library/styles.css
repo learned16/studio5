@@ -288,6 +288,7 @@ input:focus, textarea:focus { outline: 3px solid rgba(40, 90, 74, .16); border-c
   touch-action: pan-x pan-y;
 }
 #pdf-canvas {
+  direction: ltr;
   display: block;
   max-width: none;
   background: white;

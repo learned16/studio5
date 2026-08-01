@@ -90,6 +90,7 @@ export function createPdfViewer({
     const pixelRatio = Math.min(globalThis.devicePixelRatio || 1, MAX_PIXEL_RATIO);
     canvas.width = Math.max(1, Math.floor(viewport.width * pixelRatio));
     canvas.height = Math.max(1, Math.floor(viewport.height * pixelRatio));
+    context.direction = "ltr";
     canvas.style.width = `${Math.floor(viewport.width)}px`;
     canvas.style.height = `${Math.floor(viewport.height)}px`;
 

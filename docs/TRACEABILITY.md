@@ -45,6 +45,7 @@
 | `S5-UX-PDF-PICKER-001` | منتقي PDF يستقبل اللمس مباشرة على MatePad/WebView | P3-LF-008 | DONE / DEVICE PASS | MatePad PDF upload PASS بتاريخ 2026-07-31 |
 | `S5-UX-PDF-PICKER-002` | حقل ملفات نظام أصلي ظاهر ومتوافق مع MIME العام على MatePad | P3-LF-009 | DONE / DEVICE PASS | MatePad native file selection/upload PASS |
 | `S5-UX-PDF-VIEWER-001` | عرض PDF داخلي لا يعتمد على عارض WebView مع تنقل وZoom وOffline assets | P3-LF-010 | DONE / DEVICE PASS | MatePad navigation + Zoom + Fit width PASS |
+| `S5-UX-PDF-CANVAS-001` | منع PDF.js Canvas من وراثة RTL مع الحفاظ على worker والمسارات والتنقل والـZoom | P4-PDF-CANVAS-DIRECTION-001 | AUTOMATED PASS / MATEPAD VISUAL PENDING | PDF 4/4 + P3 24/24 + Build/Static Preview/Wrangler dry-run PASS؛ الحكم البصري على PDF عربي يبقى للجهاز |
 | `S5-FR-005C` | Lecture Flow وSearch وFavorites/Recent وOffline Queue | Phase 3 | PDF/NOTES DEVICE PASS / UI NOT FINAL | Workers Build `6e7ced6d` + MatePad reload/close/reopen PASS |
 | `S5-DATA-004` | Backup/Restore/Full Export | P4-HARD-001 | CORE HARDENED / DEVICE GATE PENDING | 100/100 Core + Schema 7→8 regression؛ Full MatePad Backup/Restore غير منفذ |
 | `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | DEVICE GATE PENDING / UI EXPERIMENTAL | لا توجد إفادة جهاز عن Full Backup/Verify/Restore |
