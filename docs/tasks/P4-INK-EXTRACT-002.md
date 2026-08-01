@@ -7,7 +7,7 @@
 - Branch: `refactor/p0-ink-coordinate-transforms`
 - Base: `develop@79579d92b33b60e77a4b560abe13d09e781dd380`
 - Owner: Codex
-- Status: `REVISION READY — LOCAL PASS / BUILD CLOSURE PASS / CI PENDING / MATEPAD MULTI-TOUCH PENDING`
+- Status: `LOCAL PASS / BUILD CLOSURE PASS / CI PASS / MATEPAD MULTI-TOUCH PENDING`
 
 ## Goal
 
@@ -166,6 +166,9 @@ No MatePad or real multi-touch PASS is claimed by this revision.
 - Wrangler `4.114.0` dry-run: `PASS`, reading `261` static assets.
 - Built HTTP/browser smoke and offline reopen: `PASS`.
 - `git diff --check`: `PASS`.
+- GitHub Actions: `4/4 PASS` for Core, P0, P3, and Worker Static Assets.
+- Cloudflare Workers Build: `PASS` for commit `7a19c39`; the existing Worker
+  remains the P3 preview and does not publish or integrate P0 Ink.
 
 Development benchmark, Node `24.14.0`, `15` alternating rounds with enough
 repetitions to time at least one million segments per sample:
