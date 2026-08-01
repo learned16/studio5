@@ -1,24 +1,55 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-07-31
-المرحلة الحالية: `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`
-الفرع النشط: `codex/p4-device-pass-ux-foundation-spec`
+آخر تحديث: 2026-08-01
+المرحلة الحالية: `PARTIAL DEVICE GATE PASS`
+الفرع النشط: `docs/authoritative-full-build-v5`
 
-هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
+هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
+تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
+
+ترتيب السلطة:
+
+1. أحدث قرار صريح ومؤرخ من المستخدم والمسجل في
+   `docs/authority/STUDIO5_AUTHORITY_CURRENT_EN.md`.
+2. `docs/authority/Studio5_One_Time_Full_Build_Spec_v5_AR.md` لبقية النطاق.
+3. الاختبارات والـPull Requests كأدلة لحالة التنفيذ.
+4. الوثائق القديمة للتاريخ فقط.
+
+Studio5 منصة دائمة لخمس سنوات. يعطي التنفيذ الإنتاجي الأولوية للسنة الأكاديمية
+الحالية، ولا يحذف السنوات اللاحقة من النطاق. لا تُبنى تفاصيلها وواجهاتها قبل
+حاجتها الأكاديمية، بينما يبقى Core والعقود ونموذج البيانات قابلين للتوسع.
+Web/PWA هو المسار الحالي وليس المنصة النهائية الوحيدة. Phase 5 جزء من Gate D
+وليست نهاية Studio5.
 
 > The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-نجاح PDF/Notes على MatePad لا يعني إغلاق Phase 4 كلها ولا اعتماد تصميم واجهة P3.
-تبقى P3 مرجعاً وظيفياً، بينما يبقى P0 Ink Prototype مستقلاً وغير مضاف إلى Worker
-المنشور. تنتقل بنية المنتج النهائية إلى مراجعة مواصفة Phase 4.5 قبل كتابة أي كود.
+نجاح PDF/Notes وPDF Canvas على MatePad لا يعني إغلاق Phase 4 كلها ولا اعتماد
+تصميم واجهة P3. تبقى P3 مرجعاً وظيفياً، بينما يبقى P0 Ink Prototype مستقلاً
+وغير مضاف إلى Worker المنشور.
 
 اتجاه المنتج المعتمد هو `Warm Paper Academic Studio`. Product Shell باللغة
 الإنكليزية واتجاه التطبيق LTR، مع دعم اتجاه تلقائي لمحتوى المستخدم العربي
 والمختلط. التنقل الرئيسي: `Today / Study / Projects / Practice / Library`.
 
-حالة دعم العربية المنفصل: تنفيذ عرض أسماء الملفات العربية محفوظ على branch محلي
-مستقل، واختبارات Regression للملاحظات العربية محضرة منفصلة، أما Arabic PDF
-canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه الإصلاحات.
+## تحديثات Pull Requests في 2026-08-01
+
+- PR #6: `Closed without merge`.
+- PR #7: `Merged`؛ PDF Canvas:
+  `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS`.
+- PR #8: `Merged`؛ اكتملت Ink characterization/tests والوثائق المرتبطة.
+- PR #9: `Merged`؛ Warm Paper visual prototype معتمد كمرجع فقط.
+- PR #10: `Active authority synchronization` على
+  `docs/authoritative-full-build-v5`، وحالته Ready for review.
+
+## المتبقي لإغلاق Phase 4
+
+- Ink داخل Worker.
+- Pen/Palm Rejection داخل Worker.
+- Full Backup/Verify/Restore على MatePad.
+- Corrupted backup rejection.
+- Low-storage/failure-safe tests.
+
+لا تبدأ Phase 5 بعد.
 
 ## ترتيب القراءة لأي وكيل
 
@@ -33,7 +64,8 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 ### Foundation
 
 - توثيق الرؤية والنطاق والمعمارية ونموذج البيانات والمخاطر ومعايير القبول.
-- تثبيت قرار: السنة الأولى فقط فوق Core دائم.
+- تثبيت Core دائم وعقود ونموذج بيانات قابلة للتوسع لخمس سنوات، مع أولوية إنتاجية
+  للسنة الأكاديمية الحالية.
 - منع تثبيت أسماء المواد داخل Core.
 - إنشاء مستودع Git وفروع مستقلة ومنع الدمج الآلي إلى `main`.
 
@@ -58,7 +90,8 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 - جلسة رسم 15 دقيقة: PASS بلا تأخير ملحوظ.
 - قرابة 1000 stroke: PASS للحفظ وإعادة الفتح.
 
-الاختبارات الوظيفية مغلقة، واعتمد المستخدم Web/PWA لنسخة السنة الأولى في `ADR-008`.
+الاختبارات الوظيفية مغلقة، واعتمد المستخدم Web/PWA كمسار التنفيذ والإثبات الحالي
+في `ADR-008`، لا كحصر نهائي للمنصة.
 
 ## العمل الجاري الآن
 
@@ -96,7 +129,7 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 | PRE-P5-FOUNDATION-001 | تثبيت develop وتنظيم الفروع والمعاينة وNative ومواصفات Phase 5/6 | `chore/pre-phase5-foundation` | Codex | READY FOR USER REVIEW - DOCS 9/9 + CI POLICY 7/7 + PR CI 3/3 | CI ووثائق الفروع والمعاينة وNative ومواصفات المرحلتين |
 | P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | DONE - STATIC BUILD VERIFIED / PAGES SUPERSEDED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
 | P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
-| P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `codex/p4-device-pass-ux-foundation-spec` | Codex | DOCUMENTATION READY / USER REVIEW REQUIRED | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
+| P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `historical / merged` | Codex | DOCUMENTATION COMPLETE | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -110,38 +143,45 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 
 ## القادم بعد المهمة الحالية
 
-1. مراجعة `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` مع المستخدم.
-2. اعتماد تفاصيل Phase 4.5 حول الاتجاه البصري والتنقل والـUnified Workspace قبل الكود.
-3. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
+1. إكمال مراجعة ومزامنة السلطة في PR #10 من دون Merge تلقائي.
+2. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
    Backup/Verify/Restore بما يشمل PDF وNotes وInk وTasks ورفض النسخة التالفة
    وسيناريوهات التخزين المنخفض والفشل الآمن.
-4. لا يبدأ كود Phase 4.5 أو Phase 5 قبل موافقة المستخدم على المواصفة.
-5. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
-6. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
-7. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
-8. لا يُدمج أي فرع إلى `main` دون موافقة المستخدم.
+3. لا تبدأ Phase 5 قبل إغلاق البوابات الحالية وقرار المستخدم؛ وهي جزء من Gate D
+   وليست نهاية Studio5.
+4. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
+5. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
+6. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
+7. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
 
 ## المراحل اللاحقة المحفوظة
 
 - Phase 3: Lecture Capture وCloseout وInbox وSearch وFavorites/Recent.
 - Phase 4: Backup/Restore/Export وPrivacy/Lock وRecovery.
 - Phase 4.5: UX Foundation وApp Shell ونقل الوظائف الحالية بلا تغيير Core.
-- Phase 5: Drawing Coach Lite.
+- Phase 5: Drawing Coach Lite، وهي جزء من Gate D وليست نهاية Studio5.
 - Phase 6: التكامل النهائي وHardening واختبارات الجهاز وRelease Candidate.
 
-خارج النطاق الحالي: سنوات 2-5، AI Council، Desktop Companion، التحكم بالكمبيوتر، CAD/BIM، والمزامنة المعقدة متعددة الأجهزة.
+السنوات 2–5 وAI Council وDesktop Companion والتحكم بالكمبيوتر وCAD/BIM
+والمزامنة المعقدة متعددة الأجهزة باقية في النطاق الخماسي. لا تُبنى تفاصيلها
+وواجهاتها قبل حاجتها الأكاديمية أو قبل Gates وقرارات التصميم الخاصة بها.
 
 ## بروتوكول العمل بين عدة وكلاء
 
-1. لا يبدأ الوكيل قبل وجود `Work ID` وملف مهمة وفرع مستقل.
-2. لا يشارك وكيلان الفرع نفسه ولا يعدلان الملفات المحجوزة نفسها في الوقت نفسه.
-3. يسجل الوكيل اسمه وفرعه وحالة `IN PROGRESS` قبل الكود.
-4. يقرأ آخر commit من الفرع الأساسي قبل البدء، ولا يعيد كتابة تاريخ غيره.
-5. لا يوسع النطاق من نفسه. أي اقتراح تغيير يوثق السبب والأثر والبدائل والقرار المطلوب.
-6. كل Batch يجب أن يقدم: الملفات المعدلة، الاختبارات، نتائجها، القيود المعروفة، وRollback.
-7. الحالة تصبح `DONE` فقط بعد Commit وPush ونجاح التحقق.
-8. المراجعة المستقلة لا تعدل فرع المنفذ أولاً؛ تسجل تقريراً، ثم يعود الإصلاح للمنفذ.
-9. لا Merge إلى `main` دون موافقة المستخدم.
+التنظيم: `A — Production`، و`B — Review & QA`، و
+`C — Prototype & Architecture`.
+
+1. Blockers first.
+2. لا يبدأ العمل المتوازي إلا إذا كانت المهمة `PARALLEL-SAFE`.
+3. تستخدم المهام Worktrees وفروعاً مستقلة، وتبقى الملفات المشتركة لمهمة واحدة في الوقت نفسه.
+4. Codex ينفذ؛ المستخدم والمشرف يحسمان.
+5. لا يوسع Codex النطاق من نفسه. أي اقتراح تغيير يوثق السبب والأثر والبدائل والقرار المطلوب.
+6. كل Batch يقدم الملفات المعدلة والاختبارات ونتائجها والقيود المعروفة وRollback.
+7. نهاية المهمة: `Commit + Push + Draft PR + Tests + STOP`.
+8. لا Merge تلقائي.
+
+أي حزمة مرجعية تُسلّم للمستخدم مستقبلاً تجمع في ملف عربي واحد باسم
+`Studio5_Master_Current_AR.md`. لا يُنشأ هذا الملف ضمن المزامنة الحالية.
 
 ## سجل التسليم المختصر
 
@@ -178,3 +218,8 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 | 2026-07-31 | المستخدم/MatePad | Phase 4 | PDF/Notes sub-gate PASS؛ Ink داخل Worker وFull Backup/Restore وبوابات الفشل الآمن ما زالت PENDING |
 | 2026-07-31 | المستخدم | Phase 4.5 | تصنيف واجهة P3 كإثبات وظيفي فقط وطلب مواصفة UX قبل أي كود أو Phase 5 |
 | 2026-07-31 | المستخدم | Product Direction | `Warm Paper Academic Studio`؛ English LTR shell؛ اتجاه تلقائي للمحتوى العربي/المختلط؛ التنقل `Today / Study / Projects / Practice / Library` |
+| 2026-08-01 | PR #6 | Arabic content | Closed without merge |
+| 2026-08-01 | PR #7 | PDF Canvas | Merged؛ `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` |
+| 2026-08-01 | PR #8 | P0 Ink | Merged؛ Characterization tests/documentation completed |
+| 2026-08-01 | PR #9 | Warm Paper | Merged؛ visual prototype approved as reference only |
+| 2026-08-01 | PR #10 | Authority | Active authority synchronization؛ Ready for review |
