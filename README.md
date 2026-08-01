@@ -1,27 +1,46 @@
 # Studio5
 
-Studio5 هو نظام دراسة ورسم شخصي لطالب هندسة تقنيات العمارة والبناء. تبنى النسخة الحالية للسنة الأولى فقط، فوق Core دائم يتيح إضافة السنوات اللاحقة عبر بيانات وModules ومهاجرات، لا عبر إعادة بناء التطبيق.
+Studio5 منصة دراسة ورسم ومشاريع دائمة لخمس سنوات لطالب هندسة تقنيات العمارة
+والبناء. يعطي التنفيذ الإنتاجي الأولوية لاحتياجات السنة الأكاديمية الحالية، فوق
+Core وعقود ونموذج بيانات قابلة للتوسع من دون إعادة بناء التطبيق أو فقد البيانات.
 
-المرجع السلطوي: [`Studio5_Year_One_Work_Handoff_AR-1(1).pdf`](./Studio5_Year_One_Work_Handoff_AR-1(1).pdf).
+## السلطة الحالية
+
+1. أحدث قرار صريح ومؤرخ من المستخدم والمسجل في
+   [`STUDIO5_AUTHORITY_CURRENT_EN.md`](./docs/authority/STUDIO5_AUTHORITY_CURRENT_EN.md).
+2. [`Studio5_One_Time_Full_Build_Spec_v5_AR.md`](./docs/authority/Studio5_One_Time_Full_Build_Spec_v5_AR.md)
+   لبقية النطاق.
+3. الاختبارات والـPull Requests كأدلة لحالة التنفيذ.
+4. الوثائق القديمة كتاريخ فقط.
+
+القرار الأحدث يعدل الجزء المتعارض فقط ولا يلغي المواصفة كاملة.
 
 ## الحالة الحالية
 
-اكتملت وثائق **Project Foundation**، ونُشرت نسخة P0 Candidate A لاختبار القلم والحفظ والاستعادة. بدأت Phase 2 ببناء Studio5 Core المحايد عن أسماء المواد والتقنية النهائية.
+حالة Phase 4 هي `PARTIAL DEVICE GATE PASS`. نجح PDF Canvas آلياً وعلى Cloudflare
+Preview وبصرياً على MatePad، بينما تبقى بوابات Ink داخل Worker وFull
+Backup/Verify/Restore والفشل الآمن معلقة. P0 وP3 Functional Prototypes، وWarm
+Paper نموذج بصري معتمد كمرجع فقط.
 
 الحالة الدقيقة والمنجز والجاري والقادم موجودة في [`PROJECT_STATUS.md`](./PROJECT_STATUS.md). يجب على أي وكيل برمجي قراءته قبل العمل.
 
 نقطة البداية لأي وكيل جديد هي [`AR_HERE_START.md`](./AR_HERE_START.md)، وإجراء العمل المتكرر موجود في
 [`docs/STUDIO5_SOP.md`](./docs/STUDIO5_SOP.md).
 
-## حدود النسخة الحالية
+## نطاق التنفيذ الحالي
 
-- سنة أولى فقط، لمستخدم واحد.
-- الدراسة، الملفات، PDF/Notebook/Ink، المهام، Today، النسخ الاحتياطي والتصدير، وDrawing Coach Lite.
-- لا سنوات 2-5، ولا AI Council، ولا Desktop Companion أو تكاملات CAD/BIM أو مزامنة متعددة الأجهزة معقدة.
+- احتياجات السنة الأكاديمية الحالية هي أولوية الإنتاج.
+- السنوات اللاحقة باقية في نطاق المنصة الخمسية، وتُجهز عبر Stable Contracts
+  وSubject Profiles وFeature Flags ونقاط امتداد موثقة.
+- لا تُبنى تفاصيل وواجهات السنوات اللاحقة قبل حاجتها الأكاديمية.
+- Web/PWA هو مسار التنفيذ والإثبات الحالي، وليس قراراً بأن المنتج النهائي Web-only.
+- Phase 5 Drawing Coach جزء من Gate D وليست نهاية Studio5، ولم تبدأ بعد.
 
 ## البداية الصحيحة للتنفيذ
 
-تم تنفيذ أول Prototype معزول للقلم والحفظ والاستعادة على HUAWEI MatePad 11.5 PaperMatte. المرحلة الحالية تبدأ بالـCore: نموذج البيانات العام، المعرفات الثابتة، العقود، والمهاجرات قبل الشاشات.
+تم تنفيذ Prototype معزول للقلم والحفظ والاستعادة على HUAWEI MatePad 11.5
+PaperMatte، ثم ثُبت سلوكه باختبارات Characterization. الأولوية الحالية هي
+`Core + Data contracts + Primary MatePad workflows` ثم التوسع حسب Gates A–G.
 
 المصدر: [`prototype/p0-ink-web/`](./prototype/p0-ink-web/).
 
