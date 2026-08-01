@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f2eee5" />
+    <meta
+      name="description"
+      content="Warm Paper Academic Studio — an experimental Studio5 application shell."
+    />
+    <title>Studio5 — Warm Paper Academic Studio</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="app-shell" id="app-shell">
+      <aside class="navigation-rail" aria-label="Primary navigation">
+        <button class="brand" type="button" data-action="go-today" aria-label="Studio5 home">
+          <span class="brand-mark" aria-hidden="true">S5</span>
+          <span class="brand-copy"><strong>Studio5</strong><small>Academic studio</small></span>
+        </button>
+
+        <nav class="primary-navigation" aria-label="Main destinations">
+          <button class="nav-item is-active" type="button" data-destination="today" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">T</span><span>Today</span>
+          </button>
+          <button class="nav-item" type="button" data-destination="study">
+            <span class="nav-icon" aria-hidden="true">S</span><span>Study</span>
+          </button>
+          <button class="nav-item" type="button" data-destination="projects">
+            <span class="nav-icon" aria-hidden="true">P</span><span>Projects</span>
+          </button>
+          <button class="nav-item" type="button" data-destination="practice">
+            <span class="nav-icon" aria-hidden="true">R</span><span>Practice</span>
+          </button>
+          <button class="nav-item" type="button" data-destination="library">
+            <span class="nav-icon" aria-hidden="true">L</span><span>Library</span>
+          </button>
+        </nav>
+
+        <div class="rail-footer">
+          <span class="sync-note"><span class="status-dot" aria-hidden="true"></span>Prototype data</span>
+          <button class="icon-button" type="button" data-action="settings" aria-label="Open settings">
+            <span aria-hidden="true">⚙</span>
+          </button>
+        </div>
+      </aside>
+
+      <section class="application-area">
+        <header class="top-header">
+          <div class="header-context">
+            <span class="eyebrow">Warm Paper</span>
+            <strong id="header-title">Today</strong>
+          </div>
+          <div class="header-actions">
+            <button class="search-trigger" type="button" data-action="search" aria-label="Search Studio5" aria-haspopup="dialog">
+              <span class="search-glyph" aria-hidden="true"></span>
+              <span>Search Studio5</span>
+              <kbd>Ctrl K</kbd>
+            </button>
+            <button class="icon-button header-settings" type="button" data-action="settings" aria-label="Open settings">
+              <span aria-hidden="true">⚙</span>
+            </button>
+            <button class="avatar-button" type="button" data-action="profile" aria-label="Open profile summary">HM</button>
+          </div>
+        </header>
+
+        <main id="main-content" tabindex="-1"></main>
+      </section>
+    </div>
+
+    <div class="dialog-backdrop" id="dialog-backdrop" hidden></div>
+    <section class="dialog" id="search-dialog" role="dialog" aria-modal="true" aria-labelledby="search-title" hidden>
+      <div class="dialog-header">
+        <div>
+          <span class="eyebrow">Global action</span>
+          <h2 id="search-title">Search Studio5</h2>
+        </div>
+        <button class="icon-button" type="button" data-action="close-dialog" aria-label="Close search">×</button>
+      </div>
+      <label class="search-field">
+        <span class="search-glyph" aria-hidden="true"></span>
+        <span class="sr-only">Search notes, files, drawings, and assignments</span>
+        <input id="global-search" type="search" placeholder="Search notes, files, drawings, assignments…" autocomplete="off" />
+      </label>
+      <div class="search-results" id="search-results" aria-live="polite"></div>
+    </section>
+
+    <section class="dialog settings-dialog" id="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+      <div class="dialog-header">
+        <div>
+          <span class="eyebrow">Secondary action</span>
+          <h2 id="settings-title">Settings</h2>
+        </div>
+        <button class="icon-button" type="button" data-action="close-dialog" aria-label="Close settings">×</button>
+      </div>
+      <div class="settings-list">
+        <label><span>Quiet interface motion</span><input type="checkbox" checked /></label>
+        <label><span>Compact library by default</span><input type="checkbox" checked /></label>
+        <label><span>Show contextual study panel</span><input type="checkbox" checked /></label>
+      </div>
+      <p class="muted">This experimental shell does not save settings or connect to real student data.</p>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>
