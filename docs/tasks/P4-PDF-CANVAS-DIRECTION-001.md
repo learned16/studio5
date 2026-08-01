@@ -26,8 +26,6 @@
 - `prototype/p3-lecture-capture-web/library/styles.css`
 - `prototype/p3-lecture-capture-web/library/pdf-viewer.mjs`
 - `prototype/p3-lecture-capture-web/tests/pdf-viewer-ui.test.mjs`
-- `PROJECT_STATUS.md`
-- `docs/TRACEABILITY.md`
 - هذا الملف
 
 ## خارج النطاق

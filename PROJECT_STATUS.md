@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-08-01
+آخر تحديث: 2026-07-31
 المرحلة الحالية: `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`
-الفرع النشط: `fix/pdfjs-canvas-direction`
+الفرع النشط: `codex/p4-device-pass-ux-foundation-spec`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex وClaude وأي وكيل آخر. تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً. لا تستبدل المواصفة السلطوية أو ملفات المهام.
 
@@ -64,7 +64,6 @@ canvas فيحتاج تشخيص جهاز مستقل. لا يحتوي PR #5 هذه
 
 | Work ID | المهمة | الفرع | المالك | الحالة | الملفات المحجوزة |
 |---|---|---|---|---|---|
-| P4-PDF-CANVAS-DIRECTION-001 | منع PDF.js Canvas من وراثة RTL مع إبقاء التحقق البصري على MatePad | `fix/pdfjs-canvas-direction` | Codex | AUTOMATED PASS — PDF 4/4 + P3 24/24 / MATEPAD VISUAL PENDING | `library/pdf-viewer.mjs`, `library/styles.css`, PDF viewer tests، ملف المهمة والحالة والتتبع |
 | P2-CORE-001 | أساس نموذج Studio5 Core وSchema v1 والمهاجرات | `codex/phase2-core-foundation` | Codex | DONE - 7/7 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-001.md`, ملفات الحالة |
 | P2-CORE-002 | قاعدة بيانات IndexedDB محلية وRecovery | `codex/p2-core-indexeddb` | Codex | IMPLEMENTED 14/14 - BROWSER PENDING | `packages/studio5-core/**`, `docs/tasks/P2-CORE-002.md`, ملفات الحالة |
 | P2-CORE-003 | Repository APIs للسنوات والفصول والمواد | `codex/p2-academic-repository` | Codex | DONE - 19/19 TESTS | `packages/studio5-core/**`, `docs/tasks/P2-CORE-003.md`, ملفات الحالة |
