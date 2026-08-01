@@ -180,8 +180,40 @@ repetitions to time at least one million segments per sample:
 | 50,000 | 9.419 ms | 7.575 ms | 5.838 ms | -38.0% |
 | 100,000 | 9.590 ms | 9.601 ms | 7.319 ms | -23.7% |
 
-Timing remains development evidence and is not a brittle CI gate. Structural
-tests enforce the allocation-free API and the one-calculation-per-point draw path.
+Timing remains development evidence and is not a brittle CI gate. Runtime
+getter counters enforce the allocation-free `S + 1` point-calculation budget;
+the guard is proven by mutations that recompute either the first or final point.
+
+## Review and QA revision — P4-INK-EXTRACT-002-FIX-2
+
+- The former source-shape-only `drawStroke` guard was replaced by execution of
+  the production function with getter-instrumented points. Empty, single-point,
+  and multi-segment strokes must read every point coordinate exactly once.
+- A mutation that recalculates the first point is rejected, and an independent
+  mutation that recalculates the final point is rejected. The source extraction
+  only loads the production function; acceptance is determined by runtime
+  counters, not by matching a copied equation.
+- No production seam, callback, condition, or allocation was added to the render
+  loop. `app.mjs` and the transform equations are unchanged.
+- Service Worker cache cleanup is scoped to the
+  `studio5-notebook-gate-` namespace. Activate deletes an old P0 cache while
+  preserving the current P0 cache and an unrelated experimental cache.
+- Install still precaches the transform module and the complete shell. The
+  cache-first fetch policy, `skipWaiting`, and `clients.claim` are unchanged.
+
+### FIX-2 local verification — 2026-08-02
+
+- Transform tests: `50/50 PASS`, including both mutation checks.
+- P0 full suite: `91/91 PASS`; lint/typecheck/build: `PASS`.
+- Service Worker tests: `5/5 PASS`.
+- Current Ink characterization suite: `22/22 PASS` within the P0 full suite.
+- Studio5 Core: `100/100 PASS` with lint/typecheck.
+- P3 regression: `24/24 PASS` with lint/typecheck.
+- Static build: `10` copied shell assets and `22` modules in the verified import closure.
+- Built browser smoke: Fit/Zoom and Ink draw/save/reload `PASS`.
+- Offline reopen: after complete server shutdown the built app reopened, accepted
+  another stroke, saved it, and preserved both strokes through offline reload.
+- No MatePad or real multi-touch PASS is claimed by FIX-2.
 
 ## Rollback
 

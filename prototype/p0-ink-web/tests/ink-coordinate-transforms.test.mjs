@@ -261,21 +261,139 @@ test("prepared document-to-view transform reuses scalar output identity", () => 
   assert.deepEqual(output, { scale: 1.5, x: 65, y: 10 });
 });
 
-test("drawStroke prepares one scalar transform and computes each point once", async () => {
-  const source = await readFile(new URL("../app.mjs", import.meta.url), "utf8");
+async function readDrawStrokeSource() {
+  const source = (await readFile(new URL("../app.mjs", import.meta.url), "utf8"))
+    .replaceAll("\r\n", "\n");
   const drawStroke = source.match(
-    /function drawStroke\([\s\S]*?\r?\n}\r?\n\r?\nfunction render\(/,
-  )?.[0];
+    /(function drawStroke\([\s\S]*?\n})\n\nfunction render\(/,
+  )?.[1];
   assert.ok(drawStroke, "drawStroke source must be available");
-  assert.equal(
-    [...drawStroke.matchAll(/prepareDocumentToViewTransformInto\(/g)].length,
-    1,
-    "one module call prepares the scalar transform for the stroke",
+  return drawStroke;
+}
+
+function compileDrawStroke(source) {
+  return Function(
+    "prepareDocumentToViewTransformInto",
+    "strokeViewTransform",
+    "widthForPoint",
+    `"use strict";\n${source}\nreturn drawStroke;`,
+  )(
+    prepareDocumentToViewTransformInto,
+    { scale: 1, x: 0, y: 0 },
+    () => 2,
   );
-  assert.doesNotMatch(drawStroke, /documentPointToView\(/);
-  assert.doesNotMatch(drawStroke, /documentPointToViewInto\(/);
-  assert.match(drawStroke, /let previousViewX = viewX \+ points\[0\]\.x \* viewScale/);
-  assert.match(drawStroke, /for \(let index = 1;[\s\S]*const currentViewX = viewX \+ current\.x \* viewScale/);
+}
+
+function createDrawingContext() {
+  const calls = { arc: 0, moveTo: 0, lineTo: 0, stroke: 0 };
+  return {
+    calls,
+    save() {},
+    restore() {},
+    beginPath() {},
+    fill() {},
+    arc() { calls.arc += 1; },
+    moveTo() { calls.moveTo += 1; },
+    lineTo() { calls.lineTo += 1; },
+    stroke() { calls.stroke += 1; },
+  };
+}
+
+function assertRuntimePointBudget(drawStroke, coordinates) {
+  const reads = coordinates.map(() => ({ x: 0, y: 0 }));
+  const points = coordinates.map((point, index) => Object.defineProperties(
+    { pressure: 0.5 },
+    {
+      x: {
+        enumerable: true,
+        get() {
+          reads[index].x += 1;
+          return point.x;
+        },
+      },
+      y: {
+        enumerable: true,
+        get() {
+          reads[index].y += 1;
+          return point.y;
+        },
+      },
+    },
+  ));
+  const context = createDrawingContext();
+  drawStroke(
+    context,
+    { points, color: "#123456", baseWidth: 3 },
+    { scale: 1.25, x: 17, y: -9 },
+  );
+  assert.deepEqual(
+    reads,
+    coordinates.map(() => ({ x: 1, y: 1 })),
+    `expected exactly ${coordinates.length} point calculations (S + 1)`,
+  );
+  return context.calls;
+}
+
+const drawStrokeCases = [
+  { name: "empty stroke", points: [], expectedSegments: 0, expectedArcs: 0 },
+  {
+    name: "single-point stroke",
+    points: [{ x: 10, y: 20 }],
+    expectedSegments: 0,
+    expectedArcs: 1,
+  },
+  {
+    name: "multi-segment stroke",
+    points: [
+      { x: 10, y: 20 },
+      { x: 30, y: 35 },
+      { x: 55, y: 80 },
+      { x: 90, y: 120 },
+    ],
+    expectedSegments: 3,
+    expectedArcs: 0,
+  },
+];
+
+for (const drawStrokeCase of drawStrokeCases) {
+  test(`drawStroke runtime enforces S + 1 calculations for ${drawStrokeCase.name}`, async () => {
+    const drawStroke = compileDrawStroke(await readDrawStrokeSource());
+    const calls = assertRuntimePointBudget(drawStroke, drawStrokeCase.points);
+    assert.equal(calls.arc, drawStrokeCase.expectedArcs);
+    assert.equal(calls.moveTo, drawStrokeCase.expectedSegments);
+    assert.equal(calls.lineTo, drawStrokeCase.expectedSegments);
+    assert.equal(calls.stroke, drawStrokeCase.expectedSegments);
+  });
+}
+
+test("S + 1 guard rejects a mutation that recalculates the first point", async () => {
+  const source = await readDrawStrokeSource();
+  const mutated = source.replace(
+    "let previousViewY = viewY + points[0].y * viewScale;",
+    "let previousViewY = viewY + points[0].y * viewScale;\n"
+      + "  void points[0].x;\n"
+      + "  void points[0].y;",
+  );
+  assert.notEqual(mutated, source, "first-point mutation must be applied");
+  assert.throws(
+    () => assertRuntimePointBudget(compileDrawStroke(mutated), drawStrokeCases[2].points),
+    /expected exactly 4 point calculations/,
+  );
+});
+
+test("S + 1 guard rejects a mutation that recalculates the last point", async () => {
+  const source = await readDrawStrokeSource();
+  const marker = "  targetContext.restore();\n}";
+  const markerIndex = source.lastIndexOf(marker);
+  assert.ok(markerIndex >= 0, "final drawStroke restore must be available");
+  const mutated = `${source.slice(0, markerIndex)}`
+    + "  void points[points.length - 1].x;\n"
+    + "  void points[points.length - 1].y;\n"
+    + `${source.slice(markerIndex)}`;
+  assert.throws(
+    () => assertRuntimePointBudget(compileDrawStroke(mutated), drawStrokeCases[2].points),
+    /expected exactly 4 point calculations/,
+  );
 });
 
 const roundTripCases = [
