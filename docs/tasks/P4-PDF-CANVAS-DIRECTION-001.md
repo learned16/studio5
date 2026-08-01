@@ -65,7 +65,10 @@
 - P0 Ink regression: `15/15 PASS` مع Build ناجح.
 - Static Preview: `PASS`؛ أربعة مسارات 200، والمسار المجهول 404، ولا مراجع محلية مكسورة أو ملفات حساسة.
 - Wrangler `4.114.0` dry-run: `PASS`؛ قرأ 261 ملفاً ولم ينفذ نشراً.
-- Arabic PDF visual rendering on MatePad: `PENDING`.
+- Arabic PDF visual rendering on MatePad: `PASS`.
+  - اختُبر PDF عربي كان متأثراً بالمشكلة وPDF إنكليزي.
+  - شمل الفحص صفحات من البداية والوسط، وNext/Previous، وZoom/Fit Width.
+  - استمر العرض الصحيح بعد Reload وإغلاق المتصفح وإعادة فتحه.
 - PR #6 منفصل ويخص HTML user content؛ لا يتغير ضمن هذه المهمة.
 
 ## Rollback / Recovery
