@@ -7,7 +7,7 @@
 - Branch: `refactor/p0-ink-coordinate-transforms`
 - Base: `develop@79579d92b33b60e77a4b560abe13d09e781dd380`
 - Owner: Codex
-- Status: `READY FOR REVIEW — LOCAL PASS / PR CI PENDING`
+- Status: `REVISION READY — LOCAL PASS / BUILD CLOSURE PASS / CI PENDING / MATEPAD MULTI-TOUCH PENDING`
 
 ## Goal
 
@@ -30,6 +30,10 @@ DOM, Canvas, PointerEvent, storage, Studio5 Core, timers, or browser lifecycle A
 - `prototype/p0-ink-web/tests/ink-coordinate-transforms.test.mjs`
 - `prototype/p0-ink-web/package.json` only when needed to lint the new module
 - `prototype/p0-ink-web/scripts/typecheck.mjs` only when needed to check the new module
+- `prototype/p0-ink-web/scripts/verify-build.mjs` for static import closure verification
+- `prototype/p0-ink-web/scripts/benchmark-coordinate-transforms.mjs` for development evidence
+- `prototype/p0-ink-web/sw.js` for the versioned shell precache
+- related P0 tests
 - `docs/tasks/P4-INK-EXTRACT-002.md`
 - `PROJECT_STATUS.md`
 - `docs/TRACEABILITY.md`
@@ -93,7 +97,7 @@ No other file is reserved or may be changed by this task.
 
 This local smoke is not a MatePad Device Gate.
 
-## Verification result — 2026-08-02
+## Initial extraction verification — 2026-08-02
 
 - New pure transform tests: `41/41 PASS`.
 - Golden parity: `PASS` for fit, focal zoom, pan, inverse conversion, and pinch.
@@ -114,6 +118,67 @@ This local smoke is not a MatePad Device Gate.
 
 The existing P0 UI, storage, schema, autosave/recovery, renderer, CSS, and
 deployment contracts were not changed.
+
+## Review and QA revision — P4-INK-EXTRACT-002-FIX-1
+
+- `ink-coordinate-transforms.mjs` is copied into `dist/assets/`.
+- The build verifies the complete relative module import closure and requests
+  every built module through HTTP; missing or out-of-tree imports fail the build.
+- Service Worker cache `studio5-notebook-gate-v5-ink-transforms` precaches the
+  extracted module and the complete imported P0 shell closure while retaining
+  the existing cache-first strategy, old-cache cleanup, `skipWaiting`, and
+  `clients.claim` behavior.
+- `documentPointToViewInto` reuses caller-owned output objects and remains pure
+  and DOM-free. The per-point function path still showed a stable large-input
+  slowdown in the development benchmark, so the permitted scalar hot path is
+  used by `drawStroke`: `prepareDocumentToViewTransformInto` prepares reusable
+  transform scalars once per stroke, the first point is computed once, and every
+  later point is computed once. A stroke with `S` segments now performs one
+  module preparation call plus `S + 1` point calculations, instead of `2S`
+  allocating transform calls.
+- Built HTTP/browser smoke: `PASS`; the app reached the linked-notebook and
+  ready states, and Fit/Zoom controls worked from `dist/assets`.
+- Offline reopen: `PASS`; after one online visit and complete server shutdown,
+  the built app reopened through Service Worker, allowed an Ink stroke, and
+  preserved that stroke through another offline reload.
+
+### Preserved Pinch follow-ups
+
+The following inherited behaviors are deliberately not changed in this PR and
+belong to a later Viewport/Input batch:
+
+1. Non-zero canvas-rect focal drift.
+2. Zero initial pinch distance.
+3. Three-pointer replacement behavior.
+4. Dragging state after pinch.
+
+No MatePad or real multi-touch PASS is claimed by this revision.
+
+## FIX-1 local verification — 2026-08-02
+
+- Transform tests: `46/46 PASS`.
+- Golden parity: `PASS`.
+- P0 full suite: `84/84 PASS`; lint/typecheck/build: `PASS`.
+- Current Ink characterization suite: `22/22 PASS`.
+- Studio5 Core: `100/100 PASS` with lint/typecheck.
+- P3 regression: `24/24 PASS` with lint/typecheck/static preview.
+- Static build: `10` copied shell assets and `22` modules in the verified import closure.
+- Wrangler `4.114.0` dry-run: `PASS`, reading `261` static assets.
+- Built HTTP/browser smoke and offline reopen: `PASS`.
+- `git diff --check`: `PASS`.
+
+Development benchmark, Node `24.14.0`, `15` alternating rounds with enough
+repetitions to time at least one million segments per sample:
+
+| Segments | Legacy inline | Extracted before FIX-1 | Optimized scalar path | Optimized vs legacy |
+|---:|---:|---:|---:|---:|
+| 1,000 | 5.154 ms | 4.015 ms | 2.379 ms | -53.8% |
+| 10,000 | 6.260 ms | 5.645 ms | 3.429 ms | -45.2% |
+| 50,000 | 9.419 ms | 7.575 ms | 5.838 ms | -38.0% |
+| 100,000 | 9.590 ms | 9.601 ms | 7.319 ms | -23.7% |
+
+Timing remains development evidence and is not a brittle CI gate. Structural
+tests enforce the allocation-free API and the one-calculation-per-point draw path.
 
 ## Rollback
 

@@ -12,9 +12,9 @@ import {
 } from "./ink-core.mjs";
 import {
   createPinchState,
-  documentPointToView,
   fitDocumentInSurface,
   panViewport,
+  prepareDocumentToViewTransformInto,
   updatePinchViewport,
   viewPointToDocument,
   zoomViewportAt,
@@ -66,6 +66,7 @@ let saveTimer = null;
 let journalTimer = null;
 let renderQueued = false;
 let lastFrameMs = 0;
+const strokeViewTransform = { scale: 1, x: 0, y: 0 };
 let pressureObserved = false;
 let storageMode = "جارٍ الفحص";
 let dragging = false;
@@ -373,6 +374,12 @@ function resizeCanvas() {
 function drawStroke(targetContext, stroke, transform = { scale: 1, x: 0, y: 0 }) {
   if (!stroke.points.length) return;
   const points = stroke.points;
+  prepareDocumentToViewTransformInto(transform, strokeViewTransform);
+  const viewScale = strokeViewTransform.scale;
+  const viewX = strokeViewTransform.x;
+  const viewY = strokeViewTransform.y;
+  let previousViewX = viewX + points[0].x * viewScale;
+  let previousViewY = viewY + points[0].y * viewScale;
   targetContext.save();
   targetContext.lineCap = "round";
   targetContext.lineJoin = "round";
@@ -381,11 +388,10 @@ function drawStroke(targetContext, stroke, transform = { scale: 1, x: 0, y: 0 })
 
   if (points.length === 1) {
     const radius = widthForPoint(stroke, points[0]) * transform.scale * 0.5;
-    const viewPoint = documentPointToView(points[0], transform);
     targetContext.beginPath();
     targetContext.arc(
-      viewPoint.x,
-      viewPoint.y,
+      previousViewX,
+      previousViewY,
       radius,
       0,
       Math.PI * 2,
@@ -398,14 +404,16 @@ function drawStroke(targetContext, stroke, transform = { scale: 1, x: 0, y: 0 })
   for (let index = 1; index < points.length; index += 1) {
     const previous = points[index - 1];
     const current = points[index];
-    const previousViewPoint = documentPointToView(previous, transform);
-    const currentViewPoint = documentPointToView(current, transform);
+    const currentViewX = viewX + current.x * viewScale;
+    const currentViewY = viewY + current.y * viewScale;
     targetContext.lineWidth = ((widthForPoint(stroke, previous) + widthForPoint(stroke, current)) / 2)
       * transform.scale;
     targetContext.beginPath();
-    targetContext.moveTo(previousViewPoint.x, previousViewPoint.y);
-    targetContext.lineTo(currentViewPoint.x, currentViewPoint.y);
+    targetContext.moveTo(previousViewX, previousViewY);
+    targetContext.lineTo(currentViewX, currentViewY);
     targetContext.stroke();
+    previousViewX = currentViewX;
+    previousViewY = currentViewY;
   }
   targetContext.restore();
 }

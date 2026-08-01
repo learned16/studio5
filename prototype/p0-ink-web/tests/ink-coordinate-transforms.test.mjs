@@ -9,8 +9,10 @@ import {
   clampScale,
   createPinchState,
   documentPointToView,
+  documentPointToViewInto,
   fitDocumentInSurface,
   panViewport,
+  prepareDocumentToViewTransformInto,
   updatePinchViewport,
   viewPointToDocument,
   zoomViewportAt,
@@ -209,6 +211,71 @@ test("document-to-view conversion applies scale, pan, and rect offset", () => {
     ),
     { x: 525, y: 360 },
   );
+});
+
+test("allocation-free document-to-view conversion reuses output identity", () => {
+  const output = { x: Number.NaN, y: Number.NaN };
+  const result = documentPointToViewInto(
+    { x: 230, y: 175 },
+    { scale: 2, x: 40, y: -20 },
+    output,
+  );
+  assert.equal(result, output);
+  assert.deepEqual(output, { x: 500, y: 330 });
+});
+
+test("allocation-free and public document-to-view APIs have identical values", () => {
+  const cases = [
+    [{ x: 0, y: 0 }, { scale: 1, x: 0, y: 0 }],
+    [{ x: 230, y: 175 }, { scale: 2, x: 40, y: -20 }],
+    [{ x: -8.25, y: 1000 }, { scale: 0.2, x: 91, y: -12 }],
+  ];
+  const output = { x: 0, y: 0 };
+  for (const [point, viewport] of cases) {
+    assert.equal(documentPointToViewInto(point, viewport, output), output);
+    assert.deepEqual(output, documentPointToView(point, viewport));
+  }
+});
+
+test("hot transform API performs repeated writes without per-point result allocation", () => {
+  const output = { x: 0, y: 0 };
+  const viewport = { scale: 1.25, x: 44, y: -31 };
+  for (let index = 0; index < 1000; index += 1) {
+    const result = documentPointToViewInto(
+      { x: index / 3, y: index / 7 },
+      viewport,
+      output,
+    );
+    assert.equal(result, output);
+  }
+});
+
+test("prepared document-to-view transform reuses scalar output identity", () => {
+  const output = { scale: 0, x: 0, y: 0 };
+  const result = prepareDocumentToViewTransformInto(
+    { scale: 1.5, x: 40, y: -20 },
+    output,
+    { left: 25, top: 30 },
+  );
+  assert.equal(result, output);
+  assert.deepEqual(output, { scale: 1.5, x: 65, y: 10 });
+});
+
+test("drawStroke prepares one scalar transform and computes each point once", async () => {
+  const source = await readFile(new URL("../app.mjs", import.meta.url), "utf8");
+  const drawStroke = source.match(
+    /function drawStroke\([\s\S]*?\r?\n}\r?\n\r?\nfunction render\(/,
+  )?.[0];
+  assert.ok(drawStroke, "drawStroke source must be available");
+  assert.equal(
+    [...drawStroke.matchAll(/prepareDocumentToViewTransformInto\(/g)].length,
+    1,
+    "one module call prepares the scalar transform for the stroke",
+  );
+  assert.doesNotMatch(drawStroke, /documentPointToView\(/);
+  assert.doesNotMatch(drawStroke, /documentPointToViewInto\(/);
+  assert.match(drawStroke, /let previousViewX = viewX \+ points\[0\]\.x \* viewScale/);
+  assert.match(drawStroke, /for \(let index = 1;[\s\S]*const currentViewX = viewX \+ current\.x \* viewScale/);
 });
 
 const roundTripCases = [

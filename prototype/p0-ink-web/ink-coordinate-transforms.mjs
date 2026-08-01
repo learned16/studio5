@@ -58,12 +58,31 @@ export function viewPointToDocument(viewPoint, viewport, rect) {
 export function documentPointToView(
   documentPoint,
   viewport,
-  rect = { left: 0, top: 0 },
+  rect,
 ) {
-  return {
-    x: rect.left + viewport.x + documentPoint.x * viewport.scale,
-    y: rect.top + viewport.y + documentPoint.y * viewport.scale,
-  };
+  const output = documentPointToViewInto(documentPoint, viewport, {});
+  if (rect) {
+    output.x += rect.left;
+    output.y += rect.top;
+  }
+  return output;
+}
+
+export function documentPointToViewInto(
+  documentPoint,
+  viewport,
+  output,
+) {
+  output.x = viewport.x + documentPoint.x * viewport.scale;
+  output.y = viewport.y + documentPoint.y * viewport.scale;
+  return output;
+}
+
+export function prepareDocumentToViewTransformInto(viewport, output, rect) {
+  output.scale = viewport.scale;
+  output.x = viewport.x + (rect?.left ?? 0);
+  output.y = viewport.y + (rect?.top ?? 0);
+  return output;
 }
 
 export function createPinchState({ first, second, viewport }) {
