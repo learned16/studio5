@@ -134,7 +134,7 @@ lockfile, Worker, or workflow file is in scope.
 - New merge-method-aware verifier: actual PR #11 PASS; automated normal,
   squash, rebase/history-rewrite, and negative scenarios PASS.
 - Skill Creator `quick_validate.py`: PASS.
-- Studio5 tooling and acceptance tests: `31/31 PASS`.
+- Studio5 tooling and acceptance tests: `33/33 PASS`.
 - Scope verifier: `48` changed paths checked against the task allowlist, PASS.
 - Markdown/internal links: PASS within the acceptance tests.
 - Script syntax: PASS for all three Node built-in scripts.

@@ -16,7 +16,6 @@ Options:
 
 export function normalizeRepoPath(value) {
   return String(value)
-    .trim()
     .replaceAll("\\", "/")
     .replace(/^\.\/+/, "")
     .replace(/\/{2,}/g, "/")

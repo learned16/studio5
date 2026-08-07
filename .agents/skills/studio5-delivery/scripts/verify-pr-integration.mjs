@@ -12,7 +12,7 @@ never used as a universal requirement.
 `;
 
 export function checksAreSuccessful(statusCheckRollup = []) {
-  return statusCheckRollup.every((check) => {
+  return statusCheckRollup.length > 0 && statusCheckRollup.every((check) => {
     const state = String(check.conclusion ?? check.state ?? "").toUpperCase();
     return SUCCESS_STATES.has(state);
   });

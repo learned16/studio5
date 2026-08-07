@@ -86,6 +86,13 @@ test("normalizes Windows separators and enforces prefix boundaries", () => {
   assert.equal(pathIsAllowed("docs\\tasks-extra\\one.md", ["docs/tasks"]), false);
 });
 
+test("preserves significant leading and trailing spaces in repository paths", () => {
+  assert.equal(normalizeRepoPath(" docs/tasks/one.md"), " docs/tasks/one.md");
+  assert.equal(normalizeRepoPath("docs/tasks/one.md "), "docs/tasks/one.md ");
+  assert.equal(pathIsAllowed(" docs/tasks/one.md", ["docs/tasks"]), false);
+  assert.equal(pathIsAllowed("docs/tasks/one.md ", ["docs/tasks/one.md"]), false);
+});
+
 test("checks both source and destination of a rename", () => {
   const { cwd, base } = makeRepo();
   git(cwd, ["mv", "docs/inside.txt", "src/moved.txt"]);

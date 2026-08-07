@@ -59,6 +59,17 @@ test("unreachable GitHub merge commit remains a real blocker", () => {
   assert.match(result.failures.join(" "), /merge commit is not reachable/i);
 });
 
+test("missing check evidence fails closed", () => {
+  const result = assessIntegration({
+    pr: mergedPr({ statusCheckRollup: [] }),
+    expectedBase: "develop",
+    mergeCommitReachable: true,
+    repositoryEvidencePresent: true,
+  });
+  assert.equal(result.integrated, false);
+  assert.match(result.failures.join(" "), /check/i);
+});
+
 for (const scenario of [
   {
     name: "wrong base fails",
