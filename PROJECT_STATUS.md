@@ -132,7 +132,7 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
 | P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `historical / merged` | Codex | DOCUMENTATION COMPLETE | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
 | P4-INK-EXTRACT-002 | استخراج تحويلات Ink/Viewport إلى وحدة pure مع إبقاء P0 مطابقاً | `refactor/p0-ink-coordinate-transforms` | Codex | COMPLETE / MERGED — DEVICE MULTI-TOUCH NOT CLAIMED | PR #11 / FIX-2؛ build closure وService Worker وBuilt browser وOffline reopen وCI PASS؛ Pinch الموروث مسجل للدفعة اللاحقة |
-| OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | LOCAL VERIFICATION PASS — DRAFT PR DELIVERY | Skill/tooling tests 31/31؛ Core 100/100؛ P0 91/91؛ P3 24/24؛ Worker dry-run PASS؛ لا Production ولا Batch 3 |
+| OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | LOCAL VERIFICATION PASS — DRAFT PR DELIVERY | Skill/tooling tests 33/33؛ Core 100/100؛ P0 91/91؛ P3 24/24؛ Worker dry-run PASS؛ لا Production ولا Batch 3 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

@@ -26,7 +26,7 @@
 | Required checks | Skill validation; tooling syntax/tests; scope and check-selector tests; merge-strategy regression tests; Markdown/link checks; Core/P0/P3/Worker regressions; diff check; secret scan; guard review; independent read-only review |
 | Device boundary | No new device PASS. Runtime discovery may require a new Codex session. |
 | Human gates | Only the gates listed in the delivery skill; merge approval remains human. |
-| Rollback | Revert the single tooling/governance commit. No data migration or production rollback is needed. |
+| Rollback | Revert this task PR's commits. No data migration or production rollback is needed. |
 | Stopping point | Commit, push, Draft PR, checks, independent review, then stop without merge. |
 
 ## Why
@@ -176,6 +176,6 @@ already-running Codex session.
 
 ## Rollback
 
-Revert this task's commit to remove the skill, custom agents, guards, scripts,
+Revert this task PR's commits to remove the skill, custom agents, guards, scripts,
 and documentation updates. There are no production behaviors, user data,
 schema versions, storage namespaces, or backups to restore.
