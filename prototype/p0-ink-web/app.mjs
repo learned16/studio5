@@ -8,9 +8,17 @@ import {
   eraseStrokeAt,
   exportManifest,
   pointerIntent,
-  pointToDocument,
   widthForPoint,
 } from "./ink-core.mjs";
+import {
+  createPinchState,
+  fitDocumentInSurface,
+  panViewport,
+  prepareDocumentToViewTransformInto,
+  updatePinchViewport,
+  viewPointToDocument,
+  zoomViewportAt,
+} from "./ink-coordinate-transforms.mjs";
 import {
   clearJournal,
   loadDocument,
@@ -58,6 +66,7 @@ let saveTimer = null;
 let journalTimer = null;
 let renderQueued = false;
 let lastFrameMs = 0;
+const strokeViewTransform = { scale: 1, x: 0, y: 0 };
 let pressureObserved = false;
 let storageMode = "جارٍ الفحص";
 let dragging = false;
@@ -330,13 +339,12 @@ async function openRevisionHistory() {
 
 function fitDocument() {
   const rect = canvas.getBoundingClientRect();
-  const padding = 34;
-  viewport.scale = Math.min(
-    (rect.width - padding * 2) / DOCUMENT_WIDTH,
-    (rect.height - padding * 2) / DOCUMENT_HEIGHT,
-  );
-  viewport.x = (rect.width - DOCUMENT_WIDTH * viewport.scale) / 2;
-  viewport.y = (rect.height - DOCUMENT_HEIGHT * viewport.scale) / 2;
+  viewport = fitDocumentInSurface({
+    documentWidth: DOCUMENT_WIDTH,
+    documentHeight: DOCUMENT_HEIGHT,
+    surfaceWidth: rect.width,
+    surfaceHeight: rect.height,
+  });
   updateZoom();
   scheduleRender();
 }
@@ -348,11 +356,7 @@ function updateZoom() {
 function zoomAt(factor, center = null) {
   const rect = canvas.getBoundingClientRect();
   const point = center ?? { x: rect.width / 2, y: rect.height / 2 };
-  const nextScale = Math.min(4, Math.max(0.2, viewport.scale * factor));
-  const ratio = nextScale / viewport.scale;
-  viewport.x = point.x - (point.x - viewport.x) * ratio;
-  viewport.y = point.y - (point.y - viewport.y) * ratio;
-  viewport.scale = nextScale;
+  viewport = zoomViewportAt(viewport, factor, point);
   updateZoom();
   scheduleRender();
 }
@@ -370,6 +374,12 @@ function resizeCanvas() {
 function drawStroke(targetContext, stroke, transform = { scale: 1, x: 0, y: 0 }) {
   if (!stroke.points.length) return;
   const points = stroke.points;
+  prepareDocumentToViewTransformInto(transform, strokeViewTransform);
+  const viewScale = strokeViewTransform.scale;
+  const viewX = strokeViewTransform.x;
+  const viewY = strokeViewTransform.y;
+  let previousViewX = viewX + points[0].x * viewScale;
+  let previousViewY = viewY + points[0].y * viewScale;
   targetContext.save();
   targetContext.lineCap = "round";
   targetContext.lineJoin = "round";
@@ -380,8 +390,8 @@ function drawStroke(targetContext, stroke, transform = { scale: 1, x: 0, y: 0 })
     const radius = widthForPoint(stroke, points[0]) * transform.scale * 0.5;
     targetContext.beginPath();
     targetContext.arc(
-      transform.x + points[0].x * transform.scale,
-      transform.y + points[0].y * transform.scale,
+      previousViewX,
+      previousViewY,
       radius,
       0,
       Math.PI * 2,
@@ -394,18 +404,16 @@ function drawStroke(targetContext, stroke, transform = { scale: 1, x: 0, y: 0 })
   for (let index = 1; index < points.length; index += 1) {
     const previous = points[index - 1];
     const current = points[index];
+    const currentViewX = viewX + current.x * viewScale;
+    const currentViewY = viewY + current.y * viewScale;
     targetContext.lineWidth = ((widthForPoint(stroke, previous) + widthForPoint(stroke, current)) / 2)
       * transform.scale;
     targetContext.beginPath();
-    targetContext.moveTo(
-      transform.x + previous.x * transform.scale,
-      transform.y + previous.y * transform.scale,
-    );
-    targetContext.lineTo(
-      transform.x + current.x * transform.scale,
-      transform.y + current.y * transform.scale,
-    );
+    targetContext.moveTo(previousViewX, previousViewY);
+    targetContext.lineTo(currentViewX, currentViewY);
     targetContext.stroke();
+    previousViewX = currentViewX;
+    previousViewY = currentViewY;
   }
   targetContext.restore();
 }
@@ -461,7 +469,7 @@ function updateStats() {
 
 function canvasPoint(event) {
   const rect = canvas.getBoundingClientRect();
-  const point = pointToDocument(
+  const point = viewPointToDocument(
     { x: event.clientX, y: event.clientY },
     viewport,
     rect,
@@ -559,8 +567,10 @@ function beginPan(event) {
 
 function continuePan(event) {
   if (event.pointerId !== activePanPointer) return;
-  viewport.x += event.movementX;
-  viewport.y += event.movementY;
+  viewport = panViewport(viewport, {
+    x: event.movementX,
+    y: event.movementY,
+  });
   scheduleRender();
 }
 
@@ -579,14 +589,7 @@ function beginPinch() {
   const touches = touchEntries();
   if (touches.length < 2) return;
   const [first, second] = touches.map(([, pointer]) => pointer);
-  const center = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
-  pinch = {
-    distance: Math.hypot(second.x - first.x, second.y - first.y),
-    center,
-    scale: viewport.scale,
-    x: viewport.x,
-    y: viewport.y,
-  };
+  pinch = createPinchState({ first, second, viewport });
 }
 
 function continuePinch() {
@@ -594,13 +597,7 @@ function continuePinch() {
   const touches = touchEntries();
   if (touches.length < 2) return;
   const [first, second] = touches.map(([, pointer]) => pointer);
-  const distance = Math.max(1, Math.hypot(second.x - first.x, second.y - first.y));
-  const center = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
-  const nextScale = Math.min(4, Math.max(0.2, pinch.scale * (distance / pinch.distance)));
-  const ratio = nextScale / pinch.scale;
-  viewport.scale = nextScale;
-  viewport.x = center.x - (pinch.center.x - pinch.x) * ratio;
-  viewport.y = center.y - (pinch.center.y - pinch.y) * ratio;
+  viewport = updatePinchViewport(pinch, { first, second });
   updateZoom();
   scheduleRender();
 }

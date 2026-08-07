@@ -1,3 +1,5 @@
+import { viewPointToDocument } from "./ink-coordinate-transforms.mjs";
+
 export const SCHEMA_VERSION = 1;
 export const DOCUMENT_WIDTH = 1600;
 export const DOCUMENT_HEIGHT = 1000;
@@ -55,10 +57,7 @@ export function appendPoint(stroke, point) {
 }
 
 export function pointToDocument(clientPoint, viewport, rect) {
-  return {
-    x: (clientPoint.x - rect.left - viewport.x) / viewport.scale,
-    y: (clientPoint.y - rect.top - viewport.y) / viewport.scale,
-  };
+  return viewPointToDocument(clientPoint, viewport, rect);
 }
 
 export function pointerIntent({ tool, pointerType, allowTouchDrawing }) {

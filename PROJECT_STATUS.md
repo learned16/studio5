@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-08-01
+آخر تحديث: 2026-08-02
 المرحلة الحالية: `PARTIAL DEVICE GATE PASS`
-الفرع النشط: `docs/authoritative-full-build-v5`
+الفرع النشط: `refactor/p0-ink-coordinate-transforms`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -130,6 +130,7 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | DONE - STATIC BUILD VERIFIED / PAGES SUPERSEDED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
 | P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
 | P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `historical / merged` | Codex | DOCUMENTATION COMPLETE | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
+| P4-INK-EXTRACT-002 | استخراج تحويلات Ink/Viewport إلى وحدة pure مع إبقاء P0 مطابقاً | `refactor/p0-ink-coordinate-transforms` | Codex | LOCAL PASS / BUILD CLOSURE PASS / CI PASS / MATEPAD MULTI-TOUCH PENDING | FIX-1 يغلق dist imports وService Worker ويزيل allocation لكل نقطة؛ Built browser وOffline reopen PASS؛ GitHub Actions 4/4 وWorkers Build PASS؛ Pinch الموروث مسجل للدفعة اللاحقة |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

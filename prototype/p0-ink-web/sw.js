@@ -1,10 +1,12 @@
-const CACHE_NAME = "studio5-notebook-gate-v4";
+const CACHE_PREFIX = "studio5-notebook-gate-";
+const CACHE_NAME = `${CACHE_PREFIX}v5-ink-transforms`;
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.mjs",
   "./ink-core.mjs",
+  "./ink-coordinate-transforms.mjs",
   "./storage.mjs",
   "./notebook-bridge.mjs",
   "./core-runtime.mjs",
@@ -17,6 +19,11 @@ const ASSETS = [
   "./core/file-intake.mjs",
   "./core/indexeddb-file-content-store.mjs",
   "./core/ink-format.mjs",
+  "./core/lecture-flow.mjs",
+  "./core/lecture-inbox.mjs",
+  "./core/library-search.mjs",
+  "./core/offline-queue.mjs",
+  "./core/backup.mjs",
   "./core/today-query.mjs",
   "./core/academic-repository.mjs",
   "./manifest.webmanifest",
@@ -30,7 +37,9 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(
-      keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)),
+      keys
+        .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
+        .map((key) => caches.delete(key)),
     )),
   );
   self.clients.claim();
