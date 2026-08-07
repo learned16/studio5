@@ -25,7 +25,7 @@
 | Requirement ID | المتطلب | المهمة | الحالة | دليل التحقق |
 |---|---|---|---|---|
 | `S5-NFR-001` | Ink أساسي مع Autosave/Recovery/Export | P0-INK-WEB | DONE / ADR ADOPTED | 12/12 + Browser smoke + ضغط/Recovery/15 دقيقة/1000 stroke على MatePad |
-| `S5-NFR-INK-XFORM-001` | تحويلات Ink/Viewport مستقلة عن DOM مع parity لسلوك P0 | P4-INK-EXTRACT-002 / FIX-1 | LOCAL PASS / BUILD CLOSURE PASS / CI PASS / MATEPAD MULTI-TOUCH PENDING | Pure + allocation-free APIs؛ dist import closure وprecache PASS؛ Built browser وOffline reopen PASS؛ Golden parity وGitHub Actions 4/4 وWorkers Build PASS |
+| `S5-NFR-INK-XFORM-001` | تحويلات Ink/Viewport مستقلة عن DOM مع parity لسلوك P0 | P4-INK-EXTRACT-002 / FIX-2 / PR #11 | COMPLETE / MERGED — DEVICE MULTI-TOUCH NOT CLAIMED | Pure + allocation-free APIs؛ dist import closure وprecache PASS؛ Built browser وOffline reopen PASS؛ Golden parity وCI PASS؛ متابعة pinch الواقعية تبقى لدفعة لاحقة |
 | `S5-DATA-001` | Stable IDs وSchema ومهاجرات | P2-CORE-001 | DONE | 7/7 tests |
 | `S5-DATA-002` | IndexedDB + Journal + Recovery | P2-CORE-002 | IMPLEMENTED | 14/14؛ Browser smoke المحلي معلق |
 | `S5-FR-001` | Repository عام للسنوات والفصول والمواد | P2-CORE-003 | DONE | 19/19 tests |

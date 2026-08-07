@@ -2,7 +2,7 @@
 
 ## Status and guardrails
 
-This is a future sequence, not execution authorization. The present task performs Batch 1 only: characterization lock and documentation. It does not extract, integrate, redesign, change schema, change backup, move files, start Phase 5, or retire the current UI.
+This sequence is not blanket execution authorization. Batch 1 (characterization lock) and Batch 2 (coordinate transforms) are complete and merged. Batch 3 is the next eligible extraction batch and is not started. No later batch may be inferred as authorized from this map; it does not authorize integration, redesign, schema or backup changes, Phase 5, or retirement of the current UI.
 
 Each later batch must have its own task file, branch, reserved files, checks, review, rollback, and—when behavior reaches a real device—Device Gate evidence. The current P0 path remains available until an explicitly approved replacement passes its gates.
 
