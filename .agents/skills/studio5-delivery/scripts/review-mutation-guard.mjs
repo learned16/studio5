@@ -24,7 +24,7 @@ function sha256(value) {
 }
 
 function runGit(args, cwd) {
-  const commandResult = spawnSync("git", args, {
+  const commandResult = spawnSync("git", ["--no-optional-locks", ...args], {
     cwd,
     encoding: null,
     windowsHide: true,
@@ -50,18 +50,24 @@ function splitNullTerminated(buffer) {
   return buffer.toString("utf8").split("\0").filter(Boolean);
 }
 
-function untrackedEntry(root, repositoryPath) {
+function worktreeEntry(root, repositoryPath, visibility) {
   const absolutePath = path.join(root, ...repositoryPath.split("/"));
   const stat = lstatSync(absolutePath);
   if (stat.isSymbolicLink()) {
     const target = readlinkSync(absolutePath, "utf8");
-    return { path: repositoryPath, type: "symlink", sha256: sha256(target) };
+    return { path: repositoryPath, visibility, type: "symlink", sha256: sha256(target) };
   }
   if (!stat.isFile()) {
-    return { path: repositoryPath, type: "other", sha256: sha256(String(stat.mode)) };
+    return {
+      path: repositoryPath,
+      visibility,
+      type: "other",
+      sha256: sha256(String(stat.mode)),
+    };
   }
   return {
     path: repositoryPath,
+    visibility,
     type: "file",
     size: stat.size,
     sha256: sha256(readFileSync(absolutePath)),
@@ -71,6 +77,9 @@ function untrackedEntry(root, repositoryPath) {
 export function captureRepositoryState(cwd = process.cwd()) {
   const root = repositoryRoot(cwd);
   const head = runGit(["rev-parse", "HEAD"], root).toString("utf8").trim();
+  const headReference = runGit(["rev-parse", "--abbrev-ref", "HEAD"], root)
+    .toString("utf8")
+    .trim();
   const status = runGit([
     "status",
     "--porcelain=v2",
@@ -79,19 +88,27 @@ export function captureRepositoryState(cwd = process.cwd()) {
     "--ignore-submodules=none",
   ], root);
   const diff = runGit(["diff", "--binary", "--no-ext-diff", "HEAD", "--", "."], root);
-  const untracked = splitNullTerminated(
+  const untrackedPaths = splitNullTerminated(
     runGit(["ls-files", "--others", "--exclude-standard", "-z"], root),
-  )
-    .sort((left, right) => left.localeCompare(right))
-    .map((repositoryPath) => untrackedEntry(root, repositoryPath));
+  );
+  const ignoredPaths = splitNullTerminated(
+    runGit(["ls-files", "--others", "--ignored", "--exclude-standard", "-z"], root),
+  );
+  const worktreeFiles = [
+    ...untrackedPaths.map((repositoryPath) => ({ repositoryPath, visibility: "untracked" })),
+    ...ignoredPaths.map((repositoryPath) => ({ repositoryPath, visibility: "ignored" })),
+  ]
+    .sort((left, right) => left.repositoryPath.localeCompare(right.repositoryPath))
+    .map(({ repositoryPath, visibility }) => worktreeEntry(root, repositoryPath, visibility));
 
   const state = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     repositoryRoot: root,
     head,
+    headReference,
     statusSha256: sha256(status),
     diffSha256: sha256(diff),
-    untracked,
+    worktreeFiles,
   };
   return { ...state, fingerprint: sha256(JSON.stringify(state)) };
 }
@@ -122,12 +139,13 @@ export function writeSnapshot(outputPath, cwd = process.cwd()) {
 function readSnapshot(snapshotPath) {
   const snapshot = JSON.parse(readFileSync(path.resolve(snapshotPath), "utf8"));
   if (
-    snapshot.schemaVersion !== 1
+    snapshot.schemaVersion !== 2
     || typeof snapshot.repositoryRoot !== "string"
     || typeof snapshot.head !== "string"
+    || typeof snapshot.headReference !== "string"
     || typeof snapshot.statusSha256 !== "string"
     || typeof snapshot.diffSha256 !== "string"
-    || !Array.isArray(snapshot.untracked)
+    || !Array.isArray(snapshot.worktreeFiles)
     || typeof snapshot.fingerprint !== "string"
   ) {
     throw new Error("Unsupported or invalid mutation-guard snapshot.");
@@ -136,9 +154,10 @@ function readSnapshot(snapshotPath) {
     schemaVersion: snapshot.schemaVersion,
     repositoryRoot: snapshot.repositoryRoot,
     head: snapshot.head,
+    headReference: snapshot.headReference,
     statusSha256: snapshot.statusSha256,
     diffSha256: snapshot.diffSha256,
-    untracked: snapshot.untracked,
+    worktreeFiles: snapshot.worktreeFiles,
   };
   if (sha256(JSON.stringify(snapshotState)) !== snapshot.fingerprint) {
     throw new Error("Mutation-guard snapshot integrity check failed.");
@@ -150,10 +169,11 @@ function mutationSummary(before, after) {
   const changes = [];
   if (before.repositoryRoot !== after.repositoryRoot) changes.push("repository root changed");
   if (before.head !== after.head) changes.push("HEAD changed");
+  if (before.headReference !== after.headReference) changes.push("symbolic HEAD changed");
   if (before.statusSha256 !== after.statusSha256) changes.push("Git status changed");
   if (before.diffSha256 !== after.diffSha256) changes.push("tracked diff changed");
-  if (JSON.stringify(before.untracked) !== JSON.stringify(after.untracked)) {
-    changes.push("untracked files changed");
+  if (JSON.stringify(before.worktreeFiles) !== JSON.stringify(after.worktreeFiles)) {
+    changes.push("untracked or ignored files changed");
   }
   return changes;
 }

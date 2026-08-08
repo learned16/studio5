@@ -102,7 +102,7 @@ test("fails when an untracked file is created", () => {
     writeFileSync(path.join(fixture.cwd, "created.txt"), "created\n");
     const result = verify(fixture);
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /untracked files changed/);
+    assert.match(result.stderr, /untracked or ignored files changed/);
   } finally {
     cleanUp(fixture);
   }
@@ -114,7 +114,7 @@ test("fails when existing untracked content changes", () => {
     writeFileSync(path.join(fixture.cwd, "untracked.txt"), "changed untracked content\n");
     const result = verify(fixture);
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /untracked files changed/);
+    assert.match(result.stderr, /untracked or ignored files changed/);
   } finally {
     cleanUp(fixture);
   }
@@ -129,6 +129,55 @@ test("fails when HEAD changes even if the worktree is clean", () => {
     const result = verify(fixture);
     assert.equal(result.status, 1);
     assert.match(result.stderr, /HEAD changed/);
+  } finally {
+    cleanUp(fixture);
+  }
+});
+
+test("fails when symbolic HEAD detaches at the same commit", () => {
+  const fixture = makeRepo();
+  try {
+    git(fixture.cwd, ["switch", "--detach", "HEAD"]);
+    const result = verify(fixture);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /symbolic HEAD changed/);
+  } finally {
+    cleanUp(fixture);
+  }
+});
+
+test("fails when an ignored file is created", () => {
+  const fixture = makeRepo();
+  try {
+    writeFileSync(path.join(fixture.cwd, ".gitignore"), "ignored.txt\n");
+    git(fixture.cwd, ["add", ".gitignore"]);
+    git(fixture.cwd, ["commit", "-qm", "ignore fixture"]);
+    const refreshed = path.join(fixture.records, "ignored-before.json");
+    const captured = run(fixture.cwd, ["capture", "--output", refreshed]);
+    assert.equal(captured.status, 0, captured.stderr);
+    writeFileSync(path.join(fixture.cwd, "ignored.txt"), "created\n");
+    const result = run(fixture.cwd, ["verify", "--before", refreshed]);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /untracked or ignored files changed/);
+  } finally {
+    cleanUp(fixture);
+  }
+});
+
+test("fails when existing ignored content changes", () => {
+  const fixture = makeRepo();
+  try {
+    writeFileSync(path.join(fixture.cwd, ".gitignore"), "ignored.txt\n");
+    writeFileSync(path.join(fixture.cwd, "ignored.txt"), "baseline ignored\n");
+    git(fixture.cwd, ["add", ".gitignore"]);
+    git(fixture.cwd, ["commit", "-qm", "ignore fixture"]);
+    const refreshed = path.join(fixture.records, "ignored-before.json");
+    const captured = run(fixture.cwd, ["capture", "--output", refreshed]);
+    assert.equal(captured.status, 0, captured.stderr);
+    writeFileSync(path.join(fixture.cwd, "ignored.txt"), "changed ignored\n");
+    const result = run(fixture.cwd, ["verify", "--before", refreshed]);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /untracked or ignored files changed/);
   } finally {
     cleanUp(fixture);
   }

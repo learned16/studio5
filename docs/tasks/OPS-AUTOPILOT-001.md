@@ -144,26 +144,36 @@ lockfile, Worker, or workflow file is in scope.
 - New merge-method-aware verifier: actual PR #11 PASS; automated normal,
   squash, rebase/history-rewrite, and negative scenarios PASS.
 - Skill Creator `quick_validate.py`: PASS.
-- Studio5 tooling and acceptance tests: `34/34 PASS`.
-- Scope verifier: `48` changed paths checked against the task allowlist, PASS.
+- Studio5 tooling and acceptance tests: `46/46 PASS`, including unchanged,
+  tracked edit/delete, untracked create/change, ignored create/change, HEAD OID,
+  symbolic HEAD, baseline-integrity, and inside-repository-output scenarios for
+  the B mutation guard.
+- Scope verifier: `52` changed paths checked against the task allowlist, PASS.
 - Markdown/internal links: PASS within the acceptance tests.
-- Script syntax: PASS for all three Node built-in scripts.
+- Script syntax: PASS for all four Node built-in scripts.
 - Studio5 Core: lint/typecheck PASS; `100/100` tests PASS.
 - P0 Ink: lint/typecheck/build PASS; `91/91` tests PASS.
 - P3: lint/typecheck/build/static preview PASS; `24/24` tests PASS.
 - Worker: static-assets build and Wrangler dry-run PASS with the repository's
   pinned `pnpm@10.34.5`.
-- High-confidence secret scan: `48` changed files scanned, PASS.
+- High-confidence secret scan: the current `52`-path task diff scanned, PASS.
 - A one-time scope audit confirmed that no production package manifest or lock
   file changed; this is not encoded as a permanent branch-relative contract test.
 - `git diff --check`: PASS.
 - `$clean-code-guard`: fixed generic subprocess-result names, a dead closure,
   and branching in the check selector; no remaining finding.
-- `$test-guard`: separated independent negative scenarios; no remaining
+- `$test-guard`: separated independent create/change scenarios and added
+  deterministic cleanup for temporary scope-test repositories; no remaining
   behavior/mocking/bloat finding.
-- `$docs-guard`: corrected an ambiguous relative test command and a non-Windows
-  continuation example; verified paths, CLI flags, config fields, and internal
-  links; no remaining finding.
+- `$docs-guard`: verified the OpenAI permission-inheritance claim against the
+  current official Subagents page and checked the mutation-guard commands,
+  flags, config fields, paths, and internal links against source; no remaining
+  finding.
+- Independent B review round 1: `REVISE`. B reproduced ignored-file and
+  detached-HEAD gaps and identified stale evidence counts. The guard now hashes
+  ignored and untracked files, records resolved and symbolic HEAD, disables Git
+  optional locks, and covers each regression with a negative test. Round 2 is
+  pending on the corrected commit.
 
 The first Worker attempt used the bundled pnpm 11 and failed because it ignored
 the repository's pnpm 10 build-script allowlist. The generated untracked

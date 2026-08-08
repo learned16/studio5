@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import test from "node:test";
+import test, { after } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   collectChangedEntries,
@@ -17,6 +17,13 @@ const scriptPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../scripts/verify-scope.mjs",
 );
+const temporaryRepositories = new Set();
+
+after(() => {
+  for (const repositoryPath of temporaryRepositories) {
+    rmSync(repositoryPath, { recursive: true, force: true });
+  }
+});
 
 function git(cwd, args) {
   const result = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
@@ -26,6 +33,7 @@ function git(cwd, args) {
 
 function makeRepo() {
   const cwd = mkdtempSync(path.join(tmpdir(), "studio5-scope-"));
+  temporaryRepositories.add(cwd);
   git(cwd, ["init", "-q"]);
   git(cwd, ["config", "user.email", "scope@example.invalid"]);
   git(cwd, ["config", "user.name", "Scope Test"]);

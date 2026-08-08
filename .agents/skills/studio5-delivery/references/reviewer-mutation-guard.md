@@ -31,11 +31,13 @@ After B finishes, verify the baseline before accepting its verdict:
 node .agents/skills/studio5-delivery/scripts/review-mutation-guard.mjs verify --before <same-temporary-path>
 ```
 
-The integrity-checked fingerprint covers HEAD, porcelain Git status, the binary
-tracked diff, and the paths and contents of untracked non-ignored files. Any
-mismatch or invalid baseline is a review failure. Discard B's verdict, report
-the mutation, and do not deliver or push until an authorized writer restores
-and reverifies the intended state.
+The integrity-checked fingerprint covers the resolved and symbolic HEAD, the
+porcelain Git status, the binary tracked diff, and the paths and contents of
+both untracked and ignored worktree files. Fingerprint collection disables Git
+optional locks so the read itself does not refresh the index. Any mismatch or
+invalid baseline is a review failure. Discard B's verdict, report the mutation,
+and do not deliver or push until an authorized writer restores and reverifies
+the intended state.
 
 ## Deferred isolation
 
