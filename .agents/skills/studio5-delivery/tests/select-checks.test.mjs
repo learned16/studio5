@@ -14,11 +14,17 @@ test("maps Core changes", () => {
   assert.deepEqual(names(["packages/studio5-core/src/model.mjs"]), ["Core"]);
 });
 
-test("maps P0 and P3 changes independently", () => {
-  assert.deepEqual(names([
-    "prototype/p0-ink-web/app.mjs",
+test("maps P0 changes without unrelated checks", () => {
+  assert.deepEqual(names(["prototype/p0-ink-web/app.mjs"]), ["P0"]);
+});
+
+test("maps every P3 path to both P3 and Worker checks", () => {
+  for (const filePath of [
     "prototype/p3-lecture-capture-web/app.mjs",
-  ]), ["P0", "P3"]);
+    "prototype/p3-lecture-capture-web/pnpm-lock.yaml",
+  ]) {
+    assert.deepEqual(names([filePath]), ["P3", "Worker"], filePath);
+  }
 });
 
 test("adds Worker for worker and Service Worker paths", () => {

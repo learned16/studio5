@@ -27,7 +27,7 @@
 | Device boundary | No new device PASS. Runtime discovery may require a new Codex session. |
 | Human gates | Only the gates listed in the delivery skill; merge approval remains human. |
 | Rollback | Revert this task PR's commits. No data migration or production rollback is needed. |
-| Stopping point | Commit, push, Draft PR, checks, independent review, then stop without merge. |
+| Stopping point | Commit → independent B review → revisions if needed → push → Draft PR → CI → task-caused repair/review loop → stop before merge. |
 
 ## Why
 
@@ -49,6 +49,8 @@ independent review, device evidence boundaries, or human gates.
 - Three project-scoped custom agents implement A, B, and C. B is read-only in
   both configuration and instructions. A and C inherit the parent permission
   boundary and do not receive model pins.
+- A implements, verifies, commits, and stops. The parent/supervisor obtains the
+  independent B review, then owns push, Draft PR delivery, and CI handling.
 - A conservative three-subagent cap is a concurrency ceiling, not permission
   for parallel writing. The supervisor still defaults to one writer.
 - Repository-local guard skills are reviewed and installed as a second pass;
@@ -134,7 +136,7 @@ lockfile, Worker, or workflow file is in scope.
 - New merge-method-aware verifier: actual PR #11 PASS; automated normal,
   squash, rebase/history-rewrite, and negative scenarios PASS.
 - Skill Creator `quick_validate.py`: PASS.
-- Studio5 tooling and acceptance tests: `33/33 PASS`.
+- Studio5 tooling and acceptance tests: `34/34 PASS`.
 - Scope verifier: `48` changed paths checked against the task allowlist, PASS.
 - Markdown/internal links: PASS within the acceptance tests.
 - Script syntax: PASS for all three Node built-in scripts.
@@ -144,7 +146,8 @@ lockfile, Worker, or workflow file is in scope.
 - Worker: static-assets build and Wrangler dry-run PASS with the repository's
   pinned `pnpm@10.34.5`.
 - High-confidence secret scan: `48` changed files scanned, PASS.
-- Production package manifests and package lockfiles match `origin/develop`.
+- A one-time scope audit confirmed that no production package manifest or lock
+  file changed; this is not encoded as a permanent branch-relative contract test.
 - `git diff --check`: PASS.
 - `$clean-code-guard`: fixed generic subprocess-result names, a dead closure,
   and branching in the check selector; no remaining finding.

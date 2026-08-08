@@ -55,8 +55,11 @@ const CHECK_RULES = [
   },
   {
     name: "Worker",
-    matches: isWorkerPath,
-    reason: (filePath) => `${filePath} affects Worker, Service Worker, or static build closure.`,
+    matches: (filePath) => filePath.startsWith("prototype/p3-lecture-capture-web/")
+      || isWorkerPath(filePath),
+    reason: (filePath) => filePath.startsWith("prototype/p3-lecture-capture-web/")
+      ? `${filePath} feeds the Worker static build through the P3 application.`
+      : `${filePath} affects Worker, Service Worker, or static build closure.`,
   },
   {
     name: "Docs",

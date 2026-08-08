@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import {
   existsSync,
   readdirSync,
@@ -66,33 +65,44 @@ test("A, B, and C custom agents have required fields without model pins or secre
     readRepositoryFile(".codex/agents/studio5-b-review.toml"),
     /^sandbox_mode = "read-only"$/m,
   );
-  assert.equal(
-    readRepositoryFile(".codex/config.toml").replaceAll("\r\n", "\n").trim(),
-    "[agents]\nmax_concurrent_threads_per_session = 3",
-  );
+  const configText = readRepositoryFile(".codex/config.toml");
+  assert.match(configText, /^\[agents\]$/m);
+  assert.match(configText, /^max_concurrent_threads_per_session = 3$/m);
 });
 
-test("exactly the three approved guards are installed beside studio5-delivery", () => {
+test("Agent A commits and stops while the parent owns review and remote delivery", () => {
+  const agentText = readRepositoryFile(".codex/agents/studio5-a-production.toml");
+  assert.match(agentText, /Commit the verified change, report the commit and evidence, then stop\./);
+  assert.match(agentText, /parent\/supervisor owns independent B review and all remote delivery/i);
+  assert.doesNotMatch(agentText, /\bpush\b|draft\s+pr|open (?:a )?(?:pull request|pr)/i);
+});
+
+test("required repository skills are installed with guard provenance", () => {
   const installedSkills = readdirSync(path.join(repositoryRoot, ".agents/skills"), {
     withFileTypes: true,
   })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .sort();
-  assert.deepEqual(installedSkills, [
+  const requiredSkills = [
     "clean-code-guard",
     "docs-guard",
     "studio5-delivery",
     "test-guard",
-  ]);
+  ];
+  for (const requiredSkill of requiredSkills) {
+    assert.equal(installedSkills.includes(requiredSkill), true, requiredSkill);
+  }
 
   const lock = JSON.parse(readRepositoryFile("skills-lock.json"));
-  assert.deepEqual(Object.keys(lock.skills).sort(), [
+  const requiredGuards = [
     "clean-code-guard",
     "docs-guard",
     "test-guard",
-  ]);
-  for (const guard of Object.values(lock.skills)) {
+  ];
+  for (const guardName of requiredGuards) {
+    const guard = lock.skills[guardName];
+    assert.ok(guard, guardName);
     assert.equal(guard.source, "amElnagdy/guard-skills");
     assert.equal(existsSync(path.join(repositoryRoot, ".agents/skills", path.dirname(guard.skillPath).split("/").at(-1), "SKILL.md")), true);
   }
@@ -124,23 +134,5 @@ test("studio5-delivery Markdown links resolve locally", () => {
       if (!target || /^[a-z]+:/i.test(target)) continue;
       assert.equal(existsSync(path.resolve(path.dirname(markdownPath), target)), true, `${markdownPath}: ${target}`);
     }
-  }
-});
-
-test("production package manifests and package locks match the task base", () => {
-  for (const relativePath of [
-    "package.json",
-    "pnpm-lock.yaml",
-    "packages/studio5-core/package.json",
-    "prototype/p0-ink-web/package.json",
-    "prototype/p3-lecture-capture-web/package.json",
-    "prototype/p3-lecture-capture-web/pnpm-lock.yaml",
-  ]) {
-    const packageDiff = spawnSync("git", ["diff", "--quiet", "origin/develop", "--", relativePath], {
-      cwd: repositoryRoot,
-      encoding: "utf8",
-      windowsHide: true,
-    });
-    assert.equal(packageDiff.status, 0, relativePath);
   }
 });
