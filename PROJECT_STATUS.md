@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-08-02
+آخر تحديث: 2026-08-08
 المرحلة الحالية: `PARTIAL DEVICE GATE PASS`
-الفرع النشط: `refactor/p0-ink-coordinate-transforms`
+الفرع النشط: `chore/studio5-autopilot-foundation`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -31,15 +31,16 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 الإنكليزية واتجاه التطبيق LTR، مع دعم اتجاه تلقائي لمحتوى المستخدم العربي
 والمختلط. التنقل الرئيسي: `Today / Study / Projects / Practice / Library`.
 
-## تحديثات Pull Requests في 2026-08-01
+## تحديثات Pull Requests حتى 2026-08-08
 
 - PR #6: `Closed without merge`.
 - PR #7: `Merged`؛ PDF Canvas:
   `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS`.
 - PR #8: `Merged`؛ اكتملت Ink characterization/tests والوثائق المرتبطة.
 - PR #9: `Merged`؛ Warm Paper visual prototype معتمد كمرجع فقط.
-- PR #10: `Active authority synchronization` على
-  `docs/authoritative-full-build-v5`، وحالته Ready for review.
+- PR #10: `Merged`؛ اكتملت مزامنة ملفات الدخول مع السلطة الحالية.
+- PR #11: `Merged`؛ اكتملت Ink Batch 2 / pure coordinate transforms عبر squash
+  merge مع نجاح الفحوص المسجلة. لا يُدّعى MatePad real multi-touch PASS.
 
 ## المتبقي لإغلاق Phase 4
 
@@ -130,7 +131,9 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | P4-PREVIEW-001 | تجهيز Build ساكن وفحص الاستضافة المرتبطة بـGitHub | `chore/cloudflare-preview-readiness` | Codex | DONE - STATIC BUILD VERIFIED / PAGES SUPERSEDED | PR #3: GitHub Actions 3/3 على Node 22؛ Core 100/100 + Ink 15/15 + P3 22/22 + Static Preview PASS |
 | P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
 | P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `historical / merged` | Codex | DOCUMENTATION COMPLETE | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
-| P4-INK-EXTRACT-002 | استخراج تحويلات Ink/Viewport إلى وحدة pure مع إبقاء P0 مطابقاً | `refactor/p0-ink-coordinate-transforms` | Codex | LOCAL PASS / BUILD CLOSURE PASS / CI PASS / MATEPAD MULTI-TOUCH PENDING | FIX-1 يغلق dist imports وService Worker ويزيل allocation لكل نقطة؛ Built browser وOffline reopen PASS؛ GitHub Actions 4/4 وWorkers Build PASS؛ Pinch الموروث مسجل للدفعة اللاحقة |
+| P4-INK-EXTRACT-002 | استخراج تحويلات Ink/Viewport إلى وحدة pure مع إبقاء P0 مطابقاً | `refactor/p0-ink-coordinate-transforms` | Codex | COMPLETE / MERGED — DEVICE MULTI-TOUCH NOT CLAIMED | PR #11 / FIX-2؛ build closure وService Worker وBuilt browser وOffline reopen وCI PASS؛ Pinch الموروث مسجل للدفعة اللاحقة |
+| OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | LOCAL + RUNTIME VERIFICATION PASS — DRAFT PR UPDATE | Runtime contract المصحح PASS؛ tooling 46/46؛ B mutation guard PASS؛ Core/P0/P3/Worker PASS؛ لا Production ولا Batch 3 |
+| OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `not started` | Unassigned | BACKLOG — NOT STARTED | Invocation مستقلة أو CI/Codex Action تبدأ read-only؛ لا Full access ولا Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -144,16 +147,18 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 
 ## القادم بعد المهمة الحالية
 
-1. إكمال مراجعة ومزامنة السلطة في PR #10 من دون Merge تلقائي.
-2. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
+1. إكمال `OPS-AUTOPILOT-001` بالتسليم إلى Draft PR من دون Merge تلقائي.
+2. Ink Batch 3 هو دفعة الفصل التالية المؤهلة، لكنه `NOT STARTED` ولا يبدأ ضمن
+   مهمة Autopilot الحالية.
+3. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
    Backup/Verify/Restore بما يشمل PDF وNotes وInk وTasks ورفض النسخة التالفة
    وسيناريوهات التخزين المنخفض والفشل الآمن.
-3. لا تبدأ Phase 5 قبل إغلاق البوابات الحالية وقرار المستخدم؛ وهي جزء من Gate D
+4. لا تبدأ Phase 5 قبل إغلاق البوابات الحالية وقرار المستخدم؛ وهي جزء من Gate D
    وليست نهاية Studio5.
-4. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
-5. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
-6. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
-7. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
+5. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
+6. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
+7. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
+8. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -223,4 +228,6 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | 2026-08-01 | PR #7 | PDF Canvas | Merged؛ `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` |
 | 2026-08-01 | PR #8 | P0 Ink | Merged؛ Characterization tests/documentation completed |
 | 2026-08-01 | PR #9 | Warm Paper | Merged؛ visual prototype approved as reference only |
-| 2026-08-01 | PR #10 | Authority | Active authority synchronization؛ Ready for review |
+| 2026-08-01 | PR #10 | Authority | Merged؛ authority and repository entry documents synchronized |
+| 2026-08-07 | PR #11 | P0 Ink | Merged؛ Batch 2 coordinate transforms complete; no MatePad real multi-touch PASS claimed |
+| 2026-08-08 | OPS-AUTOPILOT-001 | Tooling/Governance | Autopilot foundation active؛ Batch 3 remains not started |

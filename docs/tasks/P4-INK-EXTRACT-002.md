@@ -7,7 +7,7 @@
 - Branch: `refactor/p0-ink-coordinate-transforms`
 - Base: `develop@79579d92b33b60e77a4b560abe13d09e781dd380`
 - Owner: Codex
-- Status: `LOCAL PASS / BUILD CLOSURE PASS / CI PASS / MATEPAD MULTI-TOUCH PENDING`
+- Status: `COMPLETE / MERGED — MATEPAD REAL MULTI-TOUCH PASS NOT CLAIMED`
 
 ## Goal
 
@@ -214,6 +214,17 @@ the guard is proven by mutations that recompute either the first or final point.
 - Offline reopen: after complete server shutdown the built app reopened, accepted
   another stroke, saved it, and preserved both strokes through offline reload.
 - No MatePad or real multi-touch PASS is claimed by FIX-2.
+
+### Integration evidence — 2026-08-08
+
+- PR #11 was squash-merged to `develop` as the GitHub-reported integration
+  commit `ecddc229f74701e80557701cb831eb7f5cde1c6b`.
+- The merge commit is reachable from current `origin/develop`, and the expected
+  pure transform, build-closure, Service Worker, benchmark, and test changes are
+  present in the integrated tree.
+- Original PR-head ancestry is not required for squash or rebase integration.
+- This closes Batch 2 only. It does not claim the outstanding MatePad real
+  multi-touch evidence, close Phase 4/Gate B, or start Batch 3.
 
 ## Rollback
 

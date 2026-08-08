@@ -25,7 +25,7 @@
 | Requirement ID | المتطلب | المهمة | الحالة | دليل التحقق |
 |---|---|---|---|---|
 | `S5-NFR-001` | Ink أساسي مع Autosave/Recovery/Export | P0-INK-WEB | DONE / ADR ADOPTED | 12/12 + Browser smoke + ضغط/Recovery/15 دقيقة/1000 stroke على MatePad |
-| `S5-NFR-INK-XFORM-001` | تحويلات Ink/Viewport مستقلة عن DOM مع parity لسلوك P0 | P4-INK-EXTRACT-002 / FIX-1 | LOCAL PASS / BUILD CLOSURE PASS / CI PASS / MATEPAD MULTI-TOUCH PENDING | Pure + allocation-free APIs؛ dist import closure وprecache PASS؛ Built browser وOffline reopen PASS؛ Golden parity وGitHub Actions 4/4 وWorkers Build PASS |
+| `S5-NFR-INK-XFORM-001` | تحويلات Ink/Viewport مستقلة عن DOM مع parity لسلوك P0 | P4-INK-EXTRACT-002 / FIX-2 / PR #11 | COMPLETE / MERGED — DEVICE MULTI-TOUCH NOT CLAIMED | Pure + allocation-free APIs؛ dist import closure وprecache PASS؛ Built browser وOffline reopen PASS؛ Golden parity وCI PASS؛ متابعة pinch الواقعية تبقى لدفعة لاحقة |
 | `S5-DATA-001` | Stable IDs وSchema ومهاجرات | P2-CORE-001 | DONE | 7/7 tests |
 | `S5-DATA-002` | IndexedDB + Journal + Recovery | P2-CORE-002 | IMPLEMENTED | 14/14؛ Browser smoke المحلي معلق |
 | `S5-FR-001` | Repository عام للسنوات والفصول والمواد | P2-CORE-003 | DONE | 19/19 tests |
@@ -51,6 +51,8 @@
 | `S5-UX-BACKUP-001` | تنزيل وفحص واستعادة Backup من واجهة MatePad | P4-REL-002 | DEVICE GATE PENDING / UI EXPERIMENTAL | لا توجد إفادة جهاز عن Full Backup/Verify/Restore |
 | `S5-DATA-005` | هوية تخزين متصفح موحدة ومهاجرة آمنة للأسماء القديمة | P4-REL-003 | PDF/NOTES DEVICE PASS / FULL GATE PENDING | MatePad reload + close/reopen + PDF/Notes persistence بلا تكرار |
 | `S5-QA-P4-001` | توافق Backup القديم وتشغيل فحوص Phase 4 آلياً قبل Phase 5 | P4-HARD-001 | CI PASS / PARTIAL DEVICE GATE | Node 22 CI + Workers Build `6e7ced6d` + PDF/Notes MatePad PASS؛ Ink/Backup PENDING |
+| `S5-QA-AUTOPILOT-001` | تسليم Codex محكوم مع مراجعة B بلا كتابة وmutation guard حتمي | OPS-AUTOPILOT-001 / PR #12 | LOCAL + RUNTIME PASS / PR CI PENDING | Runtime Discovery PASS وفق العقد المصحح؛ B mutation guard PASS؛ tooling 46/46 وFull regression PASS |
+| `S5-QA-AUTOPILOT-002` | مراجعة B معزولة بفرض read-only من invocation مستقلة | OPS-AUTOPILOT-002 | BACKLOG / NOT STARTED | Separate invocation أو CI/Codex Action؛ لا ادعاء enforced تحت parent قابل للكتابة |
 | `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@3fbc776` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
 | `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DONE / DEPLOYED FROM DEVELOP | `develop@ed1d175` → Workers Build `6e7ced6d` |
 | `S5-PREVIEW-002` | فحص حزمة P3 الساكنة وحدود Cloudflare والمسارات والأصول قبل الربط | P4-PREVIEW-001 | DONE / STATIC BUILD VERIFIED | PR #3 CI + 404/PDF/SW contracts + Production build PASS |

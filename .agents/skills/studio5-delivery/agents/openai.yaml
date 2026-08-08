@@ -1,0 +1,4 @@
+interface:
+  display_name: "Studio5 Delivery"
+  short_description: "Governed Studio5 delivery from truth to Draft PR"
+  default_prompt: "Use $studio5-delivery to select and deliver the next unblocked Studio5 task through its human gate."
