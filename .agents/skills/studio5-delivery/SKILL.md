@@ -34,7 +34,9 @@ to parallel writers.
 
 ## Deliver
 
-Read [delivery-loop.md](references/delivery-loop.md), then:
+When API-funded automation is owner-deferred, first read
+[subscription-only-loop.md](references/subscription-only-loop.md). Then read
+[delivery-loop.md](references/delivery-loop.md) and:
 
 1. Implement the smallest authorized change, using A only for production work.
 2. Run native lint, typecheck, tests, and build selected for the diff. Run

@@ -2,7 +2,7 @@
 
 آخر تحديث: 2026-08-09
 المرحلة الحالية: `PARTIAL DEVICE GATE PASS`
-الفرع النشط: `docs/defer-ops-autopilot-002`
+الفرع النشط: `chore/subscription-only-supervised-delivery`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -42,6 +42,8 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 - PR #11: `Merged`؛ اكتملت Ink Batch 2 / pure coordinate transforms عبر squash
   merge مع نجاح الفحوص المسجلة. لا يُدّعى MatePad real multi-touch PASS.
 - PR #12: `Merged`؛ تأسيس Studio5 Autopilot اكتمل، وفحوص GitHub الخمسة ناجحة.
+- PR #13: `Merged`؛ سُجل قرار المالك بتأجيل API automation وحُفظ تصميم
+  OPS-AUTOPILOT-002 للمستقبل.
 
 ## قرار أتمتة المراجعة
 
@@ -146,7 +148,7 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | P4-INK-EXTRACT-002 | استخراج تحويلات Ink/Viewport إلى وحدة pure مع إبقاء P0 مطابقاً | `refactor/p0-ink-coordinate-transforms` | Codex | COMPLETE / MERGED — DEVICE MULTI-TOUCH NOT CLAIMED | PR #11 / FIX-2؛ build closure وService Worker وBuilt browser وOffline reopen وCI PASS؛ Pinch الموروث مسجل للدفعة اللاحقة |
 | OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | COMPLETE / MERGED — PR #12 | Runtime contract المصحح PASS؛ tooling 46/46؛ B mutation guard PASS؛ Core/P0/P3/Worker وGitHub checks 5/5 PASS؛ لا Production ولا Batch 3 |
 | OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `deferred` | Owner | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة الاختبارات محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه ليس خطأً |
-| OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `not started` | Unassigned | BACKLOG — NEXT AUTOMATION TASK | Project واحد + Supervisor + A/B/C حسب الحاجة + mutation guard + native checks/guards/CI + Draft PR؛ لا API ولا Full access ولا auto-merge |
+| OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | IN PROGRESS — LOCAL VALIDATION | Project واحد + Supervisor + A ثم B مع mutation guard؛ C متاح وغير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -160,8 +162,9 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 
 ## القادم بعد المهمة الحالية
 
-1. تنفيذ `OPS-AUTOPILOT-003 — Subscription-Only Supervised Delivery Validation`
-   كمهمة أتمتة governance/tooling فقط، من دون API key أو Full access أو Merge.
+1. إكمال `OPS-AUTOPILOT-003 — Subscription-Only Supervised Delivery Validation`
+   عبر commit ثم B/mutation guard ثم Draft PR وCI؛ لا تصبح DONE قبل اكتمال هذه
+   الأدلة.
 2. يبقى `OPS-AUTOPILOT-002` مؤجلاً بقرار المالك حتى يقرر تمويل API automation.
 3. Ink Batch 3 هو دفعة الفصل التالية المؤهلة، لكنه `NOT STARTED` ولا يبدأ ضمن
    مهمة الأتمتة الحالية.
@@ -175,6 +178,9 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 7. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
 8. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
 9. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
+10. بعد نجاح OPS-AUTOPILOT-003 يُقترح فقط
+    `OPS-AUTOPILOT-004 — Subscription-Only Continue Control Plane`، ولا يبدأ
+    ضمن المهمة الحالية.
 
 ## المراحل اللاحقة المحفوظة
 
