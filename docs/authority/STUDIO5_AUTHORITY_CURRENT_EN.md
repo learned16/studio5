@@ -1,6 +1,7 @@
 # Studio5 Current Authority Record
 
-Status: Current and resolved authority record, effective 1 August 2026.
+Status: Current and resolved authority record, effective 1 August 2026 and
+updated 9 August 2026.
 
 This document records the explicit decisions resolved by the user and supervisor after the publication of [Studio5 One-Time Full Build Specification v5.0](./Studio5_One_Time_Full_Build_Spec_v5_AR.md). It updates only the affected parts of v5. The remainder of v5 stays authoritative.
 
@@ -122,6 +123,28 @@ The operating rules are:
 - Codex executes; the user and supervisor decide.
 - Every task stops at: `Commit + Push + Draft PR + Tests + STOP`.
 - No automatic merge.
+
+## Automation spending boundary — 9 August 2026
+
+The owner has deferred API-funded automation. Studio5 will not add an
+`OPENAI_API_KEY` or use the OpenAI API or paid Codex GitHub Action automation
+at this stage. The absence of that repository secret is an intentional owner
+decision, not a defect or a current remediation item.
+
+Until the owner explicitly authorizes spending on automation infrastructure,
+Studio5 uses the existing Codex subscription through one Studio5 Project and
+one supervisor with:
+
+- `A — Production` for implementation;
+- an independent behaviorally no-write `B — Review & QA` reviewer wrapped by
+  the deterministic repository mutation guard;
+- `C — Prototype & Architecture` only when needed;
+- native tests, installed guards, and the existing GitHub CI;
+- push and Draft Pull Request delivery without automatic merge.
+
+This decision defers, but does not cancel, the independently invoked enforced
+read-only design in `OPS-AUTOPILOT-002`. Full access remains forbidden, and the
+decision does not authorize Phase 4.5 or Phase 5 work.
 
 ## User reference-package delivery rule
 
