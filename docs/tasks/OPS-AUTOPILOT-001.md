@@ -6,7 +6,7 @@
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
 - Base: `origin/develop@ecddc229f74701e80557701cb831eb7f5cde1c6b`
 - Branch: `chore/studio5-autopilot-foundation`
-- Status: `LOCAL VERIFICATION PASS — DRAFT PR DELIVERY`
+- Status: `IN PROGRESS — RUNTIME CONTRACT CORRECTION`
 
 ## Internal task card
 
@@ -14,20 +14,20 @@
 |---|---|
 | Task ID | `OPS-AUTOPILOT-001` |
 | Goal | Make Studio5 delivery repeatable from current authority and live repository evidence through scoped implementation, independent review, Draft PR delivery, and real human gates. |
-| Requirement IDs | Governance delivery loop; `S5-NFR-INK-XFORM-001` status reconciliation only |
+| Requirement IDs | `S5-QA-AUTOPILOT-001`; `S5-NFR-INK-XFORM-001` status reconciliation only |
 | Task type | `TOOLING / GOVERNANCE / EXCLUSIVE` |
 | Dependencies | Current authority; SOP; PR #10 and PR #11 integrated into `develop` |
 | Blockers | None after merge-method-aware PR #11 reconciliation |
 | Base | `origin/develop@ecddc229f74701e80557701cb831eb7f5cde1c6b` |
 | Branch | `chore/studio5-autopilot-foundation` |
-| Allowed files | `.agents/**`, `.codex/**`, `skills-lock.json`, `AGENTS.md`, `PROJECT_STATUS.md`, this task file, existing Ink Batch 2 status evidence, `docs/TRACEABILITY.md`, and the extraction-sequence status introduction |
+| Allowed files | `.agents/**`, `.codex/**`, `skills-lock.json`, `AGENTS.md`, `PROJECT_STATUS.md`, this task file, the deferred `OPS-AUTOPILOT-002` brief, existing Ink Batch 2 status evidence, `docs/TRACEABILITY.md`, and the extraction-sequence status introduction |
 | Forbidden files | Production modules; Core; P0/P3 application code; Worker configuration; schema/storage/backup; production package manifests and package lockfiles; workflows; Unified Workspace; Drawing Coach |
 | Shared files | `AGENTS.md`, `PROJECT_STATUS.md`, `docs/TRACEABILITY.md`, `.agents/**`, `.codex/**` — one writer only |
-| Required checks | Skill validation; tooling syntax/tests; scope and check-selector tests; merge-strategy regression tests; Markdown/link checks; Core/P0/P3/Worker regressions; diff check; secret scan; guard review; independent read-only review |
-| Device boundary | No new device PASS. Runtime discovery may require a new Codex session. |
+| Required checks | Skill validation; tooling syntax/tests; scope, check-selector, merge-strategy, and B mutation-guard tests; Markdown/link checks; Core/P0/P3/Worker regressions; diff check; secret scan; guard review; independent behaviorally no-write B review wrapped by the mutation guard |
+| Device boundary | No new device PASS. Runtime discovery uses the corrected permission-inheritance contract below. |
 | Human gates | Only the gates listed in the delivery skill; merge approval remains human. |
 | Rollback | Revert this task PR's commits. No data migration or production rollback is needed. |
-| Stopping point | Commit → independent B review → revisions if needed → push → Draft PR → CI → task-caused repair/review loop → stop before merge. |
+| Stopping point | Commit → capture repository baseline → independent behaviorally no-write B review → verify no mutation → revisions if needed → push → update Draft PR #12 → CI → task-caused repair/review loop → stop before merge. |
 
 ## Why
 
@@ -46,9 +46,12 @@ independent review, device evidence boundaries, or human gates.
   verification selection, the A/B/C delivery loop, human gates, and reporting.
 - Progressive disclosure keeps `SKILL.md` small; detailed policy lives in
   focused references and deterministic Node built-in scripts.
-- Three project-scoped custom agents implement A, B, and C. B is read-only in
-  both configuration and instructions. A and C inherit the parent permission
-  boundary and do not receive model pins.
+- Three project-scoped custom agents implement A, B, and C. B retains
+  `sandbox_mode = "read-only"` as its default and is unconditionally forbidden
+  to write by developer instructions. Current Codex live parent permission
+  overrides may replace that sandbox default when B is spawned, so every B
+  review is wrapped in a deterministic before/after repository mutation guard.
+  A and C inherit the parent permission boundary and do not receive model pins.
 - A implements, verifies, commits, and stops. The parent/supervisor obtains the
   independent B review, then owns push, Draft PR delivery, and CI handling.
 - A conservative three-subagent cap is a concurrency ceiling, not permission
@@ -84,14 +87,18 @@ strategies so an unreachable original head cannot by itself produce a false
 - Repository skills under `.agents/skills/` with progressive disclosure.
 - Project custom-agent TOML files under `.codex/agents/`.
 - Project `.codex/config.toml` with a conservative concurrency cap.
-- Parent-supervised subagents, one-writer scope, and read-only independent
-  review.
+- Parent-supervised subagents, one-writer scope, and independent behaviorally
+  no-write review with deterministic mutation detection.
 - Project skill metadata in `agents/openai.yaml`; it contains no tool
   dependency, credential, model pin, or secret.
 
-The structure was checked against the current official Codex manual sections
-for skills, custom agents, and configuration. Runtime discovery is not claimed
-from static file checks alone.
+The structure and runtime contract were checked against the current
+[official OpenAI Subagents documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents)
+on 2026-08-08. Local subagents inherit the parent turn's current sandbox and
+permission mode, and live runtime overrides are reapplied at spawn even when a
+custom agent file has different defaults. Runtime discovery is not claimed
+from static file checks alone, and this task does not claim enforced B
+read-only isolation under a writable parent.
 
 ## Guard skills provenance
 
@@ -121,6 +128,7 @@ WooCommerce guard, or other skill was installed.
 - Repository status and the minimum authority-aware `AGENTS.md` routing note.
 - Existing Ink Batch 2 status evidence only.
 - This task brief.
+- The deferred isolated-review brief `OPS-AUTOPILOT-002`.
 - `.agents/skills/studio5-delivery/**`, the three reviewed guard skills, and
   their project-local `skills-lock.json` provenance.
 - `.codex/config.toml` and the A/B/C custom-agent definitions.
@@ -163,10 +171,27 @@ workspace/package lock artifacts were removed, package hashes were rechecked,
 and the required check passed with the pinned package-manager version. This was
 a tooling-environment mismatch, not a production or CI regression.
 
-Static success does not prove live skill or custom-agent discovery in an
-already-running Codex session.
+## Corrected runtime discovery contract
 
-`RUNTIME DISCOVERY: PENDING NEW CODEX SESSION`
+The acceptance contract separates live discovery and behavioral safety from a
+stronger sandbox guarantee that the current writable parent cannot provide:
+
+- `Skill discovery: PASS` — `$studio5-delivery` was discovered and used in a
+  new Codex session.
+- `A/B/C discovery: PASS` — all three project custom agents were discovered and
+  spawned successfully.
+- `Config/concurrency discovery: PASS` — three concurrent subagents matched
+  `.codex/config.toml`'s configured ceiling.
+- `B behavioral no-write review: PENDING GUARDED REVIEW` — B's developer
+  instructions forbid mutation; final acceptance requires the deterministic
+  before/after mutation guard to pass.
+- `Enforced per-subagent read-only under writable parent: CURRENT RUNTIME LIMIT / DEFERRED`
+  — no enforced claim is made. Independent read-only isolation is tracked by
+  `OPS-AUTOPILOT-002`.
+
+Overall `RUNTIME DISCOVERY` remains pending only until the guarded B review in
+this delivery loop passes. Enforced isolated read-only execution is not an
+acceptance gate for `OPS-AUTOPILOT-001`.
 
 ## Known limits
 
@@ -176,6 +201,9 @@ already-running Codex session.
 - Check selection is advisory. It never substitutes for task-specific judgment.
 - Scope verification is diagnostic and does not replace repository permissions
   or the one-writer rule.
+- The mutation guard detects any final repository-state mismatch across B's
+  review. Enforced isolated read-only execution remains deferred to
+  `OPS-AUTOPILOT-002`.
 
 ## Rollback
 

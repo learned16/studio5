@@ -33,6 +33,8 @@ test("studio5-delivery has exact frontmatter and progressive-disclosure resource
     "references/delivery-loop.md",
     "references/human-gates.md",
     "references/report-contract.md",
+    "references/reviewer-mutation-guard.md",
+    "scripts/review-mutation-guard.mjs",
     "assets/master-autopilot-prompt.md",
   ]) {
     assert.equal(existsSync(path.join(skillRoot, relativePath)), true, relativePath);
@@ -64,6 +66,14 @@ test("A, B, and C custom agents have required fields without model pins or secre
   assert.match(
     readRepositoryFile(".codex/agents/studio5-b-review.toml"),
     /^sandbox_mode = "read-only"$/m,
+  );
+  assert.match(
+    readRepositoryFile(".codex/agents/studio5-b-review.toml"),
+    /no-write rule is mandatory even when the parent turn's live permission mode exposes workspace-write/i,
+  );
+  assert.match(
+    readRepositoryFile(".agents/skills/studio5-delivery/references/delivery-loop.md"),
+    /reviewer-mutation-guard\.md/,
   );
   const configText = readRepositoryFile(".codex/config.toml");
   assert.match(configText, /^\[agents\]$/m);
@@ -115,6 +125,7 @@ test("studio5-delivery Markdown links resolve locally", () => {
     "docs/TRACEABILITY.md",
     "docs/ink-engine/INK_EXTRACTION_SEQUENCE_EN.md",
     "docs/tasks/OPS-AUTOPILOT-001.md",
+    "docs/tasks/OPS-AUTOPILOT-002.md",
     "docs/tasks/P4-INK-EXTRACT-002.md",
   ].map((relativePath) => path.join(repositoryRoot, relativePath));
   const pending = [skillRoot];

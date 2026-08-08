@@ -44,7 +44,9 @@ Make the card specific enough that scope can be verified mechanically.
 ## Agent selection
 
 - Use `studio5_a_production` for authorized production implementation.
-- Use `studio5_b_review` after a clear commit for independent read-only review.
+- Use `studio5_b_review` after a clear commit for independent behaviorally
+  no-write review. Wrap it in the deterministic before/after mutation guard;
+  do not rely on a per-agent sandbox when the parent has a live writable mode.
 - Use `studio5_c_architecture` for architecture, isolated prototypes, research,
   dependency maps, or task preparation.
 - Read-heavy independent audits may run in parallel.

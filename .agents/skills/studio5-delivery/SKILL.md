@@ -42,7 +42,11 @@ Read [delivery-loop.md](references/delivery-loop.md), then:
 3. Run `scripts/verify-scope.mjs` against the task's required base and allowed
    prefixes.
 4. Run each installed guard applicable to the diff as a second pass.
-5. Commit, then obtain an independent read-only B review of the committed diff.
+5. Commit, then read [reviewer-mutation-guard.md](references/reviewer-mutation-guard.md).
+   Capture repository state outside the tree, obtain an independent
+   behaviorally no-write B review, and verify that the state did not change.
+   Treat any mutation as review failure. Never claim enforced per-subagent
+   read-only isolation when the parent turn's live permission mode overrides it.
 6. On `REVISE`, return findings to the writer, fix within scope, rerun evidence,
    recommit, and request a new review. Repeat until PASS or a real human gate.
 7. Push, open a Draft PR, inspect CI, and repair task-caused failures within

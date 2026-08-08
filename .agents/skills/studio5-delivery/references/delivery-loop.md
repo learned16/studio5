@@ -10,7 +10,9 @@ Establish truth
 → Run native tests, build, lint, and typecheck
 → Verify scope and run applicable guards
 → Commit
-→ Independent B review
+→ Capture repository mutation baseline outside the tree
+→ Independent behaviorally no-write B review
+→ Verify no repository mutation; fail the review on any change
 → If REVISE: return findings to the writer, fix, reverify, recommit, rereview
 → Repeat until PASS or a real human gate
 → Push
@@ -21,7 +23,11 @@ Establish truth
 ```
 
 The parent supervisor passes evidence and findings between A and B. The user
-must not act as a report courier.
+must not act as a report courier. Before accepting B's verdict, follow
+[reviewer-mutation-guard.md](reviewer-mutation-guard.md). Codex subagents inherit
+the parent turn's live permission mode, so B's no-write developer instructions
+and the deterministic guard remain mandatory even when its read-only default is
+overridden at spawn.
 
 ## Verification selection
 
@@ -55,7 +61,7 @@ Choose by diff:
 - Mixed diff: every applicable guard.
 
 Guards are a second pass. They do not replace native tests, the task card, the
-scope tool, or independent B review.
+scope tool, the B mutation guard, or independent B review.
 
 ## Delivery boundary
 
