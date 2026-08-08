@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-08-08
+آخر تحديث: 2026-08-09
 المرحلة الحالية: `PARTIAL DEVICE GATE PASS`
-الفرع النشط: `chore/studio5-autopilot-foundation`
+الفرع النشط: `docs/defer-ops-autopilot-002`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -31,7 +31,7 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 الإنكليزية واتجاه التطبيق LTR، مع دعم اتجاه تلقائي لمحتوى المستخدم العربي
 والمختلط. التنقل الرئيسي: `Today / Study / Projects / Practice / Library`.
 
-## تحديثات Pull Requests حتى 2026-08-08
+## تحديثات Pull Requests حتى 2026-08-09
 
 - PR #6: `Closed without merge`.
 - PR #7: `Merged`؛ PDF Canvas:
@@ -41,6 +41,18 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 - PR #10: `Merged`؛ اكتملت مزامنة ملفات الدخول مع السلطة الحالية.
 - PR #11: `Merged`؛ اكتملت Ink Batch 2 / pure coordinate transforms عبر squash
   merge مع نجاح الفحوص المسجلة. لا يُدّعى MatePad real multi-touch PASS.
+- PR #12: `Merged`؛ تأسيس Studio5 Autopilot اكتمل، وفحوص GitHub الخمسة ناجحة.
+
+## قرار أتمتة المراجعة
+
+- `OPS-AUTOPILOT-002`: `DEFERRED BY OWNER — API AUTOMATION LATER`.
+- لن يُضاف `OPENAI_API_KEY` حالياً، وغيابه ليس خطأً مطلوباً إصلاحه.
+- لا OpenAI API ولا Codex GitHub Action مدفوع في هذه المرحلة.
+- المسار الحالي يعتمد اشتراك Codex الموجود: Project واحد، Supervisor واحد،
+  وA للتنفيذ، وB كمراجع مستقل ممنوع سلوكياً من الكتابة مع mutation guard، وC
+  عند الحاجة فقط، ثم الاختبارات والـguards وCI الحالي وDraft PR بلا Merge تلقائي.
+- يبقى تصميم المراجعة ذات read-only المفروض محفوظاً في ملف المهمة لاستكماله
+  عندما يقرر المالك بدء الإنفاق على بنية الأتمتة.
 
 ## المتبقي لإغلاق Phase 4
 
@@ -132,8 +144,9 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | P4-WORKERS-PREVIEW-001 | إعداد Workers Static Assets + Workers Builds | `chore/workers-static-preview` | Codex | DEPLOYED — PDF/NOTES DEVICE PASS; INK/BACKUP PENDING | Build `6e7ced6d` من `develop@ed1d175`؛ Production Worker فعّال |
 | P4.5-UX-SPEC-001 | مواصفة بنية تجربة الاستخدام والواجهة الموحدة | `historical / merged` | Codex | DOCUMENTATION COMPLETE | `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md` ووثائق الحالة فقط |
 | P4-INK-EXTRACT-002 | استخراج تحويلات Ink/Viewport إلى وحدة pure مع إبقاء P0 مطابقاً | `refactor/p0-ink-coordinate-transforms` | Codex | COMPLETE / MERGED — DEVICE MULTI-TOUCH NOT CLAIMED | PR #11 / FIX-2؛ build closure وService Worker وBuilt browser وOffline reopen وCI PASS؛ Pinch الموروث مسجل للدفعة اللاحقة |
-| OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | LOCAL + RUNTIME VERIFICATION PASS — DRAFT PR UPDATE | Runtime contract المصحح PASS؛ tooling 46/46؛ B mutation guard PASS؛ Core/P0/P3/Worker PASS؛ لا Production ولا Batch 3 |
-| OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `not started` | Unassigned | BACKLOG — NOT STARTED | Invocation مستقلة أو CI/Codex Action تبدأ read-only؛ لا Full access ولا Phase 5 |
+| OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | COMPLETE / MERGED — PR #12 | Runtime contract المصحح PASS؛ tooling 46/46؛ B mutation guard PASS؛ Core/P0/P3/Worker وGitHub checks 5/5 PASS؛ لا Production ولا Batch 3 |
+| OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `deferred` | Owner | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة الاختبارات محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه ليس خطأً |
+| OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `not started` | Unassigned | BACKLOG — NEXT AUTOMATION TASK | Project واحد + Supervisor + A/B/C حسب الحاجة + mutation guard + native checks/guards/CI + Draft PR؛ لا API ولا Full access ولا auto-merge |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -147,18 +160,21 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 
 ## القادم بعد المهمة الحالية
 
-1. إكمال `OPS-AUTOPILOT-001` بالتسليم إلى Draft PR من دون Merge تلقائي.
-2. Ink Batch 3 هو دفعة الفصل التالية المؤهلة، لكنه `NOT STARTED` ولا يبدأ ضمن
-   مهمة Autopilot الحالية.
-3. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
+1. تنفيذ `OPS-AUTOPILOT-003 — Subscription-Only Supervised Delivery Validation`
+   كمهمة أتمتة governance/tooling فقط، من دون API key أو Full access أو Merge.
+2. يبقى `OPS-AUTOPILOT-002` مؤجلاً بقرار المالك حتى يقرر تمويل API automation.
+3. Ink Batch 3 هو دفعة الفصل التالية المؤهلة، لكنه `NOT STARTED` ولا يبدأ ضمن
+   مهمة الأتمتة الحالية.
+4. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
    Backup/Verify/Restore بما يشمل PDF وNotes وInk وTasks ورفض النسخة التالفة
    وسيناريوهات التخزين المنخفض والفشل الآمن.
-4. لا تبدأ Phase 5 قبل إغلاق البوابات الحالية وقرار المستخدم؛ وهي جزء من Gate D
+5. لا تبدأ Phase 4.5 أو Phase 5 ضمن مسار الأتمتة الحالي. Phase 5 لا تبدأ قبل
+   إغلاق البوابات الحالية وقرار المستخدم؛ وهي جزء من Gate D
    وليست نهاية Studio5.
-5. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
-6. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
-7. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
-8. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
+6. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
+7. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
+8. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
+9. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -231,3 +247,5 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | 2026-08-01 | PR #10 | Authority | Merged؛ authority and repository entry documents synchronized |
 | 2026-08-07 | PR #11 | P0 Ink | Merged؛ Batch 2 coordinate transforms complete; no MatePad real multi-touch PASS claimed |
 | 2026-08-08 | OPS-AUTOPILOT-001 | Tooling/Governance | Autopilot foundation active؛ Batch 3 remains not started |
+| 2026-08-08 | PR #12 | Tooling/Governance | Merged؛ Autopilot foundation and current subscription-only delivery controls established؛ GitHub checks 5/5 PASS |
+| 2026-08-09 | Owner | Automation governance | `OPS-AUTOPILOT-002` deferred until API automation spending is approved؛ missing `OPENAI_API_KEY` is intentional, not a defect |
