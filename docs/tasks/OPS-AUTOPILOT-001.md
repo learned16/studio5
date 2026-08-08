@@ -6,7 +6,7 @@
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
 - Base: `origin/develop@ecddc229f74701e80557701cb831eb7f5cde1c6b`
 - Branch: `chore/studio5-autopilot-foundation`
-- Status: `IN PROGRESS — RUNTIME CONTRACT CORRECTION`
+- Status: `LOCAL + RUNTIME VERIFICATION PASS — DRAFT PR UPDATE`
 
 ## Internal task card
 
@@ -173,7 +173,13 @@ lockfile, Worker, or workflow file is in scope.
   detached-HEAD gaps and identified stale evidence counts. The guard now hashes
   ignored and untracked files, records resolved and symbolic HEAD, disables Git
   optional locks, and covers each regression with a negative test. Round 2 is
-  pending on the corrected commit.
+  complete.
+- Independent B review round 2: `PASS WITH NON-BLOCKING NOTES`. Every round-one
+  finding was closed. The deterministic before/after guard returned PASS with
+  an identical protected-state fingerprint. B noted that Git refs/tags and
+  repository config are outside the enumerated guard boundary and that hashing
+  a large ignored footprint has a measurable runtime cost; neither note blocks
+  the corrected acceptance contract.
 
 The first Worker attempt used the bundled pnpm 11 and failed because it ignored
 the repository's pnpm 10 build-script allowlist. The generated untracked
@@ -192,16 +198,17 @@ stronger sandbox guarantee that the current writable parent cannot provide:
   spawned successfully.
 - `Config/concurrency discovery: PASS` — three concurrent subagents matched
   `.codex/config.toml`'s configured ceiling.
-- `B behavioral no-write review: PENDING GUARDED REVIEW` — B's developer
-  instructions forbid mutation; final acceptance requires the deterministic
-  before/after mutation guard to pass.
+- `B behavioral no-write review: PASS` — B's developer instructions forbade
+  mutation, and the deterministic before/after guard returned the same
+  protected-state fingerprint after independent review.
 - `Enforced per-subagent read-only under writable parent: CURRENT RUNTIME LIMIT / DEFERRED`
   — no enforced claim is made. Independent read-only isolation is tracked by
   `OPS-AUTOPILOT-002`.
 
-Overall `RUNTIME DISCOVERY` remains pending only until the guarded B review in
-this delivery loop passes. Enforced isolated read-only execution is not an
-acceptance gate for `OPS-AUTOPILOT-001`.
+`RUNTIME DISCOVERY: PASS (CORRECTED CONTRACT)`
+
+Enforced isolated read-only execution is not an acceptance gate for
+`OPS-AUTOPILOT-001` and remains explicitly deferred.
 
 ## Known limits
 
@@ -211,9 +218,13 @@ acceptance gate for `OPS-AUTOPILOT-001`.
 - Check selection is advisory. It never substitutes for task-specific judgment.
 - Scope verification is diagnostic and does not replace repository permissions
   or the one-writer rule.
-- The mutation guard detects any final repository-state mismatch across B's
-  review. Enforced isolated read-only execution remains deferred to
-  `OPS-AUTOPILOT-002`.
+- The mutation guard detects final mismatches within its enumerated protected
+  boundary: resolved/symbolic HEAD, porcelain status, tracked diff, and
+  untracked/ignored worktree files. Other Git refs/tags and repository config
+  are outside this guard. Enforced isolated read-only execution remains
+  deferred to `OPS-AUTOPILOT-002`.
+- Hashing a large ignored worktree footprint twice per review has a measurable
+  cost and should be monitored without weakening the protected boundary.
 
 ## Rollback
 
