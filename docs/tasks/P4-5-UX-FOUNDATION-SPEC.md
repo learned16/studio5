@@ -2,13 +2,14 @@
 
 ## الحالة
 
-`DOCUMENTATION ONLY / READY FOR USER REVIEW`
+`DOCUMENTATION COMPLETE / INCREMENTAL IMPLEMENTATION AUTHORIZED BY OWNER`
 
 ## الهدف
 
-توثيق نجاح بوابة PDF/Notes الجزئية من Phase 4 على جهاز
-`HUAWEI MatePad 11.5 PaperMatte`، ثم تحديد أساس تجربة الاستخدام والواجهة الموحدة
-لـStudio5 قبل كتابة أي كود جديد.
+توثيق دليل PDF/Notes التاريخي ضمن Phase 4، ثم تحديد أساس تجربة الاستخدام
+والواجهة الموحدة لـStudio5 قبل كتابة أي كود جديد. الحالة السلطوية الحالية
+لـPhase 4 هي
+`COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`.
 
 ## Requirement IDs
 
@@ -63,21 +64,40 @@
 
 ## معايير القبول
 
-- [x] تسجيل نتيجة PDF/Notes الجزئية كما أفاد بها المستخدم، مع إبقاء Ink وFull Backup/Restore معلّقين.
+- [x] حفظ نتيجة PDF/Notes الجزئية كدليل تاريخي، ثم تسجيل إغلاق Phase 4 بالدليل
+  الأحدث من المالك من دون اختلاق سجل خطوات أو metadata.
 - [x] توضيح أن واجهتي P3 وP0 Functional Prototypes فقط.
 - [x] كتابة مواصفة Phase 4.5 لكل الشاشات والمحاور المطلوبة.
 - [x] توثيق معايير MatePad والقلم والاستجابة والثيمات والإتاحة.
 - [x] توثيق نقل الوظائف الحالية بلا إعادة كتابة Core.
-- [x] منع اقتراح أو إنشاء Stable Tag قبل إغلاق Phase 4 بالكامل.
+- [x] عدم اقتراح أو إنشاء Stable Tag ضمن مهمة المواصفة التوثيقية.
 - [x] عدم تعديل كود التطبيق أو البيانات أو إعداد النشر.
+- [x] اعتمد المالك بتاريخ 2026-08-09 بدء Phase 4.5 على دفعات صغيرة مستقلة.
+- [x] تحولت التفاصيل البصرية المفتوحة إلى فرضيات تُراجع لكل شريحة، لا Blocker
+  لبداية App Shell والتنقل.
+- [x] حُددت `P4.5-UX-IMPLEMENTATION-001` كأول مهمة مؤهلة، من دون Core أو Ink أو
+  Worker cutover أو Phase 5.
+
+## نتيجة المصالحة اللاحقة
+
+Warm Paper Academic Studio يبقى مرجعاً بصرياً معتمداً فقط، لا المنتج النهائي.
+يمكن بدء App Shell والتنقل في سطح معزول، ثم تمر كل شريحة ببوابة الاختبار
+والمراجعة والقرار البشري الخاصة بها. لا يبدأ Unified Workspace Ink الحي قبل
+سلسلة Ink Batches 3–7؛ ولا يُختار Batch 3 تلقائياً قبل شرائح Phase 4.5 التي لا
+تعتمد عليه.
+
+اكتمال Phase 4 لا يبدأ live-Ink integration تلقائياً. Ink Batch 3 يبقى
+`DEFERRED / NOT STARTED`، وتُجدول سلسلة Batches 3–7 لاحقاً فقط عند حد
+live-Ink Unified Workspace.
 
 ## التحقق
 
 - مراجعة `git diff --check`.
 - التأكد أن جميع الملفات المتغيرة Markdown فقط.
 - التأكد أن `git diff --name-only` لا يحتوي `packages/**` أو `prototype/**`.
-- لا تُشغّل اختبارات التطبيق لأن الكود والاعتماديات لم تتغير؛ تبقى نتائج CI
-  وبوابة PDF/Notes السابقة هي الدليل الوظيفي المحدود لها فقط.
+- لا تُشغّل اختبارات التطبيق لأن الكود والاعتماديات لم تتغير. تبقى أدلة
+  Automated/CI ودليل المالك الكامل على الجهاز ونتيجة PR #7 أدلة منفصلة وفق
+  السجل السلطوي الحالي.
 
 ## Rollback / Recovery
 

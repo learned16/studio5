@@ -2,7 +2,13 @@
 
 ## Status and guardrails
 
-This sequence is not blanket execution authorization. Batch 1 (characterization lock) and Batch 2 (coordinate transforms) are complete and merged. Batch 3 is the next eligible extraction batch and is not started. No later batch may be inferred as authorized from this map; it does not authorize integration, redesign, schema or backup changes, Phase 5, or retirement of the current UI.
+This sequence is not blanket execution authorization. Batch 1 (characterization lock) and Batch 2 (coordinate transforms) are complete and merged. By the owner decision dated 9 August 2026, Batch 3 is `DEFERRED / NOT STARTED` while the independent Phase 4.5 shell and non-Ink adapter slices proceed. It must not be selected ahead of Phase 4.5 merely because an older status document called it next. No later batch may be inferred as authorized from this map; it does not authorize integration, redesign, schema or backup changes, Phase 5, or retirement of the current UI.
+
+Batch 3 is not a prerequisite for the Phase 4.5 shell/navigation, read-only
+Today/Study, or Library/PDF/Notes adapter slices. The complete Batches 3–7 chain
+is required before the specific live-Ink Unified Workspace slice; Batch 3 alone
+is insufficient. Schedule it at that dependency boundary through its own task
+and approval. This document does not start it.
 
 Each later batch must have its own task file, branch, reserved files, checks, review, rollback, and—when behavior reaches a real device—Device Gate evidence. The current P0 path remains available until an explicitly approved replacement passes its gates.
 
@@ -68,6 +74,8 @@ Create the first small pure seam without changing input or renderer behavior.
 If identical inputs produce different document coordinates or visible gesture regressions, restore the old calls and keep the characterization tests. No storage changes are involved.
 
 ## Batch 3 — Extract stroke and document state
+
+**Current routing:** `OWNER-DEFERRED UNTIL SCHEDULED BEFORE LIVE-INK WORKSPACE`.
 
 ### Purpose
 

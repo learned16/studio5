@@ -97,7 +97,7 @@ Gates A–G are the project's top-level map. Historical Phase labels remain smal
 | Product shell | English and LTR |
 | Arabic and mixed user content | Automatic RTL/LTR direction |
 | Main navigation | `Today / Study / Projects / Practice / Library` |
-| Phase 4 | Partial device gate; Ink and full Backup/Restore remain pending |
+| Phase 4 | `COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS` |
 | PDF Canvas | `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` |
 | PDF Canvas evidence | [PR #7](https://github.com/learned16/studio5/pull/7), dated 2026-08-01; GitHub-verified as merged into `develop` |
 | P0 Ink characterization | Completed and merged as tests and documentation |
@@ -143,8 +143,43 @@ one supervisor with:
 - push and Draft Pull Request delivery without automatic merge.
 
 This decision defers, but does not cancel, the independently invoked enforced
-read-only design in `OPS-AUTOPILOT-002`. Full access remains forbidden, and the
-decision does not authorize Phase 4.5 or Phase 5 work.
+read-only design in `OPS-AUTOPILOT-002`. Full access remains forbidden. Its
+original restriction on Phase 4.5 work was superseded by the later owner
+decision below; Phase 5 remains blocked.
+
+## Product-stage routing — 9 August 2026
+
+The owner's latest explicit evidence update confirms that the full Phase 4
+real-device test set previously discussed was completed and passed. The
+canonical device-evidence label is `OWNER-VERIFIED REAL-DEVICE PASS`, and the
+canonical Phase 4 status is
+`COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`.
+
+The authoritative routing is now:
+
+- Automated tests and CI remain software evidence; they do not replace the
+  owner's real-device evidence.
+- PR #7 separately provides PDF Canvas
+  `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS`. That evidence
+  is not the source of the broader Phase 4 device PASS.
+- The owner's `OWNER-VERIFIED REAL-DEVICE PASS` covers the previously discussed
+  Phase 4 real-device set, including Ink behavior, pen/palm rejection, Ink
+  save/reopen, full Backup/Verify/Restore, corrupt-backup rejection,
+  low-storage/failure-safe behavior, and the other required real-device Phase 4
+  checks from that session.
+- No build SHA, measurements, file counts, exact step log, or implementation
+  surface is inferred where the owner did not supply it.
+- Phase 4.5 UX/UI Redesign is the next owner-prioritized product stage and may
+  begin incrementally through small, independently gated tasks.
+- Phase 5 remains blocked until Phase 4.5 and the required gates are handled.
+- Ink extraction Batch 3 must not be selected ahead of Phase 4.5 merely because
+  an older status document listed it next.
+
+Ink Batch 3 is not a prerequisite for the Phase 4.5 shell/navigation,
+read-only Today/Study, or Library/PDF/Notes adapter slices. It is required later
+inside the full Batches 3–7 dependency chain before the specific live-Ink
+Unified Workspace slice; Batch 3 alone is not sufficient. This routing decision
+does not authorize or start Batch 3.
 
 ## User reference-package delivery rule
 

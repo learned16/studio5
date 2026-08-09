@@ -1,6 +1,6 @@
 # Phase 4 — MatePad Closure Checklist
 
-**مصدر النسخة:** build من commit محدد داخل GitHub.
+**مصدر النسخة التاريخية لاختبار 2026-07-31:** build من commit محدد داخل GitHub.
 
 **النسخة المختبرة:** `develop@ed1d175`.
 
@@ -9,12 +9,21 @@
 
 **Cloudflare Build:** `6e7ced6d` — Workers Static Assets deployment ناجح.
 
-**تاريخ النتيجة:** 2026-07-31.
+**تاريخ النتيجة التاريخية:** 2026-07-31.
 
-**النتيجة:** `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`.
+**نتيجة 2026-07-31 التاريخية:** PDF/Notes sub-gate PASS على النسخة المسجلة أعلاه.
 
-أفاد المستخدم صراحةً بنجاح الجزء الخاص بـPDF/Notes على MatePad. لا تمتد هذه
-الإفادة إلى Ink داخل Worker أو Full Backup/Restore أو اختبارات الفشل الآمن.
+**النتيجة الحالية — قرار المالك 2026-08-09:**
+`COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`.
+
+أكد المالك أن مجموعة اختبارات Phase 4 الكاملة على الجهاز الحقيقي التي نوقشت
+سابقاً قد اكتملت ونجحت. لم يزود Build SHA أو قياسات أو أعداد ملفات أو تفاصيل
+خطوات عن النتيجة الكاملة، لذلك لا تنسبها هذه الوثيقة إلى metadata التاريخية
+أعلاه ولا تخترع قيماً بديلة.
+
+أفاد المستخدم صراحةً في نتيجة 2026-07-31 بنجاح الجزء الخاص بـPDF/Notes على
+MatePad. لم تمتد تلك الإفادة التاريخية إلى بقية المجموعة؛ حسمتها إفادة المالك
+الأحدث المنفصلة.
 
 | البند | النتيجة |
 |---|---|
@@ -24,20 +33,30 @@
 | إضافة الملاحظات | PASS |
 | Reload وإغلاق المتصفح وإعادة فتحه | PASS |
 | بقاء PDF والملاحظات بلا تكرار | PASS |
-| Ink داخل Studio5 Worker المنشور | PENDING / NOT AVAILABLE |
-| القلم وPalm Rejection داخل Worker | PENDING |
-| Full Backup/Verify/Restore على MatePad | PENDING |
-| استعادة PDF وNotes وInk وTasks معاً | PENDING |
-| رفض Backup تالف على MatePad | PENDING |
-| Low-storage وFailure-safe | PENDING |
+| Ink وسلوك الجهاز ضمن مجموعة Phase 4 | OWNER-VERIFIED REAL-DEVICE PASS |
+| القلم وPalm Rejection | OWNER-VERIFIED REAL-DEVICE PASS |
+| Ink save/reopen | OWNER-VERIFIED REAL-DEVICE PASS |
+| Full Backup/Verify/Restore | OWNER-VERIFIED REAL-DEVICE PASS |
+| استعادة PDF وNotes وInk وTasks معاً | OWNER-VERIFIED REAL-DEVICE PASS |
+| رفض Backup تالف | OWNER-VERIFIED REAL-DEVICE PASS |
+| Low-storage وFailure-safe | OWNER-VERIFIED REAL-DEVICE PASS |
+| PDF كبير: البداية والوسط والنهاية | OWNER-VERIFIED REAL-DEVICE PASS |
+| إلغاء Restore بلا تغيير | OWNER-VERIFIED REAL-DEVICE PASS |
+| فشل Restore بلا استبدال جزئي | OWNER-VERIFIED REAL-DEVICE PASS |
 
-هذه النتيجة تعتمد إفادة المستخدم من الجهاز الحقيقي، ولا تضيف قياسات أو خطوات
-تفصيلية لم يذكرها. تبقى الأقسام غير المؤشرة أدناه بوابات إلزامية قبل إغلاق Phase 4.
+هذه النتيجة تعتمد إفادة المالك من الجهاز الحقيقي، ولا تضيف قياسات أو خطوات
+تفصيلية لم يذكرها. تبقى Automated/CI ونتيجة PDF Canvas في PR #7 أدلة منفصلة.
+
+الأقسام التالية Checklist إجرائية مرجعية وليست execution log لإفادة المالك
+الأخيرة. تبقى خطواتها التفصيلية غير مؤشرة عندما لا يوجد سجل خطوات دقيق؛ وهذا لا
+ينفي نتيجة المجموعة الكاملة في مصفوفة القدرات أعلاه. الخانات الإجرائية المؤشرة
+في قسمي PDF وإعادة الفتح تخص فقط أدلة 2026-07-31 المستقلة التي كانت مسجلة قبل
+تحديث المالك؛ أما `FULL PASS` في قسم التقرير فهو تصنيف النتيجة عالية المستوى.
 
 ## قبل البدء
 
-- [x] افتح الموقع على MatePad نفسه.
-- [x] سجّل رابط المعاينة وcommit SHA الظاهر في GitHub.
+- [ ] افتح الموقع على MatePad نفسه.
+- [ ] سجّل رابط المعاينة وcommit SHA الظاهر في GitHub.
 - [ ] تأكد أن الاتصال مستقر وقت تنزيل ملف الـBackup.
 - [ ] سجّل عدد ملفات PDF والملاحظات والرسومات الحالية.
 
@@ -62,7 +81,7 @@
 - [ ] تأكد أن المهام الموجودة وقت إنشاء الـBackup رجعت.
 - [ ] تأكد أن البيانات الجديدة المضافة بعد الـBackup لم تختلط بالنسخة المستعادة.
 - [ ] أعد التجربة واختر إلغاء الاستعادة قبل التأكيد؛ يجب ألا تتغير البيانات.
-- [ ] إن أمكن، اختبر ملف Backup ناقصاً أو تالفاً وتأكد أن الاستعادة تُرفض قبل
+- [ ] اختبر ملف Backup ناقصاً أو تالفاً وتأكد أن الاستعادة تُرفض قبل
   استبدال البيانات الحالية.
 
 ## إعادة الفتح وعدم التكرار
@@ -75,7 +94,7 @@
 
 ## Ink والقلم
 
-- [ ] يتوفر Ink داخل Studio5 Worker المنشور؛ P0 الحالي Prototype مستقل وليس جزءاً من Worker.
+- [ ] تحقق Ink وسلوك الجهاز ضمن مجموعة Phase 4.
 - [ ] ارسم بالقلم والممحاة وتأكد أن اللمس لا يرسم أثناء وجود القلم.
 - [ ] تأكد أن Palm rejection يعمل.
 - [ ] احفظ Ink ثم أغلق التطبيق أو المتصفح بالكامل.
@@ -83,25 +102,26 @@
 
 ## التخزين المنخفض والفشل الآمن
 
-- [ ] إن أمكن، اختبر والجهاز قريب من امتلاء مساحة التخزين أو بعد تقليل المساحة
+- [ ] اختبر والجهاز قريب من امتلاء مساحة التخزين أو بعد تقليل المساحة
   المتاحة ببيانات تجريبية.
-- [ ] عند فشل إنشاء Backup أو تنزيله يجب أن تبقى البيانات الأصلية قابلة للفتح.
-- [ ] عند فشل أو إلغاء Restore يجب ألا يحدث استبدال جزئي.
-- [ ] يجب أن تظهر رسالة خطأ مفهومة تحدد العملية التي فشلت من دون ادعاء نجاح.
+- [ ] عند فشل إنشاء Backup أو تنزيله تبقى البيانات الأصلية قابلة للفتح.
+- [ ] عند فشل أو إلغاء Restore لا يحدث استبدال جزئي.
+- [ ] تظهر رسالة خطأ مفهومة تحدد العملية التي فشلت من دون ادعاء نجاح.
 
 ## التقرير
 
-- [x] `PARTIAL PASS`: أعلن المستخدم نجاح PDF/Notes على MatePad بلا فقد أو تكرار
-  ضمن البنود المسجلة أعلاه.
-- [ ] `FULL PASS`: لا يتحقق إلا بعد نجاح Ink داخل Worker وFull Backup/Verify/Restore
-  ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن.
+- [x] `HISTORICAL PARTIAL PASS`: أعلن المستخدم نجاح PDF/Notes على MatePad بلا
+  فقد أو تكرار ضمن نتيجة 2026-07-31.
+- [x] `FULL PASS`: أكد المالك نجاح مجموعة Phase 4 الكاملة على الجهاز الحقيقي؛
+  التصنيف `OWNER-VERIFIED REAL-DEVICE PASS`.
 - [ ] `FAIL`: اذكر البند، ما ظهر، وهل بقي ملف الـBackup قابلاً للفتح.
-- [x] لا تقترح أو تنشئ Stable Tag ما دامت بوابة Phase 4 الكاملة معلقة.
+- [x] لا تنشئ مهمة توثيق الأدلة هذه Stable Tag؛ أي Tag يحتاج مهمة مستقلة.
 
 ## تصنيف الواجهة
 
 > The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-نجاح PDF/Notes الجزئي يثبت هذه الوظائف فقط، ولا يعتمد الشكل الحالي كواجهة المنتج
-النهائية ولا يثبت Ink أو Backup/Restore. مواصفة إعادة تنظيم تجربة الاستخدام موجودة في
-`docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md`.
+إغلاق Phase 4 الوظيفي لا يعتمد الشكل الحالي كواجهة المنتج النهائية، ولا يجيز
+live-Ink Unified Workspace integration. Ink Batch 3 مؤجل، وسلسلة Batches 3–7
+تُجدول لاحقاً فقط عند حد live-Ink. مواصفة إعادة تنظيم تجربة الاستخدام موجودة
+في `docs/PHASE_4_5_UX_FOUNDATION_SPEC_AR.md`.
