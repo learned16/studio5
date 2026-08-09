@@ -5,7 +5,7 @@
 - Task ID: `OPS-AUTOPILOT-005`
 - Requirement: owner-approved Control Plane operating policy
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
-- Status: `B REVISE REPAIRED — local commit and repeat B review pending`
+- Status: `B REPAIR COMMITTED — repeat B review pending`
 - Base: `origin/develop@261c1e3`
 - Branch: `chore/adaptive-model-reasoning-routing`
 - Dependencies: merged automation foundation through PR #16
@@ -103,6 +103,15 @@ quality gates unchanged. Requested transient model identifier:
 `gpt-5.6-terra`; requested reasoning: `medium`; effective model and reasoning:
 `NOT EXPOSED`; fallback/owner override: none. This is delivery evidence only,
 not a reusable policy pin.
+
+Status-correction invocation routing: complexity `trivial`, ambiguity `low`,
+production risk `none`, code/context volume `small`, architectural judgment
+`none`, review/security sensitivity `medium`, and mechanicality `repetitive`.
+It selects `R0 — economy` with light reasoning through an explicit finite,
+no-history invocation, while keeping all quality gates unchanged. Requested
+transient model identifier: `gpt-5.6-terra`; requested reasoning: `low`;
+effective model and reasoning: `NOT EXPOSED`; fallback/owner override: none.
+This is delivery evidence only, not a reusable policy pin.
 
 ## Required checks
 
