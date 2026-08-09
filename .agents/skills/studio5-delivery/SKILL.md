@@ -23,7 +23,9 @@ from Git history.
 
 ## Route the work
 
-Read [task-routing.md](references/task-routing.md). Select the highest-priority
+For a bare owner `continue`, first read
+[continue-control-plane.md](references/continue-control-plane.md). Then read
+[task-routing.md](references/task-routing.md). Select the highest-priority
 uncompleted, unblocked requirement nearest the current critical path. Build the
 internal task card before implementation. Do not ask the user to choose among
 ordinary technical tasks.

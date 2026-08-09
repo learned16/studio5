@@ -1,5 +1,17 @@
 # Task Routing
 
+## Bare `continue`
+
+Treat a bare owner `continue` as authorization for exactly one governed loop,
+not as product scope. Follow
+[continue-control-plane.md](continue-control-plane.md): establish live
+repository truth, reconcile the previous delivery, and stop at its human merge
+gate when it is not integrated. Only after integration is proven may the
+supervisor start from current `origin/develop` and select exactly one highest
+eligible uncompleted and unblocked task. Resolve blockers before dependents.
+Do not use conversation memory as repository state, and do not ask the owner to
+choose ordinary engineering details.
+
 ## Classify before execution
 
 Use one or more labels:
