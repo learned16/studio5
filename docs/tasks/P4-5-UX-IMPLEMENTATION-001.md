@@ -32,8 +32,11 @@ existing prototypes.
 
 - Requires the reconciliation PR to be merged into `develop`.
 - Does not require Ink Batch 3.
-- Does not require the pending Phase 4 cutover gates because it does not cut
-  over Worker Ink, storage, Backup, or existing routes.
+- Phase 4 is `COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`.
+  This shell task still does not perform a production route, data, Backup, or
+  live-Ink cutover.
+- Ink Batch 3 remains `DEFERRED / NOT STARTED`; Batches 3–7 are scheduled only
+  later at the live-Ink Unified Workspace dependency boundary.
 - No owner decision is required to start this bounded slice.
 
 ## Allowed implementation surface
