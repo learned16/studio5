@@ -34,12 +34,14 @@ Studio5 ليس تطبيق ملاحظات عاديًا، ولا قارئ PDF فق
   الاستعادة الآمنة، وإعادة الفتح بلا فقد.
 - Phase 3 مكتملة برمجياً، وPhase 4 اجتازت Core/Ink/P3 regression وGitHub CI.
 - حالة Phase 4 هي
-  `PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`.
+  `COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`.
+- أكد المالك اكتمال ونجاح مجموعة اختبارات Phase 4 على الجهاز الحقيقي، بما فيها
+  Ink والقلم/Palm Rejection والحفظ وإعادة الفتح وFull Backup/Verify/Restore
+  ورفض النسخة التالفة واختبارات low-storage/failure-safe المطلوبة.
 - PDF Canvas حقق
   `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` عبر PR #7.
-- المتبقي: Ink والقلم وPalm Rejection داخل Worker، وFull
-  Backup/Verify/Restore على MatePad، ورفض النسخ التالفة، واختبارات التخزين
-  المنخفض والفشل الآمن.
+- دليل المالك على الجهاز، ودليل Automated/CI، ودليل PDF Canvas في PR #7 أدلة
+  منفصلة ولا يستبدل أحدها الآخر.
 - واجهتا P3 وP0 الحاليتان Functional Prototypes وليستا تصميم المنتج النهائي؛
   P0 Ink مستقل وغير مضاف إلى Worker المنشور، وقد اكتملت Characterization Tests.
 - الاتجاه البصري المعتمد `Warm Paper Academic Studio`، ولغة Product Shell هي

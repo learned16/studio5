@@ -8,7 +8,12 @@ Phase 4.5 مرحلة تصميم وتجربة استخدام وتنفيذ واج�
 أو Backup.
 
 حالة Phase 4 الحالية:
-`PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`.
+`COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`.
+
+إفادة المالك تغطي مجموعة Phase 4 الكاملة على الجهاز الحقيقي. تبقى نتائج
+Automated/CI دليلاً مستقلاً، وتبقى نتيجة PDF Canvas في PR #7
+`AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` دليلاً منفصلاً.
+لا تُستنتج Build SHA أو قياسات أو counts أو تفاصيل تنفيذ لم يزودها المالك.
 
 > The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 

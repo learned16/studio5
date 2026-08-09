@@ -97,7 +97,7 @@ Gates A–G are the project's top-level map. Historical Phase labels remain smal
 | Product shell | English and LTR |
 | Arabic and mixed user content | Automatic RTL/LTR direction |
 | Main navigation | `Today / Study / Projects / Practice / Library` |
-| Phase 4 | `PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD` |
+| Phase 4 | `COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS` |
 | PDF Canvas | `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` |
 | PDF Canvas evidence | [PR #7](https://github.com/learned16/studio5/pull/7), dated 2026-08-01; GitHub-verified as merged into `develop` |
 | P0 Ink characterization | Completed and merged as tests and documentation |
@@ -149,25 +149,26 @@ decision below; Phase 5 remains blocked.
 
 ## Product-stage routing — 9 August 2026
 
-The owner has completed the Phase 4 device testing intended for the current
-session and has decided that the automation foundation is complete enough to
-resume product work. This decision does not convert an unrecorded device check
-into a PASS and does not close the full Phase 4 gate.
+The owner's latest explicit evidence update confirms that the full Phase 4
+real-device test set previously discussed was completed and passed. The
+canonical device-evidence label is `OWNER-VERIFIED REAL-DEVICE PASS`, and the
+canonical Phase 4 status is
+`COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`.
 
 The authoritative routing is now:
 
-- Phase 4 remains
-  `PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`.
-- The recorded Phase 4 PASS evidence remains limited to PDF upload,
-  navigation, Zoom/Fit width, Notes, reload/close/reopen, PDF/Notes persistence
-  without duplication, the PDF Canvas evidence in PR #7, and the recorded
-  PDF/Notes storage-migration evidence.
-- Unrecorded Worker Ink, pen/palm, Ink reopen, full Backup/Verify/Restore,
-  corrupt-backup rejection, large-PDF coverage, and low-storage/failure-safe
-  checks remain pending or unverified and are carried forward to their required
-  cutover gates.
-- Historical P0/P2 Ink device evidence is valid for those separate prototype
-  origins only; it is not Worker Ink evidence.
+- Automated tests and CI remain software evidence; they do not replace the
+  owner's real-device evidence.
+- PR #7 separately provides PDF Canvas
+  `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS`. That evidence
+  is not the source of the broader Phase 4 device PASS.
+- The owner's `OWNER-VERIFIED REAL-DEVICE PASS` covers the previously discussed
+  Phase 4 real-device set, including Ink behavior, pen/palm rejection, Ink
+  save/reopen, full Backup/Verify/Restore, corrupt-backup rejection,
+  low-storage/failure-safe behavior, and the other required real-device Phase 4
+  checks from that session.
+- No build SHA, measurements, file counts, exact step log, or implementation
+  surface is inferred where the owner did not supply it.
 - Phase 4.5 UX/UI Redesign is the next owner-prioritized product stage and may
   begin incrementally through small, independently gated tasks.
 - Phase 5 remains blocked until Phase 4.5 and the required gates are handled.

@@ -2,7 +2,7 @@
 
 ## الحالة
 
-`CODE + CI PASS / PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`
+`COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`
 
 ## الهدف
 
@@ -44,7 +44,7 @@
 - [x] CI يستخدم Node.js 22 ويشغل أوامر `package.json` الموجودة فعلياً.
 - [x] لا `continue-on-error` ولا تعطيل للاختبارات.
 - [x] تنجح الفحوص المحلية للمشاريع الثلاثة.
-- [x] يبقى اختبار MatePad بوابة مستقلة قبل الإغلاق النهائي.
+- [x] أُغلقت بوابة MatePad بدليل المالك المستقل عن Automated/CI.
 
 ## نتيجة التحقق المحلي
 
@@ -69,20 +69,22 @@
 
 أفاد المستخدم بتاريخ 2026-07-31 بنجاح PDF/Notes على MatePad: رفع PDF والتنقل
 وZoom/Fit width والملاحظات وإعادة التحميل وإغلاق المتصفح وإعادة فتحه وبقاء PDF
-والملاحظات بلا تكرار كلها `PASS`. Ink داخل Worker وFull Backup/Verify/Restore
-ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن ما زالت `PENDING`.
+والملاحظات بلا تكرار كلها `PASS`؛ وهذه نتيجة جزئية تاريخية.
 
-وبتاريخ 2026-08-09 أفاد المالك بأنه أكمل جلسة اختبارات Phase 4 التي قصدها في
-هذه النقطة ووجّه إلى Phase 4.5. لم يسجل ذلك PASS جديداً. تبقى أيضاً Ink save/reopen
-داخل Worker، استعادة PDF/Notes/Ink/Tasks معاً، PDF كبير من البداية إلى الوسط
-والنهاية، إلغاء Restore بلا تغيير، والحماية من الاستبدال الجزئي
-`PENDING / UNVERIFIED`. نجاح P0/P2 Ink على أصول منفصلة لا يثبت Worker Ink.
+أكد المالك بتاريخ 2026-08-09 أن مجموعة اختبارات Phase 4 الكاملة على الجهاز
+الحقيقي التي نوقشت سابقاً قد اكتملت ونجحت. التصنيف هو
+`OWNER-VERIFIED REAL-DEVICE PASS`، ويشمل Ink وسلوك الجهاز والقلم/Palm Rejection
+وInk save/reopen وFull Backup/Verify/Restore ورفض النسخة التالفة
+وlow-storage/failure-safe وبقية فحوص المجموعة. لا تسجل هذه الوثيقة Build SHA أو
+قياسات أو counts أو تفاصيل سطح تنفيذ لم يقدمها المالك.
+
+تبقى نتائج Automated/CI أعلاه دليلاً مستقلاً، وتبقى نتيجة PDF Canvas في PR #7
+`AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` دليلاً منفصلاً.
 
 > The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-لا تغلق هذه النتيجة Phase 4 بالكامل، ولا تبدأ Phase 5. أذن المالك ببدء Phase 4.5
-على دفعات صغيرة لا تعتمد على البوابات المعلقة، وتبقى بوابات cutover المطلوبة
-محمولة إلى مواضعها قبل التكامل الحي أو الإغلاق النهائي.
+Phase 4 مغلقة، وPhase 4.5 هي التالية. هذا لا يبدأ Phase 5 ولا يجيز live-Ink
+Unified Workspace: Batch 3 مؤجل، وتُجدول Batches 3–7 لاحقاً فقط عند حد live-Ink.
 
 ## خارج النطاق
 

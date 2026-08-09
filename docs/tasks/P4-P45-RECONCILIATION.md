@@ -2,7 +2,7 @@
 
 ## Status
 
-`DRAFT PR #16 OPEN / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING`
+`OWNER EVIDENCE UPDATE / B RE-REVIEW PENDING / FINAL PR-HEAD CI RECHECK PENDING`
 
 ## Goal
 
@@ -27,8 +27,8 @@ starts Phase 4.5 implementation.
 ## Owner decision — 2026-08-09
 
 - The automation foundation is complete enough to resume product work.
-- The owner completed the Phase 4 device testing intended for the current
-  session. Missing results are not converted into PASS.
+- The owner confirmed that the full Phase 4 real-device test set previously
+  discussed was completed and passed.
 - Phase 4.5 UX/UI Redesign is the next owner-prioritized product stage.
 - Phase 5 remains blocked until Phase 4.5 and the required gates are handled.
 - Ink Batch 3 is not selected automatically ahead of Phase 4.5 because of an
@@ -36,33 +36,23 @@ starts Phase 4.5 implementation.
 
 ## Evidence reconciliation
 
-Phase 4 remains:
+Phase 4 is now:
 
-`PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`
+`COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`
 
-Recorded Phase 4 PASS evidence is limited to:
+The evidence categories remain distinct:
 
-- PDF upload, navigation, Zoom, and Fit width;
-- Notes;
-- reload, close, and reopen;
-- PDF and Notes persistence without duplication;
-- PDF Canvas `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS`
-  in PR #7;
-- recorded storage-migration evidence for PDF and Notes.
+- Automated tests and CI prove the software checks recorded by the repository.
+- PR #7 separately proves PDF Canvas
+  `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS`.
+- The owner's `OWNER-VERIFIED REAL-DEVICE PASS` covers the full previously
+  discussed Phase 4 real-device set: Ink/device behavior, pen and palm
+  rejection, Ink save/reopen, full Backup/Verify/Restore, corrupt-backup
+  rejection, low-storage/failure-safe behavior, and the other required checks
+  from that device session.
 
-The following remain `PENDING / UNVERIFIED`:
-
-- Ink inside the Studio5 Worker;
-- pen and palm rejection inside the Worker;
-- Ink save/reopen inside the Worker;
-- full Backup/Verify/Restore including PDF, Notes, Ink, and Tasks;
-- corrupt-backup rejection;
-- low-storage and failure-safe behavior;
-- large-PDF beginning/middle/end coverage;
-- backup cancellation with no change and protection from partial replacement.
-
-Historical P0/P2 Ink device PASS evidence belongs to those separate origins and
-must not be reported as Worker PASS.
+No build SHA, measurement, file count, exact step log, or implementation-surface
+detail is inferred where the owner did not supply it.
 
 PR #15 was merged into `develop` as `0ffc446`; its five reported checks passed,
 and no auto-merge was used. This merge closes the automation-foundation loop
@@ -90,6 +80,8 @@ that preceded this routing correction.
 - `docs/ink-engine/INK_EXTRACTION_SEQUENCE_EN.md`
 - `docs/tasks/P4-MATEPAD-CLOSURE-CHECKLIST.md`
 - `docs/tasks/P4-HARD-001.md`
+- `docs/tasks/P4-REL-002.md`
+- `docs/tasks/P4-REL-003.md`
 
 ## Forbidden scope
 
@@ -113,15 +105,17 @@ that preceded this routing correction.
 
 ## Device boundary
 
-No new device test is performed or claimed. Existing evidence is preserved,
-and missing results remain explicitly pending. The owner does not need to
-provide another device result to start the first Phase 4.5 slice.
+Codex did not run a physical-device test in this documentation task. The latest
+device result is the owner's explicit evidence: `OWNER-VERIFIED REAL-DEVICE PASS`.
+No unsupplied quantitative or implementation metadata is added.
 
 ## Local verification evidence
 
 - Check selector: Docs + Full regression.
 - Studio5 delivery tooling: `57/57` PASS.
-- Exact scope: `11/11` assigned paths PASS.
+- Current branch scope: `13/13` allowed paths PASS. The owner-evidence update
+  adds only the two directly affected Phase 4 reliability task records to the
+  original reconciliation allowlist.
 - Markdown local links and conflict-marker scan: PASS.
 - Stale-status scan and high-confidence secret scan: PASS.
 - Core lint/typecheck and tests: `100/100` PASS.
@@ -134,9 +128,9 @@ No device test, deployment, or production change was performed.
 
 ## Delivery evidence at this commit
 
-- Independent behaviorally no-write B review: PASS after the focused Arabic
-  PDF Canvas evidence correction.
-- Deterministic repository mutation guard around B review: PASS.
+- Previous independent B review and mutation guard: PASS before this new owner
+  evidence update.
+- B re-review of the owner evidence update: `PENDING`.
 - Draft PR: #16 OPEN against `develop`.
 - Final PR-head CI recheck: `PENDING` after this evidence commit.
 - Merge: not performed and not claimed.
