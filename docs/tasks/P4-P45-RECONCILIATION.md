@@ -2,7 +2,7 @@
 
 ## Status
 
-`OWNER EVIDENCE UPDATE / B RE-REVIEW PENDING / FINAL PR-HEAD CI RECHECK PENDING`
+`OWNER EVIDENCE RECONCILED / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING`
 
 ## Goal
 
@@ -128,9 +128,9 @@ No device test, deployment, or production change was performed.
 
 ## Delivery evidence at this commit
 
-- Previous independent B review and mutation guard: PASS before this new owner
-  evidence update.
-- B re-review of the owner evidence update: `PENDING`.
+- Independent B review of the owner evidence update:
+  `REVISE → fix → PASS`.
+- Deterministic repository mutation guard around B review: PASS.
 - Draft PR: #16 OPEN against `develop`.
 - Final PR-head CI recheck: `PENDING` after this evidence commit.
 - Merge: not performed and not claimed.
