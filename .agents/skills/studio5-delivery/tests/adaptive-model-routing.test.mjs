@@ -59,20 +59,31 @@ test("routing records explicit and inherited invocation truth without reusable p
   assert.doesNotMatch(routing, /(?:^|\n)\s*model(?:_reasoning_effort)?\s*=/im);
 });
 
-test("skill delivery report and master prompt require auditable adaptive evidence", () => {
-  const texts = [
-    read(".agents/skills/studio5-delivery/SKILL.md"),
-    read(".agents/skills/studio5-delivery/references/task-routing.md"),
-    read(".agents/skills/studio5-delivery/references/delivery-loop.md"),
-    read(".agents/skills/studio5-delivery/references/report-contract.md"),
-    read(".agents/skills/studio5-delivery/assets/master-autopilot-prompt.md"),
-  ].join("\n");
-  for (const requiredPhrase of [
-    "adaptive-model-routing.md",
-    "lowest sufficient",
-    "requested/effective",
-    "fallback",
-    "owner override",
-  ]) assert.match(texts, new RegExp(requiredPhrase, "i"));
-  assert.doesNotMatch(texts, /\bgpt-[\w.-]+\b/i);
+test("each critical surface retains its own adaptive-routing contract", () => {
+  const surfaces = [
+    ["skill", ".agents/skills/studio5-delivery/SKILL.md", ["adaptive-model-routing.md", "lowest sufficient"]],
+    ["task routing", ".agents/skills/studio5-delivery/references/task-routing.md", ["adaptive-model-routing.md", "requested/effective", "fallback", "owner override"]],
+    ["delivery loop", ".agents/skills/studio5-delivery/references/delivery-loop.md", ["adaptive-model-routing.md", "requested/effective", "fallback", "human gates"]],
+    ["report contract", ".agents/skills/studio5-delivery/references/report-contract.md", ["requested/effective", "NOT EXPOSED", "owner override"]],
+    ["master prompt", ".agents/skills/studio5-delivery/assets/master-autopilot-prompt.md", ["lowest sufficient", "requested/effective", "fallback", "owner override", "NOT EXPOSED"]],
+  ];
+  for (const [label, relativePath, requiredPhrases] of surfaces) {
+    const text = read(relativePath);
+    for (const phrase of requiredPhrases) {
+      assert.match(text, new RegExp(phrase, "i"), `${label}: ${phrase}`);
+    }
+    assert.doesNotMatch(text, /\bgpt-[\w.-]+\b/i, `${label}: reusable model pin`);
+  }
+});
+
+test("master prompt stays free of transient delivery state and stale phase routing", () => {
+  const prompt = read(".agents/skills/studio5-delivery/assets/master-autopilot-prompt.md");
+  assert.doesNotMatch(prompt, /PR #\d+/i);
+  assert.doesNotMatch(prompt, /\b[0-9a-f]{40}\b/i);
+  assert.doesNotMatch(prompt, /\b\d+\/\d+\s+PASS\b/i);
+  assert.doesNotMatch(prompt, /(?:chore|feat|fix|test|docs)\/[a-z0-9._/-]+/i);
+  assert.doesNotMatch(prompt, /\borigin\/[\w.-]+/i);
+  assert.doesNotMatch(prompt, /Phase 4\.5/i);
+  assert.match(prompt, /stage unless authority and its task card authorize it/i);
+  assert.match(prompt, /Phase 5 remains blocked/i);
 });

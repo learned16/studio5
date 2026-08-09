@@ -5,7 +5,7 @@
 - Task ID: `OPS-AUTOPILOT-005`
 - Requirement: owner-approved Control Plane operating policy
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
-- Status: `IMPLEMENTATION COMMITTED — independent B review and remote delivery pending`
+- Status: `B REVISE REPAIRED — local commit and repeat B review pending`
 - Base: `origin/develop@261c1e3`
 - Branch: `chore/adaptive-model-reasoning-routing`
 - Dependencies: merged automation foundation through PR #16
@@ -31,6 +31,7 @@ and does not require routine owner model-selection input.
 - `.agents/skills/studio5-delivery/assets/master-autopilot-prompt.md`
 - `.agents/skills/studio5-delivery/tests/adaptive-model-routing.test.mjs`
 - `.agents/skills/studio5-delivery/tests/foundation-contract.test.mjs`
+- `.agents/skills/studio5-delivery/tests/continue-control-plane.test.mjs`
 
 `PROJECT_STATUS.md` and `docs/TRACEABILITY.md` are intentionally excluded
 because the still-open PR #17 owns those shared files. The parent supervisor
@@ -82,6 +83,26 @@ and finite fork context, while keeping every quality gate unchanged.
 Requested transient model identifier: `gpt-5.6-terra`; requested reasoning:
 `medium`; effective model and reasoning: `NOT EXPOSED`. This is delivery
 evidence only, not a reusable policy pin.
+
+## B review repair evidence — 9 August 2026
+
+The first independent B review returned `REVISE` for two governance-contract
+issues: the master prompt still prohibited authority-approved incremental Phase
+4.5 work, and the adaptive routing test accepted a requirement if it existed on
+only a different surface. This repair removes the stale Phase 4.5 prohibition,
+keeps the rule that `continue` grants no product scope or unauthorized stage,
+and keeps Phase 5 blocked. It also makes every critical surface prove its own
+required routing hook/evidence and protects the reusable master prompt from
+transient PR, SHA, count, branch, and stale phase-routing state.
+
+Repair invocation routing: complexity `simple`, ambiguity `low`, production
+risk `none`, code/context volume `small`, architectural judgment `none`,
+review/security sensitivity `high`, and mechanicality `mixed`. It selects
+`R1 — balanced`, reuses an explicit limited-context A invocation, and keeps all
+quality gates unchanged. Requested transient model identifier:
+`gpt-5.6-terra`; requested reasoning: `medium`; effective model and reasoning:
+`NOT EXPOSED`; fallback/owner override: none. This is delivery evidence only,
+not a reusable policy pin.
 
 ## Required checks
 
