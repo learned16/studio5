@@ -170,10 +170,13 @@ performance, offline, or backup device PASS is required or claimed.
   `91/91` with build, P3 `24/24` with build, and Worker static build plus
   Wrangler dry-run.
 - [Draft PR #15](https://github.com/learned16/studio5/pull/15) is open against
-  `develop` at head `3d01c98cd210cfa828eff47637b9dba1576f3bb8`.
-- All five current checks passed: `Studio5 Core`, `P0 Ink Web`,
+  `develop`. Commit `3d01c98cd210cfa828eff47637b9dba1576f3bb8` is the
+  reviewed implementation head that received the second B `PASS` and the first
+  CI `5/5 PASS` before the final evidence-only commit.
+- All five checks passed on that implementation head: `Studio5 Core`, `P0 Ink Web`,
   `P3 Lecture Capture Web`, `Cloudflare Worker Static Assets`, and
   `Workers Builds: studio5`.
+- Final PR-head CI must be rechecked after the evidence-only commit is pushed.
 - GitHub reports `autoMergeRequest = null`. No merge was performed.
 
 ## Current delivery truth
@@ -181,7 +184,9 @@ performance, offline, or backup device PASS is required or claimed.
 Validation is complete at the Draft Pull Request boundary. PR #15 remains
 `OPEN` and `Draft`; it is not merged. Independent B review, both mutation-guard
 verifications, local tooling and native evidence, exact scope verification, and
-the five current GitHub checks passed. The active branch remains
+the five checks on the reviewed implementation head passed. Final PR-head CI
+remains subject to recheck after the evidence-only commit is pushed. The active
+branch remains
 `chore/subscription-only-continue-control-plane` until the owner decides whether
 to merge.
 
