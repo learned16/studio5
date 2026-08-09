@@ -2,7 +2,7 @@
 
 ## Status
 
-`LOCAL CHECKS PASS / READY FOR INDEPENDENT B REVIEW`
+`DRAFT PR #16 OPEN / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING`
 
 ## Goal
 
@@ -131,6 +131,15 @@ provide another device result to start the first Phase 4.5 slice.
 - `git diff --check`: PASS.
 
 No device test, deployment, or production change was performed.
+
+## Delivery evidence at this commit
+
+- Independent behaviorally no-write B review: PASS after the focused Arabic
+  PDF Canvas evidence correction.
+- Deterministic repository mutation guard around B review: PASS.
+- Draft PR: #16 OPEN against `develop`.
+- Final PR-head CI recheck: `PENDING` after this evidence commit.
+- Merge: not performed and not claimed.
 
 ## Rollback
 

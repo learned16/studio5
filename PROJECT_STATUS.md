@@ -173,7 +173,7 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `deferred` | Owner | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة الاختبارات محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه ليس خطأً |
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
-| P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | LOCAL CHECKS PASS — READY FOR B REVIEW | لا Production؛ تثبيت PASS المسجل فقط، حمل البوابات المعلقة، وتحديد أول مهمة Phase 4.5 |
+| P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | DRAFT PR #16 OPEN — B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING | لا Production؛ تثبيت PASS المسجل فقط، حمل البوابات المعلقة، وتحديد أول مهمة Phase 4.5؛ لا Merge |
 | P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | ELIGIBLE / NOT STARTED | سطح استبدال معزول `prototype/p45-product-shell-web/**`؛ خمس وجهات؛ لا Core/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
@@ -188,7 +188,9 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 
 ## القادم بعد المهمة الحالية
 
-1. أكمل `P4-P45-RECONCILIATION` كتوثيق وحوكمة فقط، ثم توقف عند Draft PR بلا Merge.
+1. `P4-P45-RECONCILIATION` موجودة في Draft PR #16؛ مراجعة B المستقلة وmutation
+   guard ناجحان، وتبقى إعادة فحص CI على رأس PR النهائي `PENDING`. لا يُدّعى
+   Merge ولا تبدأ مهمة المنتج قبل بوابة المالك.
 2. بعد دمج المصالحة، تكون `P4.5-UX-IMPLEMENTATION-001 — Warm Paper App Shell
    and Navigation Foundation` المهمة الوحيدة التالية المؤهلة لأمر `continue`.
 3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm
