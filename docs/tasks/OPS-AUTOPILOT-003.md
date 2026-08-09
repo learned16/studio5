@@ -5,7 +5,7 @@
 - Task ID: `OPS-AUTOPILOT-003`
 - Requirement: `S5-QA-AUTOPILOT-003`
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
-- Status: `IN PROGRESS — LOCAL VALIDATION`
+- Status: `VALIDATION COMPLETE — DRAFT PR #14 / CI PASS`
 - Base: `origin/develop@88f06f312efd74cb0e83ecb6e248d9f8a5ec6130`
 - Branch: `chore/subscription-only-supervised-delivery`
 - Dependency: `OPS-AUTOPILOT-001` complete and `OPS-AUTOPILOT-002`
@@ -139,23 +139,48 @@ automation must not merge or enable automatic merge.
 - No production behavior, API automation, Full access, automatic merge, Phase
   4.5, or Phase 5 work occurs.
 
+## Final validation evidence — 9 August 2026
+
+- `SUPERVISOR = PASS`: repository truth was reconciled from the current
+  authority, status, task backlog, Git, PR, and CI evidence before work began.
+- `A = PASS`: A changed only the authorized governance, tooling documentation,
+  and contract-test files, ran the selected checks, created commit `76c6895`,
+  and stopped before remote delivery.
+- `B REVIEW = PASS`: an independent behaviorally no-write B reviewed the task,
+  diff, and evidence without making changes. No enforced read-only sandbox is
+  claimed under the writable parent.
+- `B MUTATION GUARD = PASS`: the deterministic before/after repository
+  fingerprint was unchanged.
+- `C = AVAILABLE / NOT REQUIRED`: no architecture or research decision arose.
+- `CHECK SELECTION = PASS`: the selector required Docs, Tooling, and Full
+  regression for the shared governance diff.
+- `SCOPE = PASS`: all six implementation-commit paths were inside the task
+  allowlist, with no production, workflow, package, or lockfile change.
+- `DRAFT PR = CREATED`: [PR #14](https://github.com/learned16/studio5/pull/14)
+  targets `develop`; remote delivery occurred only after B and mutation checks.
+- `CI = PASS`: all five current GitHub checks passed on PR #14.
+- `AUTO-MERGE = DISABLED`: no merge or automatic-merge action occurred.
+- `OWNER ROUTINE TECHNICAL INPUT = NOT REQUIRED`: the owner supplied only
+  `continue`; the supervisor resolved routine execution choices from authority
+  and repository evidence.
+
 ## Definition of Done
 
-- [ ] `SUBSCRIPTION-ONLY LOOP = end-to-end demonstrated`
-- [ ] `SUPERVISOR = PASS`
-- [ ] `A = PASS`
-- [ ] `B REVIEW = PASS`
-- [ ] `B MUTATION GUARD = PASS`
+- [x] `SUBSCRIPTION-ONLY LOOP = end-to-end demonstrated`
+- [x] `SUPERVISOR = PASS`
+- [x] `A = PASS`
+- [x] `B REVIEW = PASS`
+- [x] `B MUTATION GUARD = PASS`
 - [x] `C = AVAILABLE / NOT REQUIRED`
-- [ ] `CHECK SELECTION = PASS`
-- [ ] `SCOPE = PASS`
-- [ ] `CI = PASS`
-- [ ] `DRAFT PR = CREATED`
+- [x] `CHECK SELECTION = PASS`
+- [x] `SCOPE = PASS`
+- [x] `CI = PASS`
+- [x] `DRAFT PR = CREATED`
 - [x] `AUTO-MERGE = DISABLED`
 - [x] `OWNER ROUTINE TECHNICAL INPUT = NOT REQUIRED`
 
-This task must remain `IN PROGRESS` until the unchecked evidence exists. Local
-files or a commit alone do not make the end-to-end loop complete.
+Validation is complete at the Draft Pull Request boundary. Merge remains the
+owner's separate human gate and was not performed by this task.
 
 ## Rollback
 
