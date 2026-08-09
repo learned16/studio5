@@ -21,7 +21,7 @@ function assertOrdered(text, fragments) {
   }
 }
 
-test("bare continue reconciles live state and stops when the previous delivery is unmerged", () => {
+test("merged delivery requires merge-aware evidence before one fresh task", () => {
   const contract = readRepositoryFile(
     ".agents/skills/studio5-delivery/references/continue-control-plane.md",
   );
@@ -32,9 +32,52 @@ test("bare continue reconciles live state and stops when the previous delivery i
   for (const text of [contract, prompt]) {
     assert.match(text, /live repository truth/i);
     assert.match(text, /Do not use conversation memory as repository state/i);
-    assert.match(text, /previous (?:delivery|Pull Request).*not integrated.*stop.*human merge gate/s);
     assert.match(text, /merge-method-aware/i);
     assert.match(text, /current `origin\/develop`/i);
+    assert.match(text, /merged and integrated.*select exactly one (?:new )?[^.]*task/is);
+  }
+});
+
+test("open merge-ready delivery stops for approval without starting another task", () => {
+  const contract = readRepositoryFile(
+    ".agents/skills/studio5-delivery/references/continue-control-plane.md",
+  );
+  const prompt = readRepositoryFile(
+    ".agents/skills/studio5-delivery/assets/master-autopilot-prompt.md",
+  );
+
+  for (const text of [contract, prompt]) {
+    assert.match(text, /open and merge-ready.*CI (?:is )?fully green.*B.*mutation guard.*no unresolved blocking finding/is);
+    assert.match(text, /open and merge-ready.*human merge approval.*do not start a new task/is);
+  }
+});
+
+test("open repairable delivery resumes the same task instead of requesting merge", () => {
+  const contract = readRepositoryFile(
+    ".agents/skills/studio5-delivery/references/continue-control-plane.md",
+  );
+  const prompt = readRepositoryFile(
+    ".agents/skills/studio5-delivery/assets/master-autopilot-prompt.md",
+  );
+
+  for (const text of [contract, prompt]) {
+    assert.match(text, /open and repairable.*task-caused CI failure.*B `REVISE`.*unresolved fixable finding/is);
+    assert.match(text, /resume the same task.*do not ask the owner to merge.*do not start a new task/is);
+  }
+});
+
+test("closed or unreconciled delivery reports the exact blocker and stops only at a real gate", () => {
+  const contract = readRepositoryFile(
+    ".agents/skills/studio5-delivery/references/continue-control-plane.md",
+  );
+  const prompt = readRepositoryFile(
+    ".agents/skills/studio5-delivery/assets/master-autopilot-prompt.md",
+  );
+
+  for (const text of [contract, prompt]) {
+    assert.match(text, /closed without merge or genuinely unreconciled.*investigate and report\s+the exact blocker/is);
+    assert.match(text, /stop only (?:if|for)\s+a real human or external gate/is);
+    assert.match(text, /do not start a new task/is);
   }
 });
 
@@ -62,6 +105,7 @@ test("continue preserves A stop, independent B mutation verification, and delive
   assertOrdered(contract, [
     "Supervisor establishes live truth and selects one task",
     "A implements only the allowed scope",
+    "native checks, scope verification, and applicable guards pass",
     "A commits and stops before remote delivery",
     "independent behaviorally no-write B review",
     "supervisor verifies the mutation guard",

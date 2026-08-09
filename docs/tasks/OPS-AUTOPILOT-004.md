@@ -36,11 +36,13 @@ integration.
 
 Formalize and validate a bare owner `continue` as authorization for exactly one
 subscription-only governed delivery loop. The supervisor must reconcile live
-authority, Git, GitHub, status, tasks, and tests; stop if the prior delivery is
-still at its human merge gate; otherwise select the highest eligible unblocked
-task and deliver it through A, native checks and guards, independent behavioral
-B review with mutation verification, Draft PR, CI, and a final human merge
-gate.
+authority, Git, GitHub, status, tasks, and tests; route an open prior delivery
+through merge approval only when it is fully green and review-clean; otherwise
+resume its fixable repair loop or report its exact real blocker. Only a verified
+merged delivery permits selection of the highest eligible unblocked new task.
+The selected task proceeds through A, native checks and guards, independent
+behavioral B review with mutation verification, Draft PR, CI, and a final human
+merge gate.
 
 `continue` does not grant product scope by itself. Authority and the selected
 task card continue to define what may change.
@@ -81,10 +83,18 @@ These files are exclusive to this task while its writer is active.
 
 1. Rebuild authority and implementation state from live repository and GitHub
    evidence; never route from session memory.
-2. Verify the prior PR using merge-method-aware evidence. If it is not merged,
-   stop at that existing human merge gate and do not start another task.
-3. Start from current `origin/develop`, select exactly one highest eligible
-   unblocked task, and resolve blockers before dependents.
+2. Classify the prior PR from observable evidence:
+   - merged and integrated: verify merge-method-aware evidence, start from
+     current `origin/develop`, and select exactly one new task;
+   - open and merge-ready: require fully green CI, B and mutation-guard PASS,
+     and no unresolved blocking finding, then stop for human merge approval;
+   - open and repairable: resume the same task when task-caused CI, B `REVISE`,
+     or another unresolved fixable finding exists, without asking for merge;
+   - closed without merge or genuinely unreconciled: investigate and report the
+     exact blocker, stopping only at a real human or external gate.
+3. Never start a second task while the prior delivery remains open. After
+   verified integration, select exactly one highest eligible unblocked task and
+   resolve blockers before dependents.
 4. Make routine technical choices from authority, the task card, repository
    evidence, and established contracts without asking the owner.
 5. Use one writer. A implements, checks, commits, and stops before remote
@@ -125,9 +135,15 @@ performance, offline, or backup device PASS is required or claimed.
 
 - A bare `continue` always begins from live authority, repository, PR, and CI
   evidence instead of remembered state.
-- An unmerged prior delivery stops the loop at its existing human merge gate.
 - A merged prior delivery is verified by merge-method-aware evidence before a
   fresh branch starts from current `origin/develop`.
+- An open prior delivery reaches human merge approval only when CI is fully
+  green, B and mutation guard passed, and no unresolved blocking finding exists.
+- An open delivery with task-caused CI failure, B `REVISE`, or another fixable
+  finding resumes the same task loop without requesting merge or starting a
+  second task.
+- A delivery closed without merge or genuinely unreconciled is investigated and
+  reports its exact blocker; it stops only at a real human or external gate.
 - Exactly one highest eligible unblocked task is selected automatically.
 - A cannot bypass scope, checks, commit, or its stop-before-delivery boundary.
 - Push and Draft PR cannot precede independent B review and mutation-guard PASS.

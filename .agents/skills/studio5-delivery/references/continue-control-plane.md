@@ -8,17 +8,25 @@ not authorize a product phase, feature, architecture change, or merge.
 1. Establish live repository truth from authority, status, task files, the
    working tree, current remotes, GitHub Pull Requests, reported checks, and
    current test evidence. Do not use conversation memory as repository state.
-2. Reconcile the previous delivery before selecting new work. If its Pull
-   Request is still open or otherwise not integrated, stop at the existing
-   human merge gate and do not start a new task.
-3. When GitHub reports the previous Pull Request merged, apply the
-   merge-method-aware rule in
-   [authority-and-freshness.md](authority-and-freshness.md): GitHub PR state,
-   merge-commit reachability, and current tree evidence prove integration.
-   Original-head ancestry is optional and cannot reject squash or rebase-style
-   integration.
-4. Start the selected task from current `origin/develop`. Never continue on the
-   previous task branch or another stale branch.
+2. Reconcile the previous delivery before selecting new work. Classify its
+   observable Pull Request, review, mutation-guard, and CI state:
+   - **Merged and integrated:** apply the merge-method-aware rule in
+     [authority-and-freshness.md](authority-and-freshness.md). GitHub PR state,
+     merge-commit reachability, and current tree evidence prove integration;
+     original-head ancestry is optional. Start from current `origin/develop`
+     and select exactly one new task.
+   - **Open and merge-ready:** when CI is fully green, B and the mutation guard
+     passed, and no unresolved blocking finding remains, stop at the existing
+     human merge approval. Do not start a new task.
+   - **Open and repairable:** when a task-caused CI failure, B `REVISE`, or an
+     unresolved fixable finding exists, resume the same task's
+     repair/check/commit/B/guard/push/CI loop. Do not ask the owner to merge and
+     do not start a new task.
+   - **Closed without merge or genuinely unreconciled:** investigate and report
+     the exact blocker. Continue any safe in-scope reconciliation; stop only if
+     a real human or external gate remains. Do not start a new task.
+3. Never continue on the previous task branch after integration or another
+   stale branch. No open prior delivery permits a second task.
 
 ## Select one task
 
