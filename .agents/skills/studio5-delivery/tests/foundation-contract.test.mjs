@@ -34,6 +34,7 @@ test("studio5-delivery has exact frontmatter and progressive-disclosure resource
     "references/human-gates.md",
     "references/report-contract.md",
     "references/reviewer-mutation-guard.md",
+    "references/adaptive-model-routing.md",
     "scripts/review-mutation-guard.mjs",
     "assets/master-autopilot-prompt.md",
   ]) {
@@ -60,7 +61,10 @@ test("A, B, and C custom agents have required fields without model pins or secre
     assert.match(agentText, new RegExp(`^name = "${expectedName}"`, "m"));
     assert.match(agentText, /^description = ".+"$/m);
     assert.match(agentText, /^developer_instructions = """$/m);
-    assert.doesNotMatch(agentText, /^model(?:_reasoning_effort)?\s*=/m);
+    assert.doesNotMatch(
+      agentText,
+      /^(?:model|model_reasoning_effort|reasoning_effort)\s*=/m,
+    );
     assert.doesNotMatch(agentText, /(?:token|api[_-]?key|credential|secret)\s*=/i);
   }
   assert.match(
@@ -78,6 +82,26 @@ test("A, B, and C custom agents have required fields without model pins or secre
   const configText = readRepositoryFile(".codex/config.toml");
   assert.match(configText, /^\[agents\]$/m);
   assert.match(configText, /^max_concurrent_threads_per_session = 3$/m);
+  assert.doesNotMatch(
+    configText,
+    /^(?:model|model_reasoning_effort|reasoning_effort)\s*=/m,
+  );
+});
+
+test("foundation keeps routing adaptive instead of pinning agents globally", () => {
+  const routing = readRepositoryFile(
+    ".agents/skills/studio5-delivery/references/adaptive-model-routing.md",
+  );
+  for (const text of [
+    routing,
+    readRepositoryFile(".agents/skills/studio5-delivery/SKILL.md"),
+    readRepositoryFile(".agents/skills/studio5-delivery/assets/master-autopilot-prompt.md"),
+  ]) {
+    assert.doesNotMatch(text, /\bgpt-[\w.-]+\b/i);
+    assert.doesNotMatch(text, /(?:^|\n)\s*model(?:_reasoning_effort)?\s*=/im);
+  }
+  assert.match(routing, /lowest sufficient\s+currently available/i);
+  assert.match(routing, /remaining\s+safe alternative/i);
 });
 
 test("Agent A commits and stops while the parent owns review and remote delivery", () => {
