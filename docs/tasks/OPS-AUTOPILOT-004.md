@@ -5,7 +5,7 @@
 - Task ID: `OPS-AUTOPILOT-004`
 - Requirement: `S5-QA-AUTOPILOT-004`
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
-- Status: `IN PROGRESS — LOCAL VALIDATION`
+- Status: `VALIDATION COMPLETE — DRAFT PR #15 / CI PASS`
 - Base: `origin/develop@1043d46`
 - Branch: `chore/subscription-only-continue-control-plane`
 - Dependency: `OPS-AUTOPILOT-003` merged through PR #14
@@ -153,19 +153,42 @@ performance, offline, or backup device PASS is required or claimed.
 - No API key, Codex GitHub Action, Full access, unsafe bypass, automatic merge,
   Phase 4.5, Phase 5, or Production change is introduced.
 - Tooling, scope, applicable guards, native regression, B review, mutation
-  guard, and GitHub CI pass before the task is marked complete.
+  guard, and GitHub CI pass before validation is marked complete.
+
+## Acceptance evidence — 9 August 2026
+
+- A created the scoped implementation commit `04ff732` and stopped before
+  remote delivery.
+- The first independent B review returned a real `HIGH / REVISE` finding about
+  routing every unintegrated Pull Request to merge approval. A repaired the
+  contract in `3d01c98`, reran focused evidence, and stopped again.
+- The second independent B review returned `PASS`. Deterministic mutation-guard
+  verification passed around both B reviews; neither review changed the
+  repository.
+- Tooling passed `57/57`; scope verification passed for all eight allowed paths.
+- The previously selected full native evidence passed: Core `100/100`, P0
+  `91/91` with build, P3 `24/24` with build, and Worker static build plus
+  Wrangler dry-run.
+- [Draft PR #15](https://github.com/learned16/studio5/pull/15) is open against
+  `develop` at head `3d01c98cd210cfa828eff47637b9dba1576f3bb8`.
+- All five current checks passed: `Studio5 Core`, `P0 Ink Web`,
+  `P3 Lecture Capture Web`, `Cloudflare Worker Static Assets`, and
+  `Workers Builds: studio5`.
+- GitHub reports `autoMergeRequest = null`. No merge was performed.
 
 ## Current delivery truth
 
-The contract implementation is under local validation. This task is not
-`COMPLETE` until A commits and stops, the supervisor obtains B and mutation
-guard PASS, pushes, opens a Draft PR, and verifies current GitHub CI. No remote
-delivery or CI result is claimed in this implementation commit.
+Validation is complete at the Draft Pull Request boundary. PR #15 remains
+`OPEN` and `Draft`; it is not merged. Independent B review, both mutation-guard
+verifications, local tooling and native evidence, exact scope verification, and
+the five current GitHub checks passed. The active branch remains
+`chore/subscription-only-continue-control-plane` until the owner decides whether
+to merge.
 
 ## Human gate
 
-The only planned human gate is approval to merge the eventual Draft Pull
-Request. The automation must not merge or enable automatic merge.
+The only remaining human gate is owner approval to merge Draft PR #15. The
+automation must not merge or enable automatic merge.
 
 ## Rollback
 
