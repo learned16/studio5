@@ -2,7 +2,7 @@
 
 ## Status
 
-`ELIGIBLE / NOT STARTED`
+`IMPLEMENTED / LOCAL CHECKS PASS / REMOTE DELIVERY PENDING`
 
 This is the single next eligible product task after
 `P4-P45-RECONCILIATION`. It is a small isolated Phase 4.5 slice, not a broad
@@ -114,6 +114,24 @@ Desktop/browser visual checks prove only the implementation candidate. MatePad
 landscape/portrait, touch targets, keyboard behavior, contrast, content
 direction, and long-use comfort require a later device/visual gate. A build or
 snapshot PASS does not approve the final design.
+
+## Local implementation evidence — 2026-08-09
+
+- Added the isolated dependency-free surface at
+  `prototype/p45-product-shell-web/**`; no existing prototype, Core module,
+  schema, storage, Backup, Ink, Worker behavior, or production route changed.
+- Surface lint and static module-boundary checks pass.
+- Surface contract tests: `8/8` pass.
+- Static build: `6` assets with a closed `3`-module JavaScript import graph.
+- Built HTTP smoke passes for all five hash destinations, required assets, and
+  the static direct-path fallback.
+- Selected full regression passes: Core `100/100`, P0 `91/91` plus build, P3
+  `24/24` plus build, Studio5 delivery tooling `57/57`, and Wrangler dry-run
+  with `261` existing Worker assets.
+- Exact scope, applicable code/test/docs guards, documentation/path checks,
+  high-confidence secret scan, and `git diff --check` pass. Independent B
+  review, mutation verification, push, Draft PR, and CI remain parent-owned
+  delivery steps and are not claimed here.
 
 ## Rollback and replacement boundary
 

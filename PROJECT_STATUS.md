@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-08-09
-المرحلة الحالية: `COMPLETE — AUTOMATED/CI PASS + OWNER-VERIFIED REAL-DEVICE PASS`
-الفرع النشط: `docs/phase4-phase45-reconciliation`
+المرحلة الحالية: `PHASE 4.5 — APP SHELL FOUNDATION / LOCAL CHECKS PASS`
+الفرع النشط: `feat/p45-warm-paper-shell-foundation`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -48,6 +48,8 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
   Production أو API key أو Merge تلقائي. Merge commit الحالي هو `1043d46`.
 - PR #15: `Merged`؛ اكتملت حلقة تحكم `continue` باشتراك Codex الحالي، ونجحت
   فحوص GitHub الخمسة، ودُمجت في `develop` عبر `0ffc446` من دون Auto-Merge.
+- PR #16: `Merged`؛ صولحت أدلة Phase 4 وأُثبتت أولوية Phase 4.5، ودُمجت في
+  `develop` عبر `261c1e3` من دون Production أو Auto-Merge.
 
 ## قرار توجيه المنتج — 2026-08-09
 
@@ -175,8 +177,8 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `deferred` | Owner | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة الاختبارات محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه ليس خطأً |
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
-| P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | OWNER EVIDENCE RECONCILED / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING | Draft PR #16 مفتوح؛ B `REVISE → fix → PASS`؛ Phase 4 كاملة؛ لا Production ولا Merge |
-| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | ELIGIBLE / NOT STARTED | سطح استبدال معزول `prototype/p45-product-shell-web/**`؛ خمس وجهات؛ لا Core/Ink/Phase 5 |
+| P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
+| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | IMPLEMENTED / LOCAL CHECKS PASS / REMOTE DELIVERY PENDING | سطح معزول بخمس وجهات؛ tests `8/8` وbuild/HTTP smoke وFull regression PASS؛ لا Core/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -190,12 +192,12 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 
 ## القادم بعد المهمة الحالية
 
-1. `P4-P45-RECONCILIATION` موجودة في Draft PR #16؛ اكتملت دورة B
-   `REVISE → fix → PASS` ونجح mutation guard بعد مصالحة دليل المالك. إعادة فحص
-   CI على رأس PR النهائي `PENDING`. لا يُدّعى Merge ولا تبدأ مهمة المنتج قبل
-   بوابة المالك.
-2. بعد دمج المصالحة، تكون `P4.5-UX-IMPLEMENTATION-001 — Warm Paper App Shell
-   and Navigation Foundation` المهمة الوحيدة التالية المؤهلة لأمر `continue`.
+1. `P4.5-UX-IMPLEMENTATION-001 — Warm Paper App Shell and Navigation
+   Foundation` هي المهمة النشطة. التنفيذ المعزول وفحوص A المحلية ناجحة؛
+   Independent B review وmutation guard وDraft PR وCI ما زالت خطوات التسليم
+   التالية، ولا يُدّعى نجاحها قبل تنفيذها.
+2. لا يبدأ أي Route cutover أو Data adapter أو شريحة منتج تالية قبل بوابة
+   المراجعة والتسليم والقرار البشري لهذه الشريحة.
 3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm
    Paper مرجع معتمد فقط وليس المنتج النهائي.
 4. Ink Batch 3 `DEFERRED / NOT STARTED` حتى يُجدول ضمن سلسلة Batches 3–7 قبل

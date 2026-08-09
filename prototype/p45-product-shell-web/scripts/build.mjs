@@ -1,0 +1,57 @@
+import { access, cp, mkdir, readFile, rm } from "node:fs/promises";
+import { dirname, join, relative, resolve, sep } from "node:path";
+
+const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+const assets = join(root, "dist", "assets");
+const staticAssets = [
+  "index.html",
+  "404.html",
+  "styles.css",
+  "app.mjs",
+  "routes.mjs",
+  "views.mjs",
+];
+
+function relativeImports(source) {
+  const patterns = [
+    /\bfrom\s+["'](\.[^"']+)["']/g,
+    /\bimport\s+["'](\.[^"']+)["']/g,
+  ];
+  return patterns.flatMap((pattern) => [...source.matchAll(pattern)].map((match) => match[1]));
+}
+
+async function moduleClosure(entrypoints) {
+  const pending = [...entrypoints];
+  const visited = new Set();
+  while (pending.length > 0) {
+    const modulePath = pending.pop();
+    if (visited.has(modulePath)) continue;
+    visited.add(modulePath);
+    const source = await readFile(modulePath, "utf8");
+    for (const specifier of relativeImports(source)) {
+      const importedPath = resolve(dirname(modulePath), specifier);
+      const importedRelativePath = relative(assets, importedPath);
+      if (importedRelativePath === ".." || importedRelativePath.startsWith(`..${sep}`)) {
+        throw new Error(`Build import escapes static assets: ${specifier}`);
+      }
+      await access(importedPath);
+      pending.push(importedPath);
+    }
+  }
+  return visited;
+}
+
+await rm(join(root, "dist"), { recursive: true, force: true });
+await mkdir(assets, { recursive: true });
+for (const asset of staticAssets) await cp(join(root, asset), join(assets, asset));
+
+const indexHtml = await readFile(join(assets, "index.html"), "utf8");
+if (!indexHtml.includes('lang="en" dir="ltr"') || !indexHtml.includes('src="./app.mjs"')) {
+  throw new Error("Build verification failed: English LTR shell entrypoint is missing");
+}
+
+const closure = await moduleClosure([
+  join(assets, "app.mjs"),
+  join(assets, "routes.mjs"),
+]);
+console.log(`Verified Phase 4.5 static build: ${staticAssets.length} assets, ${closure.size} modules`);

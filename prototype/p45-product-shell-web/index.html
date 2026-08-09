@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4efe5" />
+    <meta
+      name="description"
+      content="Studio5 Phase 4.5 application shell and navigation foundation."
+    />
+    <title>Today — Studio5</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="app-shell">
+      <aside class="navigation-rail" aria-label="Studio5 application navigation">
+        <a class="brand" href="#/today" aria-label="Studio5 Today">
+          <span class="brand-mark" aria-hidden="true">S5</span>
+          <span><strong>Studio5</strong><small>Academic studio</small></span>
+        </a>
+        <nav class="primary-navigation" aria-label="Primary destinations" data-navigation></nav>
+        <div class="rail-status" role="status">
+          <span class="status-symbol" aria-hidden="true">✓</span>
+          <span><strong>Local foundation</strong><small>No live data connected</small></span>
+        </div>
+      </aside>
+
+      <section class="application-area">
+        <header class="top-bar">
+          <div>
+            <span class="eyebrow">Warm Paper</span>
+            <strong id="route-label">Today</strong>
+          </div>
+          <button class="secondary-action" type="button" disabled aria-describedby="search-state">
+            <span aria-hidden="true">⌕</span>
+            Search
+          </button>
+          <span class="sr-only" id="search-state">Search is unavailable in this foundation slice.</span>
+        </header>
+        <main id="main-content" tabindex="-1"></main>
+      </section>
+
+      <nav class="bottom-navigation" aria-label="Primary destinations" data-navigation></nav>
+    </div>
+
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

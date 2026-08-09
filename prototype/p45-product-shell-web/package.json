@@ -1,0 +1,14 @@
+{
+  "name": "studio5-p45-product-shell-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "lint": "node --check app.mjs && node --check routes.mjs && node --check views.mjs && node --check server.mjs && node --check scripts/build.mjs && node --check scripts/built-smoke.mjs && node --check scripts/typecheck.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/build.mjs",
+    "smoke": "node scripts/built-smoke.mjs"
+  }
+}

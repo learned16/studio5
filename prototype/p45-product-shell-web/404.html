@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Returning to Studio5</title>
+  </head>
+  <body>
+    <p>Returning to the Studio5 application shell…</p>
+    <a href="./#/today">Open Studio5 Today</a>
+    <script type="module">
+      import { routeFromPathname, routeHash } from "./routes.mjs";
+
+      const destination = routeFromPathname(window.location.pathname);
+      window.location.replace(new URL(`./${routeHash(destination.id)}`, window.location.href));
+    </script>
+  </body>
+</html>
