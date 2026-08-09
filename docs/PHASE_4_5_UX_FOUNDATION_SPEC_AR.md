@@ -420,13 +420,16 @@ Error، واتجاه محتوى LTR/RTL التلقائي عند الحاجة.
 
 ## 20. حالة دعم العربية
 
-هذه المواصفة تسجل الحالة ولا تدمج إصلاح العربية داخل PR #5:
+هذه المواصفة تفصل بين أدلة محتوى HTML وأدلة PDF Canvas:
 
-- Arabic filenames rendering: implementation saved on a separate local branch.
-- Arabic notes rendering: regression tests prepared separately.
-- Arabic PDF canvas rendering: requires separate device diagnosis.
-
-الفرع المنفصل ليس جزءاً من هذا PR، ولا يجوز ادعاء أن الإصلاح منشور أو مدمج.
+- عمل Arabic/mixed HTML filenames وNotes كان ضمن PR #6، وقد أُغلق من دون Merge؛
+  لذلك لا يُدّعى أنه مدمج أو منشور.
+- عمل اتجاه PDF Canvas والتكافؤ البصري كان ضمن PR #7، وقد دُمج وحقق
+  `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS`، بما في ذلك
+  الدليل البصري المسجل لصفحات PDF عربية وإنكليزية في
+  `docs/tasks/P4-PDF-CANVAS-DIRECTION-001.md`.
+- نجاح PDF Canvas لا يثبت عرض Arabic/mixed HTML filenames أو Notes ولا يمتد
+  إلى بقية واجهة المستخدم.
 
 ## 21. نقل الوظائف الحالية بلا إعادة كتابة Core
 
