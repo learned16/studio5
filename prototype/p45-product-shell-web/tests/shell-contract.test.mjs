@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 
 import { destinations } from "../routes.mjs";
 import { destinationView } from "../views.mjs";
@@ -13,6 +13,29 @@ const [html, css, app, fallback, packageManifest] = await Promise.all([
   readFile(new URL("404.html", root), "utf8"),
   readFile(new URL("package.json", root), "utf8"),
 ]);
+
+async function surfaceSourceFiles(directory = root) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const nestedFiles = await Promise.all(entries.map(async (entry) => {
+    if (["dist", "node_modules", "tests"].includes(entry.name)) return [];
+    const entryUrl = new URL(entry.name + (entry.isDirectory() ? "/" : ""), directory);
+    if (entry.isDirectory()) return surfaceSourceFiles(entryUrl);
+    return /\.(?:css|html|mjs)$/.test(entry.name) ? [entryUrl] : [];
+  }));
+  return nestedFiles.flat();
+}
+
+function withoutLocalHttpUrls(source) {
+  return source.replace(/http:\/\/(?:localhost|127\.0\.0\.1)(?::(?:\d+|\$\{[^}]+\}))?/g, "");
+}
+
+function moduleSpecifiers(source) {
+  const patterns = [
+    /\bfrom\s+["']([^"']+)["']/g,
+    /\bimport\s*(?:\(\s*)?["']([^"']+)["']/g,
+  ];
+  return patterns.flatMap((pattern) => [...source.matchAll(pattern)].map((match) => match[1]));
+}
 
 test("shell stays English LTR while representative user content uses automatic direction", () => {
   assert.match(html, /<html lang="en" dir="ltr">/);
@@ -27,6 +50,16 @@ test("responsive navigation exposes a rail and a five-column bottom bar", () => 
   assert.match(css, /\.bottom-navigation\s*\{/);
   assert.match(css, /grid-template-columns:\s*repeat\(5,/);
   assert.match(css, /@media \(max-width: 63\.99rem\)/);
+});
+
+test("presentation colors outside the token registry use semantic variables", () => {
+  const cssWithoutTokenRegistry = css.replace(/:root\s*\{[\s\S]*?\}/, "");
+  assert.match(css, /--color-bg-navigation:/);
+  assert.match(css, /--color-text-on-primary:/);
+  assert.doesNotMatch(
+    cssWithoutTokenRegistry,
+    /(?:color|background(?:-color)?|border(?:-[^:]+)?):[^;]*(?:#[\da-f]{3,8}|\b(?:white|black)\b)/i,
+  );
 });
 
 test("keyboard and non-color accessibility states remain explicit", () => {
@@ -47,11 +80,28 @@ test("Practice is a disabled shell state and does not implement Phase 5", () => 
   assert.doesNotMatch(practice, /<canvas|data-exercise|data-assessment/i);
 });
 
-test("surface remains dependency-free and isolated", () => {
+test("all surface sources remain dependency-free and isolated", async () => {
   const manifest = JSON.parse(packageManifest);
   assert.equal(manifest.dependencies, undefined);
   assert.equal(manifest.devDependencies, undefined);
-  assert.doesNotMatch(html, /https?:\/\//);
-  assert.doesNotMatch(app, /p0-ink-web|p3-lecture-capture-web|studio5-core/);
+  const sourceFiles = await surfaceSourceFiles();
+  assert.ok(sourceFiles.length > 0);
+  for (const sourceFile of sourceFiles) {
+    const source = await readFile(sourceFile, "utf8");
+    const bareImports = moduleSpecifiers(source)
+      .filter((specifier) => !specifier.startsWith(".") && !specifier.startsWith("node:"));
+    assert.deepEqual(bareImports, [], `${sourceFile.pathname}: bare import`);
+    assert.doesNotMatch(withoutLocalHttpUrls(source), /https?:\/\//, `${sourceFile.pathname}: external URL`);
+    assert.doesNotMatch(
+      source,
+      /p0-ink-web|p3-lecture-capture-web|p45-warm-paper-shell|packages\/studio5-core|@studio5\/core/,
+      `${sourceFile.pathname}: cross-surface reference`,
+    );
+  }
+  const repositoryFiles = await readdir(root, { recursive: true });
+  assert.equal(
+    repositoryFiles.some((path) => /(?:^|[\\/])(?:pnpm-lock\.yaml|package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|bun\.lockb?|deno\.lock)$/.test(path)),
+    false,
+  );
   assert.match(fallback, /routeFromPathname/);
 });

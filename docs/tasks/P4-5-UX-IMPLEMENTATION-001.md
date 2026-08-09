@@ -121,7 +121,7 @@ snapshot PASS does not approve the final design.
   `prototype/p45-product-shell-web/**`; no existing prototype, Core module,
   schema, storage, Backup, Ink, Worker behavior, or production route changed.
 - Surface lint and static module-boundary checks pass.
-- Surface contract tests: `8/8` pass.
+- Surface contract tests: `9/9` pass.
 - Static build: `6` assets with a closed `3`-module JavaScript import graph.
 - Built HTTP smoke passes for all five hash destinations, required assets, and
   the static direct-path fallback.

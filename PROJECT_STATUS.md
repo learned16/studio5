@@ -178,7 +178,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
 | P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
-| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | IMPLEMENTED / LOCAL CHECKS PASS / REMOTE DELIVERY PENDING | سطح معزول بخمس وجهات؛ tests `8/8` وbuild/HTTP smoke وFull regression PASS؛ لا Core/Ink/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | IMPLEMENTED / LOCAL CHECKS PASS / REMOTE DELIVERY PENDING | سطح معزول بخمس وجهات؛ tests `9/9` وbuild/HTTP smoke وFull regression PASS؛ لا Core/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
