@@ -154,10 +154,12 @@ snapshot PASS does not approve the final design.
 ## Remote delivery evidence — 2026-08-09
 
 - Draft PR #17 is open to `develop`; automatic merge is not enabled.
-- PR #18 is merged into `develop`, and its merge commit is reconciled into the
-  PR #17 branch without changing the P4.5 production-route boundary.
-- The published PR head before this evidence-only commit is
-  `fb3e1e1b8878cab0a86e346ca0bd5b3e258a8b73`.
+- PR #18 is merged into `develop`. The local PR #17 branch contains its merge
+  commit without changing the P4.5 production-route boundary; that local
+  reconciliation and the owner-gate evidence remain unpublished until the
+  supervisor pushes after B PASS.
+- The current live published PR #17 head is
+  `7512a2ab5e1b8a941d2646d7da78bc3f29cfc111`.
 - Independent B review completed `REVISE → repair → PASS`, and the repository
   mutation guard passed.
 - All five reported GitHub checks succeeded on that published head: Studio5
@@ -166,6 +168,9 @@ snapshot PASS does not approve the final design.
 - The owner visual/MatePad human gate is PASS on the isolated preview. This
   owner evidence does not replace the required post-reconciliation B review,
   mutation guard, or final PR-head CI.
+- The first post-reconciliation B review returned `REVISE` only because the
+  local reconciliation was not distinguished from the live published head.
+  This wording is repaired; repeat B review remains pending.
 - The canonical delivery state remains `B RE-REVIEW + FINAL PR-HEAD CI RECHECK
   PENDING` until those checks complete on the reconciled branch.
 - The production route remains unchanged and continues to serve P3. Phase 5
