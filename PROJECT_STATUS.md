@@ -46,9 +46,10 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
   OPS-AUTOPILOT-002 للمستقبل.
 - PR #14: `Merged`؛ اكتمل تحقق مسار التسليم باشتراك Codex الحالي، بلا
   Production أو API key أو Merge تلقائي. Merge commit الحالي هو `1043d46`.
-- PR #15: `Draft / CI 5/5 PASS`؛ اكتمل تحقق Continue Control Plane بعد دورة
-  B فعلية `REVISE → fix → PASS` ونجاح mutation guard في المراجعتين. لا
-  Auto-Merge، والفرع غير مدمج.
+- PR #15: `Draft / FINAL PR-HEAD CI RECHECK PENDING`؛ نجح CI 5/5 على رأس
+  التنفيذ المراجع `3d01c98` بعد دورة B فعلية `REVISE → fix → PASS` ونجاح
+  mutation guard في المراجعتين. يجب إعادة فحص CI بعد رفع commits الأدلة
+  النهائية. لا Auto-Merge، والفرع غير مدمج.
 
 ## قرار أتمتة المراجعة
 
@@ -154,7 +155,7 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | COMPLETE / MERGED — PR #12 | Runtime contract المصحح PASS؛ tooling 46/46؛ B mutation guard PASS؛ Core/P0/P3/Worker وGitHub checks 5/5 PASS؛ لا Production ولا Batch 3 |
 | OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `deferred` | Owner | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة الاختبارات محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه ليس خطأً |
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
-| OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | VALIDATION COMPLETE — DRAFT PR #15 / CI 5/5 PASS | B: `REVISE → fix 3d01c98 → PASS`؛ mutation guard مرتان PASS؛ tooling 57/57 وscope 8/8؛ `autoMergeRequest = null`؛ لا Production ولا Phase 4.5/5 |
+| OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | DRAFT PR #15 — FINAL PR-HEAD CI RECHECK PENDING | B: `REVISE → fix 3d01c98 → PASS`؛ mutation guard مرتان PASS؛ CI 5/5 على رأس التنفيذ `3d01c98`؛ tooling 57/57 وscope 8/8؛ `autoMergeRequest = null`؛ لا Production ولا Phase 4.5/5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -168,9 +169,10 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 
 ## القادم بعد المهمة الحالية
 
-1. `OPS-AUTOPILOT-004 — Subscription-Only Continue Control Plane` اكتمل تحققها
-   حتى Draft PR #15 وCI 5/5 PASS. تنتظر بوابة المالك للدمج فقط؛ لا يوجد Merge
-   تلقائي ولا يُدّعى أن PR #15 مدمج.
+1. `OPS-AUTOPILOT-004 — Subscription-Only Continue Control Plane` موجودة في
+   Draft PR #15. نجح CI 5/5 على رأس التنفيذ المراجع `3d01c98`، وتبقى إعادة فحص
+   CI على رأس PR النهائي بعد رفع commits الأدلة. لا تُعلن بوابة الدمج قبل هذا
+   الفحص، ولا يوجد Merge تلقائي ولا يُدّعى أن PR #15 مدمج.
 2. يبقى `OPS-AUTOPILOT-002` مؤجلاً بقرار المالك حتى يقرر تمويل API automation.
 3. Ink Batch 3 هو دفعة الفصل التالية المؤهلة، لكنه `NOT STARTED` ولا يبدأ ضمن
    مهمة الأتمتة الحالية.

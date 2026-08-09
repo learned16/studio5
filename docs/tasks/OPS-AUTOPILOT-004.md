@@ -5,7 +5,7 @@
 - Task ID: `OPS-AUTOPILOT-004`
 - Requirement: `S5-QA-AUTOPILOT-004`
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
-- Status: `VALIDATION COMPLETE — DRAFT PR #15 / CI PASS`
+- Status: `DRAFT PR #15 — FINAL PR-HEAD CI RECHECK PENDING`
 - Base: `origin/develop@1043d46`
 - Branch: `chore/subscription-only-continue-control-plane`
 - Dependency: `OPS-AUTOPILOT-003` merged through PR #14
@@ -155,7 +155,7 @@ performance, offline, or backup device PASS is required or claimed.
 - Tooling, scope, applicable guards, native regression, B review, mutation
   guard, and GitHub CI pass before validation is marked complete.
 
-## Acceptance evidence — 9 August 2026
+## Implementation and review evidence — 9 August 2026
 
 - A created the scoped implementation commit `04ff732` and stopped before
   remote delivery.
@@ -172,27 +172,31 @@ performance, offline, or backup device PASS is required or claimed.
 - [Draft PR #15](https://github.com/learned16/studio5/pull/15) is open against
   `develop`. Commit `3d01c98cd210cfa828eff47637b9dba1576f3bb8` is the
   reviewed implementation head that received the second B `PASS` and the first
-  CI `5/5 PASS` before the final evidence-only commit.
+  CI `5/5 PASS` before the subsequent evidence-only commits.
 - All five checks passed on that implementation head: `Studio5 Core`, `P0 Ink Web`,
   `P3 Lecture Capture Web`, `Cloudflare Worker Static Assets`, and
   `Workers Builds: studio5`.
-- Final PR-head CI must be rechecked after the evidence-only commit is pushed.
+- Final PR-head CI must be rechecked after the evidence-only commits are pushed.
 - GitHub reports `autoMergeRequest = null`. No merge was performed.
 
 ## Current delivery truth
 
-Validation is complete at the Draft Pull Request boundary. PR #15 remains
-`OPEN` and `Draft`; it is not merged. Independent B review, both mutation-guard
-verifications, local tooling and native evidence, exact scope verification, and
-the five checks on the reviewed implementation head passed. Final PR-head CI
-remains subject to recheck after the evidence-only commit is pushed. The active
-branch remains
-`chore/subscription-only-continue-control-plane` until the owner decides whether
-to merge.
+PR #15 remains `OPEN` and `Draft`; it is not merged, and GitHub reports
+`autoMergeRequest = null`. Independent B review, both mutation-guard
+verifications, local tooling and native evidence, and exact scope verification
+passed. CI `5/5 PASS` applies to the reviewed implementation head `3d01c98`, not
+to the unpublished final evidence head.
+
+The supervisor must push the final evidence commits, verify live CI on the
+resulting final PR head, and only then report the owner merge gate externally.
+No additional evidence commit should be created after that live check: a commit
+cannot contain the future CI result for its own SHA. The active branch remains
+`chore/subscription-only-continue-control-plane` while this recheck is pending.
 
 ## Human gate
 
-The only remaining human gate is owner approval to merge Draft PR #15. The
+Owner approval to merge Draft PR #15 remains the eventual human gate, but the
+repository does not report it ready while final PR-head CI is pending. The
 automation must not merge or enable automatic merge.
 
 ## Rollback
