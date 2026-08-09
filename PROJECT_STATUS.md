@@ -52,8 +52,12 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
   `develop` عبر `261c1e3` من دون Production أو Auto-Merge.
 - PR #17: `Draft / Open` إلى `develop`؛ دورة B هي `REVISE → repair → PASS`
   وmutation guard ناجح. نجحت فحوص GitHub الخمسة على الرأس المنشور `fb3e1e1`؛
-  commit الأدلة اللاحق غير منشور بعد، لذلك
-  `FINAL PR-HEAD CI RECHECK PENDING`. لا Auto-Merge.
+  أكد المالك `Owner visual review: PASS / MatePad review: PASS / P4.5 human
+  gate for this foundation: PASS` على isolated P4.5 preview. صولح الفرع مع
+  PR #18 بعد دمجه، وتبقى `B RE-REVIEW + FINAL PR-HEAD CI RECHECK PENDING`.
+  Production route ما زال P3 ولا Auto-Merge.
+- PR #18: `Merged`؛ أضيفت سياسة Adaptive Model and Reasoning Routing إلى Control
+  Plane ونجحت فحوص GitHub الخمسة؛ merge commit هو `110d744`.
 
 ## قرار توجيه المنتج — 2026-08-09
 
@@ -182,7 +186,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
 | P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
-| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | DRAFT PR #17 / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING | tests `10/10` وFull regression PASS؛ GitHub 5/5 على `fb3e1e1`؛ evidence commit غير منشور؛ لا Browser/Visual/MatePad/Device claim ولا Core/Ink/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | DRAFT PR #17 / OWNER VISUAL + MATEPAD HUMAN GATE PASS / B RE-REVIEW + FINAL PR-HEAD CI RECHECK PENDING | OWNER-VERIFIED visual/MatePad PASS على isolated preview؛ PR #18 reconciled؛ production route ما زال P3؛ لا Core/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -197,13 +201,11 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 ## القادم بعد المهمة الحالية
 
 1. `P4.5-UX-IMPLEMENTATION-001 — Warm Paper App Shell and Navigation
-   Foundation` هي المهمة النشطة في Draft PR #17. دورة B وmutation guard ناجحتان،
-   وفحوص GitHub الخمسة نجحت على الرأس المنشور `fb3e1e1`. بعد دفع commit الأدلة
-   يجب إعادة فحص CI على الرأس النهائي؛ لذلك الحالة الحالية
-   `FINAL PR-HEAD CI RECHECK PENDING`.
-2. بعد نجاح فحوص الرأس النهائي، يتوقف العمل عند بوابة المالك للمراجعة والدمج
-   والتقييم البصري/الجهاز. لا يبدأ Route cutover أو Data adapter أو شريحة منتج
-   تالية تلقائياً.
+   Foundation` هي المهمة النشطة في Draft PR #17. اجتازت بوابة المالك البصرية
+   وMatePad على isolated preview، وصُولح الفرع مع PR #18. تبقى إعادة B مع
+   mutation guard وفحوص CI على الرأس النهائي مطلوبة قبل جاهزية الدمج.
+2. بعد نجاح B وCI النهائيين، يتوقف العمل عند بوابة المالك للدمج فقط. لا يبدأ
+   Route cutover أو Data adapter أو شريحة منتج تالية تلقائياً.
 3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm
    Paper مرجع معتمد فقط وليس المنتج النهائي.
 4. Ink Batch 3 `DEFERRED / NOT STARTED` حتى يُجدول ضمن سلسلة Batches 3–7 قبل

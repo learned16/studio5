@@ -2,7 +2,7 @@
 
 ## Status
 
-`DRAFT PR #17 / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING`
+`DRAFT PR #17 / OWNER VISUAL + MATEPAD HUMAN GATE PASS / B RE-REVIEW + FINAL PR-HEAD CI RECHECK PENDING`
 
 This is the single next eligible product task after
 `P4-P45-RECONCILIATION`. It is a small isolated Phase 4.5 slice, not a broad
@@ -116,6 +116,22 @@ landscape/portrait, touch targets, keyboard behavior, contrast, content
 direction, and long-use comfort require a later device/visual gate. A build or
 snapshot PASS does not approve the final design.
 
+## Owner human-gate evidence — 2026-08-09
+
+- The owner reviewed the isolated Phase 4.5 Warm Paper preview on MatePad and
+  recorded `Owner visual review: PASS`, `MatePad review: PASS`, and
+  `P4.5 human gate for this foundation: PASS`.
+- This is `OWNER-VERIFIED` visual/device evidence. It is distinct from local
+  automated checks, GitHub CI, and the independent B review.
+- The reviewed isolated preview is
+  `https://studio5-p45-human-gate-preview.44trm84.workers.dev` and exposes the
+  current `prototype/p45-product-shell-web` candidate without replacing P3.
+- No measurements, orientation-by-orientation checklist, touch-test details,
+  or accessibility measurements are inferred beyond the owner's explicit
+  PASS statements.
+- Acceptance of this foundation does not authorize production route cutover,
+  real-data integration, or a later Phase 4.5 slice.
+
 ## Local implementation evidence — 2026-08-09
 
 - Added the isolated dependency-free surface at
@@ -129,15 +145,17 @@ snapshot PASS does not approve the final design.
   across all five routes and verifies rendered headings, `aria-current`, and
   focus transitions. This is executable navigation evidence, not browser,
   visual, touch, or device evidence.
-- Selected full regression passes: Core `100/100`, P0 `91/91` plus build, P3
-  `24/24` plus build, Studio5 delivery tooling `57/57`, and Wrangler dry-run
-  with `261` existing Worker assets.
+- Selected full regression passes after PR #18 reconciliation: Core `100/100`,
+  P0 `91/91` plus build, P3 `24/24` plus build, Studio5 delivery tooling
+  `64/64`, and Wrangler dry-run with `261` existing Worker assets.
 - Exact scope, applicable code/test/docs guards, documentation/path checks,
   high-confidence secret scan, and `git diff --check` pass.
 
 ## Remote delivery evidence — 2026-08-09
 
 - Draft PR #17 is open to `develop`; automatic merge is not enabled.
+- PR #18 is merged into `develop`, and its merge commit is reconciled into the
+  PR #17 branch without changing the P4.5 production-route boundary.
 - The published PR head before this evidence-only commit is
   `fb3e1e1b8878cab0a86e346ca0bd5b3e258a8b73`.
 - Independent B review completed `REVISE → repair → PASS`, and the repository
@@ -145,11 +163,13 @@ snapshot PASS does not approve the final design.
 - All five reported GitHub checks succeeded on that published head: Studio5
   Core, P0 Ink Web, P3 Lecture Capture Web, Cloudflare Worker Static Assets,
   and Workers Builds: studio5.
-- This evidence-only commit is not yet published, so the canonical delivery
-  state remains `FINAL PR-HEAD CI RECHECK PENDING` until checks run on the new
-  PR head.
-- No browser, visual, touch, MatePad, or device gate is claimed. Phase 5 has not
-  started.
+- The owner visual/MatePad human gate is PASS on the isolated preview. This
+  owner evidence does not replace the required post-reconciliation B review,
+  mutation guard, or final PR-head CI.
+- The canonical delivery state remains `B RE-REVIEW + FINAL PR-HEAD CI RECHECK
+  PENDING` until those checks complete on the reconciled branch.
+- The production route remains unchanged and continues to serve P3. Phase 5
+  has not started.
 
 ## Rollback and replacement boundary
 
@@ -159,11 +179,12 @@ or restore operation is needed.
 
 ## Human gate
 
-The owner reviews the isolated shell after automated and B-review PASS. The
-owner may classify it `Accepted`, `Revise`, or `Retired`. No merge, route
+The owner classified this isolated shell foundation `Accepted` after visual and
+MatePad review. Merge approval remains a separate human gate. No merge, route
 cutover, or expansion to data adapters follows automatically.
 
 ## Stop condition
 
-Commit, B review and mutation guard, push, Draft PR, CI, then stop at the human
-merge/visual gate. Do not start the next Phase 4.5 slice automatically.
+Commit, B re-review and mutation guard, push, final PR-head CI, then stop at the
+human merge gate. Do not start route cutover or the next Phase 4.5 slice
+automatically.
