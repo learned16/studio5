@@ -97,7 +97,7 @@ Gates A–G are the project's top-level map. Historical Phase labels remain smal
 | Product shell | English and LTR |
 | Arabic and mixed user content | Automatic RTL/LTR direction |
 | Main navigation | `Today / Study / Projects / Practice / Library` |
-| Phase 4 | Partial device gate; Ink and full Backup/Restore remain pending |
+| Phase 4 | `PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD` |
 | PDF Canvas | `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` |
 | PDF Canvas evidence | [PR #7](https://github.com/learned16/studio5/pull/7), dated 2026-08-01; GitHub-verified as merged into `develop` |
 | P0 Ink characterization | Completed and merged as tests and documentation |
@@ -143,8 +143,42 @@ one supervisor with:
 - push and Draft Pull Request delivery without automatic merge.
 
 This decision defers, but does not cancel, the independently invoked enforced
-read-only design in `OPS-AUTOPILOT-002`. Full access remains forbidden, and the
-decision does not authorize Phase 4.5 or Phase 5 work.
+read-only design in `OPS-AUTOPILOT-002`. Full access remains forbidden. Its
+original restriction on Phase 4.5 work was superseded by the later owner
+decision below; Phase 5 remains blocked.
+
+## Product-stage routing — 9 August 2026
+
+The owner has completed the Phase 4 device testing intended for the current
+session and has decided that the automation foundation is complete enough to
+resume product work. This decision does not convert an unrecorded device check
+into a PASS and does not close the full Phase 4 gate.
+
+The authoritative routing is now:
+
+- Phase 4 remains
+  `PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`.
+- The recorded Phase 4 PASS evidence remains limited to PDF upload,
+  navigation, Zoom/Fit width, Notes, reload/close/reopen, PDF/Notes persistence
+  without duplication, the PDF Canvas evidence in PR #7, and the recorded
+  PDF/Notes storage-migration evidence.
+- Unrecorded Worker Ink, pen/palm, Ink reopen, full Backup/Verify/Restore,
+  corrupt-backup rejection, large-PDF coverage, and low-storage/failure-safe
+  checks remain pending or unverified and are carried forward to their required
+  cutover gates.
+- Historical P0/P2 Ink device evidence is valid for those separate prototype
+  origins only; it is not Worker Ink evidence.
+- Phase 4.5 UX/UI Redesign is the next owner-prioritized product stage and may
+  begin incrementally through small, independently gated tasks.
+- Phase 5 remains blocked until Phase 4.5 and the required gates are handled.
+- Ink extraction Batch 3 must not be selected ahead of Phase 4.5 merely because
+  an older status document listed it next.
+
+Ink Batch 3 is not a prerequisite for the Phase 4.5 shell/navigation,
+read-only Today/Study, or Library/PDF/Notes adapter slices. It is required later
+inside the full Batches 3–7 dependency chain before the specific live-Ink
+Unified Workspace slice; Batch 3 alone is not sufficient. This routing decision
+does not authorize or start Batch 3.
 
 ## User reference-package delivery rule
 

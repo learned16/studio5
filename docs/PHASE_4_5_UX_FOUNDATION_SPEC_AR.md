@@ -2,18 +2,21 @@
 
 ## 1. الغرض والحالة
 
-Phase 4.5 مرحلة تصميم وتجربة استخدام فقط، تقع بين إثبات الوظائف في Phase 4
-وتنفيذ Drawing Coach في Phase 5. هدفها تحويل القدرات الحالية إلى بنية واجهة
+Phase 4.5 مرحلة تصميم وتجربة استخدام وتنفيذ واجهة تدريجية، تقع بين إثبات الوظائف
+في Phase 4 وتنفيذ Drawing Coach في Phase 5. هدفها تحويل القدرات الحالية إلى بنية واجهة
 موحدة ومناسبة للاستخدام الجامعي اليومي، من دون تغيير Core أو Schema أو التخزين
 أو Backup.
 
 حالة Phase 4 الحالية:
-`PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`.
+`PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`.
 
 > The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-هذه الوثيقة مواصفة للمراجعة وليست إذناً بكتابة الكود. لا يبدأ التنفيذ قبل موافقة
-المستخدم على بنية المعلومات والتدفقات والشكل العام.
+اعتمد المالك بتاريخ 2026-08-09 بدء Phase 4.5 على دفعات صغيرة مستقلة. تبدأ
+الدفعة الأولى بـApp Shell والتنقل فقط وفق
+`docs/tasks/P4-5-UX-IMPLEMENTATION-001.md`. تبقى التفاصيل البصرية غير المثبتة
+فرضيات تُراجع شريحة بعد أخرى، وليست مانعاً لبدء هذا الأساس المحدود. لا تمنح هذه
+الموافقة إذناً بتغيير Core أو البيانات أو دمج Ink أو بدء Phase 5.
 
 ## 2. مبادئ المنتج
 
@@ -240,6 +243,11 @@ Workspace هو السطح المركزي للدراسة، وليس قارئ PDF 
 - Ink طبقة مستقلة قابلة للإخفاء والتصدير والاستعادة.
 - Autosave وRecovery يسبقان أي تحسين بصري.
 
+Ink Batch 3 ليس شرطاً لشرائح App Shell والتنقل أو Today/Study للقراءة فقط أو
+Library/PDF/Notes adapters. قبل شريحة live-Ink Unified Workspace يلزم إكمال
+سلسلة الاستخراج Batches 3–7 والتحقق منها؛ Batch 3 وحده غير كافٍ. يُجدول هذا
+العمل لاحقاً عند ذلك الحد ولا يبدأ تلقائياً من هذه المواصفة.
+
 ## 11. Tasks (Contextual)
 
 ### الظهور
@@ -449,13 +457,14 @@ Error، واتجاه محتوى LTR/RTL التلقائي عند الحاجة.
 
 ## 22. معايير القبول
 
-### مواصفة التصميم
+### مواصفة التصميم والتقدم المرحلي
 
-- [ ] يوافق المستخدم على Information Architecture والتنقل.
-- [ ] التنقل الرئيسي هو `Today / Study / Projects / Practice / Library`.
-- [ ] Product Shell إنكليزي LTR، ومحتوى المستخدم العربي/المختلط يختار اتجاهه تلقائياً.
-- [ ] الاتجاه البصري يطابق `Warm Paper Academic Studio`.
-- [ ] يوافق المستخدم على Wireframes الأساسية قبل التنفيذ.
+- [x] وافق المستخدم على Information Architecture والتنقل الأساسي.
+- [x] التنقل الرئيسي هو `Today / Study / Projects / Practice / Library`.
+- [x] Product Shell إنكليزي LTR، ومحتوى المستخدم العربي/المختلط يختار اتجاهه تلقائياً.
+- [x] الاتجاه البصري المرجعي هو `Warm Paper Academic Studio`.
+- [x] أذن المستخدم ببدء App Shell والتنقل كأول شريحة معزولة.
+- [ ] تُراجع Wireframes لكل شريحة قبل قبولها، من دون منع بدء Shell الأساسي.
 - [ ] تُراجع Light/Dark tokens والتباين.
 - [ ] تُراجع مساحات القلم على MatePad.
 
@@ -496,7 +505,7 @@ Error، واتجاه محتوى LTR/RTL التلقائي عند الحاجة.
 7. Reload، browser close/reopen، وOffline smoke.
 8. اختبار بيانات موجودة مسبقاً للتأكد أن UI الجديد يقرأها بلا Migration.
 
-## 24. القرارات قبل الكود
+## 24. القرارات وحدود التنفيذ المرحلي
 
 ### قرارات اعتمدها المستخدم
 
@@ -508,12 +517,14 @@ Error، واتجاه محتوى LTR/RTL التلقائي عند الحاجة.
 5. Product Shell إنكليزي LTR، مع اتجاه تلقائي للمحتوى العربي والمختلط.
 6. P0 وP3 Functional Prototypes وليسا التصميم النهائي.
 
-### ما يحتاج مراجعة قبل التنفيذ
+### فرضيات تُراجع شريحة بعد أخرى
 
 1. تفاصيل Navigation Rail في Landscape وBottom Navigation في Portrait.
 2. تفاصيل Unified Workspace في Landscape وPortrait.
 3. Light/Dark tokens والمكونات المشتركة.
 4. استخدام Feature Flag ومسار رجوع إلى P3 أثناء النقل.
 
-حتى تُحسم هذه القرارات تبقى Phase 4.5 بحالة `SPECIFICATION REVIEW`، ولا يبدأ
-أي كود واجهة.
+هذه التفاصيل لا تمنع تنفيذ شريحة App Shell والتنقل المعزولة، لكنها تمنع اعتماد
+تصميم نهائي أو تحويل Route قبل مراجعة الأدلة الخاصة بكل شريحة. Warm Paper يبقى
+مرجعاً بصرياً معتمداً فقط، وليس واجهة المنتج النهائية. أول مهمة مؤهلة هي
+`P4.5-UX-IMPLEMENTATION-001`، ولا تشمل Core أو Ink أو Phase 5.

@@ -1,8 +1,8 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-08-09
-المرحلة الحالية: `PARTIAL DEVICE GATE PASS`
-الفرع النشط: `chore/subscription-only-continue-control-plane`
+المرحلة الحالية: `PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`
+الفرع النشط: `docs/phase4-phase45-reconciliation`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -46,10 +46,20 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
   OPS-AUTOPILOT-002 للمستقبل.
 - PR #14: `Merged`؛ اكتمل تحقق مسار التسليم باشتراك Codex الحالي، بلا
   Production أو API key أو Merge تلقائي. Merge commit الحالي هو `1043d46`.
-- PR #15: `Draft / FINAL PR-HEAD CI RECHECK PENDING`؛ نجح CI 5/5 على رأس
-  التنفيذ المراجع `3d01c98` بعد دورة B فعلية `REVISE → fix → PASS` ونجاح
-  mutation guard في المراجعتين. يجب إعادة فحص CI بعد رفع commits الأدلة
-  النهائية. لا Auto-Merge، والفرع غير مدمج.
+- PR #15: `Merged`؛ اكتملت حلقة تحكم `continue` باشتراك Codex الحالي، ونجحت
+  فحوص GitHub الخمسة، ودُمجت في `develop` عبر `0ffc446` من دون Auto-Merge.
+
+## قرار توجيه المنتج — 2026-08-09
+
+- مؤسسة الأتمتة مكتملة بما يكفي لاستئناف عمل المنتج.
+- أكمل المالك اختبارات Phase 4 التي قصد تنفيذها في جلسة الجهاز الحالية. لا
+  يحول هذا القرار أي بند غير مسجل إلى PASS ولا يغلق Phase 4 كاملة.
+- Phase 4.5 UX/UI Redesign هي مرحلة المنتج التالية ذات أولوية المالك.
+- Phase 5 تبقى محظورة حتى معالجة Phase 4.5 والبوابات المطلوبة.
+- لا يُختار Ink Batch 3 قبل Phase 4.5 بسبب ترتيب قديم في ملف الحالة.
+- Ink Batch 3 لا يلزم لبداية App Shell والتنقل أو Today/Study للقراءة فقط أو
+  Library/PDF/Notes adapters. يلزم لاحقاً ضمن سلسلة Batches 3–7 الكاملة قبل
+  live-Ink Unified Workspace، ولا يبدأ من مهمة المصالحة.
 
 ## قرار أتمتة المراجعة
 
@@ -66,9 +76,16 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 
 - Ink داخل Worker.
 - Pen/Palm Rejection داخل Worker.
+- Ink save/reopen داخل Worker.
 - Full Backup/Verify/Restore على MatePad.
 - Corrupted backup rejection.
 - Low-storage/failure-safe tests.
+- Large PDF: البداية والوسط والنهاية.
+- Backup/Restore cancellation بلا تغيير، والفشل بلا استبدال جزئي.
+
+نجاحات Ink التاريخية في P0/P2 أدلة لأصول منفصلة، وليست PASS لـInk داخل Worker.
+تحمل هذه البنود إلى بوابات cutover التي تعتمد عليها، ولا تمنع أول شريحة Shell
+معزولة في Phase 4.5.
 
 لا تبدأ Phase 5 بعد.
 
@@ -155,7 +172,9 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | OPS-AUTOPILOT-001 | تأسيس تشغيل Studio5 عبر Skill ووكلاء A/B/C وأدوات scope/checks | `chore/studio5-autopilot-foundation` | Codex | COMPLETE / MERGED — PR #12 | Runtime contract المصحح PASS؛ tooling 46/46؛ B mutation guard PASS؛ Core/P0/P3/Worker وGitHub checks 5/5 PASS؛ لا Production ولا Batch 3 |
 | OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `deferred` | Owner | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة الاختبارات محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه ليس خطأً |
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
-| OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | DRAFT PR #15 — FINAL PR-HEAD CI RECHECK PENDING | B: `REVISE → fix 3d01c98 → PASS`؛ mutation guard مرتان PASS؛ CI 5/5 على رأس التنفيذ `3d01c98`؛ tooling 57/57 وscope 8/8؛ `autoMergeRequest = null`؛ لا Production ولا Phase 4.5/5 |
+| OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
+| P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | LOCAL CHECKS PASS — READY FOR B REVIEW | لا Production؛ تثبيت PASS المسجل فقط، حمل البوابات المعلقة، وتحديد أول مهمة Phase 4.5 |
+| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | ELIGIBLE / NOT STARTED | سطح استبدال معزول `prototype/p45-product-shell-web/**`؛ خمس وجهات؛ لا Core/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -169,24 +188,20 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 
 ## القادم بعد المهمة الحالية
 
-1. `OPS-AUTOPILOT-004 — Subscription-Only Continue Control Plane` موجودة في
-   Draft PR #15. نجح CI 5/5 على رأس التنفيذ المراجع `3d01c98`، وتبقى إعادة فحص
-   CI على رأس PR النهائي بعد رفع commits الأدلة. لا تُعلن بوابة الدمج قبل هذا
-   الفحص، ولا يوجد Merge تلقائي ولا يُدّعى أن PR #15 مدمج.
-2. يبقى `OPS-AUTOPILOT-002` مؤجلاً بقرار المالك حتى يقرر تمويل API automation.
-3. Ink Batch 3 هو دفعة الفصل التالية المؤهلة، لكنه `NOT STARTED` ولا يبدأ ضمن
-   مهمة الأتمتة الحالية.
-4. إكمال بوابات الجهاز المعلقة: Ink داخل Worker، القلم وPalm Rejection، وFull
-   Backup/Verify/Restore بما يشمل PDF وNotes وInk وTasks ورفض النسخة التالفة
-   وسيناريوهات التخزين المنخفض والفشل الآمن.
-5. لا تبدأ Phase 4.5 أو Phase 5 ضمن مسار الأتمتة الحالي. Phase 5 لا تبدأ قبل
-   إغلاق البوابات الحالية وقرار المستخدم؛ وهي جزء من Gate D
-   وليست نهاية Studio5.
-6. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
-7. تبقى واجهتا P3 وP0 مرجعين وظيفيين مستقلين ولا تُحذفان أو يعاد استخدام تصميمهما القديم.
-8. مواقع Sites القديمة مجمدة، وGitHub هو المصدر الوحيد للكود.
-9. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
-10. PR #14 مدمج، و`OPS-AUTOPILOT-003` مكتملة. لا يبقى فرعها مسجلاً كفرع نشط.
+1. أكمل `P4-P45-RECONCILIATION` كتوثيق وحوكمة فقط، ثم توقف عند Draft PR بلا Merge.
+2. بعد دمج المصالحة، تكون `P4.5-UX-IMPLEMENTATION-001 — Warm Paper App Shell
+   and Navigation Foundation` المهمة الوحيدة التالية المؤهلة لأمر `continue`.
+3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm
+   Paper مرجع معتمد فقط وليس المنتج النهائي.
+4. Ink Batch 3 `DEFERRED / NOT STARTED` حتى يُجدول ضمن سلسلة Batches 3–7 قبل
+   live-Ink Unified Workspace. لا يبدأ تلقائياً.
+5. تحمل بوابات Phase 4 المعلقة إلى نقاط cutover الخاصة بها، ولا يُدّعى PASS غير مسجل.
+6. يبقى `OPS-AUTOPILOT-002` مؤجلاً بقرار المالك حتى يقرر تمويل API automation.
+7. Phase 5 لا تبدأ قبل Phase 4.5 والبوابات المطلوبة وقرار المالك؛ وهي جزء من
+   Gate D وليست نهاية Studio5.
+8. لا يُقترح أو يُنشأ Stable Tag قبل إغلاق بوابة Phase 4 الكاملة.
+9. تبقى P3 وP0 وWarm Paper prototype مراجع مستقلة ولا تُحذف أو تُتخذ كتصميم نهائي.
+10. لا يُدمج أي فرع دون موافقة المستخدم، ولا يوجد Merge تلقائي.
 
 ## المراحل اللاحقة المحفوظة
 
@@ -261,3 +276,5 @@ Web/PWA هو المسار الحالي وليس المنصة النهائية ا
 | 2026-08-08 | OPS-AUTOPILOT-001 | Tooling/Governance | Autopilot foundation active؛ Batch 3 remains not started |
 | 2026-08-08 | PR #12 | Tooling/Governance | Merged؛ Autopilot foundation and current subscription-only delivery controls established؛ GitHub checks 5/5 PASS |
 | 2026-08-09 | Owner | Automation governance | `OPS-AUTOPILOT-002` deferred until API automation spending is approved؛ missing `OPENAI_API_KEY` is intentional, not a defect |
+| 2026-08-09 | PR #15 | Automation governance | Merged into `develop` as `0ffc446` after GitHub checks 5/5 PASS؛ no auto-merge |
+| 2026-08-09 | Owner | Product routing | Automation foundation complete enough to resume product work؛ current Phase 4 device-test session complete without inventing PASS؛ Phase 4.5 next؛ Ink Batch 3 deferred until its live-Ink dependency boundary؛ Phase 5 blocked |

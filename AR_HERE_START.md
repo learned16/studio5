@@ -33,7 +33,8 @@ Studio5 ليس تطبيق ملاحظات عاديًا، ولا قارئ PDF فق
 - P2 Notebook/Revisions اجتاز اختبار الجهاز: حفظ نسختين، المعاينة، الرجوع،
   الاستعادة الآمنة، وإعادة الفتح بلا فقد.
 - Phase 3 مكتملة برمجياً، وPhase 4 اجتازت Core/Ink/P3 regression وGitHub CI.
-- حالة Phase 4 هي `PARTIAL DEVICE GATE PASS`.
+- حالة Phase 4 هي
+  `PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`.
 - PDF Canvas حقق
   `AUTOMATED PASS / CLOUDFLARE PREVIEW PASS / MATEPAD VISUAL PASS` عبر PR #7.
 - المتبقي: Ink والقلم وPalm Rejection داخل Worker، وFull
@@ -44,7 +45,13 @@ Studio5 ليس تطبيق ملاحظات عاديًا، ولا قارئ PDF فق
 - الاتجاه البصري المعتمد `Warm Paper Academic Studio`، ولغة Product Shell هي
   English باتجاه LTR، مع اتجاه تلقائي لمحتوى المستخدم العربي والمختلط.
 - Warm Paper visual prototype معتمد كمرجع فقط، لا كمنتج نهائي.
-- PR #10 يزامن سلطة المشروع وملفات الدخول، ولا يبدأ Phase 5.
+- اكتملت مؤسسة الأتمتة الحالية عبر PR #15، وأصبح Phase 4.5 UX/UI Redesign هو
+  المرحلة الإنتاجية التالية ذات أولوية المالك.
+- أول مهمة مؤهلة هي `P4.5-UX-IMPLEMENTATION-001` لبناء App Shell والتنقل في
+  سطح معزول، من دون Core أو Ink أو تغيير بيانات.
+- Ink Batch 3 مؤجل حتى يُجدول قبل live-Ink Unified Workspace؛ لا يلزم لبدء
+  Shell والتنقل، ولا يبدأ تلقائياً.
+- Phase 5 محظورة حتى تُعالج Phase 4.5 والبوابات المطلوبة.
 - ChatGPT Sites متوقف؛ النشر القديم مرجع مجمد وليس مصدر كود أو بيئة قبول.
 - تبقى واجهات التجارب `Experimental` حتى يثبت الاستخدام الجامعي الحقيقي ملاءمتها.
 

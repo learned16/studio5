@@ -2,7 +2,7 @@
 
 ## الحالة
 
-`DOCUMENTATION ONLY / READY FOR USER REVIEW`
+`DOCUMENTATION COMPLETE / INCREMENTAL IMPLEMENTATION AUTHORIZED BY OWNER`
 
 ## الهدف
 
@@ -70,6 +70,19 @@
 - [x] توثيق نقل الوظائف الحالية بلا إعادة كتابة Core.
 - [x] منع اقتراح أو إنشاء Stable Tag قبل إغلاق Phase 4 بالكامل.
 - [x] عدم تعديل كود التطبيق أو البيانات أو إعداد النشر.
+- [x] اعتمد المالك بتاريخ 2026-08-09 بدء Phase 4.5 على دفعات صغيرة مستقلة.
+- [x] تحولت التفاصيل البصرية المفتوحة إلى فرضيات تُراجع لكل شريحة، لا Blocker
+  لبداية App Shell والتنقل.
+- [x] حُددت `P4.5-UX-IMPLEMENTATION-001` كأول مهمة مؤهلة، من دون Core أو Ink أو
+  Worker cutover أو Phase 5.
+
+## نتيجة المصالحة اللاحقة
+
+Warm Paper Academic Studio يبقى مرجعاً بصرياً معتمداً فقط، لا المنتج النهائي.
+يمكن بدء App Shell والتنقل في سطح معزول، ثم تمر كل شريحة ببوابة الاختبار
+والمراجعة والقرار البشري الخاصة بها. لا يبدأ Unified Workspace Ink الحي قبل
+سلسلة Ink Batches 3–7؛ ولا يُختار Batch 3 تلقائياً قبل شرائح Phase 4.5 التي لا
+تعتمد عليه.
 
 ## التحقق
 

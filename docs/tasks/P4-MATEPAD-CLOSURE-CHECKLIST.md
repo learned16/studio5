@@ -11,7 +11,13 @@
 
 **تاريخ النتيجة:** 2026-07-31.
 
-**النتيجة:** `PHASE 4 PARTIAL DEVICE GATE PASS — PDF/NOTES PASS; INK AND FULL BACKUP/RESTORE PENDING`.
+**النتيجة الحالية:**
+`PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`.
+
+أفاد المالك بتاريخ 2026-08-09 بأنه أكمل اختبارات Phase 4 التي قصد تنفيذها في
+جلسة الجهاز الحالية. هذا قرار ترتيب عمل، وليس نتيجة PASS جديدة. تبقى جميع
+الخانات غير المؤشرة أدناه `PENDING / UNVERIFIED` وتحمل إلى بوابة القطع التي
+تعتمد عليها.
 
 أفاد المستخدم صراحةً بنجاح الجزء الخاص بـPDF/Notes على MatePad. لا تمتد هذه
 الإفادة إلى Ink داخل Worker أو Full Backup/Restore أو اختبارات الفشل الآمن.
@@ -30,9 +36,15 @@
 | استعادة PDF وNotes وInk وTasks معاً | PENDING |
 | رفض Backup تالف على MatePad | PENDING |
 | Low-storage وFailure-safe | PENDING |
+| PDF كبير: البداية والوسط والنهاية | PENDING / UNVERIFIED |
+| إلغاء Restore بلا تغيير | PENDING / UNVERIFIED |
+| فشل Restore بلا استبدال جزئي | PENDING / UNVERIFIED |
 
 هذه النتيجة تعتمد إفادة المستخدم من الجهاز الحقيقي، ولا تضيف قياسات أو خطوات
 تفصيلية لم يذكرها. تبقى الأقسام غير المؤشرة أدناه بوابات إلزامية قبل إغلاق Phase 4.
+
+نجاحات Ink التاريخية على P0/P2 تخص أصول Prototype منفصلة، ولا تثبت Ink أو
+القلم أو Palm Rejection داخل Studio5 Worker.
 
 ## قبل البدء
 
@@ -97,6 +109,10 @@
   ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن.
 - [ ] `FAIL`: اذكر البند، ما ظهر، وهل بقي ملف الـBackup قابلاً للفتح.
 - [x] لا تقترح أو تنشئ Stable Tag ما دامت بوابة Phase 4 الكاملة معلقة.
+
+اكتمال جلسة الاختبار الحالية لا يحول البنود المعلقة إلى FAIL ولا يلغيها. يسمح
+قرار المالك ببدء شرائح Phase 4.5 التي لا تعتمد على هذه البوابات، بينما تبقى
+البوابات المطلوبة للـcutover والتكامل الحي محمولة إلى مواضعها الصحيحة.
 
 ## تصنيف الواجهة
 

@@ -2,7 +2,7 @@
 
 ## الحالة
 
-`CODE + CI PASS / PDF-NOTES DEVICE PASS / FULL DEVICE GATE PENDING`
+`CODE + CI PASS / PARTIAL DEVICE GATE PASS — CURRENT OWNER DEVICE-TEST SESSION COMPLETE; CUTOVER GATES CARRIED FORWARD`
 
 ## الهدف
 
@@ -72,10 +72,17 @@
 والملاحظات بلا تكرار كلها `PASS`. Ink داخل Worker وFull Backup/Verify/Restore
 ورفض النسخة التالفة واختبارات التخزين المنخفض والفشل الآمن ما زالت `PENDING`.
 
+وبتاريخ 2026-08-09 أفاد المالك بأنه أكمل جلسة اختبارات Phase 4 التي قصدها في
+هذه النقطة ووجّه إلى Phase 4.5. لم يسجل ذلك PASS جديداً. تبقى أيضاً Ink save/reopen
+داخل Worker، استعادة PDF/Notes/Ink/Tasks معاً، PDF كبير من البداية إلى الوسط
+والنهاية، إلغاء Restore بلا تغيير، والحماية من الاستبدال الجزئي
+`PENDING / UNVERIFIED`. نجاح P0/P2 Ink على أصول منفصلة لا يثبت Worker Ink.
+
 > The current P3 and P0 interfaces are functional prototypes and are not the final Studio5 product design.
 
-لا تغلق هذه النتيجة Phase 4 بالكامل، ولا تبدأ Phase 5. الخطوة التالية هي مراجعة
-مواصفة Phase 4.5 UI/UX وإكمال بوابات الجهاز المعلقة.
+لا تغلق هذه النتيجة Phase 4 بالكامل، ولا تبدأ Phase 5. أذن المالك ببدء Phase 4.5
+على دفعات صغيرة لا تعتمد على البوابات المعلقة، وتبقى بوابات cutover المطلوبة
+محمولة إلى مواضعها قبل التكامل الحي أو الإغلاق النهائي.
 
 ## خارج النطاق
 
