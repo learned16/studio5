@@ -124,6 +124,25 @@ The operating rules are:
 - Every task stops at: `Commit + Push + Draft PR + Tests + STOP`.
 - No automatic merge.
 
+### Adaptive model and reasoning routing — 9 August 2026
+
+The owner approves routine Supervisor selection of the appropriate available
+model capability and reasoning effort for each A, B, or C invocation. The
+Supervisor classifies complexity, ambiguity, production risk, code/context
+volume, architectural judgment, review/security sensitivity, and whether work
+is repetitive or mechanical before each spawn. It uses the lowest sufficient
+available setup, with the highest safety-relevant dimension taking precedence;
+volume alone does not justify maximum reasoning.
+
+The policy is capability-based and graceful: no model or reasoning level is
+globally pinned, no reusable policy relies on a concrete model identifier, and
+the best safe available fallback is used when a preferred option is absent. The
+owner may override routing for one exceptional task without creating a global
+pin. The chosen tier never reduces required tests, B review, scope guards, or
+human gates. Delivery evidence records the role, classification, tier,
+requested/effective transient runtime values, fork context, and fallback or
+override; unavailable values are recorded as `NOT EXPOSED` rather than guessed.
+
 ## Automation spending boundary — 9 August 2026
 
 The owner has deferred API-funded automation. Studio5 will not add an

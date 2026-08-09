@@ -14,6 +14,10 @@ Lead with the outcome and include only current, verified evidence:
 9. Device evidence explicitly claimed and explicitly not claimed.
 10. Remaining risk, deferred isolated-review enforcement, or real human gate.
 11. Confirmation of no automatic merge.
+12. For every A, B, or C invocation: seven-factor routing summary, selected
+    tier, requested/effective model capability and reasoning values, fork
+    context, and any fallback or owner override. Use `NOT EXPOSED` rather than
+    inferring runtime values.
 
 Do not report remembered test counts, stale PR state, or inferred device PASS.
 Record runtime discovery as separate claims:
@@ -28,6 +32,10 @@ Overall `RUNTIME DISCOVERY: PASS` requires the first four claims to pass. The
 fifth claim is a disclosed current-runtime limit, not an impossible gate for a
 subagent spawned by a writable parent. Never describe the B sandbox as enforced
 in that case. Track independently invoked read-only isolation as separate work.
+
+Routing evidence is transient delivery evidence, not a permanent model pin.
+Follow [adaptive-model-routing.md](adaptive-model-routing.md) before reporting
+it.
 
 Finish with one user action only. Do not ask the user to relay reports between
 agents.

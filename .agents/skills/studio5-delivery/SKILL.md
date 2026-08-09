@@ -34,6 +34,12 @@ Default to one writer. Use the project A/B/C custom agents only when their role
 is useful. Do not start all three automatically, and do not assign shared files
 to parallel writers.
 
+Before every A, B, or C spawn, read
+[adaptive-model-routing.md](references/adaptive-model-routing.md), classify the
+work, select the lowest sufficient available capability and reasoning tier, and
+record truthful routing evidence. Do not globally pin a model or reasoning
+effort. Preserve every quality gate regardless of the selected tier.
+
 ## Deliver
 
 When API-funded automation is owner-deferred, first read

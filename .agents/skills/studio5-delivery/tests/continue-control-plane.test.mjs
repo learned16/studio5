@@ -33,9 +33,10 @@ test("merged delivery requires merge-aware evidence before one fresh task", () =
     assert.match(text, /live repository truth/i);
     assert.match(text, /Do not use conversation memory as repository state/i);
     assert.match(text, /merge-method-aware/i);
-    assert.match(text, /current `origin\/develop`/i);
     assert.match(text, /merged and integrated.*select exactly one (?:new )?[^.]*task/is);
   }
+  assert.match(contract, /current `origin\/develop`/i);
+  assert.match(prompt, /current integrated base/i);
 });
 
 test("open merge-ready delivery stops for approval without starting another task", () => {

@@ -6,6 +6,7 @@
 Establish truth
 → Select the next unblocked small task
 → Build the task card
+→ Classify routing and choose the lowest sufficient available capability tier
 → Use A when production implementation is required
 → Run native tests, build, lint, and typecheck
 → Verify scope and run applicable guards
@@ -28,6 +29,12 @@ must not act as a report courier. Before accepting B's verdict, follow
 the parent turn's live permission mode, so B's no-write developer instructions
 and the deterministic guard remain mandatory even when its read-only default is
 overridden at spawn.
+
+Before every A, B, or C invocation, follow
+[adaptive-model-routing.md](adaptive-model-routing.md). Record the seven-factor
+classification and requested/effective runtime values in delivery evidence.
+An unavailable preferred capability is a fallback decision, not a reason to
+skip B review, tests, scope verification, or human gates.
 
 ## Verification selection
 
