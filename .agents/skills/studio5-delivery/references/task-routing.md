@@ -55,6 +55,13 @@ Make the card specific enough that scope can be verified mechanically.
 
 ## Agent selection
 
+Before selecting an agent invocation, read
+[adaptive-model-routing.md](adaptive-model-routing.md). Classify the seven
+routing dimensions and record the selected tier, requested/effective runtime
+values, fork context, and any fallback or owner override. Use the lowest
+sufficient currently available capability; do not lower verification, scope, or
+human-gate requirements.
+
 - Use `studio5_a_production` for authorized production implementation.
 - Use `studio5_b_review` after a clear commit for independent behaviorally
   no-write review. Wrap it in the deterministic before/after mutation guard;
