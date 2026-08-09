@@ -1,6 +1,7 @@
 import { readFile, stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, relative, resolve, sep } from "node:path";
+import assert from "node:assert/strict";
 
 const assets = new URL("../dist/assets/", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const contentTypes = {
@@ -19,6 +20,105 @@ async function builtFile(pathname) {
     if (error.code !== "ENOENT") throw error;
   }
   return join(assets, "404.html");
+}
+
+class SmokeLink {
+  constructor(destinationId) {
+    this.dataset = { route: destinationId };
+    this.attributes = new Map();
+    this.classList = { toggle() {} };
+  }
+
+  setAttribute(name, content) {
+    this.attributes.set(name, content);
+  }
+
+  removeAttribute(name) {
+    this.attributes.delete(name);
+  }
+}
+
+class SmokeNavigation {
+  links = [];
+
+  set innerHTML(markup) {
+    this.links = [...markup.matchAll(/data-route="([^"]+)"/g)]
+      .map((match) => new SmokeLink(match[1]));
+  }
+
+  addEventListener() {}
+
+  querySelectorAll(selector) {
+    return selector === "[data-route]" ? this.links : [];
+  }
+}
+
+class SmokeMainContent {
+  innerHTML = "";
+  focusedHeading = null;
+
+  querySelector(selector) {
+    if (selector !== "h1") return null;
+    return { focus: () => {
+      this.focusedHeading = this.innerHTML.match(/<h1[^>]*>([^<]+)<\/h1>/)?.[1] ?? null;
+    } };
+  }
+}
+
+function builtDomHarness() {
+  const mainContent = new SmokeMainContent();
+  const routeLabel = { textContent: "" };
+  const navigations = [new SmokeNavigation(), new SmokeNavigation()];
+  const location = { hash: "" };
+  const listeners = new Map();
+  return {
+    document: smokeDocument(mainContent, routeLabel, navigations),
+    history: { replaceState: (_state, _title, hash) => { location.hash = hash; } },
+    mainContent,
+    navigations,
+    routeLabel,
+    window: {
+      location,
+      addEventListener: (eventName, listener) => listeners.set(eventName, listener),
+    },
+    navigate: (hash) => {
+      location.hash = hash;
+      listeners.get("hashchange")();
+    },
+  };
+}
+
+function smokeDocument(mainContent, routeLabel, navigations) {
+  return {
+    title: "",
+    querySelector: (selector) => ({ "#main-content": mainContent, "#route-label": routeLabel })[selector],
+    querySelectorAll: (selector) => selector === "[data-navigation]"
+      ? navigations
+      : navigations.flatMap((navigation) => navigation.links),
+  };
+}
+
+async function verifyBuiltNavigation() {
+  const harness = builtDomHarness();
+  globalThis.document = harness.document;
+  globalThis.history = harness.history;
+  globalThis.window = harness.window;
+  await import(new URL("../dist/assets/app.mjs", import.meta.url));
+
+  const destinations = ["study", "projects", "practice", "library", "today"];
+  for (const destinationId of destinations) {
+    harness.navigate(`#/${destinationId}`);
+    const expectedLabel = `${destinationId[0].toUpperCase()}${destinationId.slice(1)}`;
+    assert.match(harness.mainContent.innerHTML, new RegExp(`<h1[^>]*>${expectedLabel}</h1>`));
+    assert.equal(harness.routeLabel.textContent, expectedLabel);
+    assert.equal(harness.mainContent.focusedHeading, expectedLabel);
+    for (const navigation of harness.navigations) {
+      const currentLinks = navigation.links.filter(
+        (link) => link.attributes.get("aria-current") === "page",
+      );
+      assert.deepEqual(currentLinks.map((link) => link.dataset.route), [destinationId]);
+    }
+  }
 }
 
 const server = createServer(async (request, response) => {
@@ -42,12 +142,6 @@ try {
     const response = await fetch(`${origin}${path}`);
     if (!response.ok) throw new Error(`Built asset returned ${response.status}: ${path}`);
   }
-  for (const destination of ["today", "study", "projects", "practice", "library"]) {
-    const response = await fetch(`${origin}/#/${destination}`);
-    if (!response.ok || !(await response.text()).includes("data-navigation")) {
-      throw new Error(`Built shell did not load for hash destination: ${destination}`);
-    }
-  }
   const fallback = await fetch(`${origin}/study`);
   if (fallback.status !== 404 || !(await fallback.text()).includes("routeFromPathname")) {
     throw new Error("Static fallback did not preserve a direct route");
@@ -58,4 +152,5 @@ try {
   });
 }
 
-console.log("Built HTTP smoke passed: assets, five hash routes, and static fallback");
+await verifyBuiltNavigation();
+console.log("Built smoke passed: HTTP asset/fallback closure + executable five-route DOM navigation");

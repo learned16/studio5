@@ -101,7 +101,8 @@ final product and must not be copied as an implicit production contract.
 - Static contracts for English LTR shell and automatic user-content direction.
 - Responsive rail/bottom-navigation behavior checks.
 - Keyboard/focus and basic accessibility checks available without a device.
-- Internal-link/asset closure and built browser smoke.
+- Internal-link/asset closure and executable built-app navigation smoke; actual
+  browser, visual, touch, and device evidence remain a separate later gate.
 - `.agents/skills/studio5-delivery/scripts/select-checks.mjs` plus all selected
   native checks.
 - Exact task-scope verification, applicable code/test/docs guards, secret scan,
@@ -121,10 +122,13 @@ snapshot PASS does not approve the final design.
   `prototype/p45-product-shell-web/**`; no existing prototype, Core module,
   schema, storage, Backup, Ink, Worker behavior, or production route changed.
 - Surface lint and static module-boundary checks pass.
-- Surface contract tests: `9/9` pass.
+- Surface contract tests: `10/10` pass.
 - Static build: `6` assets with a closed `3`-module JavaScript import graph.
-- Built HTTP smoke passes for all five hash destinations, required assets, and
-  the static direct-path fallback.
+- Built smoke keeps HTTP assertions limited to asset/static-fallback closure,
+  then executes the built application through a dependency-free DOM harness
+  across all five routes and verifies rendered headings, `aria-current`, and
+  focus transitions. This is executable navigation evidence, not browser,
+  visual, touch, or device evidence.
 - Selected full regression passes: Core `100/100`, P0 `91/91` plus build, P3
   `24/24` plus build, Studio5 delivery tooling `57/57`, and Wrangler dry-run
   with `261` existing Worker assets.

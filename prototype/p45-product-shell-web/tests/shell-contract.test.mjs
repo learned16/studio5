@@ -6,12 +6,13 @@ import { destinations } from "../routes.mjs";
 import { destinationView } from "../views.mjs";
 
 const root = new URL("..", import.meta.url);
-const [html, css, app, fallback, packageManifest] = await Promise.all([
+const [html, css, app, fallback, packageManifest, builtSmoke] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("styles.css", root), "utf8"),
   readFile(new URL("app.mjs", root), "utf8"),
   readFile(new URL("404.html", root), "utf8"),
   readFile(new URL("package.json", root), "utf8"),
+  readFile(new URL("scripts/built-smoke.mjs", root), "utf8"),
 ]);
 
 async function surfaceSourceFiles(directory = root) {
@@ -70,6 +71,13 @@ test("keyboard and non-color accessibility states remain explicit", () => {
   assert.match(destinationView("practice"), /Unavailable/);
   assert.match(destinationView("practice"), /disabled/);
   assert.match(destinationView("study"), /empty-state/);
+});
+
+test("built smoke executes navigation instead of treating URL fragments as HTTP evidence", () => {
+  assert.doesNotMatch(builtSmoke, /fetch\([^)]*#\//);
+  assert.match(builtSmoke, /await import\(new URL\("\.\.\/dist\/assets\/app\.mjs"/);
+  assert.match(builtSmoke, /aria-current/);
+  assert.match(builtSmoke, /focusedHeading/);
 });
 
 test("Practice is a disabled shell state and does not implement Phase 5", () => {
