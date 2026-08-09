@@ -2,7 +2,7 @@
 
 ## Status
 
-`DRAFT PR #17 / OWNER VISUAL + MATEPAD HUMAN GATE PASS / B RE-REVIEW + FINAL PR-HEAD CI RECHECK PENDING`
+`DRAFT PR #17 / OWNER VISUAL + MATEPAD HUMAN GATE PASS / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING`
 
 This is the single next eligible product task after
 `P4-P45-RECONCILIATION`. It is a small isolated Phase 4.5 slice, not a broad
@@ -170,9 +170,16 @@ snapshot PASS does not approve the final design.
   mutation guard, or final PR-head CI.
 - The first post-reconciliation B review returned `REVISE` only because the
   local reconciliation was not distinguished from the live published head.
-  This wording is repaired; repeat B review remains pending.
-- The canonical delivery state remains `B RE-REVIEW + FINAL PR-HEAD CI RECHECK
-  PENDING` until those checks complete on the reconciled branch.
+  After repair, the repeat B review and repository mutation guard both passed.
+- B routing evidence: all seven dimensions were classified as normal
+  complexity, low ambiguity, low production risk, medium context, no
+  architecture judgment, high review sensitivity, and judgment-heavy work.
+  The Supervisor selected `R3 — assurance review`, requested the transient
+  available reviewer setup `gpt-5.6-sol` with `high` reasoning and finite
+  context, recorded the effective runtime as `NOT EXPOSED`, used no fallback or
+  owner override, and kept all quality gates unchanged.
+- The canonical delivery state remains `FINAL PR-HEAD CI RECHECK PENDING` until
+  checks complete on the published reconciled branch.
 - The production route remains unchanged and continues to serve P3. Phase 5
   has not started.
 
