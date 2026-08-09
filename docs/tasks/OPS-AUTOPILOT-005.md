@@ -5,7 +5,7 @@
 - Task ID: `OPS-AUTOPILOT-005`
 - Requirement: owner-approved Control Plane operating policy
 - Type: `TOOLING / GOVERNANCE / EXCLUSIVE`
-- Status: `B REPAIR COMMITTED — repeat B review pending`
+- Status: `DRAFT PR #18 — FINAL PR-HEAD CI RECHECK PENDING`
 - Base: `origin/develop@261c1e3`
 - Branch: `chore/adaptive-model-reasoning-routing`
 - Dependencies: merged automation foundation through PR #16
@@ -112,6 +112,51 @@ no-history invocation, while keeping all quality gates unchanged. Requested
 transient model identifier: `gpt-5.6-terra`; requested reasoning: `low`;
 effective model and reasoning: `NOT EXPOSED`; fallback/owner override: none.
 This is delivery evidence only, not a reusable policy pin.
+
+## Final review and Draft PR evidence — 9 August 2026
+
+Draft PR #18 is `OPEN` against `develop` at published head
+`3599121ac539cd5b6ef6b6fd2dd15745fc40f98f`; `autoMergeRequest` is `null`.
+Its five named checks succeeded: `Studio5 Core`, `P0 Ink Web`,
+`P3 Lecture Capture Web`, `Cloudflare Worker Static Assets`, and
+`Workers Builds: studio5`. Those initial CI results apply to `3599121`; this
+unpublished evidence-only commit requires a final CI recheck after push.
+
+Independent B1 review routing: complexity `complex`, ambiguity `low`,
+production risk `none`, governance sensitivity `high`, code/context volume
+`large`, architectural judgment `moderate`, review/security sensitivity `high`,
+and mechanicality `judgment-heavy`. It selected `R3 — assurance` through an
+explicit finite-context invocation. Requested transient model identifier:
+`gpt-5.6-sol`; requested reasoning: `xhigh`; effective model and reasoning:
+`NOT EXPOSED`; outcome: `REVISE`; mutation guard: `PASS`; fallback/owner
+override: none; quality gates unchanged.
+
+Independent B2 review routing: complexity `normal`, ambiguity `low`,
+production risk `none`, code/context volume `medium`, architectural judgment
+`low`, review/security sensitivity `high`, and mechanicality `judgment-heavy`.
+It selected `R3 — assurance` through an explicit finite-context invocation.
+Requested transient model identifier: `gpt-5.6-sol`; requested reasoning:
+`high`; effective model and reasoning: `NOT EXPOSED`; outcome: `REVISE` for a
+status finding; mutation guard: `PASS`; fallback/owner override: none; quality
+gates unchanged.
+
+Independent B3 review routing: complexity `simple`, ambiguity `low`,
+production risk `none`, code/context volume `small`, architectural judgment
+`none`, review/security sensitivity `medium`, and mechanicality `repetitive`.
+It selected `R1 — balanced` through an explicit finite-context invocation.
+Requested transient model identifier: `gpt-5.6-terra`; requested reasoning:
+`medium`; effective model and reasoning: `NOT EXPOSED`; outcome: `PASS`;
+mutation guard: `PASS`; fallback/owner override: none; quality gates unchanged.
+
+Final-evidence update invocation routing: complexity `trivial`, ambiguity
+`low`, production risk `none`, code/context volume `small`, architectural
+judgment `none`, review/security sensitivity `medium`, and mechanicality
+`repetitive`. It selects `R0 — economy` with light reasoning through a reused
+explicit no-history finite A invocation, while keeping all quality gates
+unchanged. Requested transient model identifier: `gpt-5.6-terra`; requested
+reasoning: `low`; effective model and reasoning: `NOT EXPOSED`;
+fallback/owner override: none. This is delivery evidence only, not a reusable
+policy pin.
 
 ## Required checks
 
