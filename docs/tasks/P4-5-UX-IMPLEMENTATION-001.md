@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED / LOCAL CHECKS PASS / REMOTE DELIVERY PENDING`
+`DRAFT PR #17 / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING`
 
 This is the single next eligible product task after
 `P4-P45-RECONCILIATION`. It is a small isolated Phase 4.5 slice, not a broad
@@ -133,9 +133,23 @@ snapshot PASS does not approve the final design.
   `24/24` plus build, Studio5 delivery tooling `57/57`, and Wrangler dry-run
   with `261` existing Worker assets.
 - Exact scope, applicable code/test/docs guards, documentation/path checks,
-  high-confidence secret scan, and `git diff --check` pass. Independent B
-  review, mutation verification, push, Draft PR, and CI remain parent-owned
-  delivery steps and are not claimed here.
+  high-confidence secret scan, and `git diff --check` pass.
+
+## Remote delivery evidence — 2026-08-09
+
+- Draft PR #17 is open to `develop`; automatic merge is not enabled.
+- The published PR head before this evidence-only commit is
+  `fb3e1e1b8878cab0a86e346ca0bd5b3e258a8b73`.
+- Independent B review completed `REVISE → repair → PASS`, and the repository
+  mutation guard passed.
+- All five reported GitHub checks succeeded on that published head: Studio5
+  Core, P0 Ink Web, P3 Lecture Capture Web, Cloudflare Worker Static Assets,
+  and Workers Builds: studio5.
+- This evidence-only commit is not yet published, so the canonical delivery
+  state remains `FINAL PR-HEAD CI RECHECK PENDING` until checks run on the new
+  PR head.
+- No browser, visual, touch, MatePad, or device gate is claimed. Phase 5 has not
+  started.
 
 ## Rollback and replacement boundary
 

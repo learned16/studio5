@@ -1,7 +1,7 @@
 # Studio5 Project Status
 
 آخر تحديث: 2026-08-09
-المرحلة الحالية: `PHASE 4.5 — APP SHELL FOUNDATION / LOCAL CHECKS PASS`
+المرحلة الحالية: `PHASE 4.5 — APP SHELL FOUNDATION / DRAFT PR REVIEW`
 الفرع النشط: `feat/p45-warm-paper-shell-foundation`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
@@ -50,6 +50,10 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
   فحوص GitHub الخمسة، ودُمجت في `develop` عبر `0ffc446` من دون Auto-Merge.
 - PR #16: `Merged`؛ صولحت أدلة Phase 4 وأُثبتت أولوية Phase 4.5، ودُمجت في
   `develop` عبر `261c1e3` من دون Production أو Auto-Merge.
+- PR #17: `Draft / Open` إلى `develop`؛ دورة B هي `REVISE → repair → PASS`
+  وmutation guard ناجح. نجحت فحوص GitHub الخمسة على الرأس المنشور `fb3e1e1`؛
+  commit الأدلة اللاحق غير منشور بعد، لذلك
+  `FINAL PR-HEAD CI RECHECK PENDING`. لا Auto-Merge.
 
 ## قرار توجيه المنتج — 2026-08-09
 
@@ -178,7 +182,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
 | P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
-| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | IMPLEMENTED / LOCAL CHECKS PASS / REMOTE DELIVERY PENDING | سطح معزول بخمس وجهات؛ tests `10/10` وbuild وHTTP closure + executable DOM navigation smoke وFull regression PASS؛ لا Browser/Device claim ولا Core/Ink/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | DRAFT PR #17 / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING | tests `10/10` وFull regression PASS؛ GitHub 5/5 على `fb3e1e1`؛ evidence commit غير منشور؛ لا Browser/Visual/MatePad/Device claim ولا Core/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -193,11 +197,13 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 ## القادم بعد المهمة الحالية
 
 1. `P4.5-UX-IMPLEMENTATION-001 — Warm Paper App Shell and Navigation
-   Foundation` هي المهمة النشطة. التنفيذ المعزول وفحوص A المحلية ناجحة؛
-   Independent B review وmutation guard وDraft PR وCI ما زالت خطوات التسليم
-   التالية، ولا يُدّعى نجاحها قبل تنفيذها.
-2. لا يبدأ أي Route cutover أو Data adapter أو شريحة منتج تالية قبل بوابة
-   المراجعة والتسليم والقرار البشري لهذه الشريحة.
+   Foundation` هي المهمة النشطة في Draft PR #17. دورة B وmutation guard ناجحتان،
+   وفحوص GitHub الخمسة نجحت على الرأس المنشور `fb3e1e1`. بعد دفع commit الأدلة
+   يجب إعادة فحص CI على الرأس النهائي؛ لذلك الحالة الحالية
+   `FINAL PR-HEAD CI RECHECK PENDING`.
+2. بعد نجاح فحوص الرأس النهائي، يتوقف العمل عند بوابة المالك للمراجعة والدمج
+   والتقييم البصري/الجهاز. لا يبدأ Route cutover أو Data adapter أو شريحة منتج
+   تالية تلقائياً.
 3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm
    Paper مرجع معتمد فقط وليس المنتج النهائي.
 4. Ink Batch 3 `DEFERRED / NOT STARTED` حتى يُجدول ضمن سلسلة Batches 3–7 قبل
