@@ -65,3 +65,16 @@ test("Today renders loading, empty, recoverable error, and automatic content dir
   assert.match(ready, /dir="auto"><strong>الرسم المعماري — Studio/);
   assert.match(ready, /Overdue first/);
 });
+
+test("Today escapes hostile user content while preserving automatic direction", () => {
+  const hostile = projectionFixture();
+  hostile.agenda[0].title = '<img src=x onerror="unsafe()"> & مراجعة';
+
+  const ready = destinationView("today", { status: "ready", projection: hostile });
+
+  assert.doesNotMatch(ready, /<img src=x/);
+  assert.match(
+    ready,
+    /dir="auto"><strong>&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; مراجعة/,
+  );
+});

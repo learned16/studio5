@@ -37,6 +37,18 @@ the existing canonical browser storage context and
 Workspace or cross the live-Ink dependency boundary. No new architecture,
 Core contract, schema, or storage decision is introduced.
 
+## Origin and evidence boundary
+
+IndexedDB is scoped to the browser origin. The isolated localhost surface and
+any separate preview origin cannot read canonical records written on the P3 or
+production origin. Reading those same records requires later same-origin
+hosting; this task does not authorize that route or deployment change.
+
+Automated facade/projection tests and the built smoke prove application wiring
+against a controlled in-memory IndexedDB boundary. They do not prove a physical
+browser driver reading existing user data. The Core browser-storage smoke stays
+pending, and this task claims no device, preview-data, or production-route PASS.
+
 ## Allowed files
 
 - `prototype/p45-product-shell-web/**`
@@ -69,8 +81,11 @@ Core contract, schema, or storage decision is introduced.
 
 - Surface lint, typecheck, behavior tests, build, and built smoke.
 - Facade contract: `queryToday` only and no exposed mutator.
-- Today projection: agenda/task order, empty/error state, timezone inputs, and
-  automatic content direction.
+- Today projection: agenda/task order, empty/error state, timezone inputs,
+  hostile-content escaping, and automatic content direction.
+- Executable built-app transition from a controlled read failure through the
+  actual Retry listener to a ready state, including the exact current instant
+  and browser UTC offset supplied to the facade.
 - Studio5 check selection and every selected native check.
 - Exact scope verification, clean-code/test/docs guards, secret scan, and
   `git diff --check`.

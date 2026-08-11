@@ -6,9 +6,11 @@ PR #17 merged as `2c5d0c6` with GitHub `5/5 PASS` and owner-verified visual,
 MatePad, and P4.5 foundation human-gate `PASS`; the production route remains
 P3. PR #18 merged as `110d744` with GitHub `5/5 PASS`; PR #19 merged as
 `c2991c7` and closed OPS-AUTOPILOT-006. `P4.5-UX-IMPLEMENTATION-002` is the
-active isolated read-only Today slice. Ink Batch 3 stays deferred and Phase 5
-stays blocked. Existing CI covers Core/P0/P3/Worker but has no independent P4.5
-job; this is a coverage finding only.
+active isolated read-only Today slice. IndexedDB remains origin-scoped: an
+isolated localhost/preview does not prove access to P3 or production-origin
+records, and the physical browser-driver read remains unverified. Ink Batch 3
+stays deferred and Phase 5 stays blocked. Existing CI covers Core/P0/P3/Worker
+but has no independent P4.5 job; this is a coverage finding only.
 
 هذه المصفوفة تربط متطلبات السنة الأولى بالمهام والاختبارات والأدلة. لا تستبدل ملف المهمة أو المواصفة.
 
@@ -73,7 +75,7 @@ job; this is a coverage finding only.
 | `S5-PREVIEW-003` | إعداد Workers Static Assets وWorkers Builds بإصدار Wrangler مثبت وفحص بلا نشر | P4-WORKERS-PREVIEW-001 | DONE / DEPLOYED / OWNER-VERIFIED REAL-DEVICE PASS | Wrangler/build evidence آلي؛ owner device evidence منفصل ولا يُنسب إلى Build SHA غير supplied |
 | `S5-UX-FOUNDATION-001` | Warm Paper Academic Studio وEnglish LTR shell والتنقل الرئيسي الموحد | P4.5-UX-SPEC-001 | ADOPTED / INCREMENTAL IMPLEMENTATION AUTHORIZED | `Today / Study / Projects / Practice / Library` + اتجاه تلقائي لمحتوى المستخدم؛ Warm Paper reference only |
 | `S5-UX-P45-SHELL-001` | App Shell وتنقل Responsive معزولان من دون Core أو Ink | P4.5-UX-IMPLEMENTATION-001 / PR #17 | COMPLETE / MERGED | PR #17 merged as `2c5d0c6` after GitHub 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ B `REVISE → repair → PASS` وmutation guard PASS؛ production route ما زال P3 ولا route cutover أو Phase 5 |
-| `S5-UX-P45-TODAY-001` | عرض Today للقراءة فقط من إسقاط Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-002 | IN PROGRESS | facade محلي يكشف `queryToday` فقط؛ حالات loading/data/empty/error واتجاه محتوى تلقائي؛ لا P3 أو route cutover أو mutators أو Phase 5 |
+| `S5-UX-P45-TODAY-001` | عرض Today للقراءة فقط من إسقاط Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-002 | IN PROGRESS / B REPAIR | facade يكشف `queryToday` فقط؛ نفس-origin مطلوب لرؤية نفس IndexedDB؛ built smoke مضبوط لا يثبت browser-driver أو بيانات P3/production؛ لا route cutover أو mutators أو Phase 5 |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

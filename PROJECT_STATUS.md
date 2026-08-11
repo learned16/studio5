@@ -11,8 +11,11 @@ progress snapshots where they conflict.
 - PR #18 is `Merged` into `develop` as `110d744`; GitHub checks were `5/5 PASS`.
 - PR #19 merged into `develop` as `c2991c7`; OPS-AUTOPILOT-006 is complete.
 - `P4.5-UX-IMPLEMENTATION-002` is the active bounded product slice. It connects
-  only the isolated Today screen to the existing read-only Core Today query.
-  Ink Batch 3 remains deferred and Phase 5 remains blocked.
+  the isolated Today screen to the canonical read-only Core Today query for the
+  surface's current browser origin. A separate localhost/preview origin cannot
+  see P3 or production IndexedDB records; same-origin hosting is a later slice.
+  Physical-browser access to existing data remains unverified. Ink Batch 3
+  remains deferred and Phase 5 remains blocked.
 - `.github/workflows/ci.yml` currently runs Core, P0, P3, and Worker checks;
   it has no independent P4.5 job. This is a material coverage finding, not a
   claim that the workflow was changed.
@@ -202,7 +205,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
 | P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
 | P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | COMPLETE / MERGED — PR #17 | Merged as `2c5d0c6` after GitHub checks 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ production route ما زال P3؛ لا route cutover أو Core/Ink/Phase 5 |
-| P4.5-UX-IMPLEMENTATION-002 | Read-Only Today Core Projection | `feat/p45-readonly-today-core-projection` | Codex | IN PROGRESS | سطح P4.5 فقط؛ canonical Core browser storage + `queryToday` للقراءة؛ لا mutators أو P3/route cutover أو Schema/Ink/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-002 | Read-Only Today Core Projection | `feat/p45-readonly-today-core-projection` | Codex | IN PROGRESS / B REPAIR | سطح P4.5 فقط؛ القراءة من canonical Core على نفس origin فقط؛ localhost/preview المعزول لا يرى بيانات P3/production؛ browser-driver الحقيقي ما زال غير مثبت؛ لا mutators أو route cutover أو Schema/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
