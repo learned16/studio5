@@ -37,6 +37,7 @@ function isCriticalPath(filePath) {
     || baseName === "backup.mjs"
     || baseName === "storage.mjs"
     || /(^|\/)(storage|backup|persistence|indexeddb)(?:[.-]|\/|$)/i.test(filePath)
+    || /(^|\/)browser-(storage|backup|persistence|indexeddb|migration)(?:[.-]|\/|$)/i.test(filePath)
     || /(^|\/)data-(store|persistence)\.[^/]+$/i.test(filePath);
 }
 

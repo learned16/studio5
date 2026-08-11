@@ -69,6 +69,8 @@ test("escalates backup and browser-persistence paths", () => {
     "prototype/p3-lecture-capture-web/storage.mjs",
     "prototype/p0-ink-web/indexeddb-storage.mjs",
     "prototype/p0-ink-web/data-persistence.mjs",
+    "packages/studio5-core/src/browser-storage-profile.mjs",
+    "packages/studio5-core/src/browser-storage-migration.mjs",
   ]) {
     assert.equal(names([filePath]).includes("Full regression"), true, filePath);
   }
