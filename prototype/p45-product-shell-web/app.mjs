@@ -1,9 +1,12 @@
 import { destinations, routeFromHash, routeHash } from "./routes.mjs";
+import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
 const mainContent = document.querySelector("#main-content");
 const routeLabel = document.querySelector("#route-label");
 const navigationRegions = [...document.querySelectorAll("[data-navigation]")];
+let renderVersion = 0;
+let todayFacadePromise = null;
 
 function navigationLink(destination) {
   return `<a class="navigation-item" href="${routeHash(destination.id)}" data-route="${destination.id}">
@@ -26,13 +29,59 @@ function updateSelectedDestination(destinationId) {
   }
 }
 
-function renderRoute({ focusHeading = false } = {}) {
-  const destination = routeFromHash(window.location.hash);
-  mainContent.innerHTML = destinationView(destination.id);
+function todayFacade() {
+  if (!todayFacadePromise) {
+    todayFacadePromise = openCanonicalTodayReadFacade().catch((error) => {
+      todayFacadePromise = null;
+      throw error;
+    });
+  }
+  return todayFacadePromise;
+}
+
+function todayQueryOptions() {
+  const now = Date.now();
+  return {
+    now,
+    utcOffsetMinutes: -new Date(now).getTimezoneOffset(),
+  };
+}
+
+function updateRouteContent(destination, content, focusHeading) {
+  mainContent.innerHTML = content;
   routeLabel.textContent = destination.label;
   document.title = `${destination.label} — Studio5`;
   updateSelectedDestination(destination.id);
   if (focusHeading) mainContent.querySelector("h1")?.focus();
+}
+
+async function renderToday(destination, version, focusHeading) {
+  try {
+    const facade = await todayFacade();
+    const projection = await facade.query(todayQueryOptions());
+    if (version !== renderVersion || routeFromHash(window.location.hash).id !== "today") return;
+    updateRouteContent(destination, destinationView("today", {
+      status: "ready",
+      projection,
+    }), focusHeading);
+  } catch {
+    if (version !== renderVersion || routeFromHash(window.location.hash).id !== "today") return;
+    updateRouteContent(destination, destinationView("today", { status: "error" }), focusHeading);
+    mainContent.querySelector("[data-today-retry]")?.addEventListener("click", () => {
+      renderRoute({ focusHeading: true });
+    });
+  }
+}
+
+function renderRoute({ focusHeading = false } = {}) {
+  const destination = routeFromHash(window.location.hash);
+  renderVersion += 1;
+  if (destination.id === "today") {
+    updateRouteContent(destination, destinationView("today", { status: "loading" }), focusHeading);
+    void renderToday(destination, renderVersion, focusHeading);
+    return;
+  }
+  updateRouteContent(destination, destinationView(destination.id), focusHeading);
 }
 
 function focusAdjacentLink(event) {

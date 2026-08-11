@@ -3,12 +3,15 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 
 const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const assets = join(root, "dist", "assets");
+const coreSource = resolve(root, "..", "..", "packages", "studio5-core", "src");
 const staticAssets = [
   "index.html",
   "404.html",
   "styles.css",
   "app.mjs",
   "routes.mjs",
+  "today-projection.mjs",
+  "today-read-facade.mjs",
   "views.mjs",
 ];
 
@@ -16,6 +19,7 @@ function relativeImports(source) {
   const patterns = [
     /\bfrom\s+["'](\.[^"']+)["']/g,
     /\bimport\s+["'](\.[^"']+)["']/g,
+    /\bimport\(\s*["'](\.[^"']+)["']\s*\)/g,
   ];
   return patterns.flatMap((pattern) => [...source.matchAll(pattern)].map((match) => match[1]));
 }
@@ -44,6 +48,7 @@ async function moduleClosure(entrypoints) {
 await rm(join(root, "dist"), { recursive: true, force: true });
 await mkdir(assets, { recursive: true });
 for (const asset of staticAssets) await cp(join(root, asset), join(assets, asset));
+await cp(coreSource, join(assets, "core"), { recursive: true });
 
 const indexHtml = await readFile(join(assets, "index.html"), "utf8");
 if (!indexHtml.includes('lang="en" dir="ltr"') || !indexHtml.includes('src="./app.mjs"')) {

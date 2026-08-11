@@ -326,6 +326,18 @@ p {
   padding: clamp(var(--space-4), 3vw, var(--space-8));
 }
 
+.today-state {
+  align-items: start;
+  display: grid;
+  justify-items: start;
+}
+
+.today-completed {
+  font-size: 0.875rem;
+  margin: 0;
+  text-align: end;
+}
+
 .priority-card {
   background: var(--color-bg-elevated);
   border-block-start: 0.25rem solid var(--color-action-primary);

@@ -65,6 +65,56 @@ class SmokeMainContent {
   }
 }
 
+class SmokeIndexedDatabase {
+  constructor() {
+    this.stores = new Map();
+    this.objectStoreNames = { contains: (name) => this.stores.has(name) };
+  }
+
+  createObjectStore(name) {
+    const records = new Map();
+    this.stores.set(name, records);
+    return records;
+  }
+
+  transaction(storeName) {
+    const transaction = {
+      error: null,
+      objectStore: () => ({
+        get: (key) => {
+          const request = {};
+          queueMicrotask(() => {
+            request.result = this.stores.get(storeName)?.get(key);
+            request.onsuccess?.();
+            transaction.oncomplete?.();
+          });
+          return request;
+        },
+      }),
+    };
+    return transaction;
+  }
+
+  close() {}
+}
+
+function smokeIndexedDB() {
+  const databases = new Map();
+  return {
+    open(name) {
+      const request = {};
+      queueMicrotask(() => {
+        const isNew = !databases.has(name);
+        if (isNew) databases.set(name, new SmokeIndexedDatabase());
+        request.result = databases.get(name);
+        if (isNew) request.onupgradeneeded?.();
+        request.onsuccess?.();
+      });
+      return request;
+    },
+  };
+}
+
 function builtDomHarness() {
   const mainContent = new SmokeMainContent();
   const routeLabel = { textContent: "" };
@@ -102,6 +152,7 @@ async function verifyBuiltNavigation() {
   const harness = builtDomHarness();
   globalThis.document = harness.document;
   globalThis.history = harness.history;
+  globalThis.indexedDB = smokeIndexedDB();
   globalThis.window = harness.window;
   await import(new URL("../dist/assets/app.mjs", import.meta.url));
 
@@ -119,6 +170,11 @@ async function verifyBuiltNavigation() {
       assert.deepEqual(currentLinks.map((link) => link.dataset.route), [destinationId]);
     }
   }
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    if (harness.mainContent.innerHTML.includes("Your day is clear")) return;
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+  }
+  throw new Error("Built Today route did not reach its empty ready state");
 }
 
 const server = createServer(async (request, response) => {
@@ -153,4 +209,4 @@ try {
 }
 
 await verifyBuiltNavigation();
-console.log("Built smoke passed: HTTP asset/fallback closure + executable five-route DOM navigation");
+console.log("Built smoke passed: HTTP closure + five-route navigation + canonical Today empty state");
