@@ -69,7 +69,7 @@ class SmokeButton {
 class SmokeMainContent {
   markup = "";
   focusedHeading = null;
-  retryButton = null;
+  retryButtons = new Map();
 
   get innerHTML() {
     return this.markup;
@@ -77,11 +77,15 @@ class SmokeMainContent {
 
   set innerHTML(markup) {
     this.markup = markup;
-    this.retryButton = markup.includes("data-today-retry") ? new SmokeButton() : null;
+    this.retryButtons = new Map();
+    for (const selector of ["[data-study-retry]", "[data-today-retry]"]) {
+      const attribute = selector.slice(1, -1);
+      if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
+    }
   }
 
   querySelector(selector) {
-    if (selector === "[data-today-retry]") return this.retryButton;
+    if (this.retryButtons.has(selector)) return this.retryButtons.get(selector);
     if (selector === "h1") {
       return { focus: () => {
         this.focusedHeading = this.markup.match(/<h1[^>]*>([^<]+)<\/h1>/)?.[1] ?? null;
@@ -186,10 +190,12 @@ async function verifyBuiltNavigation() {
   const harness = builtDomHarness();
   const fixedInstant = Date.parse("2026-08-11T08:15:00.000Z");
   const queryOptions = [];
+  const subjectCallArguments = [];
   const { AcademicRepository } = await import(
     new URL("../dist/assets/core/academic-repository.mjs", import.meta.url)
   );
   const originalQueryToday = AcademicRepository.prototype.queryToday;
+  const originalListSubjects = AcademicRepository.prototype.listSubjects;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
   AcademicRepository.prototype.queryToday = function queryToday(options) {
@@ -207,6 +213,16 @@ async function verifyBuiltNavigation() {
       tasks: { overdue: [], dueToday: [], unscheduled: [], completedToday: [] },
     });
   };
+  AcademicRepository.prototype.listSubjects = function listSubjects(...args) {
+    subjectCallArguments.push(structuredClone(args));
+    if (subjectCallArguments.length === 1) {
+      return Promise.reject(new Error("controlled subject read failure"));
+    }
+    return Promise.resolve([
+      { id: "subject:1", title: "Structures & Safety" },
+      { id: "subject:2", title: '<img src=x onerror="unsafe()"> & مراجعة' },
+    ]);
+  };
   Date.now = () => fixedInstant;
   Date.prototype.getTimezoneOffset = () => -180;
   globalThis.document = harness.document;
@@ -216,7 +232,7 @@ async function verifyBuiltNavigation() {
   try {
     await import(new URL("../dist/assets/app.mjs", import.meta.url));
     await waitForMarkup(harness.mainContent, "Today could not be opened");
-    harness.mainContent.retryButton.click();
+    harness.mainContent.querySelector("[data-today-retry]").click();
     await waitForMarkup(harness.mainContent, "&lt;img src=x onerror=&quot;unsafe()&quot;&gt;");
     assert.deepEqual(queryOptions, [
       { now: fixedInstant, utcOffsetMinutes: 180 },
@@ -234,7 +250,24 @@ async function verifyBuiltNavigation() {
       assert.deepEqual(todayLinks.map((link) => link.dataset.route), ["today"]);
     }
 
-    for (const destinationId of ["study", "projects", "practice", "library"]) {
+    harness.navigate("#/study");
+    await waitForMarkup(harness.mainContent, "Subjects could not be opened");
+    harness.mainContent.querySelector("[data-study-retry]").click();
+    await waitForMarkup(harness.mainContent, "&lt;img src=x onerror=&quot;unsafe()&quot;&gt;");
+    assert.deepEqual(subjectCallArguments, [[], []]);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /<img src=x/);
+    assert.match(
+      harness.mainContent.innerHTML,
+      /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; مراجعة/,
+    );
+    for (const navigation of harness.navigations) {
+      const studyLinks = navigation.links.filter(
+        (link) => link.attributes.get("aria-current") === "page",
+      );
+      assert.deepEqual(studyLinks.map((link) => link.dataset.route), ["study"]);
+    }
+
+    for (const destinationId of ["projects", "practice", "library"]) {
       harness.navigate(`#/${destinationId}`);
       const expectedLabel = `${destinationId[0].toUpperCase()}${destinationId.slice(1)}`;
       assert.match(harness.mainContent.innerHTML, new RegExp(`<h1[^>]*>${expectedLabel}</h1>`));
@@ -249,6 +282,7 @@ async function verifyBuiltNavigation() {
     }
   } finally {
     AcademicRepository.prototype.queryToday = originalQueryToday;
+    AcademicRepository.prototype.listSubjects = originalListSubjects;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
   }
@@ -271,7 +305,16 @@ await new Promise((resolveListening) => server.listen(0, "127.0.0.1", resolveLis
 const address = server.address();
 const origin = `http://127.0.0.1:${address.port}`;
 try {
-  for (const path of ["/", "/index.html", "/styles.css", "/app.mjs", "/routes.mjs", "/views.mjs"]) {
+  for (const path of [
+    "/",
+    "/index.html",
+    "/styles.css",
+    "/app.mjs",
+    "/routes.mjs",
+    "/study-subjects-projection.mjs",
+    "/study-subjects-read-facade.mjs",
+    "/views.mjs",
+  ]) {
     const response = await fetch(`${origin}${path}`);
     if (!response.ok) throw new Error(`Built asset returned ${response.status}: ${path}`);
   }
@@ -286,4 +329,4 @@ try {
 }
 
 await verifyBuiltNavigation();
-console.log("Built smoke passed: HTTP closure + five routes + Today failure/retry/escaped ready state");
+console.log("Built smoke passed: HTTP closure + five routes + Today and Study failure/retry/escaped ready states");

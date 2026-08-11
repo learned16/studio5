@@ -10,9 +10,12 @@ progress snapshots where they conflict.
   `PASS`. The production route remains P3; no route cutover was made.
 - PR #18 is `Merged` into `develop` as `110d744`; GitHub checks were `5/5 PASS`.
 - PR #19 merged into `develop` as `c2991c7`; OPS-AUTOPILOT-006 is complete.
-- `P4.5-UX-IMPLEMENTATION-002` is the active bounded product slice. It connects
-  the isolated Today screen to the canonical read-only Core Today query for the
-  surface's current browser origin. A separate localhost/preview origin cannot
+- PR #20 merged into `develop` as `190851d`; `P4.5-UX-IMPLEMENTATION-002` is
+  complete and the isolated Today screen now reads the canonical Core Today
+  query for the surface's current browser origin.
+- `P4.5-UX-IMPLEMENTATION-003` is the only active bounded product slice. It
+  replaces only Study's representative subject content with a canonical
+  read-only Core subject listing. A separate localhost/preview origin cannot
   see P3 or production IndexedDB records; same-origin hosting is a later slice.
   Physical-browser access to existing data remains unverified. Ink Batch 3
   remains deferred and Phase 5 remains blocked.
@@ -21,8 +24,8 @@ progress snapshots where they conflict.
   claim that the workflow was changed.
 
 آخر تحديث: 2026-08-11
-المرحلة الحالية: `PHASE 4.5 — READ-ONLY TODAY CORE PROJECTION IN PROGRESS`
-الفرع النشط: `feat/p45-readonly-today-core-projection`
+المرحلة الحالية: `PHASE 4.5 — READ-ONLY STUDY SUBJECTS PROJECTION IN PROGRESS`
+الفرع النشط: `feat/p45-readonly-study-subjects`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -205,7 +208,8 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
 | P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
 | P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | COMPLETE / MERGED — PR #17 | Merged as `2c5d0c6` after GitHub checks 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ production route ما زال P3؛ لا route cutover أو Core/Ink/Phase 5 |
-| P4.5-UX-IMPLEMENTATION-002 | Read-Only Today Core Projection | `feat/p45-readonly-today-core-projection` | Codex | IN PROGRESS / B REPAIR | سطح P4.5 فقط؛ القراءة من canonical Core على نفس origin فقط؛ localhost/preview المعزول لا يرى بيانات P3/production؛ browser-driver الحقيقي ما زال غير مثبت؛ لا mutators أو route cutover أو Schema/Ink/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-002 | Read-Only Today Core Projection | `feat/p45-readonly-today-core-projection` | Codex | COMPLETE / MERGED — PR #20 | merged into `develop` as `190851d`؛ facade للقراءة فقط؛ same-origin boundary محفوظ؛ لا route cutover أو mutators أو Phase 5 |
+| P4.5-UX-IMPLEMENTATION-003 | Read-Only Study Subjects Projection | `feat/p45-readonly-study-subjects` | Codex | LOCAL VERIFIED / PARENT B REVIEW PENDING | Surface 22/22 + Core 100/100 + lint/typecheck/build/built smoke PASS؛ يستبدل محتوى Study التمثيلي فقط بقائمة `AcademicRepository.listSubjects` للقراءة؛ Today وبقية المسارات محفوظة؛ لا Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -219,9 +223,9 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 
 ## القادم بعد المهمة الحالية
 
-1. بعد تكامل `P4.5-UX-IMPLEMENTATION-002`، يختار `continue` شريحة المنتج التالية
-   المؤهلة ضمن Phase 4.5 وفق المسار الحرج. لا يبدأ Ink Batch 3 أو Phase 5 ولا
-   تحسين أتمتة جديد تلقائياً.
+1. أكمل `P4.5-UX-IMPLEMENTATION-003` كأصغر شريحة Study للقراءة فقط، ثم توقف عند
+   بوابة مراجعة ودمج المالك. لا يبدأ Ink Batch 3 أو Phase 5 ولا تحسين أتمتة
+   جديد تلقائياً.
 2. يبقى Route cutover وData adapter شريحتين لاحقتين تتطلبان Task Card مستقلة؛ لا
    تبدأ أي منهما تلقائياً.
 3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm

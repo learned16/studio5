@@ -5,7 +5,10 @@ const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "
 const coreSource = resolve(root, "..", "..", "packages", "studio5-core", "src");
 const modules = [
   "app.mjs",
+  "canonical-read-repository.mjs",
   "routes.mjs",
+  "study-subjects-projection.mjs",
+  "study-subjects-read-facade.mjs",
   "today-projection.mjs",
   "today-read-facade.mjs",
   "views.mjs",

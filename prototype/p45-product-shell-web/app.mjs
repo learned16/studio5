@@ -1,4 +1,5 @@
 import { destinations, routeFromHash, routeHash } from "./routes.mjs";
+import { openCanonicalStudySubjectsReadFacade } from "./study-subjects-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
@@ -6,6 +7,7 @@ const mainContent = document.querySelector("#main-content");
 const routeLabel = document.querySelector("#route-label");
 const navigationRegions = [...document.querySelectorAll("[data-navigation]")];
 let renderVersion = 0;
+let studyFacadePromise = null;
 let todayFacadePromise = null;
 
 function navigationLink(destination) {
@@ -37,6 +39,16 @@ function todayFacade() {
     });
   }
   return todayFacadePromise;
+}
+
+function studyFacade() {
+  if (!studyFacadePromise) {
+    studyFacadePromise = openCanonicalStudySubjectsReadFacade().catch((error) => {
+      studyFacadePromise = null;
+      throw error;
+    });
+  }
+  return studyFacadePromise;
 }
 
 function todayQueryOptions() {
@@ -73,12 +85,35 @@ async function renderToday(destination, version, focusHeading) {
   }
 }
 
+async function renderStudy(destination, version, focusHeading) {
+  try {
+    const facade = await studyFacade();
+    const subjects = await facade.list();
+    if (version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    updateRouteContent(destination, destinationView("study", {
+      status: "ready",
+      subjects,
+    }), focusHeading);
+  } catch {
+    if (version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    updateRouteContent(destination, destinationView("study", { status: "error" }), focusHeading);
+    mainContent.querySelector("[data-study-retry]")?.addEventListener("click", () => {
+      renderRoute({ focusHeading: true });
+    });
+  }
+}
+
 function renderRoute({ focusHeading = false } = {}) {
   const destination = routeFromHash(window.location.hash);
   renderVersion += 1;
   if (destination.id === "today") {
     updateRouteContent(destination, destinationView("today", { status: "loading" }), focusHeading);
     void renderToday(destination, renderVersion, focusHeading);
+    return;
+  }
+  if (destination.id === "study") {
+    updateRouteContent(destination, destinationView("study", { status: "loading" }), focusHeading);
+    void renderStudy(destination, renderVersion, focusHeading);
     return;
   }
   updateRouteContent(destination, destinationView(destination.id), focusHeading);
