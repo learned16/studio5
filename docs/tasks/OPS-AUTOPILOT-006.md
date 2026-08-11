@@ -68,16 +68,20 @@ product work, Phase 5, auto-merge, and merge operations.
 - scope verification against `origin/develop` using the paths above;
 - applicable docs and test guards, secret scan, and `git diff --check`.
 
-Full Core/P0/P3/Worker regression is deliberately not selected for this bounded
-tooling/governance change. Existing remote CI remains unchanged.
+The ordinary narrow P4.5 plus routine status/traceability case does not select
+Full regression. This specific OPS-AUTOPILOT-006 diff also changes an authority
+file, which is a conservative Full-regression trigger; Full Core/P0/P3/Worker
+regression was therefore selected and run. Existing remote CI remains unchanged.
 
 ## Delivery boundaries
 
 No device claim is created. Existing Phase 4 owner evidence is only reconciled
 where the authority expressly supports it; the published Worker-specific
-Ink/pen/Palm gate remains unclaimed. Rollback is a revert of this task's single
-commit. Stop after independent B review, mutation guard, push, Draft PR, and
-current CI; the owner alone decides merge.
+Ink/pen/Palm gate remains unclaimed. If rollback is needed, safely revert the
+task/PR changes with the appropriate revert commit or commits; do not rewrite
+history merely to make rollback appear single-commit. Stop after independent B
+review, mutation guard, push, Draft PR, and current CI; the owner alone decides
+merge.
 
 ## A routing evidence
 
