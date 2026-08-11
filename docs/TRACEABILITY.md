@@ -1,5 +1,15 @@
 # Requirement Traceability
 
+## Current reconciliation — 11 August 2026
+
+PR #17 merged as `2c5d0c6` with GitHub `5/5 PASS` and owner-verified visual,
+MatePad, and P4.5 foundation human-gate `PASS`; the production route remains
+P3. PR #18 merged as `110d744` with GitHub `5/5 PASS`. `OPS-AUTOPILOT-006` is
+the one bounded automation-efficiency task. After its integration, routing
+returns to the eligible Phase 4.5 product critical path; Ink Batch 3 stays
+deferred and Phase 5 stays blocked. Existing CI covers Core/P0/P3/Worker but
+has no independent P4.5 job; this is a coverage finding only.
+
 هذه المصفوفة تربط متطلبات السنة الأولى بالمهام والاختبارات والأدلة. لا تستبدل ملف المهمة أو المواصفة.
 
 ## عائلات المعرّفات
@@ -56,12 +66,13 @@
 | `S5-QA-AUTOPILOT-002` | مراجعة B معزولة بفرض read-only من invocation مستقلة | OPS-AUTOPILOT-002 | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة regression محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه قرار تشغيلي لا defect |
 | `S5-QA-AUTOPILOT-003` | تحقق مسار التسليم باشتراك Codex الحالي فقط | OPS-AUTOPILOT-003 / PR #14 | COMPLETE / MERGED | Supervisor/A/B وmutation guard وcheck selection وscope PASS؛ PR #14 merged at `1043d46` بعد GitHub CI 5/5 PASS؛ C غير مطلوب؛ لا API key ولا Full access ولا auto-merge ولا Production |
 | `S5-QA-AUTOPILOT-004` | توجيه أمر المالك `continue` من الحقيقة الحية إلى حلقة تسليم واحدة محكومة | OPS-AUTOPILOT-004 / PR #15 | COMPLETE / MERGED | B `REVISE → fix → PASS` مع mutation guard PASS؛ GitHub checks 5/5؛ merged into `develop` as `0ffc446`؛ no auto-merge or Production |
+| `S5-QA-AUTOPILOT-006` | اختيار فحوص محلية دقيقة ومشغّلة فعلياً مع تجميد تحسينات الأتمتة غير الضرورية | OPS-AUTOPILOT-006 | IN PROGRESS / GOVERNANCE ONLY | Proxy evidence only; no savings claim; after integration return to eligible Phase 4.5 product work unless an approved optimization trigger exists |
 | `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@3fbc776` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
 | `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DONE / DEPLOYED FROM DEVELOP | `develop@ed1d175` → Workers Build `6e7ced6d` |
 | `S5-PREVIEW-002` | فحص حزمة P3 الساكنة وحدود Cloudflare والمسارات والأصول قبل الربط | P4-PREVIEW-001 | DONE / STATIC BUILD VERIFIED | PR #3 CI + 404/PDF/SW contracts + Production build PASS |
 | `S5-PREVIEW-003` | إعداد Workers Static Assets وWorkers Builds بإصدار Wrangler مثبت وفحص بلا نشر | P4-WORKERS-PREVIEW-001 | DONE / DEPLOYED / OWNER-VERIFIED REAL-DEVICE PASS | Wrangler/build evidence آلي؛ owner device evidence منفصل ولا يُنسب إلى Build SHA غير supplied |
 | `S5-UX-FOUNDATION-001` | Warm Paper Academic Studio وEnglish LTR shell والتنقل الرئيسي الموحد | P4.5-UX-SPEC-001 | ADOPTED / INCREMENTAL IMPLEMENTATION AUTHORIZED | `Today / Study / Projects / Practice / Library` + اتجاه تلقائي لمحتوى المستخدم؛ Warm Paper reference only |
-| `S5-UX-P45-SHELL-001` | App Shell وتنقل Responsive معزولان من دون Core أو Ink | P4.5-UX-IMPLEMENTATION-001 / PR #17 | DRAFT PR / OWNER VISUAL + MATEPAD HUMAN GATE PASS / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING | OWNER-VERIFIED visual/MatePad PASS؛ B `REVISE → repair → PASS`؛ PR #18 reconciled محلياً والرأس الحي `7512a2a` حتى الدفع؛ production route ما زال P3 ولا route cutover أو Phase 5 |
+| `S5-UX-P45-SHELL-001` | App Shell وتنقل Responsive معزولان من دون Core أو Ink | P4.5-UX-IMPLEMENTATION-001 / PR #17 | COMPLETE / MERGED | PR #17 merged as `2c5d0c6` after GitHub 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ B `REVISE → repair → PASS` وmutation guard PASS؛ production route ما زال P3 ولا route cutover أو Phase 5 |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

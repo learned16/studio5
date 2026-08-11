@@ -44,9 +44,17 @@ Run:
 node .agents/skills/studio5-delivery/scripts/select-checks.mjs --base <base>
 ```
 
-The output recommends Core, P0, P3, Worker, Docs, Tooling, or Full regression
-and explains why. It never executes tests. Apply task-specific checks in
-addition to its safe recommendation.
+The output recommends Core, P0, P3, Worker, P4.5, Docs, Tooling, or Full
+regression and explains why. Where a P4.5 prototype change is selected, it
+also emits the repository's runnable local lint, typecheck, test, and build
+commands. It never executes tests. Apply task-specific checks in addition to
+its safe recommendation.
+
+Routine status, traceability, and ordinary task-evidence documentation changes
+are Docs-only unless another changed path independently raises risk. Authority,
+workflow, manifest/lock, schema/migration, shared runtime, storage/backup, and
+deployment paths remain Full-regression triggers. The selector does not weaken
+remote CI.
 
 Run scope verification before delivery:
 

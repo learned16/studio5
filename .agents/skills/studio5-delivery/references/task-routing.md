@@ -28,6 +28,13 @@ Choose the highest uncompleted, unblocked requirement closest to the current
 critical path. Resolve blockers before dependents. Do not turn a missing
 ordinary implementation choice into a user decision.
 
+After an owner-approved bounded automation optimization integrates, return the
+next bare `continue` to the eligible product critical path. Do not select a
+further delivery-cost optimization unless a correctness or safety issue, broken
+workflow, material recurring bottleneck, or an explicit owner request justifies
+it. Do not create persistent summaries or orchestration solely to account for
+cost; record concise, task-local evidence instead.
+
 ## Internal task card
 
 Produce these fields before work:
