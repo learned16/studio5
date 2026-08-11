@@ -26,10 +26,10 @@ for example, normally stays economical unless another dimension makes it risky.
 
 | Tier | Suitable work | Reasoning intent |
 | --- | --- | --- |
-| `R0 — economy` | scans, extraction, repetitive checks, simple documentation | light/low |
-| `R1 — balanced` | normal scoped implementation and ordinary task preparation | standard/medium |
+| `R0 — economy` | mechanical, low-risk scans, extraction, repetitive checks, and simple documentation | light/low; start with the least-cost sufficient setup |
+| `R1 — balanced` | ordinary low-risk implementation, review, and task preparation | standard/medium |
 | `R2 — deep implementation` | complex production behavior, broad context, or difficult correctness work | high |
-| `R3 — assurance review` | B review of regressions, edge cases, security, or risky logic | high to extra-high |
+| `R3 — assurance review` | review of regressions, edge cases, security, or risky logic | high to extra-high; the B role alone does not automatically require R3 |
 | `R4 — architecture` | C research or architecture with material tradeoffs | extra-high to maximum when justified |
 
 Select the least costly available model and reasoning effort that meets the

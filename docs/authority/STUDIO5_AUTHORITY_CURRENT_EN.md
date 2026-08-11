@@ -143,6 +143,18 @@ human gates. Delivery evidence records the role, classification, tier,
 requested/effective transient runtime values, fork context, and fallback or
 override; unavailable values are recorded as `NOT EXPOSED` rather than guessed.
 
+### Automation optimization freeze — 11 August 2026
+
+The owner approves one bounded delivery-efficiency optimization in
+`OPS-AUTOPILOT-006`. After it is integrated, the Supervisor must return a bare
+`continue` to the next eligible Phase 4.5 product-critical-path task.
+
+No further automation or delivery-cost optimization may be selected merely to
+seek speculative savings. A later optimization needs one of: a correctness or
+safety concern, a broken workflow, a material recurring bottleneck, or an
+explicit owner request. This freeze does not reduce tests, B review, scope
+guards, human gates, or existing GitHub CI, and it does not authorize Phase 5.
+
 ## Automation spending boundary — 9 August 2026
 
 The owner has deferred API-funded automation. Studio5 will not add an

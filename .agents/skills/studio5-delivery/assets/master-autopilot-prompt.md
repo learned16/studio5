@@ -10,3 +10,10 @@ pin a model or reasoning effort, and use `NOT EXPOSED` for values the runtime
 does not reveal. A cheaper tier never removes tests, B review, scope guards, or
 human gates. A preferred unavailable option requires a safe fallback, not task
 failure.
+
+For routine check selection, prefer the narrowest verified local checks and
+their operational commands. Do not create a persistent summary or extra
+orchestration merely to estimate cost. After the owner-approved bounded
+automation optimization integrates, route the next `continue` to the product
+critical path unless correctness, safety, a broken workflow, a material
+recurring bottleneck, or an owner request justifies another optimization task.

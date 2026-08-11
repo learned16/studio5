@@ -37,5 +37,10 @@ Routing evidence is transient delivery evidence, not a permanent model pin.
 Follow [adaptive-model-routing.md](adaptive-model-routing.md) before reporting
 it.
 
+For automation/tooling work, report deterministic check-selection evidence and
+only the commands actually selected. Keep the report task-local and concise;
+do not create a persistent summary or an extra orchestration loop merely to
+estimate cost, tokens, time, or savings.
+
 Finish with one user action only. Do not ask the user to relay reports between
 agents.

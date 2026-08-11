@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { collectChangedPaths, normalizeRepoPath } from "./verify-scope.mjs";
 
-const ORDER = ["Core", "P0", "P3", "Worker", "Docs", "Tooling", "Full regression"];
+const ORDER = ["Core", "P0", "P3", "Worker", "P4.5", "Docs", "Tooling", "Full regression"];
 const HELP = `Usage: node select-checks.mjs --base <ref>
        node select-checks.mjs --file <path> [--file <path> ...]
 
@@ -28,14 +28,20 @@ function isCriticalPath(filePath) {
     || filePath.startsWith(".github/")
     || filePath === "wrangler.jsonc"
     || filePath === "AGENTS.md"
-    || filePath === "PROJECT_STATUS.md"
-    || filePath === "docs/TRACEABILITY.md"
     || filePath.startsWith("docs/authority/")
     || /(^|\/)(schema|migrations)(\/|$)/.test(filePath)
     || /(^|\/)schema\.[^/]+$/.test(filePath)
     || baseName === "core-runtime.mjs"
     || baseName === "storage-runtime.mjs";
 }
+
+const P45_PREFIX = "prototype/p45-product-shell-web/";
+const P45_COMMANDS = [
+  "npm --prefix prototype/p45-product-shell-web run lint",
+  "npm --prefix prototype/p45-product-shell-web run typecheck",
+  "npm --prefix prototype/p45-product-shell-web test",
+  "npm --prefix prototype/p45-product-shell-web run build",
+];
 
 const CHECK_RULES = [
   {
@@ -62,6 +68,12 @@ const CHECK_RULES = [
       : `${filePath} affects Worker, Service Worker, or static build closure.`,
   },
   {
+    name: "P4.5",
+    matches: (filePath) => filePath.startsWith(P45_PREFIX),
+    reason: (filePath) => `${filePath} affects the isolated P4.5 product-shell prototype.`,
+    commands: P45_COMMANDS,
+  },
+  {
     name: "Docs",
     matches: (filePath) => isMarkdown(filePath)
       || filePath === "AGENTS.md"
@@ -82,9 +94,16 @@ const CHECK_RULES = [
   },
 ];
 
+function addRecommendation(checks, rule, filePath) {
+  if (!checks.has(rule.name)) checks.set(rule.name, { reasons: new Set(), commands: new Set() });
+  const recommendation = checks.get(rule.name);
+  recommendation.reasons.add(rule.reason(filePath));
+  for (const command of rule.commands ?? []) recommendation.commands.add(command);
+}
+
 function addReason(checks, name, reason) {
-  if (!checks.has(name)) checks.set(name, new Set());
-  checks.get(name).add(reason);
+  if (!checks.has(name)) checks.set(name, { reasons: new Set(), commands: new Set() });
+  checks.get(name).reasons.add(reason);
 }
 
 export function selectChecks(inputPaths) {
@@ -94,7 +113,7 @@ export function selectChecks(inputPaths) {
 
   for (const filePath of normalizedPaths) {
     const matchingRules = CHECK_RULES.filter((rule) => rule.matches(filePath));
-    for (const rule of matchingRules) addReason(checks, rule.name, rule.reason(filePath));
+    for (const rule of matchingRules) addRecommendation(checks, rule, filePath);
     if (!matchingRules.length) addReason(
       checks,
       "Full regression",
@@ -102,11 +121,22 @@ export function selectChecks(inputPaths) {
     );
   }
 
+  const includesP45 = normalizedPaths.some((filePath) => filePath.startsWith(P45_PREFIX));
+  const includesSharedCoreOrSchema = normalizedPaths.some((filePath) => filePath.startsWith("packages/studio5-core/")
+    || /(^|\/)(schema|migrations)(\/|$)/.test(filePath)
+    || /(^|\/)schema\.[^/]+$/.test(filePath));
+  if (includesP45 && includesSharedCoreOrSchema) addReason(
+    checks,
+    "Full regression",
+    "P4.5 mixed with shared Core, schema, or migration paths requires the safe superset.",
+  );
+
   return ORDER
     .filter((name) => checks.has(name))
     .map((name) => ({
       name,
-      reasons: [...checks.get(name)].sort((left, right) => left.localeCompare(right)),
+      reasons: [...checks.get(name).reasons].sort((left, right) => left.localeCompare(right)),
+      commands: [...checks.get(name).commands].sort((left, right) => left.localeCompare(right)),
     }));
 }
 
@@ -120,6 +150,7 @@ function printChecks(checks) {
   for (const check of checks) {
     process.stdout.write(`- ${check.name}\n`);
     for (const reason of check.reasons) process.stdout.write(`  - ${reason}\n`);
+    for (const command of check.commands) process.stdout.write(`  - run: ${command}\n`);
   }
 }
 

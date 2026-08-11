@@ -1,8 +1,25 @@
 # Studio5 Project Status
 
-آخر تحديث: 2026-08-09
-المرحلة الحالية: `PHASE 4.5 — APP SHELL FOUNDATION / DRAFT PR REVIEW`
-الفرع النشط: `feat/p45-warm-paper-shell-foundation`
+## Current reconciliation — 11 August 2026
+
+This section is the current operational state and supersedes older in-document
+progress snapshots where they conflict.
+
+- PR #17 is `Merged` into `develop` as `2c5d0c6`; GitHub checks were `5/5 PASS`.
+  The owner visual review, MatePad review, and P4.5 foundation human gate are
+  `PASS`. The production route remains P3; no route cutover was made.
+- PR #18 is `Merged` into `develop` as `110d744`; GitHub checks were `5/5 PASS`.
+- `OPS-AUTOPILOT-006` is the single bounded tooling/governance task in progress.
+  After it integrates, the next bare `continue` returns to the next eligible
+  Phase 4.5 product-critical-path task. Ink Batch 3 remains deferred and Phase
+  5 remains blocked.
+- `.github/workflows/ci.yml` currently runs Core, P0, P3, and Worker checks;
+  it has no independent P4.5 job. This is a material coverage finding, not a
+  claim that the workflow was changed.
+
+آخر تحديث: 2026-08-11
+المرحلة الحالية: `PHASE 4.5 — NEXT PRODUCT SLICE PENDING / GOVERNANCE TASK IN PROGRESS`
+الفرع النشط: `chore/ops-autopilot-006-credit-efficiency`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.

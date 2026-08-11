@@ -28,8 +28,8 @@
 - [x] Note مرتبطة بـPDF والصفحة من دون تعديل bytes الأصل، وتبقى قابلة للبحث والمفضلة والحديثة. (`P3-LF-007`, 88/88 Core)
 - [x] واجهة Library تحفظ PDF محلياً وتستعيد Draft وتفتح الملف بعد إعادة إنشاء Repository. (`P3-LF-007`, 13/13 UI)
 - [x] اختبارات Core الآلية تتحقق من Backup/Restore والعدّ والـmanifest ورفض المحتوى التالف. (`P4-HARD-001`, 100/100 Core)
-- [ ] اختبار MatePad الكامل ينشئ ويفحص ويستعيد Backup ويعيد PDF وNotes وInk وTasks معاً بلا فقد.
-- [ ] MatePad يرفض Backup تالفاً، ويحافظ على البيانات في التخزين المنخفض وحالات الفشل.
+- [x] `OWNER-VERIFIED REAL-DEVICE PASS`: Full Backup/Verify/Restore was completed and passed. No combined per-artifact test detail is inferred.
+- [x] `OWNER-VERIFIED REAL-DEVICE PASS`: corrupt-backup rejection and low-storage/failure-safe behavior were completed and passed.
 - [x] كل Migration منفذة حتى Schema v8 تملك اختباراً ومسار Recovery مفهوم. (`P2-CORE-001` إلى `P3-LF-007`)
 - [x] بوابة MatePad الخاصة بـNotebook/Revisions تحفظ نسختين وتعاين وتستعيد بأمان بلا فقد. (`P2-GATE-001/002`, 8/8 device PASS)
 - [x] بوابة Phase 4 الجزئية على MatePad تثبت رفع PDF والتنقل وZoom/Fit width وNotes وإعادة الفتح وبقاء PDF/Notes بلا تكرار. (`P4-MATEPAD-CLOSURE-CHECKLIST`, 2026-07-31)
