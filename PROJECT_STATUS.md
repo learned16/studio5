@@ -67,13 +67,10 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
   فحوص GitHub الخمسة، ودُمجت في `develop` عبر `0ffc446` من دون Auto-Merge.
 - PR #16: `Merged`؛ صولحت أدلة Phase 4 وأُثبتت أولوية Phase 4.5، ودُمجت في
   `develop` عبر `261c1e3` من دون Production أو Auto-Merge.
-- PR #17: `Draft / Open` إلى `develop`؛ دورة B هي `REVISE → repair → PASS`
-  وmutation guard ناجح. نجحت فحوص GitHub الخمسة على الرأس المنشور `7512a2a`؛
-  أكد المالك `Owner visual review: PASS / MatePad review: PASS / P4.5 human
-  gate for this foundation: PASS` على isolated P4.5 preview. صولح الفرع المحلي
-  مع PR #18 بعد دمجه، لكن GitHub PR #17 ما زال على `7512a2a` حتى الدفع. أعادت B
-  المراجعة `REVISE → repair → PASS` ونجح mutation guard؛ تبقى
-  `FINAL PR-HEAD CI RECHECK PENDING`. Production route ما زال P3 ولا Auto-Merge.
+- PR #17: `Merged` إلى `develop` عبر `2c5d0c6`؛ GitHub checks `5/5 PASS`، ودورة
+  B هي `REVISE → repair → PASS` وmutation guard ناجح. أكد المالك
+  `Owner visual review: PASS / MatePad review: PASS / P4.5 human gate for this
+  foundation: PASS`. Production route ما زال P3 ولا route cutover ولا Auto-Merge.
 - PR #18: `Merged`؛ أضيفت سياسة Adaptive Model and Reasoning Routing إلى Control
   Plane ونجحت فحوص GitHub الخمسة؛ merge commit هو `110d744`.
 
@@ -204,7 +201,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
 | P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
-| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | DRAFT PR #17 / OWNER VISUAL + MATEPAD HUMAN GATE PASS / B PASS / MUTATION GUARD PASS / FINAL PR-HEAD CI RECHECK PENDING | OWNER-VERIFIED visual/MatePad PASS؛ B `REVISE → repair → PASS`؛ PR #18 reconciled محلياً والرأس الحي `7512a2a` حتى الدفع؛ production route ما زال P3؛ لا Core/Ink/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | COMPLETE / MERGED — PR #17 | Merged as `2c5d0c6` after GitHub checks 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ production route ما زال P3؛ لا route cutover أو Core/Ink/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
@@ -218,13 +215,11 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 
 ## القادم بعد المهمة الحالية
 
-1. `P4.5-UX-IMPLEMENTATION-001 — Warm Paper App Shell and Navigation
-   Foundation` هي المهمة النشطة في Draft PR #17. اجتازت بوابة المالك البصرية
-   وMatePad على isolated preview، وصُولح الفرع المحلي مع PR #18؛ الرأس الحي
-   ما زال `7512a2a` حتى الدفع. أعادت B المراجعة `REVISE → repair → PASS` ونجح
-   mutation guard؛ تبقى فحوص CI على الرأس النهائي مطلوبة قبل جاهزية الدمج.
-2. بعد نجاح CI النهائي، يتوقف العمل عند بوابة المالك للدمج فقط. لا يبدأ
-   Route cutover أو Data adapter أو شريحة منتج تالية تلقائياً.
+1. بعد تكامل `OPS-AUTOPILOT-006`، يختار `continue` مهمة المنتج التالية المؤهلة
+   ضمن Phase 4.5 وفق المسار الحرج. لا يبدأ Ink Batch 3 أو Phase 5 ولا تحسين
+   أتمتة جديد تلقائياً.
+2. يبقى Route cutover وData adapter شريحتين لاحقتين تتطلبان Task Card مستقلة؛ لا
+   تبدأ أي منهما تلقائياً.
 3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm
    Paper مرجع معتمد فقط وليس المنتج النهائي.
 4. Ink Batch 3 `DEFERRED / NOT STARTED` حتى يُجدول ضمن سلسلة Batches 3–7 قبل

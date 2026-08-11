@@ -29,10 +29,15 @@ function isCriticalPath(filePath) {
     || filePath === "wrangler.jsonc"
     || filePath === "AGENTS.md"
     || filePath.startsWith("docs/authority/")
+    || isWorkerPath(filePath)
     || /(^|\/)(schema|migrations)(\/|$)/.test(filePath)
     || /(^|\/)schema\.[^/]+$/.test(filePath)
     || baseName === "core-runtime.mjs"
-    || baseName === "storage-runtime.mjs";
+    || baseName === "storage-runtime.mjs"
+    || baseName === "backup.mjs"
+    || baseName === "storage.mjs"
+    || /(^|\/)(storage|backup|persistence|indexeddb)(?:[.-]|\/|$)/i.test(filePath)
+    || /(^|\/)data-(store|persistence)\.[^/]+$/i.test(filePath);
 }
 
 const P45_PREFIX = "prototype/p45-product-shell-web/";

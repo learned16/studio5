@@ -39,8 +39,10 @@ product work, Phase 5, auto-merge, and merge operations.
 1. Routine `PROJECT_STATUS.md`, `docs/TRACEABILITY.md`, and ordinary
    `docs/tasks/**` evidence updates recommend `Docs`, not `Full regression`.
 2. Authority, AGENTS, root manifests/locks, workflow configuration,
-   schema/migrations, shared Core/runtime, storage/backup, and Worker/service
-   worker/deployment paths remain conservative and recommend `Full regression`.
+   schema/migrations, shared Core/runtime, storage/backup/browser-persistence,
+   and real Worker, Service Worker, build-closure, or deployment paths remain
+   conservative and recommend `Full regression`. Ordinary P3 application paths
+   remain the narrower P3 + Worker mapping unless independently critical.
 3. `prototype/p45-product-shell-web/**` recommends `P4.5` with the existing,
    runnable local `lint`, `typecheck`, `test`, and `build` commands. A P4.5
    change plus status/trace evidence adds `Docs`; an actual P3/Worker path adds

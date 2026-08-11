@@ -27,9 +27,10 @@ test("maps every P3 path to both P3 and Worker checks", () => {
   }
 });
 
-test("adds Worker for worker and Service Worker paths", () => {
-  assert.deepEqual(names(["prototype/p0-ink-web/sw.js"]), ["P0", "Worker"]);
-  assert.deepEqual(names(["prototype/p3-lecture-capture-web/worker/index.mjs"]), ["P3", "Worker"]);
+test("escalates Worker, Service Worker, and build-closure paths", () => {
+  assert.deepEqual(names(["prototype/p0-ink-web/sw.js"]), ["P0", "Worker", "Full regression"]);
+  assert.deepEqual(names(["prototype/p3-lecture-capture-web/worker/index.mjs"]), ["P3", "Worker", "Full regression"]);
+  assert.deepEqual(names(["scripts/verify-build.mjs"]), ["Worker", "Full regression"]);
 });
 
 test("maps docs and Codex tooling with Windows separators", () => {
@@ -57,6 +58,17 @@ test("root package, CI, schema, migration, and shared runtime select full regres
     "packages/studio5-core/src/schema.mjs",
     "packages/studio5-core/migrations/v2.mjs",
     "prototype/p0-ink-web/core-runtime.mjs",
+  ]) {
+    assert.equal(names([filePath]).includes("Full regression"), true, filePath);
+  }
+});
+
+test("escalates backup and browser-persistence paths", () => {
+  for (const filePath of [
+    "packages/studio5-core/src/backup.mjs",
+    "prototype/p3-lecture-capture-web/storage.mjs",
+    "prototype/p0-ink-web/indexeddb-storage.mjs",
+    "prototype/p0-ink-web/data-persistence.mjs",
   ]) {
     assert.equal(names([filePath]).includes("Full regression"), true, filePath);
   }
