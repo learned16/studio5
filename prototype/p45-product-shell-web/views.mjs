@@ -1,39 +1,62 @@
+import { projectTodayQuery } from "./today-projection.mjs";
+
 function statusBadge(tone, symbol, label) {
   return `<span class="status-badge status-${tone}"><span aria-hidden="true">${symbol}</span>${label}</span>`;
 }
 
-function pageIntroduction(eyebrow, title, description) {
+function pageIntroduction(eyebrow, title, description, stateLabel = "Representative state") {
   return `<header class="page-introduction">
     <div><span class="eyebrow">${eyebrow}</span><h1 tabindex="-1">${title}</h1><p>${description}</p></div>
-    ${statusBadge("neutral", "◇", "Representative state")}
+    ${statusBadge("neutral", "◇", stateLabel)}
   </header>`;
 }
 
-function todayView() {
-  return `<section class="screen">
-    ${pageIntroduction("Sunday, 9 August", "Today", "A calm starting point for the next useful academic action.")}
-    <div class="feature-grid">
-      <article class="paper-card priority-card">
-        <span class="section-number">01</span><p class="eyebrow">Continue studying</p>
-        <h2 dir="auto">Load paths and structural systems</h2>
-        <p dir="auto">Building Structures · Week 04 · Last opened yesterday</p>
-        <a class="primary-action" href="#/study">Open Study <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="paper-card">
-        <span class="section-number">02</span><p class="eyebrow">Next session</p>
-        <h2 dir="auto">Architectural Drawing</h2>
-        <p dir="auto">Studio 3 · Bring A3 sheets</p>
-        ${statusBadge("info", "→", "Today at 12:30")}
-      </article>
-    </div>
-    <section class="paper-card task-section" aria-labelledby="today-priorities">
-      <div class="section-heading"><div><span class="section-number">03</span><h2 id="today-priorities">Top priorities</h2></div><span>2 items</span></div>
-      <ul class="content-list">
-        <li><span class="list-marker" aria-hidden="true">1</span><span dir="auto"><strong>Finish section line weights</strong><small>Design Project · due 18:00</small></span>${statusBadge("warning", "!", "Due today")}</li>
-        <li><span class="list-marker" aria-hidden="true">2</span><span dir="auto"><strong>مراجعة أمثلة الأحمال — Load-path examples</strong><small>Building Structures · 25 min</small></span>${statusBadge("neutral", "○", "Planned")}</li>
-      </ul>
-    </section>
+function escaped(content) {
+  return String(content ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character]);
+}
+
+function todayLoadingView() {
+  return `<section class="screen" aria-busy="true">
+    ${pageIntroduction("Local academic data", "Today", "A calm starting point for the next useful academic action.", "Reading local data")}
+    <article class="paper-card today-state" role="status"><h2>Loading today…</h2><p>Reading your current schedule and tasks from this device.</p></article>
   </section>`;
+}
+
+function todayErrorView() {
+  return `<section class="screen">
+    ${pageIntroduction("Local academic data", "Today", "A calm starting point for the next useful academic action.", "Read unavailable")}
+    <article class="paper-card today-state" role="alert"><h2>Today could not be opened</h2><p>Today did not create or edit academic items. Try the local read again.</p><button class="primary-action" type="button" data-today-retry>Try again</button></article>
+  </section>`;
+}
+
+function agendaMarkup(agenda) {
+  if (agenda.length === 0) return "";
+  return `<section class="paper-card" aria-labelledby="today-agenda"><div class="section-heading"><div><span class="section-number">01</span><h2 id="today-agenda">Agenda</h2></div><span>${agenda.length} ${agenda.length === 1 ? "item" : "items"}</span></div><ul class="content-list">${agenda.map((entry) => `<li><span class="list-marker" aria-hidden="true">→</span><span dir="auto"><strong>${escaped(entry.title)}</strong><small>${escaped(entry.context)}</small></span>${statusBadge("info", "○", escaped(entry.time))}</li>`).join("")}</ul></section>`;
+}
+
+function taskMarkup(tasks) {
+  if (tasks.length === 0) return "";
+  return `<section class="paper-card task-section" aria-labelledby="today-priorities"><div class="section-heading"><div><span class="section-number">02</span><h2 id="today-priorities">Priorities</h2></div><span>${tasks.length} ${tasks.length === 1 ? "item" : "items"}</span></div><ul class="content-list">${tasks.map((task, index) => `<li><span class="list-marker" aria-hidden="true">${index + 1}</span><span dir="auto"><strong>${escaped(task.title)}</strong><small>${escaped(task.context)}${task.time ? ` · ${escaped(task.time)}` : ""}</small></span>${statusBadge(task.tone, task.tone === "danger" ? "!" : "○", task.status)}</li>`).join("")}</ul></section>`;
+}
+
+function todayReadyView(projection) {
+  const today = projectTodayQuery(projection);
+  if (today.isEmpty) {
+    return `<section class="screen">${pageIntroduction(today.date, "Today", "A calm starting point for the next useful academic action.", "Local data")}<article class="paper-card empty-state"><span class="empty-symbol" aria-hidden="true">＋</span><div><h2>Your day is clear</h2><p>No scheduled sessions or open tasks are due today.</p></div><a class="secondary-action" href="#/study">Open Study</a></article></section>`;
+  }
+  return `<section class="screen">${pageIntroduction(today.date, "Today", "A calm starting point for the next useful academic action.", "Local data")}${agendaMarkup(today.agenda)}${taskMarkup(today.tasks)}${today.completedCount > 0 ? `<p class="today-completed">${today.completedCount} completed today</p>` : ""}</section>`;
+}
+
+function todayView(state = { status: "loading" }) {
+  if (state.status === "error") return todayErrorView();
+  if (state.status === "ready") return todayReadyView(state.projection);
+  return todayLoadingView();
 }
 
 function studyView() {
@@ -103,6 +126,7 @@ const viewByDestination = Object.freeze({
   library: libraryView,
 });
 
-export function destinationView(destinationId) {
+export function destinationView(destinationId, todayState) {
+  if (destinationId === "today") return todayView(todayState);
   return (viewByDestination[destinationId] ?? todayView)();
 }

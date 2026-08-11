@@ -88,7 +88,7 @@ test("Practice is a disabled shell state and does not implement Phase 5", () => 
   assert.doesNotMatch(practice, /<canvas|data-exercise|data-assessment/i);
 });
 
-test("all surface sources remain dependency-free and isolated", async () => {
+test("surface stays dependency-free and imports no sibling prototype", async () => {
   const manifest = JSON.parse(packageManifest);
   assert.equal(manifest.dependencies, undefined);
   assert.equal(manifest.devDependencies, undefined);
@@ -102,8 +102,8 @@ test("all surface sources remain dependency-free and isolated", async () => {
     assert.doesNotMatch(withoutLocalHttpUrls(source), /https?:\/\//, `${sourceFile.pathname}: external URL`);
     assert.doesNotMatch(
       source,
-      /p0-ink-web|p3-lecture-capture-web|p45-warm-paper-shell|packages\/studio5-core|@studio5\/core/,
-      `${sourceFile.pathname}: cross-surface reference`,
+      /prototype[\\/]p(?:0|3|45)-|@studio5\/core/,
+      `${sourceFile.pathname}: sibling-prototype or package import`,
     );
   }
   const repositoryFiles = await readdir(root, { recursive: true });
@@ -112,4 +112,13 @@ test("all surface sources remain dependency-free and isolated", async () => {
     false,
   );
   assert.match(fallback, /routeFromPathname/);
+});
+
+test("Today runtime uses only the local canonical Core build alias", async () => {
+  const facade = await readFile(new URL("today-read-facade.mjs", root), "utf8");
+  assert.match(facade, /\.\/core\/browser-storage-profile\.mjs/);
+  assert.match(facade, /\.\/core\/browser-storage-migration\.mjs/);
+  assert.match(facade, /CANONICAL_BROWSER_STORAGE_PROFILE/);
+  assert.match(facade, /createBrowserStorageContext/);
+  assert.doesNotMatch(facade, /p3-lecture-capture-web|openCanonicalBrowserStorage/);
 });

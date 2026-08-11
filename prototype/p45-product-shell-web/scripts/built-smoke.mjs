@@ -53,16 +53,92 @@ class SmokeNavigation {
   }
 }
 
+class SmokeButton {
+  listener = null;
+
+  addEventListener(eventName, listener) {
+    if (eventName === "click") this.listener = listener;
+  }
+
+  click() {
+    assert.equal(typeof this.listener, "function", "retry listener was not attached");
+    this.listener();
+  }
+}
+
 class SmokeMainContent {
-  innerHTML = "";
+  markup = "";
   focusedHeading = null;
+  retryButton = null;
+
+  get innerHTML() {
+    return this.markup;
+  }
+
+  set innerHTML(markup) {
+    this.markup = markup;
+    this.retryButton = markup.includes("data-today-retry") ? new SmokeButton() : null;
+  }
 
   querySelector(selector) {
-    if (selector !== "h1") return null;
-    return { focus: () => {
-      this.focusedHeading = this.innerHTML.match(/<h1[^>]*>([^<]+)<\/h1>/)?.[1] ?? null;
-    } };
+    if (selector === "[data-today-retry]") return this.retryButton;
+    if (selector === "h1") {
+      return { focus: () => {
+        this.focusedHeading = this.markup.match(/<h1[^>]*>([^<]+)<\/h1>/)?.[1] ?? null;
+      } };
+    }
+    return null;
   }
+}
+
+class SmokeIndexedDatabase {
+  constructor() {
+    this.stores = new Map();
+    this.objectStoreNames = { contains: (name) => this.stores.has(name) };
+  }
+
+  createObjectStore(name) {
+    const records = new Map();
+    this.stores.set(name, records);
+    return records;
+  }
+
+  transaction(storeName) {
+    const transaction = {
+      error: null,
+      objectStore: () => ({
+        get: (key) => {
+          const request = {};
+          queueMicrotask(() => {
+            request.result = this.stores.get(storeName)?.get(key);
+            request.onsuccess?.();
+            transaction.oncomplete?.();
+          });
+          return request;
+        },
+      }),
+    };
+    return transaction;
+  }
+
+  close() {}
+}
+
+function smokeIndexedDB() {
+  const databases = new Map();
+  return {
+    open(name) {
+      const request = {};
+      queueMicrotask(() => {
+        const isNew = !databases.has(name);
+        if (isNew) databases.set(name, new SmokeIndexedDatabase());
+        request.result = databases.get(name);
+        if (isNew) request.onupgradeneeded?.();
+        request.onsuccess?.();
+      });
+      return request;
+    },
+  };
 }
 
 function builtDomHarness() {
@@ -98,26 +174,83 @@ function smokeDocument(mainContent, routeLabel, navigations) {
   };
 }
 
+async function waitForMarkup(mainContent, expected) {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    if (mainContent.innerHTML.includes(expected)) return;
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+  }
+  throw new Error(`Built Today route did not render: ${expected}`);
+}
+
 async function verifyBuiltNavigation() {
   const harness = builtDomHarness();
+  const fixedInstant = Date.parse("2026-08-11T08:15:00.000Z");
+  const queryOptions = [];
+  const { AcademicRepository } = await import(
+    new URL("../dist/assets/core/academic-repository.mjs", import.meta.url)
+  );
+  const originalQueryToday = AcademicRepository.prototype.queryToday;
+  const originalDateNow = Date.now;
+  const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
+  AcademicRepository.prototype.queryToday = function queryToday(options) {
+    queryOptions.push(structuredClone(options));
+    if (queryOptions.length === 1) return Promise.reject(new Error("controlled read failure"));
+    return Promise.resolve({
+      date: "2026-08-11",
+      utcOffsetMinutes: options.utcOffsetMinutes,
+      agenda: [{
+        id: "lecture:hostile",
+        title: '<img src=x onerror="unsafe()"> & مراجعة',
+        startsAt: "2026-08-11T09:00:00.000Z",
+        subject: { title: "Structures & Safety" },
+      }],
+      tasks: { overdue: [], dueToday: [], unscheduled: [], completedToday: [] },
+    });
+  };
+  Date.now = () => fixedInstant;
+  Date.prototype.getTimezoneOffset = () => -180;
   globalThis.document = harness.document;
   globalThis.history = harness.history;
+  globalThis.indexedDB = smokeIndexedDB();
   globalThis.window = harness.window;
-  await import(new URL("../dist/assets/app.mjs", import.meta.url));
-
-  const destinations = ["study", "projects", "practice", "library", "today"];
-  for (const destinationId of destinations) {
-    harness.navigate(`#/${destinationId}`);
-    const expectedLabel = `${destinationId[0].toUpperCase()}${destinationId.slice(1)}`;
-    assert.match(harness.mainContent.innerHTML, new RegExp(`<h1[^>]*>${expectedLabel}</h1>`));
-    assert.equal(harness.routeLabel.textContent, expectedLabel);
-    assert.equal(harness.mainContent.focusedHeading, expectedLabel);
+  try {
+    await import(new URL("../dist/assets/app.mjs", import.meta.url));
+    await waitForMarkup(harness.mainContent, "Today could not be opened");
+    harness.mainContent.retryButton.click();
+    await waitForMarkup(harness.mainContent, "&lt;img src=x onerror=&quot;unsafe()&quot;&gt;");
+    assert.deepEqual(queryOptions, [
+      { now: fixedInstant, utcOffsetMinutes: 180 },
+      { now: fixedInstant, utcOffsetMinutes: 180 },
+    ]);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /<img src=x/);
+    assert.match(
+      harness.mainContent.innerHTML,
+      /dir="auto"><strong>&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; مراجعة/,
+    );
     for (const navigation of harness.navigations) {
-      const currentLinks = navigation.links.filter(
+      const todayLinks = navigation.links.filter(
         (link) => link.attributes.get("aria-current") === "page",
       );
-      assert.deepEqual(currentLinks.map((link) => link.dataset.route), [destinationId]);
+      assert.deepEqual(todayLinks.map((link) => link.dataset.route), ["today"]);
     }
+
+    for (const destinationId of ["study", "projects", "practice", "library"]) {
+      harness.navigate(`#/${destinationId}`);
+      const expectedLabel = `${destinationId[0].toUpperCase()}${destinationId.slice(1)}`;
+      assert.match(harness.mainContent.innerHTML, new RegExp(`<h1[^>]*>${expectedLabel}</h1>`));
+      assert.equal(harness.routeLabel.textContent, expectedLabel);
+      assert.equal(harness.mainContent.focusedHeading, expectedLabel);
+      for (const navigation of harness.navigations) {
+        const currentLinks = navigation.links.filter(
+          (link) => link.attributes.get("aria-current") === "page",
+        );
+        assert.deepEqual(currentLinks.map((link) => link.dataset.route), [destinationId]);
+      }
+    }
+  } finally {
+    AcademicRepository.prototype.queryToday = originalQueryToday;
+    Date.now = originalDateNow;
+    Date.prototype.getTimezoneOffset = originalTimezoneOffset;
   }
 }
 
@@ -153,4 +286,4 @@ try {
 }
 
 await verifyBuiltNavigation();
-console.log("Built smoke passed: HTTP asset/fallback closure + executable five-route DOM navigation");
+console.log("Built smoke passed: HTTP closure + five routes + Today failure/retry/escaped ready state");
