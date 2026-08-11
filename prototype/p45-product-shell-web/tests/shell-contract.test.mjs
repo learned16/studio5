@@ -70,7 +70,7 @@ test("keyboard and non-color accessibility states remain explicit", () => {
   assert.match(css, /prefers-reduced-motion: reduce/);
   assert.match(destinationView("practice"), /Unavailable/);
   assert.match(destinationView("practice"), /disabled/);
-  assert.match(destinationView("study"), /empty-state/);
+  assert.match(destinationView("study", { status: "ready", subjects: [] }), /empty-state/);
 });
 
 test("built smoke executes navigation instead of treating URL fragments as HTTP evidence", () => {
@@ -114,11 +114,19 @@ test("surface stays dependency-free and imports no sibling prototype", async () 
   assert.match(fallback, /routeFromPathname/);
 });
 
-test("Today runtime uses only the local canonical Core build alias", async () => {
-  const facade = await readFile(new URL("today-read-facade.mjs", root), "utf8");
-  assert.match(facade, /\.\/core\/browser-storage-profile\.mjs/);
-  assert.match(facade, /\.\/core\/browser-storage-migration\.mjs/);
-  assert.match(facade, /CANONICAL_BROWSER_STORAGE_PROFILE/);
-  assert.match(facade, /createBrowserStorageContext/);
-  assert.doesNotMatch(facade, /p3-lecture-capture-web|openCanonicalBrowserStorage/);
+test("read adapters use only the local canonical Core build alias", async () => {
+  const [canonicalRepository, ...facades] = await Promise.all([
+    readFile(new URL("canonical-read-repository.mjs", root), "utf8"),
+    readFile(new URL("today-read-facade.mjs", root), "utf8"),
+    readFile(new URL("study-subjects-read-facade.mjs", root), "utf8"),
+  ]);
+  assert.match(canonicalRepository, /\.\/core\/browser-storage-profile\.mjs/);
+  assert.match(canonicalRepository, /\.\/core\/browser-storage-migration\.mjs/);
+  assert.match(canonicalRepository, /CANONICAL_BROWSER_STORAGE_PROFILE/);
+  assert.match(canonicalRepository, /createBrowserStorageContext/);
+  assert.doesNotMatch(canonicalRepository, /p3-lecture-capture-web|openCanonicalBrowserStorage/);
+  for (const facade of facades) {
+    assert.match(facade, /\.\/canonical-read-repository\.mjs/);
+    assert.doesNotMatch(facade, /p3-lecture-capture-web|openCanonicalBrowserStorage/);
+  }
 });

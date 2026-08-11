@@ -1,3 +1,4 @@
+import { projectStudySubjects } from "./study-subjects-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
 function statusBadge(tone, symbol, label) {
@@ -59,23 +60,36 @@ function todayView(state = { status: "loading" }) {
   return todayLoadingView();
 }
 
-function studyView() {
-  return `<section class="screen">
-    ${pageIntroduction("Academic workspace", "Study", "Subjects remain contextual without hard-coded Core data.")}
-    <div class="feature-grid">
-      <article class="paper-card">
-        <span class="section-number">01</span><p class="eyebrow">Active subject</p>
-        <h2 dir="auto">Building Structures</h2><p dir="auto">8 lectures · 3 notes · 1 open task</p>
-        ${statusBadge("success", "✓", "Ready to continue")}
-      </article>
-      <article class="paper-card empty-state">
-        <span class="empty-symbol" aria-hidden="true">＋</span>
-        <div><h2>No additional subjects yet</h2><p>This empty state explains the next step without pretending to create live records.</p></div>
-        <button class="secondary-action" type="button" disabled aria-describedby="subject-disabled">Add subject</button>
-        <small id="subject-disabled">Unavailable until a later data-adapter slice.</small>
-      </article>
-    </div>
+function studyLoadingView() {
+  return `<section class="screen" aria-busy="true">
+    ${pageIntroduction("Local academic data", "Study", "Your canonical subjects, read from this device without changing them.", "Reading local data")}
+    <article class="paper-card study-state" role="status"><h2>Loading subjects…</h2><p>Reading your subject list from local academic data.</p></article>
   </section>`;
+}
+
+function studyErrorView() {
+  return `<section class="screen">
+    ${pageIntroduction("Local academic data", "Study", "Your canonical subjects, read from this device without changing them.", "Read unavailable")}
+    <article class="paper-card study-state" role="alert"><h2>Subjects could not be opened</h2><p>Study did not create or edit subjects. Try the local read again.</p><button class="primary-action" type="button" data-study-retry>Try again</button></article>
+  </section>`;
+}
+
+function studyReadyView(subjects) {
+  const projectedSubjects = projectStudySubjects(subjects);
+  if (projectedSubjects.length === 0) {
+    return `<section class="screen">${pageIntroduction("Local academic data", "Study", "Your canonical subjects, read from this device without changing them.", "Local data")}<article class="paper-card empty-state"><span class="empty-symbol" aria-hidden="true">＋</span><div><h2>No subjects yet</h2><p>No subjects are available in local academic data.</p></div></article></section>`;
+  }
+  const cards = projectedSubjects.map((subject, index) => {
+    const headingId = `study-subject-${index + 1}`;
+    return `<li><article class="paper-card subject-card" aria-labelledby="${headingId}"><span class="section-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><h3 id="${headingId}" dir="auto">${escaped(subject.title)}</h3></article></li>`;
+  }).join("");
+  return `<section class="screen">${pageIntroduction("Local academic data", "Study", "Your canonical subjects, read from this device without changing them.", "Local data")}<section aria-labelledby="study-subjects"><div class="section-heading"><div><span class="section-number">01</span><h2 id="study-subjects">Subjects</h2></div><span>${projectedSubjects.length} ${projectedSubjects.length === 1 ? "subject" : "subjects"}</span></div><ul class="subject-grid">${cards}</ul></section></section>`;
+}
+
+function studyView(state = { status: "loading" }) {
+  if (state.status === "error") return studyErrorView();
+  if (state.status === "ready") return studyReadyView(state.subjects);
+  return studyLoadingView();
 }
 
 function projectsView() {
@@ -126,7 +140,8 @@ const viewByDestination = Object.freeze({
   library: libraryView,
 });
 
-export function destinationView(destinationId, todayState) {
-  if (destinationId === "today") return todayView(todayState);
+export function destinationView(destinationId, state) {
+  if (destinationId === "today") return todayView(state);
+  if (destinationId === "study") return studyView(state);
   return (viewByDestination[destinationId] ?? todayView)();
 }

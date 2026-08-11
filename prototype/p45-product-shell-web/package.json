@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node server.mjs",
-    "lint": "node --check app.mjs && node --check routes.mjs && node --check today-projection.mjs && node --check today-read-facade.mjs && node --check views.mjs && node --check server.mjs && node --check scripts/build.mjs && node --check scripts/built-smoke.mjs && node --check scripts/typecheck.mjs",
+    "lint": "node --check app.mjs && node --check canonical-read-repository.mjs && node --check routes.mjs && node --check study-subjects-projection.mjs && node --check study-subjects-read-facade.mjs && node --check today-projection.mjs && node --check today-read-facade.mjs && node --check views.mjs && node --check server.mjs && node --check scripts/build.mjs && node --check scripts/built-smoke.mjs && node --check scripts/typecheck.mjs",
     "typecheck": "node scripts/typecheck.mjs",
     "test": "node --test tests/*.test.mjs",
     "build": "node scripts/build.mjs",
