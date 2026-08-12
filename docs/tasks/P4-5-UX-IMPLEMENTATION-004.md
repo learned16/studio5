@@ -129,7 +129,7 @@ review, push, Draft PR, CI, and the human merge gate. No automatic merge.
 - Check selector: `P4.5 + Docs`; Core was added by task-specific judgment.
 - Surface lint: PASS.
 - Surface typecheck: PASS (`11` modules).
-- Surface behavior tests: `28/28 PASS`.
+- Surface behavior tests: `29/29 PASS`.
 - Static build: PASS (`13` assets; `28`-module closure).
 - Built smoke: PASS for five routes plus actual Today, Study, and Library
   failure/Retry/escaped-ready transitions with selected-route preservation.

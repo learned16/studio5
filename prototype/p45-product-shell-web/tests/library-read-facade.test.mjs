@@ -19,10 +19,17 @@ test("Library facade exposes only canonical read search", async () => {
   };
   const facade = createLibraryReadFacade(repository);
 
-  assert.deepEqual(Object.keys(facade), ["search"]);
+  assert.deepEqual(Object.keys(facade), ["searchLibrary"]);
   assert.equal(facade.createNote, undefined);
-  assert.deepEqual(await facade.search({ query: "", limit: 50 }), [{ targetId: "resource:1" }]);
+  assert.deepEqual(await facade.searchLibrary({ query: "", limit: 50 }), [{ targetId: "resource:1" }]);
   assert.deepEqual(calls, [{ query: "", limit: 50 }]);
+});
+
+test("Library facade rejects a repository without canonical search", () => {
+  assert.throws(
+    () => createLibraryReadFacade({}),
+    /requires AcademicRepository\.searchLibrary/,
+  );
 });
 
 test("canonical Library facade initializes the shared read repository", async () => {
@@ -40,6 +47,6 @@ test("canonical Library facade initializes the shared read repository", async ()
     contextFactory: async () => ({ repository }),
   });
 
-  assert.deepEqual(await facade.search(), []);
+  assert.deepEqual(await facade.searchLibrary(), []);
   assert.deepEqual(events, ["initialize", ["searchLibrary", {}]]);
 });

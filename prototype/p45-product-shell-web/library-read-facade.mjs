@@ -1,8 +1,11 @@
 import { openCanonicalReadRepository } from "./canonical-read-repository.mjs";
 
 export function createLibraryReadFacade(repository) {
+  if (typeof repository?.searchLibrary !== "function") {
+    throw new TypeError("Library read facade requires AcademicRepository.searchLibrary");
+  }
   return Object.freeze({
-    search(options = {}) {
+    searchLibrary(options = {}) {
       return repository.searchLibrary(options);
     },
   });

@@ -118,7 +118,7 @@ async function renderStudy(destination, version, focusHeading) {
 async function renderLibrary(destination, version, focusHeading) {
   try {
     const facade = await libraryFacade();
-    const results = await facade.search({ query: "", limit: 50 });
+    const results = await facade.searchLibrary({ query: "", limit: 50 });
     if (version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
     updateRouteContent(destination, destinationView("library", {
       status: "ready",

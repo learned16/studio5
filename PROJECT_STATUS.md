@@ -213,7 +213,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | COMPLETE / MERGED — PR #17 | Merged as `2c5d0c6` after GitHub checks 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ production route ما زال P3؛ لا route cutover أو Core/Ink/Phase 5 |
 | P4.5-UX-IMPLEMENTATION-002 | Read-Only Today Core Projection | `feat/p45-readonly-today-core-projection` | Codex | COMPLETE / MERGED — PR #20 | merged into `develop` as `190851d`؛ facade للقراءة فقط؛ same-origin boundary محفوظ؛ لا route cutover أو mutators أو Phase 5 |
 | P4.5-UX-IMPLEMENTATION-003 | Read-Only Study Subjects Projection | `feat/p45-readonly-study-subjects` | Codex | COMPLETE / MERGED — PR #21 | merged into `develop` as `54c4f48` after GitHub checks 5/5 PASS؛ facade للقراءة فقط؛ same-origin boundary محفوظ؛ لا route cutover أو mutators أو Phase 5 |
-| P4.5-UX-IMPLEMENTATION-004 | Read-Only Library Index Projection | `feat/p45-readonly-library-index` | Codex | LOCAL VERIFIED / PARENT B REVIEW PENDING | Surface 28/28 + Core 100/100 + delivery tooling 70/70 + lint/typecheck/build/built smoke PASS؛ facade يكشف `searchLibrary` فقط؛ لا فتح PDF أو file bytes أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-004 | Read-Only Library Index Projection | `feat/p45-readonly-library-index` | Codex | LOCAL VERIFIED / PARENT B REVIEW PENDING | Surface 29/29 + Core 100/100 + delivery tooling 70/70 + lint/typecheck/build/built smoke PASS؛ facade يكشف `searchLibrary` فقط؛ لا فتح PDF أو file bytes أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
