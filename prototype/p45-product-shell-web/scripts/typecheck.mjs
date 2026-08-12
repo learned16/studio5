@@ -13,6 +13,8 @@ const modules = [
   "routes.mjs",
   "study-subjects-projection.mjs",
   "study-subjects-read-facade.mjs",
+  "study-subject-detail-read-facade.mjs",
+  "study-subject-detail-projection.mjs",
   "today-projection.mjs",
   "today-read-facade.mjs",
   "views.mjs",

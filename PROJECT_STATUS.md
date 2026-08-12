@@ -20,8 +20,8 @@ progress snapshots where they conflict.
   PDF opening/viewing and Notes remain later work.
 - PR #23 merged `OPS-AUTOPILOT-007` into `develop` as `eebeb35`; automation
   optimization remains frozen. PR #24 merged `P4.5-UX-IMPLEMENTATION-005` as
-  `454ad9d`. `P4.5-UX-IMPLEMENTATION-006` is the only active
-  product task: a read-only Library-local search interaction. Ink Batch
+  `454ad9d`. `P4.5-UX-IMPLEMENTATION-007` is the only active
+  product task: a read-only Study subject-detail interaction. Ink Batch
   3 remains deferred and Phase 5 remains blocked.
 - `.github/workflows/ci.yml` currently runs Core, P0, P3, and Worker checks;
   it has no independent P4.5 job. This is a material coverage finding, not a
@@ -218,6 +218,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | P4.5-UX-IMPLEMENTATION-004 | Read-Only Library Index Projection | `feat/p45-readonly-library-index` | Codex | COMPLETE / MERGED — PR #22 | merged into `develop` as `0912af0` after GitHub checks 5/5 PASS؛ facade يكشف `searchLibrary` فقط؛ لا فتح PDF أو file bytes أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
 | P4.5-UX-IMPLEMENTATION-005 | Read-Only Library Note Detail Projection | `feat/p45-readonly-library-note-detail` | Codex | COMPLETE / MERGED — PR #24 | merged as `454ad9d`; inline experimental Note detail via frozen `getNote` only; no Notes-writing or Workspace parity |
 | P4.5-UX-IMPLEMENTATION-006 | Read-Only Library Search Interaction | `feat/p45-readonly-library-search` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | Library-local `searchLibrary({query,limit})` only; no global search, mutators, file/PDF access, or route cutover |
+| P4.5-UX-IMPLEMENTATION-007 | Read-Only Study Subject Detail Projection | `feat/p45-readonly-study-subject-detail` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `getSubject` only; inline detail with stale-response protection; no mutators or route cutover |
 
 ### نتيجة P2-CORE-001 المطلوبة
 

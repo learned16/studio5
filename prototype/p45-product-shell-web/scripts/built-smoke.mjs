@@ -110,7 +110,12 @@ class SmokeMainContent {
         button.dataset = { libraryNoteOpen: match[1] };
         return button;
       });
-    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]"]) {
+    this.subjectButtons = [...markup.matchAll(/data-study-subject-open="([^"]+)"/g)].map((match) => {
+      const button = new SmokeButton();
+      button.dataset = { studySubjectOpen: match[1] };
+      return button;
+    });
+    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-close]"]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -131,7 +136,9 @@ class SmokeMainContent {
   }
 
   querySelectorAll(selector) {
-    return selector === "[data-library-note-open]" ? this.noteButtons : [];
+    if (selector === "[data-library-note-open]") return this.noteButtons;
+    if (selector === "[data-study-subject-open]") return this.subjectButtons;
+    return [];
   }
 }
 
@@ -245,6 +252,7 @@ async function verifyBuiltNavigation() {
   const originalSearchLibrary = AcademicRepository.prototype.searchLibrary;
   const originalGetNote = AcademicRepository.prototype.getNote;
   const originalListSubjects = AcademicRepository.prototype.listSubjects;
+  const originalGetSubject = AcademicRepository.prototype.getSubject;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
   AcademicRepository.prototype.queryToday = function queryToday(options) {
@@ -271,6 +279,13 @@ async function verifyBuiltNavigation() {
       { id: "subject:1", title: "Structures & Safety" },
       { id: "subject:2", title: '<img src=x onerror="unsafe()"> & مراجعة' },
     ]);
+  };
+  const pendingSubjects = [];
+  AcademicRepository.prototype.getSubject = function getSubject(id) {
+    let resolve;
+    const promise = new Promise((resolveRead) => { resolve = resolveRead; });
+    pendingSubjects.push({ id, resolve });
+    return promise;
   };
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
     libraryCallArguments.push(structuredClone(options));
@@ -352,6 +367,21 @@ async function verifyBuiltNavigation() {
       harness.mainContent.innerHTML,
       /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; مراجعة/,
     );
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading subject");
+    harness.mainContent.querySelector("[data-study-subject-close]").click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:1", title: "Stale subject", code: "S1" });
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Stale subject/);
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:1", title: "First stale subject", code: "S1" });
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /First stale subject/);
+    pendingSubjects.shift().resolve({ id: "subject:2", title: "Current subject", code: "S2" });
+    await waitForMarkup(harness.mainContent, "Current subject");
     for (const navigation of harness.navigations) {
       const studyLinks = navigation.links.filter(
         (link) => link.attributes.get("aria-current") === "page",
@@ -425,6 +455,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.searchLibrary = originalSearchLibrary;
     AcademicRepository.prototype.getNote = originalGetNote;
     AcademicRepository.prototype.listSubjects = originalListSubjects;
+    AcademicRepository.prototype.getSubject = originalGetSubject;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
   }
@@ -459,6 +490,8 @@ try {
     "/routes.mjs",
     "/study-subjects-projection.mjs",
     "/study-subjects-read-facade.mjs",
+    "/study-subject-detail-read-facade.mjs",
+    "/study-subject-detail-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);
