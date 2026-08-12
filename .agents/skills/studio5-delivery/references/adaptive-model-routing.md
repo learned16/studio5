@@ -38,7 +38,7 @@ not require `R2`; assess the actual behavior and safety-relevant dimensions.
 Use `R2` only when concrete deep-implementation reasons remain, such as
 complex production behavior, difficult correctness, a material interaction
 between safety-relevant concerns, or genuinely broad context that must be
-reasoned about together. Use `R3` for high-risk, security-sensitive, regression,
+reasoned about together. Use `R3` for high-risk regression, security-sensitive,
 or risky-logic assurance review. The B role does not itself require `R3`:
 routine low-risk B review may use the lowest sufficient lower tier.
 

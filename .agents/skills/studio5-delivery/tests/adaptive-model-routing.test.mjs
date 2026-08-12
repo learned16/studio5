@@ -87,8 +87,10 @@ test("routine low-risk B review is not R3 solely because of its role", () => {
   assert.match(read(routingPath), /B role does not itself require `R3`/i);
 });
 
-test("high-risk assurance review remains R3", () => {
-  assert.match(read(routingPath), /Use `R3` for high-risk, security-sensitive, regression,\s+or risky-logic assurance review/i);
+test("high-risk regression assurance review remains R3 while regression alone does not", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /Use `R3` for high-risk regression, security-sensitive,\s+or risky-logic assurance review/i);
+  assert.doesNotMatch(routing, /Use `R3` for high-risk, security-sensitive, regression,/i);
 });
 
 test("routing falls back safely and keeps quality gates invariant", () => {

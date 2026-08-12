@@ -29,8 +29,8 @@ progress snapshots where they conflict.
   claim that the workflow was changed.
 
 آخر تحديث: 2026-08-12
-المرحلة الحالية: `PHASE 4.5 — READ-ONLY LIBRARY INDEX LOCAL VERIFIED / PARENT B REVIEW PENDING`
-الفرع النشط: `feat/p45-readonly-library-index`
+المرحلة الحالية: `OPS-AUTOPILOT-007 — PROVEN-PATTERN ROUTING CALIBRATION IN PROGRESS`
+الفرع النشط: `chore/ops-autopilot-007-proven-pattern-routing`
 
 هذه الوثيقة هي لوحة التنسيق المشتركة بين المستخدم وCodex والمشرف وأي وكيل آخر.
 تعرض ما أُنجز، ما يجري الآن، وما يأتي لاحقاً، ولا تستبدل السلطة الحالية.
@@ -230,9 +230,9 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 
 ## القادم بعد المهمة الحالية
 
-1. راجع وسلم `P4.5-UX-IMPLEMENTATION-004` بعد اكتمال التنفيذ المحلي، ثم توقف
-   عند بوابة دمج المالك. لا يبدأ Ink Batch 3 أو Phase 5 ولا تحسين أتمتة جديد
-   تلقائياً.
+1. أكمل `OPS-AUTOPILOT-007` لمرة واحدة بسبب اختناق التوجيه المتكرر. بعد دمجه
+   يبقى تجميد تحسينات الأتمتة وتعود `continue` التالية إلى مهمة المنتج Phase 4.5
+   المؤهلة؛ لا يبدأ Ink Batch 3 أو Phase 5 تلقائياً.
 2. يبقى Route cutover وData adapter شريحتين لاحقتين تتطلبان Task Card مستقلة؛ لا
    تبدأ أي منهما تلقائياً.
 3. تبقى شرائح Phase 4.5 مستقلة وصغيرة، وتراجع الفرضيات البصرية لكل شريحة؛ Warm
