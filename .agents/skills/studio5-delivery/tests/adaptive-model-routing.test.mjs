@@ -90,7 +90,9 @@ test("routine low-risk B review is not R3 solely because of its role", () => {
 test("high-risk regression assurance review remains R3 while regression alone does not", () => {
   const routing = read(routingPath);
   assert.match(routing, /Use `R3` for high-risk regression, security-sensitive,\s+or risky-logic assurance review/i);
+  assert.match(routing, /R3[^\n]*review of high-risk regressions or edge cases, security-sensitive logic, or risky logic/i);
   assert.doesNotMatch(routing, /Use `R3` for high-risk, security-sensitive, regression,/i);
+  assert.doesNotMatch(routing, /R3[^\n]*review of regressions, edge cases, security, or risky logic/i);
 });
 
 test("routing falls back safely and keeps quality gates invariant", () => {

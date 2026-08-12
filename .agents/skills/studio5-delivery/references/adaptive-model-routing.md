@@ -55,7 +55,7 @@ architecture is not architecture escalation.
 | `R0 — economy` | mechanical, low-risk scans, extraction, repetitive checks, and simple documentation | light/low; start with the least-cost sufficient setup |
 | `R1 — balanced` | ordinary low-risk implementation, review, and task preparation | standard/medium |
 | `R2 — deep implementation` | complex production behavior, broad context, or difficult correctness work | high |
-| `R3 — assurance review` | review of regressions, edge cases, security, or risky logic | high to extra-high; the B role alone does not automatically require R3 |
+| `R3 — assurance review` | review of high-risk regressions or edge cases, security-sensitive logic, or risky logic | high to extra-high; the B role alone does not automatically require R3 |
 | `R4 — architecture` | C research or architecture with material tradeoffs | extra-high to maximum when justified |
 
 Select the least costly available model and reasoning effort that meets the
