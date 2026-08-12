@@ -29,11 +29,14 @@ critical path. Resolve blockers before dependents. Do not turn a missing
 ordinary implementation choice into a user decision.
 
 After an owner-approved bounded automation optimization integrates, return the
-next bare `continue` to the eligible product critical path. Do not select a
-further delivery-cost optimization unless a correctness or safety issue, broken
-workflow, material recurring bottleneck, or an explicit owner request justifies
-it. Do not create persistent summaries or orchestration solely to account for
-cost; record concise, task-local evidence instead.
+next bare `continue` to the eligible product critical path. The one-time
+`OPS-AUTOPILOT-007` proven-pattern routing calibration is the material recurring
+bottleneck exception to this freeze; once it integrates, the freeze remains
+active and the next routing is the eligible Phase 4.5 product task. Do not
+select a further delivery-cost optimization unless a correctness or safety
+issue, broken workflow, material recurring bottleneck, or an explicit owner
+request justifies it. Do not create persistent summaries or orchestration solely
+to account for cost; record concise, task-local evidence instead.
 
 ## Internal task card
 

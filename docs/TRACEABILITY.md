@@ -8,9 +8,11 @@ P3. PR #18 merged as `110d744` with GitHub `5/5 PASS`; PR #19 merged as
 `c2991c7` and closed OPS-AUTOPILOT-006. PR #20 merged
 `P4.5-UX-IMPLEMENTATION-002` into `develop` as `190851d`.
 PR #21 merged `P4.5-UX-IMPLEMENTATION-003` into `develop` as `54c4f48` after
-GitHub checks `5/5 PASS`. `P4.5-UX-IMPLEMENTATION-004` is the only active
-isolated read-only Library slice and is locally verified pending parent B
-review.
+GitHub checks `5/5 PASS`. PR #22 merged `P4.5-UX-IMPLEMENTATION-004` as
+`0912af0` with GitHub checks `5/5 PASS`. `OPS-AUTOPILOT-007` is the only active
+governance task: the one-time material recurring-bottleneck exception for
+proven-pattern routing calibration. After integration the automation freeze
+remains active and routing returns to the eligible Phase 4.5 product task.
 IndexedDB remains origin-scoped: an isolated localhost/preview does not prove
 access to P3 or production-origin records, and the physical browser-driver read
 remains unverified. PDF opening/viewing and Notes are not implemented by this
@@ -75,6 +77,7 @@ coverage finding only.
 | `S5-QA-AUTOPILOT-003` | تحقق مسار التسليم باشتراك Codex الحالي فقط | OPS-AUTOPILOT-003 / PR #14 | COMPLETE / MERGED | Supervisor/A/B وmutation guard وcheck selection وscope PASS؛ PR #14 merged at `1043d46` بعد GitHub CI 5/5 PASS؛ C غير مطلوب؛ لا API key ولا Full access ولا auto-merge ولا Production |
 | `S5-QA-AUTOPILOT-004` | توجيه أمر المالك `continue` من الحقيقة الحية إلى حلقة تسليم واحدة محكومة | OPS-AUTOPILOT-004 / PR #15 | COMPLETE / MERGED | B `REVISE → fix → PASS` مع mutation guard PASS؛ GitHub checks 5/5؛ merged into `develop` as `0ffc446`؛ no auto-merge or Production |
 | `S5-QA-AUTOPILOT-006` | اختيار فحوص محلية دقيقة ومشغّلة فعلياً مع تجميد تحسينات الأتمتة غير الضرورية | OPS-AUTOPILOT-006 / PR #19 | COMPLETE / MERGED | Merge `c2991c7`؛ check selection and evidence reconciliation integrated; future optimization stays frozen unless an approved trigger exists |
+| `S5-QA-AUTOPILOT-007` | Proven-pattern routing calibration | OPS-AUTOPILOT-007 | IN PROGRESS | One-time material recurring-bottleneck exception, evidenced from requested R2/high routes in P4.5 task cards 002/003/004; no effective-runtime value is claimed when NOT EXPOSED; after integration the freeze remains and product routing returns to Phase 4.5 |
 | `S5-GIT-001` | `develop` قاعدة التجميع مع فروع قصيرة وPR إلى develop | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW / PR CI PASS | `develop@3fbc776` + PR #2 + GitHub Actions 3/3 + `BRANCH_AUDIT.md` + `GIT_WORKFLOW_AR.md` |
 | `S5-PREVIEW-001` | Preview يبني SHA من GitHub ولا يعتمد Sites | PRE-P5-FOUNDATION-001 | DONE / DEPLOYED FROM DEVELOP | `develop@ed1d175` → Workers Build `6e7ced6d` |
 | `S5-PREVIEW-002` | فحص حزمة P3 الساكنة وحدود Cloudflare والمسارات والأصول قبل الربط | P4-PREVIEW-001 | DONE / STATIC BUILD VERIFIED | PR #3 CI + 404/PDF/SW contracts + Production build PASS |
@@ -83,7 +86,7 @@ coverage finding only.
 | `S5-UX-P45-SHELL-001` | App Shell وتنقل Responsive معزولان من دون Core أو Ink | P4.5-UX-IMPLEMENTATION-001 / PR #17 | COMPLETE / MERGED | PR #17 merged as `2c5d0c6` after GitHub 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ B `REVISE → repair → PASS` وmutation guard PASS؛ production route ما زال P3 ولا route cutover أو Phase 5 |
 | `S5-UX-P45-TODAY-001` | عرض Today للقراءة فقط من إسقاط Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-002 / PR #20 | COMPLETE / MERGED | merged into `develop` as `190851d`؛ facade يكشف `queryToday` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا route cutover أو mutators أو Phase 5 |
 | `S5-UX-P45-STUDY-001` | عرض مواد Study للقراءة فقط من قائمة Core السلطوية داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-003 / PR #21 | COMPLETE / MERGED | merged into `develop` as `54c4f48` after GitHub checks 5/5 PASS؛ facade يكشف `listSubjects` فقط؛ يحفظ ترتيب Core وescaping و`dir="auto"`؛ same-origin boundary محفوظة؛ لا route cutover أو mutators أو Phase 5 |
-| `S5-UX-P45-LIBRARY-001` | عرض فهرس Library للقراءة فقط من بحث Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-004 | LOCAL VERIFIED / PARENT B REVIEW PENDING | Surface 29/29 + Core 100/100 + lint/typecheck/build/built smoke PASS؛ facade يكشف بحث `AcademicRepository.searchLibrary` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا PDF/file-byte opening أو viewer أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
+| `S5-UX-P45-LIBRARY-001` | عرض فهرس Library للقراءة فقط من بحث Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-004 / PR #22 | COMPLETE / MERGED | merged into `develop` as `0912af0` after GitHub checks 5/5 PASS؛ facade يكشف بحث `AcademicRepository.searchLibrary` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا PDF/file-byte opening أو viewer أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

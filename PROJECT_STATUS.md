@@ -15,13 +15,15 @@ progress snapshots where they conflict.
   query for the surface's current browser origin.
 - PR #21 merged into `develop` as `54c4f48`; all five reported GitHub checks
   passed and `P4.5-UX-IMPLEMENTATION-003` is complete.
-- `P4.5-UX-IMPLEMENTATION-004` is the only active bounded product slice. It
-  replaces only Library's representative content with the canonical read-only
-  Core library index and is locally verified pending parent B review. A
-  separate localhost/preview origin cannot see P3 or
-  production IndexedDB records; same-origin hosting is a later slice.
-  Physical-browser access, PDF opening/viewing, and Notes remain unverified or
-  unimplemented here. Ink Batch 3 remains deferred and Phase 5 remains blocked.
+- PR #22 merged `P4.5-UX-IMPLEMENTATION-004` into `develop` as `0912af0`; all
+  five reported GitHub checks passed. Its Library index projection is complete;
+  PDF opening/viewing and Notes remain later work.
+- `OPS-AUTOPILOT-007` is the only active governance task: a one-time
+  proven-pattern routing calibration justified by recurring over-routing of
+  bounded low-ambiguity read-only patterns. After integration, automation
+  optimization remains frozen and the next routing returns to the eligible
+  Phase 4.5 product task. Ink Batch 3 remains deferred and Phase 5 remains
+  blocked.
 - `.github/workflows/ci.yml` currently runs Core, P0, P3, and Worker checks;
   it has no independent P4.5 job. This is a material coverage finding, not a
   claim that the workflow was changed.
@@ -209,11 +211,12 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | OPS-AUTOPILOT-002 | مراجعة B معزولة بصلاحية read-only مفروضة من invocation مستقلة | `deferred` | Owner | DEFERRED BY OWNER — API AUTOMATION LATER | التصميم ومعايير القبول وخطة الاختبارات محفوظة؛ لا `OPENAI_API_KEY` الآن وغيابه ليس خطأً |
 | OPS-AUTOPILOT-003 | التحقق من مسار التسليم باشتراك Codex الحالي فقط | `chore/subscription-only-supervised-delivery` | Codex | COMPLETE / MERGED — PR #14 | Supervisor وA وB وmutation guard وscope/check selection PASS؛ GitHub CI 5/5 PASS قبل الدمج؛ C غير مطلوب؛ لا API ولا Full access ولا auto-merge ولا Production |
 | OPS-AUTOPILOT-004 | تثبيت أمر `continue` كحلقة تحكم باشتراك Codex فقط | `chore/subscription-only-continue-control-plane` | Codex | COMPLETE / MERGED — PR #15 | B: `REVISE → fix → PASS`؛ mutation guard PASS؛ GitHub checks 5/5؛ merge `0ffc446`؛ لا Auto-Merge ولا Production |
+| OPS-AUTOPILOT-007 | Proven-pattern routing calibration | `chore/ops-autopilot-007-proven-pattern-routing` | Codex | IN PROGRESS | One-time recurring-bottleneck exception; no product, contract, or data change; after integration the automation optimization freeze remains and routing returns to Phase 4.5 product work |
 | P4-P45-RECONCILIATION | مصالحة أدلة Phase 4 وتوجيه المنتج إلى Phase 4.5 | `docs/phase4-phase45-reconciliation` | Codex | COMPLETE / MERGED — PR #16 | B `REVISE → fix → PASS`؛ mutation guard وGitHub CI ناجحان؛ Phase 4 كاملة؛ merge `261c1e3` |
 | P4.5-UX-IMPLEMENTATION-001 | Warm Paper App Shell and Navigation Foundation | `feat/p45-warm-paper-shell-foundation` | Codex | COMPLETE / MERGED — PR #17 | Merged as `2c5d0c6` after GitHub checks 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ production route ما زال P3؛ لا route cutover أو Core/Ink/Phase 5 |
 | P4.5-UX-IMPLEMENTATION-002 | Read-Only Today Core Projection | `feat/p45-readonly-today-core-projection` | Codex | COMPLETE / MERGED — PR #20 | merged into `develop` as `190851d`؛ facade للقراءة فقط؛ same-origin boundary محفوظ؛ لا route cutover أو mutators أو Phase 5 |
 | P4.5-UX-IMPLEMENTATION-003 | Read-Only Study Subjects Projection | `feat/p45-readonly-study-subjects` | Codex | COMPLETE / MERGED — PR #21 | merged into `develop` as `54c4f48` after GitHub checks 5/5 PASS؛ facade للقراءة فقط؛ same-origin boundary محفوظ؛ لا route cutover أو mutators أو Phase 5 |
-| P4.5-UX-IMPLEMENTATION-004 | Read-Only Library Index Projection | `feat/p45-readonly-library-index` | Codex | LOCAL VERIFIED / PARENT B REVIEW PENDING | Surface 29/29 + Core 100/100 + delivery tooling 70/70 + lint/typecheck/build/built smoke PASS؛ facade يكشف `searchLibrary` فقط؛ لا فتح PDF أو file bytes أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-004 | Read-Only Library Index Projection | `feat/p45-readonly-library-index` | Codex | COMPLETE / MERGED — PR #22 | merged into `develop` as `0912af0` after GitHub checks 5/5 PASS؛ facade يكشف `searchLibrary` فقط؛ لا فتح PDF أو file bytes أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
