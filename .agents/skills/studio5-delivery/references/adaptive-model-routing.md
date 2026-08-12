@@ -22,6 +22,32 @@ Use the highest safety-relevant dimension, not a simple average. Context volume
 alone does not require maximum reasoning. A routine documentation correction,
 for example, normally stays economical unless another dimension makes it risky.
 
+## Proven-pattern calibration
+
+`R1 — balanced` is eligible, but never forced, for a bounded, low-ambiguity,
+repeated proven pattern. This is a downward-routing signal when the work has no
+schema or migration, storage semantics, backup, data-meaning, write or mutator,
+security, deployment, cutover, concurrency, recovery, novel-algorithm, or
+significant-architecture concern. Mechanicality is also a downward signal;
+repetitive implementation is not, by itself, a reason to request `R2`.
+
+Medium or large context volume alone does not require `R2`. A `PRODUCTION`
+label or a read-only projection of an existing Core contract alone also does
+not require `R2`; assess the actual behavior and safety-relevant dimensions.
+
+Use `R2` only when concrete deep-implementation reasons remain, such as
+complex production behavior, difficult correctness, a material interaction
+between safety-relevant concerns, or genuinely broad context that must be
+reasoned about together. Use `R3` for high-risk regression, security-sensitive,
+or risky-logic assurance review. The B role does not itself require `R3`:
+routine low-risk B review may use the lowest sufficient lower tier.
+
+A new schema or migration, storage or persistence semantics, backup or recovery
+behavior, a new write path, or difficult concurrency is an actual deep-work
+reason for `R2` or a stronger route as risk requires. Significant new
+architecture judgment is a reason to consider `R4` and C; reuse of an approved
+architecture is not architecture escalation.
+
 ## Capability tiers
 
 | Tier | Suitable work | Reasoning intent |
@@ -29,7 +55,7 @@ for example, normally stays economical unless another dimension makes it risky.
 | `R0 — economy` | mechanical, low-risk scans, extraction, repetitive checks, and simple documentation | light/low; start with the least-cost sufficient setup |
 | `R1 — balanced` | ordinary low-risk implementation, review, and task preparation | standard/medium |
 | `R2 — deep implementation` | complex production behavior, broad context, or difficult correctness work | high |
-| `R3 — assurance review` | review of regressions, edge cases, security, or risky logic | high to extra-high; the B role alone does not automatically require R3 |
+| `R3 — assurance review` | review of high-risk regressions or edge cases, security-sensitive logic, or risky logic | high to extra-high; the B role alone does not automatically require R3 |
 | `R4 — architecture` | C research or architecture with material tradeoffs | extra-high to maximum when justified |
 
 Select the least costly available model and reasoning effort that meets the

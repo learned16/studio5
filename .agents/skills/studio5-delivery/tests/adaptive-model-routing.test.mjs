@@ -37,6 +37,64 @@ test("routing uses cost-aware tiers without making trivial documentation maximum
   assert.match(routing, /highest safety-relevant dimension/i);
 });
 
+test("R1 is eligible, but not forced, for bounded low-ambiguity repeated proven patterns", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /R1[^\n]*eligible, but never forced/i);
+  assert.match(routing, /bounded, low-ambiguity,[\s\S]*repeated proven pattern/i);
+});
+
+test("medium or large context alone does not require R2", () => {
+  assert.match(read(routingPath), /Medium or large context volume alone does not require `R2`/i);
+});
+
+test("schema or migration changes retain deep-work escalation", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /A new schema or migration/i);
+  assert.match(routing, /reason for `R2` or a stronger route/i);
+});
+
+test("storage persistence and recovery changes retain deep-work escalation", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /storage or persistence semantics, backup or recovery/i);
+  assert.match(routing, /actual deep-work\s+reason/i);
+});
+
+test("significant new architecture remains eligible for architecture escalation", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /Significant new\s+architecture judgment is a reason to consider `R4` and C/i);
+  assert.match(routing, /reuse of an approved\s+architecture is not architecture escalation/i);
+});
+
+test("a production label or read-only existing Core projection alone does not require R2", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /PRODUCTION`?\s+label/i);
+  assert.match(routing, /read-only projection of an existing Core contract alone also does\s+not require `R2`/i);
+});
+
+test("mechanicality is a downward routing signal", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /Mechanicality is also a downward signal/i);
+  assert.match(routing, /repetitive implementation is not, by itself, a reason to request `R2`/i);
+});
+
+test("R2 retains concrete deep-implementation reasons", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /Use `R2` only when concrete deep-implementation reasons remain/i);
+  assert.match(routing, /complex production behavior, difficult correctness/i);
+});
+
+test("routine low-risk B review is not R3 solely because of its role", () => {
+  assert.match(read(routingPath), /B role does not itself require `R3`/i);
+});
+
+test("high-risk regression assurance review remains R3 while regression alone does not", () => {
+  const routing = read(routingPath);
+  assert.match(routing, /Use `R3` for high-risk regression, security-sensitive,\s+or risky-logic assurance review/i);
+  assert.match(routing, /R3[^\n]*review of high-risk regressions or edge cases, security-sensitive logic, or risky logic/i);
+  assert.doesNotMatch(routing, /Use `R3` for high-risk, security-sensitive, regression,/i);
+  assert.doesNotMatch(routing, /R3[^\n]*review of regressions, edge cases, security, or risky logic/i);
+});
+
 test("routing falls back safely and keeps quality gates invariant", () => {
   const routing = read(routingPath);
   assert.match(routing, /same capability tier,[\s\S]*next stronger tier/i);
