@@ -66,6 +66,24 @@ class SmokeButton {
   }
 }
 
+class SmokeSearchForm {
+  listener = null;
+
+  constructor(value) {
+    this.input = { value };
+  }
+
+  addEventListener(eventName, listener) {
+    if (eventName === "submit") this.listener = listener;
+  }
+
+  submit(value) {
+    this.input.value = value;
+    assert.equal(typeof this.listener, "function", "search listener was not attached");
+    this.listener({ preventDefault() {} });
+  }
+}
+
 class SmokeMainContent {
   markup = "";
   focusedHeading = null;
@@ -96,6 +114,8 @@ class SmokeMainContent {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
+    const searchValue = markup.match(/data-library-search-input[^>]*value="([^"]*)"/)?.[1];
+    this.searchForm = searchValue === undefined ? null : new SmokeSearchForm(searchValue);
   }
 
   querySelector(selector) {
@@ -105,6 +125,8 @@ class SmokeMainContent {
         this.focusedHeading = this.markup.match(/<h1[^>]*>([^<]+)<\/h1>/)?.[1] ?? null;
       } };
     }
+    if (selector === "[data-library-search]") return this.searchForm;
+    if (selector === "[data-library-search-input]") return this.searchForm?.input ?? null;
     return null;
   }
 
@@ -339,11 +361,11 @@ async function verifyBuiltNavigation() {
 
     harness.navigate("#/library");
     await waitForMarkup(harness.mainContent, "Library could not be opened");
-    harness.mainContent.querySelector("[data-library-retry]").click();
+    harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
     assert.deepEqual(libraryCallArguments, [
       { query: "", limit: 50 },
-      { query: "", limit: 50 },
+      { query: "second", limit: 50 },
     ]);
     harness.mainContent.querySelectorAll("[data-library-note-open]")[0].click();
     await waitForMarkup(harness.mainContent, "Note could not be opened");

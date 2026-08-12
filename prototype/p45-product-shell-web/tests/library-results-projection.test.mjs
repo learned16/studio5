@@ -64,6 +64,15 @@ test("Library loading and recoverable error states are explicit", () => {
   assert.match(error, /did not open files or create notes/);
 });
 
+test("Library search form preserves the submitted query across states", () => {
+  const ready = destinationView("library", { status: "ready", query: "structures", results: canonicalResults });
+  const error = destinationView("library", { status: "error", query: "structures" });
+
+  assert.match(ready, /data-library-search/);
+  assert.match(ready, /value="structures"/);
+  assert.match(error, /value="structures"/);
+});
+
 test("Library note detail states escape content, retain direction, and provide controls", () => {
   const ready = destinationView("library", {
     status: "ready",

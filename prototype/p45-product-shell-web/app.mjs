@@ -10,6 +10,7 @@ const routeLabel = document.querySelector("#route-label");
 const navigationRegions = [...document.querySelectorAll("[data-navigation]")];
 let renderVersion = 0;
 let libraryDetailRequestVersion = 0;
+let librarySearchQuery = "";
 let libraryFacadePromise = null;
 let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
@@ -128,23 +129,42 @@ async function renderStudy(destination, version, focusHeading) {
   }
 }
 
-async function renderLibrary(destination, version, focusHeading) {
+async function renderLibrary(destination, version, focusHeading, query = librarySearchQuery) {
   try {
     const facade = await libraryFacade();
-    const results = await facade.searchLibrary({ query: "", limit: 50 });
+    const results = await facade.searchLibrary({ query, limit: 50 });
     if (version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
     updateRouteContent(destination, destinationView("library", {
       status: "ready",
       results,
+      query,
     }), focusHeading);
     bindLibraryNoteActions(destination, version, focusHeading, results);
+    bindLibrarySearch(destination, focusHeading);
   } catch {
     if (version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
-    updateRouteContent(destination, destinationView("library", { status: "error" }), focusHeading);
+    updateRouteContent(destination, destinationView("library", { status: "error", query }), focusHeading);
+    bindLibrarySearch(destination, focusHeading);
     mainContent.querySelector("[data-library-retry]")?.addEventListener("click", () => {
-      renderRoute({ focusHeading: true });
+      renderLibrarySearch(destination, focusHeading, query);
     });
   }
+}
+
+function bindLibrarySearch(destination, focusHeading) {
+  mainContent.querySelector("[data-library-search]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = mainContent.querySelector("[data-library-search-input]")?.value ?? "";
+    renderLibrarySearch(destination, focusHeading, query);
+  });
+}
+
+function renderLibrarySearch(destination, focusHeading, query) {
+  librarySearchQuery = query;
+  renderVersion += 1;
+  updateRouteContent(destination, destinationView("library", { status: "loading", query }), focusHeading);
+  bindLibrarySearch(destination, focusHeading);
+  void renderLibrary(destination, renderVersion, focusHeading, query);
 }
 
 function bindLibraryNoteActions(destination, version, focusHeading, results) {
@@ -158,8 +178,9 @@ function bindLibraryNoteActions(destination, version, focusHeading, results) {
 function bindLibraryDetailControls(destination, version, focusHeading, results, noteId) {
   mainContent.querySelector("[data-library-note-close]")?.addEventListener("click", () => {
     libraryDetailRequestVersion += 1;
-    updateRouteContent(destination, destinationView("library", { status: "ready", results }), focusHeading);
+    updateRouteContent(destination, destinationView("library", { status: "ready", results, query: librarySearchQuery }), focusHeading);
     bindLibraryNoteActions(destination, version, focusHeading, results);
+    bindLibrarySearch(destination, focusHeading);
   });
   mainContent.querySelector("[data-library-note-retry]")?.addEventListener("click", () => {
     void renderLibraryNoteDetail(destination, version, focusHeading, results, noteId);
@@ -170,18 +191,20 @@ async function renderLibraryNoteDetail(destination, version, focusHeading, resul
   if (version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
   const requestVersion = libraryDetailRequestVersion + 1;
   libraryDetailRequestVersion = requestVersion;
-  updateRouteContent(destination, destinationView("library", { status: "ready", results, detail: { status: "loading" } }), focusHeading);
+  updateRouteContent(destination, destinationView("library", { status: "ready", results, query: librarySearchQuery, detail: { status: "loading" } }), focusHeading);
   bindLibraryNoteActions(destination, version, focusHeading, results);
+  bindLibrarySearch(destination, focusHeading);
   bindLibraryDetailControls(destination, version, focusHeading, results, noteId);
   try {
     const note = await (await libraryNoteFacade()).getNote(noteId);
     if (requestVersion !== libraryDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
-    updateRouteContent(destination, destinationView("library", { status: "ready", results, detail: { status: note ? "ready" : "missing", note } }), focusHeading);
+    updateRouteContent(destination, destinationView("library", { status: "ready", results, query: librarySearchQuery, detail: { status: note ? "ready" : "missing", note } }), focusHeading);
   } catch {
     if (requestVersion !== libraryDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
-    updateRouteContent(destination, destinationView("library", { status: "ready", results, detail: { status: "error" } }), focusHeading);
+    updateRouteContent(destination, destinationView("library", { status: "ready", results, query: librarySearchQuery, detail: { status: "error" } }), focusHeading);
   }
   bindLibraryNoteActions(destination, version, focusHeading, results);
+  bindLibrarySearch(destination, focusHeading);
   bindLibraryDetailControls(destination, version, focusHeading, results, noteId);
 }
 
@@ -199,8 +222,10 @@ function renderRoute({ focusHeading = false } = {}) {
     return;
   }
   if (destination.id === "library") {
-    updateRouteContent(destination, destinationView("library", { status: "loading" }), focusHeading);
-    void renderLibrary(destination, renderVersion, focusHeading);
+    librarySearchQuery = "";
+    updateRouteContent(destination, destinationView("library", { status: "loading", query: librarySearchQuery }), focusHeading);
+    bindLibrarySearch(destination, focusHeading);
+    void renderLibrary(destination, renderVersion, focusHeading, librarySearchQuery);
     return;
   }
   updateRouteContent(destination, destinationView(destination.id), focusHeading);
