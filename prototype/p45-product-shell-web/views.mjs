@@ -120,6 +120,10 @@ function practiceView() {
   </section>`;
 }
 
+function librarySearchMarkup(query = "") {
+  return `<form class="library-search" data-library-search><label for="library-search-input">Search Library</label><div><input id="library-search-input" data-library-search-input name="query" type="search" value="${escaped(query)}" autocomplete="off"><button class="primary-action" type="submit">Search</button></div></form>`;
+}
+
 function libraryLoadingView() {
   return `<section class="screen" aria-busy="true">
     ${pageIntroduction("Local academic data", "Library", "Your canonical resource index, read from this device without opening or changing items.", "Reading local data")}
@@ -167,9 +171,10 @@ function libraryNoteDetailView(detail) {
 }
 
 function libraryView(state = { status: "loading" }) {
-  if (state.status === "error") return libraryErrorView();
-  if (state.status === "ready") return `${libraryReadyView(state.results)}${libraryNoteDetailView(state.detail)}`;
-  return libraryLoadingView();
+  const search = librarySearchMarkup(state.query);
+  if (state.status === "error") return `${search}${libraryErrorView()}`;
+  if (state.status === "ready") return `${search}${libraryReadyView(state.results)}${libraryNoteDetailView(state.detail)}`;
+  return `${search}${libraryLoadingView()}`;
 }
 
 const viewByDestination = Object.freeze({
