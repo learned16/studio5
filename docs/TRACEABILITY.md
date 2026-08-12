@@ -11,10 +11,8 @@ PR #21 merged `P4.5-UX-IMPLEMENTATION-003` into `develop` as `54c4f48` after
 GitHub checks `5/5 PASS`. PR #22 merged `P4.5-UX-IMPLEMENTATION-004` as
 `0912af0` with GitHub checks `5/5 PASS`. PR #23 merged `OPS-AUTOPILOT-007` as
 `eebeb35`; the automation freeze remains active. `P4.5-UX-IMPLEMENTATION-005`
-merged as PR #24 at `454ad9d`. The active product task is
-`P4.5-UX-IMPLEMENTATION-006`, a read-only Library-local search interaction.
-Only `P4.5-UX-IMPLEMENTATION-007` is active: a read-only Study subject-detail
-projection.
+merged as PR #24 at `454ad9d`. Only `P4.5-UX-IMPLEMENTATION-007` is active:
+a read-only Study subject-detail projection.
 IndexedDB remains origin-scoped: an isolated localhost/preview does not prove
 access to P3 or production-origin records, and the physical browser-driver read
 remains unverified. PDF opening/viewing and Notes are not implemented by this
