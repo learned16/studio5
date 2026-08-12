@@ -78,7 +78,11 @@ class SmokeMainContent {
   set innerHTML(markup) {
     this.markup = markup;
     this.retryButtons = new Map();
-    for (const selector of ["[data-study-retry]", "[data-today-retry]"]) {
+    for (const selector of [
+      "[data-library-retry]",
+      "[data-study-retry]",
+      "[data-today-retry]",
+    ]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -183,18 +187,20 @@ async function waitForMarkup(mainContent, expected) {
     if (mainContent.innerHTML.includes(expected)) return;
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
   }
-  throw new Error(`Built Today route did not render: ${expected}`);
+  throw new Error(`Built route did not render: ${expected}`);
 }
 
 async function verifyBuiltNavigation() {
   const harness = builtDomHarness();
   const fixedInstant = Date.parse("2026-08-11T08:15:00.000Z");
+  const libraryCallArguments = [];
   const queryOptions = [];
   const subjectCallArguments = [];
   const { AcademicRepository } = await import(
     new URL("../dist/assets/core/academic-repository.mjs", import.meta.url)
   );
   const originalQueryToday = AcademicRepository.prototype.queryToday;
+  const originalSearchLibrary = AcademicRepository.prototype.searchLibrary;
   const originalListSubjects = AcademicRepository.prototype.listSubjects;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
@@ -221,6 +227,26 @@ async function verifyBuiltNavigation() {
     return Promise.resolve([
       { id: "subject:1", title: "Structures & Safety" },
       { id: "subject:2", title: '<img src=x onerror="unsafe()"> & مراجعة' },
+    ]);
+  };
+  AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
+    libraryCallArguments.push(structuredClone(options));
+    if (libraryCallArguments.length === 1) {
+      return Promise.reject(new Error("controlled library read failure"));
+    }
+    return Promise.resolve([
+      {
+        targetKind: "file-artifact",
+        targetId: "file-artifact:hostile",
+        title: '<img src=x onerror="unsafe()"> & مرجع',
+        subtitle: '<script>alert("unsafe")</script> & مصدر',
+      },
+      {
+        targetKind: "note",
+        targetId: "note:second",
+        title: "Second canonical result",
+        subtitle: null,
+      },
     ]);
   };
   Date.now = () => fixedInstant;
@@ -267,7 +293,31 @@ async function verifyBuiltNavigation() {
       assert.deepEqual(studyLinks.map((link) => link.dataset.route), ["study"]);
     }
 
-    for (const destinationId of ["projects", "practice", "library"]) {
+    harness.navigate("#/library");
+    await waitForMarkup(harness.mainContent, "Library could not be opened");
+    harness.mainContent.querySelector("[data-library-retry]").click();
+    await waitForMarkup(harness.mainContent, "Second canonical result");
+    assert.deepEqual(libraryCallArguments, [
+      { query: "", limit: 50 },
+      { query: "", limit: 50 },
+    ]);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /<img src=x|<script>/);
+    assert.match(
+      harness.mainContent.innerHTML,
+      /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; مرجع/,
+    );
+    assert.match(
+      harness.mainContent.innerHTML,
+      /dir="auto">&lt;script&gt;alert\(&quot;unsafe&quot;\)&lt;\/script&gt; &amp; مصدر/,
+    );
+    for (const navigation of harness.navigations) {
+      const libraryLinks = navigation.links.filter(
+        (link) => link.attributes.get("aria-current") === "page",
+      );
+      assert.deepEqual(libraryLinks.map((link) => link.dataset.route), ["library"]);
+    }
+
+    for (const destinationId of ["projects", "practice"]) {
       harness.navigate(`#/${destinationId}`);
       const expectedLabel = `${destinationId[0].toUpperCase()}${destinationId.slice(1)}`;
       assert.match(harness.mainContent.innerHTML, new RegExp(`<h1[^>]*>${expectedLabel}</h1>`));
@@ -282,6 +332,7 @@ async function verifyBuiltNavigation() {
     }
   } finally {
     AcademicRepository.prototype.queryToday = originalQueryToday;
+    AcademicRepository.prototype.searchLibrary = originalSearchLibrary;
     AcademicRepository.prototype.listSubjects = originalListSubjects;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
@@ -310,6 +361,8 @@ try {
     "/index.html",
     "/styles.css",
     "/app.mjs",
+    "/library-read-facade.mjs",
+    "/library-results-projection.mjs",
     "/routes.mjs",
     "/study-subjects-projection.mjs",
     "/study-subjects-read-facade.mjs",
@@ -329,4 +382,4 @@ try {
 }
 
 await verifyBuiltNavigation();
-console.log("Built smoke passed: HTTP closure + five routes + Today and Study failure/retry/escaped ready states");
+console.log("Built smoke passed: HTTP closure + five routes + Today, Study, and Library failure/retry/escaped ready states");

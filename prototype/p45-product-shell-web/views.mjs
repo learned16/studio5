@@ -1,3 +1,4 @@
+import { projectLibraryResults } from "./library-results-projection.mjs";
 import { projectStudySubjects } from "./study-subjects-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
@@ -118,18 +119,43 @@ function practiceView() {
   </section>`;
 }
 
-function libraryView() {
-  return `<section class="screen">
-    ${pageIntroduction("Reference collection", "Library", "Representative files show automatic direction without reading or changing user storage.")}
-    <section class="paper-card" aria-labelledby="library-items">
-      <div class="section-heading"><div><span class="section-number">01</span><h2 id="library-items">Recent items</h2></div><span>3 examples</span></div>
-      <ul class="content-list resource-list">
-        <li><span class="file-mark" aria-hidden="true">PDF</span><span dir="auto"><strong>Structures — Week 04</strong><small>Building Structures · 28 pages</small></span>${statusBadge("success", "✓", "Available")}</li>
-        <li><span class="file-mark" aria-hidden="true">NT</span><span dir="auto"><strong>Lecture 6 — القوى والعزوم</strong><small>Statics · Note</small></span>${statusBadge("neutral", "○", "Recent")}</li>
-        <li><span class="file-mark" aria-hidden="true">DR</span><span dir="auto"><strong>تفاصيل درج — Stair Detail 01</strong><small>Architectural Drawing · A3</small></span>${statusBadge("danger", "×", "Unavailable")}</li>
-      </ul>
-    </section>
+function libraryLoadingView() {
+  return `<section class="screen" aria-busy="true">
+    ${pageIntroduction("Local academic data", "Library", "Your canonical resource index, read from this device without opening or changing items.", "Reading local data")}
+    <article class="paper-card library-state" role="status"><h2>Loading library…</h2><p>Reading the local resource index without opening files.</p></article>
   </section>`;
+}
+
+function libraryErrorView() {
+  return `<section class="screen">
+    ${pageIntroduction("Local academic data", "Library", "Your canonical resource index, read from this device without opening or changing items.", "Read unavailable")}
+    <article class="paper-card library-state" role="alert"><h2>Library could not be opened</h2><p>Library did not open files or create notes. Try the local read again.</p><button class="primary-action" type="button" data-library-retry>Try again</button></article>
+  </section>`;
+}
+
+function libraryKindLabel(targetKind) {
+  return String(targetKind ?? "resource").replaceAll("-", " ");
+}
+
+function libraryReadyView(results) {
+  const projectedResults = projectLibraryResults(results);
+  if (projectedResults.length === 0) {
+    return `<section class="screen">${pageIntroduction("Local academic data", "Library", "Your canonical resource index, read from this device without opening or changing items.", "Local data")}<article class="paper-card empty-state"><span class="empty-symbol" aria-hidden="true">＋</span><div><h2>No library items yet</h2><p>No resources are available in the local library index.</p></div></article></section>`;
+  }
+  const cards = projectedResults.map((result, index) => {
+    const headingId = `library-result-${index + 1}`;
+    const subtitle = result.subtitle
+      ? `<p dir="auto">${escaped(result.subtitle)}</p>`
+      : "";
+    return `<li><article class="paper-card library-card" aria-labelledby="${headingId}"><span class="eyebrow">${escaped(libraryKindLabel(result.targetKind))}</span><h3 id="${headingId}" dir="auto">${escaped(result.title)}</h3>${subtitle}</article></li>`;
+  }).join("");
+  return `<section class="screen">${pageIntroduction("Local academic data", "Library", "Your canonical resource index, read from this device without opening or changing items.", "Local data")}<section aria-labelledby="library-items"><div class="section-heading"><div><span class="section-number">01</span><h2 id="library-items">Library index</h2></div><span>${projectedResults.length} ${projectedResults.length === 1 ? "item" : "items"}</span></div><ul class="library-grid">${cards}</ul></section></section>`;
+}
+
+function libraryView(state = { status: "loading" }) {
+  if (state.status === "error") return libraryErrorView();
+  if (state.status === "ready") return libraryReadyView(state.results);
+  return libraryLoadingView();
 }
 
 const viewByDestination = Object.freeze({
@@ -143,5 +169,6 @@ const viewByDestination = Object.freeze({
 export function destinationView(destinationId, state) {
   if (destinationId === "today") return todayView(state);
   if (destinationId === "study") return studyView(state);
+  if (destinationId === "library") return libraryView(state);
   return (viewByDestination[destinationId] ?? todayView)();
 }
