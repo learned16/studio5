@@ -11,8 +11,8 @@ PR #21 merged `P4.5-UX-IMPLEMENTATION-003` into `develop` as `54c4f48` after
 GitHub checks `5/5 PASS`. PR #22 merged `P4.5-UX-IMPLEMENTATION-004` as
 `0912af0` with GitHub checks `5/5 PASS`. PR #23 merged `OPS-AUTOPILOT-007` as
 `eebeb35`; the automation freeze remains active. `P4.5-UX-IMPLEMENTATION-005`
-merged as PR #24 at `454ad9d`. The active product task is
-`P4.5-UX-IMPLEMENTATION-006`, a read-only Library-local search interaction.
+merged as PR #24 at `454ad9d`. Only `P4.5-UX-IMPLEMENTATION-007` is active:
+a read-only Study subject-detail projection.
 IndexedDB remains origin-scoped: an isolated localhost/preview does not prove
 access to P3 or production-origin records, and the physical browser-driver read
 remains unverified. PDF opening/viewing and Notes are not implemented by this
@@ -89,6 +89,7 @@ coverage finding only.
 | `S5-UX-P45-LIBRARY-001` | عرض فهرس Library للقراءة فقط من بحث Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-004 / PR #22 | COMPLETE / MERGED | merged into `develop` as `0912af0` after GitHub checks 5/5 PASS؛ facade يكشف بحث `AcademicRepository.searchLibrary` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا PDF/file-byte opening أو viewer أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
 | `S5-UX-P45-LIBRARY-NOTE-001` | عرض تفصيل Note داخل Library للقراءة فقط | P4.5-UX-IMPLEMENTATION-005 / PR #24 | COMPLETE / MERGED | `454ad9d`; frozen `AcademicRepository.getNote` facade; no Workspace/Notes-write parity |
 | `S5-UX-P45-LIBRARY-SEARCH-001` | بحث Library المحلي للقراءة فقط | P4.5-UX-IMPLEMENTATION-006 | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `searchLibrary({query,limit})` only; local loading/empty/error/retry; no global search or mutators |
+| `S5-UX-P45-STUDY-DETAIL-001` | عرض تفصيل Study subject للقراءة فقط | P4.5-UX-IMPLEMENTATION-007 | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `getSubject` facade; inline states and stale-response protection; no mutators |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

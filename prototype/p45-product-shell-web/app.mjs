@@ -2,6 +2,7 @@ import { destinations, routeFromHash, routeHash } from "./routes.mjs";
 import { openCanonicalLibraryReadFacade } from "./library-read-facade.mjs";
 import { openCanonicalLibraryNoteReadFacade } from "./library-note-read-facade.mjs";
 import { openCanonicalStudySubjectsReadFacade } from "./study-subjects-read-facade.mjs";
+import { openCanonicalStudySubjectDetailReadFacade } from "./study-subject-detail-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
@@ -11,9 +12,11 @@ const navigationRegions = [...document.querySelectorAll("[data-navigation]")];
 let renderVersion = 0;
 let libraryDetailRequestVersion = 0;
 let librarySearchQuery = "";
+let studyDetailRequestVersion = 0;
 let libraryFacadePromise = null;
 let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
+let studyDetailFacadePromise = null;
 let todayFacadePromise = null;
 
 function navigationLink(destination) {
@@ -55,6 +58,16 @@ function studyFacade() {
     });
   }
   return studyFacadePromise;
+}
+
+function studyDetailFacade() {
+  if (!studyDetailFacadePromise) {
+    studyDetailFacadePromise = openCanonicalStudySubjectDetailReadFacade().catch((error) => {
+      studyDetailFacadePromise = null;
+      throw error;
+    });
+  }
+  return studyDetailFacadePromise;
 }
 
 function libraryFacade() {
@@ -120,6 +133,7 @@ async function renderStudy(destination, version, focusHeading) {
       status: "ready",
       subjects,
     }), focusHeading);
+    bindStudyDetailActions(destination, version, focusHeading, subjects);
   } catch {
     if (version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
     updateRouteContent(destination, destinationView("study", { status: "error" }), focusHeading);
@@ -127,6 +141,39 @@ async function renderStudy(destination, version, focusHeading) {
       renderRoute({ focusHeading: true });
     });
   }
+}
+
+function bindStudyDetailActions(destination, version, focusHeading, subjects) {
+  for (const button of mainContent.querySelectorAll("[data-study-subject-open]")) {
+    button.addEventListener("click", () => void renderStudyDetail(destination, version, focusHeading, subjects, button.dataset.studySubjectOpen));
+  }
+}
+
+function bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId) {
+  mainContent.querySelector("[data-study-subject-close]")?.addEventListener("click", () => {
+    studyDetailRequestVersion += 1;
+    updateRouteContent(destination, destinationView("study", { status: "ready", subjects }), focusHeading);
+    bindStudyDetailActions(destination, version, focusHeading, subjects);
+  });
+  mainContent.querySelector("[data-study-subject-retry]")?.addEventListener("click", () => void renderStudyDetail(destination, version, focusHeading, subjects, subjectId));
+}
+
+async function renderStudyDetail(destination, version, focusHeading, subjects, subjectId) {
+  const requestVersion = studyDetailRequestVersion + 1;
+  studyDetailRequestVersion = requestVersion;
+  updateRouteContent(destination, destinationView("study", { status: "ready", subjects, detail: { status: "loading" } }), focusHeading);
+  bindStudyDetailActions(destination, version, focusHeading, subjects);
+  bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
+  try {
+    const subject = await (await studyDetailFacade()).getSubject(subjectId);
+    if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    updateRouteContent(destination, destinationView("study", { status: "ready", subjects, detail: { status: subject ? "ready" : "missing", subject } }), focusHeading);
+  } catch {
+    if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    updateRouteContent(destination, destinationView("study", { status: "ready", subjects, detail: { status: "error" } }), focusHeading);
+  }
+  bindStudyDetailActions(destination, version, focusHeading, subjects);
+  bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
 }
 
 async function renderLibrary(destination, version, focusHeading, query = librarySearchQuery) {

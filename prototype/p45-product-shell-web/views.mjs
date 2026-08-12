@@ -1,6 +1,7 @@
 import { projectLibraryResults } from "./library-results-projection.mjs";
 import { projectLibraryNoteDetail } from "./library-note-detail-projection.mjs";
 import { projectStudySubjects } from "./study-subjects-projection.mjs";
+import { projectStudySubjectDetail } from "./study-subject-detail-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
 function statusBadge(tone, symbol, label) {
@@ -83,14 +84,24 @@ function studyReadyView(subjects) {
   }
   const cards = projectedSubjects.map((subject, index) => {
     const headingId = `study-subject-${index + 1}`;
-    return `<li><article class="paper-card subject-card" aria-labelledby="${headingId}"><span class="section-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><h3 id="${headingId}" dir="auto">${escaped(subject.title)}</h3></article></li>`;
+    return `<li><article class="paper-card subject-card" aria-labelledby="${headingId}"><span class="section-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><h3 id="${headingId}" dir="auto">${escaped(subject.title)}</h3><button class="secondary-action" type="button" data-study-subject-open="${escaped(subject.id)}">Open subject</button></article></li>`;
   }).join("");
   return `<section class="screen">${pageIntroduction("Local academic data", "Study", "Your canonical subjects, read from this device without changing them.", "Local data")}<section aria-labelledby="study-subjects"><div class="section-heading"><div><span class="section-number">01</span><h2 id="study-subjects">Subjects</h2></div><span>${projectedSubjects.length} ${projectedSubjects.length === 1 ? "subject" : "subjects"}</span></div><ul class="subject-grid">${cards}</ul></section></section>`;
 }
 
+function studyDetailView(detail) {
+  if (!detail) return "";
+  const close = `<button class="secondary-action" type="button" data-study-subject-close>Close</button>`;
+  if (detail.status === "loading") return `<article class="paper-card study-detail" aria-busy="true" role="status"><h2>Loading subject…</h2>${close}</article>`;
+  if (detail.status === "missing") return `<article class="paper-card study-detail" role="alert"><h2>Subject is unavailable</h2>${close}</article>`;
+  if (detail.status === "error") return `<article class="paper-card study-detail" role="alert"><h2>Subject could not be opened</h2><button class="primary-action" type="button" data-study-subject-retry>Retry</button>${close}</article>`;
+  const subject = projectStudySubjectDetail(detail.subject);
+  return `<article class="paper-card study-detail" aria-labelledby="study-detail-title"><h2 id="study-detail-title" dir="auto">${escaped(subject.title)}</h2>${subject.code ? `<p dir="auto">${escaped(subject.code)}</p>` : ""}${close}</article>`;
+}
+
 function studyView(state = { status: "loading" }) {
   if (state.status === "error") return studyErrorView();
-  if (state.status === "ready") return studyReadyView(state.subjects);
+  if (state.status === "ready") return `${studyReadyView(state.subjects)}${studyDetailView(state.detail)}`;
   return studyLoadingView();
 }
 
