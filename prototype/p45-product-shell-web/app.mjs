@@ -144,6 +144,7 @@ async function renderLibrary(destination, version, focusHeading, query = library
   } catch {
     if (version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
     updateRouteContent(destination, destinationView("library", { status: "error", query }), focusHeading);
+    bindLibrarySearch(destination, focusHeading);
     mainContent.querySelector("[data-library-retry]")?.addEventListener("click", () => {
       renderLibrarySearch(destination, focusHeading, query);
     });

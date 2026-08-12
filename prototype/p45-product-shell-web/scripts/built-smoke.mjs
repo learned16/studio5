@@ -361,15 +361,12 @@ async function verifyBuiltNavigation() {
 
     harness.navigate("#/library");
     await waitForMarkup(harness.mainContent, "Library could not be opened");
-    harness.mainContent.querySelector("[data-library-retry]").click();
+    harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
     assert.deepEqual(libraryCallArguments, [
       { query: "", limit: 50 },
-      { query: "", limit: 50 },
+      { query: "second", limit: 50 },
     ]);
-    harness.mainContent.querySelector("[data-library-search]").submit("second");
-    await waitForMarkup(harness.mainContent, "Second canonical result");
-    assert.deepEqual(libraryCallArguments.at(-1), { query: "second", limit: 50 });
     harness.mainContent.querySelectorAll("[data-library-note-open]")[0].click();
     await waitForMarkup(harness.mainContent, "Note could not be opened");
     harness.mainContent.querySelector("[data-library-note-retry]").click();
