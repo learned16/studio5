@@ -204,6 +204,12 @@ async function waitForMarkup(mainContent, expected) {
   throw new Error(`Built route did not render: ${expected}`);
 }
 
+function deferredNoteRead(noteId) {
+  let resolve;
+  const promise = new Promise((resolveRead) => { resolve = resolveRead; });
+  return { noteId, promise, resolve };
+}
+
 async function verifyBuiltNavigation() {
   const harness = builtDomHarness();
   const fixedInstant = Date.parse("2026-08-11T08:15:00.000Z");
@@ -262,12 +268,24 @@ async function verifyBuiltNavigation() {
         title: "Second canonical result",
         subtitle: null,
       },
+      {
+        targetKind: "note",
+        targetId: "note:third",
+        title: "Third canonical result",
+        subtitle: null,
+      },
     ]);
   };
+  const pendingNoteReads = [];
   let noteReadCount = 0;
   AcademicRepository.prototype.getNote = function getNote(noteId) {
     noteReadCount += 1;
     if (noteReadCount === 1) return Promise.reject(new Error("controlled note read failure"));
+    if (noteReadCount > 2) {
+      const pendingRead = deferredNoteRead(noteId);
+      pendingNoteReads.push(pendingRead);
+      return pendingRead.promise;
+    }
     return Promise.resolve({
       id: noteId,
       title: '<img src=x onerror="unsafe()"> & ملاحظة',
@@ -335,6 +353,22 @@ async function verifyBuiltNavigation() {
     assert.match(harness.mainContent.innerHTML, /class="note-body" dir="auto">&lt;script/);
     harness.mainContent.querySelector("[data-library-note-close]").click();
     await waitForMarkup(harness.mainContent, "Second canonical result");
+    harness.mainContent.querySelectorAll("[data-library-note-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading note");
+    harness.mainContent.querySelector("[data-library-note-close]").click();
+    pendingNoteReads.shift().resolve({ id: "note:second", title: "Closed stale note", body: "stale" });
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale note/);
+    assert.match(harness.mainContent.innerHTML, /Second canonical result/);
+    harness.mainContent.querySelectorAll("[data-library-note-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading note");
+    harness.mainContent.querySelectorAll("[data-library-note-open]")[1].click();
+    pendingNoteReads.shift().resolve({ id: "note:second", title: "First stale note", body: "stale" });
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /First stale note/);
+    assert.match(harness.mainContent.innerHTML, /Loading note/);
+    pendingNoteReads.shift().resolve({ id: "note:third", title: "Current note", body: "current" });
+    await waitForMarkup(harness.mainContent, "Current note");
     assert.doesNotMatch(harness.mainContent.innerHTML, /<img src=x|<script>/);
     assert.match(
       harness.mainContent.innerHTML,

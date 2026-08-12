@@ -18,6 +18,6 @@ This is not Workspace or Notes parity: no creation, update, draft, autosave, ope
 
 ## Verification and rollback
 
-Tests cover the facade-only contract and detail projection states, escaping, direction, missing/error, close, and the built app Library note failure → Retry → ready → Close flow while prior Today/Study/Library behavior and routing stay preserved. Revert this task's commit to retire the experimental projection; it owns no data and requires no migration.
+Tests cover the facade-only contract and detail projection states, escaping, direction, missing/error, close, and the built app Library note failure → Retry → ready → Close flow. A request token prevents a pending response from restoring a closed detail or overwriting a newer Note selection. Prior Today/Study/Library behavior and routing stay preserved. Revert this task's commit to retire the experimental projection; it owns no data and requires no migration.
 
 The parent owns independent B review, mutation guard, remote delivery, and the human merge gate. A commits local verified work and stops.
