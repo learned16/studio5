@@ -331,6 +331,7 @@ p {
   padding: clamp(var(--space-4), 3vw, var(--space-8));
 }
 
+.library-state,
 .study-state,
 .today-state {
   align-items: start;
@@ -338,6 +339,7 @@ p {
   justify-items: start;
 }
 
+.library-grid,
 .subject-grid {
   display: grid;
   gap: var(--space-4);
@@ -347,12 +349,19 @@ p {
   padding: 0;
 }
 
+.library-card,
 .subject-card {
   height: 100%;
 }
 
+.library-card h3,
 .subject-card h3 {
   margin-block: var(--space-3) 0;
+}
+
+.library-card p {
+  color: var(--color-text-muted);
+  margin-block: var(--space-2) 0;
 }
 
 .today-completed {
@@ -598,6 +607,7 @@ p {
 @media (max-width: 47.99rem) {
   .page-introduction,
   .feature-grid,
+  .library-grid,
   .subject-grid,
   .project-card,
   .empty-state,

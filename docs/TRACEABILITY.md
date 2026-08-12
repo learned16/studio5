@@ -1,16 +1,20 @@
 # Requirement Traceability
 
-## Current reconciliation — 11 August 2026
+## Current reconciliation — 12 August 2026
 
 PR #17 merged as `2c5d0c6` with GitHub `5/5 PASS` and owner-verified visual,
 MatePad, and P4.5 foundation human-gate `PASS`; the production route remains
 P3. PR #18 merged as `110d744` with GitHub `5/5 PASS`; PR #19 merged as
 `c2991c7` and closed OPS-AUTOPILOT-006. PR #20 merged
 `P4.5-UX-IMPLEMENTATION-002` into `develop` as `190851d`.
-`P4.5-UX-IMPLEMENTATION-003` is the only active isolated read-only Study slice.
+PR #21 merged `P4.5-UX-IMPLEMENTATION-003` into `develop` as `54c4f48` after
+GitHub checks `5/5 PASS`. `P4.5-UX-IMPLEMENTATION-004` is the only active
+isolated read-only Library slice and is locally verified pending parent B
+review.
 IndexedDB remains origin-scoped: an isolated localhost/preview does not prove
 access to P3 or production-origin records, and the physical browser-driver read
-remains unverified. Ink Batch 3 stays deferred and Phase 5 stays blocked.
+remains unverified. PDF opening/viewing and Notes are not implemented by this
+slice. Ink Batch 3 stays deferred and Phase 5 stays blocked.
 Existing CI covers Core/P0/P3/Worker but has no independent P4.5 job; this is a
 coverage finding only.
 
@@ -78,7 +82,8 @@ coverage finding only.
 | `S5-UX-FOUNDATION-001` | Warm Paper Academic Studio وEnglish LTR shell والتنقل الرئيسي الموحد | P4.5-UX-SPEC-001 | ADOPTED / INCREMENTAL IMPLEMENTATION AUTHORIZED | `Today / Study / Projects / Practice / Library` + اتجاه تلقائي لمحتوى المستخدم؛ Warm Paper reference only |
 | `S5-UX-P45-SHELL-001` | App Shell وتنقل Responsive معزولان من دون Core أو Ink | P4.5-UX-IMPLEMENTATION-001 / PR #17 | COMPLETE / MERGED | PR #17 merged as `2c5d0c6` after GitHub 5/5 PASS؛ OWNER-VERIFIED visual/MatePad human gate PASS؛ B `REVISE → repair → PASS` وmutation guard PASS؛ production route ما زال P3 ولا route cutover أو Phase 5 |
 | `S5-UX-P45-TODAY-001` | عرض Today للقراءة فقط من إسقاط Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-002 / PR #20 | COMPLETE / MERGED | merged into `develop` as `190851d`؛ facade يكشف `queryToday` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا route cutover أو mutators أو Phase 5 |
-| `S5-UX-P45-STUDY-001` | عرض مواد Study للقراءة فقط من قائمة Core السلطوية داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-003 | LOCAL VERIFIED / PARENT B REVIEW PENDING | Surface 22/22 + Core 100/100 + lint/typecheck/build/built smoke PASS؛ facade يكشف `listSubjects` فقط؛ يحفظ ترتيب Core وescaping و`dir="auto"`؛ same-origin وphysical-browser boundaries محفوظة؛ لا Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
+| `S5-UX-P45-STUDY-001` | عرض مواد Study للقراءة فقط من قائمة Core السلطوية داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-003 / PR #21 | COMPLETE / MERGED | merged into `develop` as `54c4f48` after GitHub checks 5/5 PASS؛ facade يكشف `listSubjects` فقط؛ يحفظ ترتيب Core وescaping و`dir="auto"`؛ same-origin boundary محفوظة؛ لا route cutover أو mutators أو Phase 5 |
+| `S5-UX-P45-LIBRARY-001` | عرض فهرس Library للقراءة فقط من بحث Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-004 | LOCAL VERIFIED / PARENT B REVIEW PENDING | Surface 29/29 + Core 100/100 + lint/typecheck/build/built smoke PASS؛ facade يكشف بحث `AcademicRepository.searchLibrary` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا PDF/file-byte opening أو viewer أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

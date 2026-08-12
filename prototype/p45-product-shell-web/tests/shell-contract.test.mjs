@@ -40,7 +40,17 @@ function moduleSpecifiers(source) {
 
 test("shell stays English LTR while representative user content uses automatic direction", () => {
   assert.match(html, /<html lang="en" dir="ltr">/);
-  const views = destinations.map(({ id }) => destinationView(id)).join("");
+  const views = destinations.map(({ id }) => id === "library"
+    ? destinationView(id, {
+      status: "ready",
+      results: [{
+        targetKind: "note",
+        targetId: "note:direction",
+        title: "محاضرة مختلطة — Mixed lecture",
+        subtitle: null,
+      }],
+    })
+    : destinationView(id)).join("");
   assert.match(views, /dir="auto"[^>]*>[\s\S]{0,80}[\u0600-\u06ff]/u);
   assert.doesNotMatch(html, /dir="rtl"/);
 });
@@ -71,6 +81,7 @@ test("keyboard and non-color accessibility states remain explicit", () => {
   assert.match(destinationView("practice"), /Unavailable/);
   assert.match(destinationView("practice"), /disabled/);
   assert.match(destinationView("study", { status: "ready", subjects: [] }), /empty-state/);
+  assert.match(destinationView("library", { status: "ready", results: [] }), /empty-state/);
 });
 
 test("built smoke executes navigation instead of treating URL fragments as HTTP evidence", () => {
@@ -117,6 +128,7 @@ test("surface stays dependency-free and imports no sibling prototype", async () 
 test("read adapters use only the local canonical Core build alias", async () => {
   const [canonicalRepository, ...facades] = await Promise.all([
     readFile(new URL("canonical-read-repository.mjs", root), "utf8"),
+    readFile(new URL("library-read-facade.mjs", root), "utf8"),
     readFile(new URL("today-read-facade.mjs", root), "utf8"),
     readFile(new URL("study-subjects-read-facade.mjs", root), "utf8"),
   ]);
