@@ -11,6 +11,8 @@ const staticAssets = [
   "app.mjs",
   "canonical-read-repository.mjs",
   "library-read-facade.mjs",
+  "library-note-read-facade.mjs",
+  "library-note-detail-projection.mjs",
   "library-results-projection.mjs",
   "routes.mjs",
   "study-subjects-projection.mjs",

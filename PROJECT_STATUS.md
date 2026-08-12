@@ -18,12 +18,10 @@ progress snapshots where they conflict.
 - PR #22 merged `P4.5-UX-IMPLEMENTATION-004` into `develop` as `0912af0`; all
   five reported GitHub checks passed. Its Library index projection is complete;
   PDF opening/viewing and Notes remain later work.
-- `OPS-AUTOPILOT-007` is the only active governance task: a one-time
-  proven-pattern routing calibration justified by recurring over-routing of
-  bounded low-ambiguity read-only patterns. After integration, automation
-  optimization remains frozen and the next routing returns to the eligible
-  Phase 4.5 product task. Ink Batch 3 remains deferred and Phase 5 remains
-  blocked.
+- PR #23 merged `OPS-AUTOPILOT-007` into `develop` as `eebeb35`; automation
+  optimization remains frozen. `P4.5-UX-IMPLEMENTATION-005` is the only active
+  product task: an inline, read-only Library Note-detail experiment. Ink Batch
+  3 remains deferred and Phase 5 remains blocked.
 - `.github/workflows/ci.yml` currently runs Core, P0, P3, and Worker checks;
   it has no independent P4.5 job. This is a material coverage finding, not a
   claim that the workflow was changed.
@@ -217,6 +215,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | P4.5-UX-IMPLEMENTATION-002 | Read-Only Today Core Projection | `feat/p45-readonly-today-core-projection` | Codex | COMPLETE / MERGED — PR #20 | merged into `develop` as `190851d`؛ facade للقراءة فقط؛ same-origin boundary محفوظ؛ لا route cutover أو mutators أو Phase 5 |
 | P4.5-UX-IMPLEMENTATION-003 | Read-Only Study Subjects Projection | `feat/p45-readonly-study-subjects` | Codex | COMPLETE / MERGED — PR #21 | merged into `develop` as `54c4f48` after GitHub checks 5/5 PASS؛ facade للقراءة فقط؛ same-origin boundary محفوظ؛ لا route cutover أو mutators أو Phase 5 |
 | P4.5-UX-IMPLEMENTATION-004 | Read-Only Library Index Projection | `feat/p45-readonly-library-index` | Codex | COMPLETE / MERGED — PR #22 | merged into `develop` as `0912af0` after GitHub checks 5/5 PASS؛ facade يكشف `searchLibrary` فقط؛ لا فتح PDF أو file bytes أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
+| P4.5-UX-IMPLEMENTATION-005 | Read-Only Library Note Detail Projection | `feat/p45-readonly-library-note-detail` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | inline experimental Note detail via frozen `getNote` only; no Notes-writing or Workspace parity; same-origin and physical-device read remain unverified |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
