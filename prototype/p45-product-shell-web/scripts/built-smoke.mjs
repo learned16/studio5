@@ -253,6 +253,7 @@ async function verifyBuiltNavigation() {
   const originalGetNote = AcademicRepository.prototype.getNote;
   const originalListSubjects = AcademicRepository.prototype.listSubjects;
   const originalGetSubject = AcademicRepository.prototype.getSubject;
+  const originalInitialize = AcademicRepository.prototype.initialize;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
   AcademicRepository.prototype.queryToday = function queryToday(options) {
@@ -281,6 +282,14 @@ async function verifyBuiltNavigation() {
     ]);
   };
   const pendingSubjects = [];
+  let failNextSubjectInitialize = false;
+  AcademicRepository.prototype.initialize = function initialize(...args) {
+    if (failNextSubjectInitialize) {
+      failNextSubjectInitialize = false;
+      return Promise.reject(new Error("controlled subject detail initialization failure"));
+    }
+    return originalInitialize.apply(this, args);
+  };
   AcademicRepository.prototype.getSubject = function getSubject(id) {
     let resolve;
     const promise = new Promise((resolveRead) => { resolve = resolveRead; });
@@ -367,6 +376,20 @@ async function verifyBuiltNavigation() {
       harness.mainContent.innerHTML,
       /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; مراجعة/,
     );
+    failNextSubjectInitialize = true;
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Subject could not be opened");
+    harness.mainContent.querySelector("[data-study-subject-retry]").click();
+    await waitForMarkup(harness.mainContent, "Loading subject");
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:1", title: "Ready subject", code: "S1" });
+    await waitForMarkup(harness.mainContent, "Ready subject");
+    harness.mainContent.querySelector("[data-study-subject-close]").click();
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve(null);
+    await waitForMarkup(harness.mainContent, "Subject is unavailable");
+    harness.mainContent.querySelector("[data-study-subject-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await waitForMarkup(harness.mainContent, "Loading subject");
     harness.mainContent.querySelector("[data-study-subject-close]").click();
@@ -456,6 +479,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.getNote = originalGetNote;
     AcademicRepository.prototype.listSubjects = originalListSubjects;
     AcademicRepository.prototype.getSubject = originalGetSubject;
+    AcademicRepository.prototype.initialize = originalInitialize;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
   }

@@ -61,7 +61,12 @@ function studyFacade() {
 }
 
 function studyDetailFacade() {
-  if (!studyDetailFacadePromise) studyDetailFacadePromise = openCanonicalStudySubjectDetailReadFacade();
+  if (!studyDetailFacadePromise) {
+    studyDetailFacadePromise = openCanonicalStudySubjectDetailReadFacade().catch((error) => {
+      studyDetailFacadePromise = null;
+      throw error;
+    });
+  }
   return studyDetailFacadePromise;
 }
 
