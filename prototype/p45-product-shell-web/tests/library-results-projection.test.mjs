@@ -63,3 +63,29 @@ test("Library loading and recoverable error states are explicit", () => {
   assert.match(error, /data-library-retry/);
   assert.match(error, /did not open files or create notes/);
 });
+
+test("Library note detail states escape content, retain direction, and provide controls", () => {
+  const ready = destinationView("library", {
+    status: "ready",
+    results: canonicalResults,
+    detail: { status: "ready", note: {
+      id: "note:hostile",
+      title: '<img src=x onerror="unsafe()"> & ملاحظة',
+      body: '<script>alert("unsafe")</script> & نص',
+      pageNumber: 3,
+    } },
+  });
+  const loading = destinationView("library", { status: "ready", results: canonicalResults, detail: { status: "loading" } });
+  const missing = destinationView("library", { status: "ready", results: canonicalResults, detail: { status: "missing" } });
+  const error = destinationView("library", { status: "ready", results: canonicalResults, detail: { status: "error" } });
+
+  assert.match(ready, /data-library-note-open="note:1"/);
+  assert.doesNotMatch(ready, /<img src=x|<script>/);
+  assert.match(ready, /id="library-note-title" dir="auto">&lt;img/);
+  assert.match(ready, /class="note-body" dir="auto">&lt;script/);
+  assert.match(ready, /Page 3/);
+  assert.match(loading, /aria-busy="true"/);
+  assert.match(missing, /Note is unavailable/);
+  assert.match(error, /data-library-note-retry/);
+  assert.match(error, /data-library-note-close/);
+});

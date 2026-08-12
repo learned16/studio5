@@ -9,10 +9,10 @@ P3. PR #18 merged as `110d744` with GitHub `5/5 PASS`; PR #19 merged as
 `P4.5-UX-IMPLEMENTATION-002` into `develop` as `190851d`.
 PR #21 merged `P4.5-UX-IMPLEMENTATION-003` into `develop` as `54c4f48` after
 GitHub checks `5/5 PASS`. PR #22 merged `P4.5-UX-IMPLEMENTATION-004` as
-`0912af0` with GitHub checks `5/5 PASS`. `OPS-AUTOPILOT-007` is the only active
-governance task: the one-time material recurring-bottleneck exception for
-proven-pattern routing calibration. After integration the automation freeze
-remains active and routing returns to the eligible Phase 4.5 product task.
+`0912af0` with GitHub checks `5/5 PASS`. PR #23 merged `OPS-AUTOPILOT-007` as
+`eebeb35`; the automation freeze remains active. `P4.5-UX-IMPLEMENTATION-005`
+is the active product task for an inline experimental, read-only Library Note
+detail projection.
 IndexedDB remains origin-scoped: an isolated localhost/preview does not prove
 access to P3 or production-origin records, and the physical browser-driver read
 remains unverified. PDF opening/viewing and Notes are not implemented by this
@@ -87,6 +87,7 @@ coverage finding only.
 | `S5-UX-P45-TODAY-001` | عرض Today للقراءة فقط من إسقاط Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-002 / PR #20 | COMPLETE / MERGED | merged into `develop` as `190851d`؛ facade يكشف `queryToday` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا route cutover أو mutators أو Phase 5 |
 | `S5-UX-P45-STUDY-001` | عرض مواد Study للقراءة فقط من قائمة Core السلطوية داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-003 / PR #21 | COMPLETE / MERGED | merged into `develop` as `54c4f48` after GitHub checks 5/5 PASS؛ facade يكشف `listSubjects` فقط؛ يحفظ ترتيب Core وescaping و`dir="auto"`؛ same-origin boundary محفوظة؛ لا route cutover أو mutators أو Phase 5 |
 | `S5-UX-P45-LIBRARY-001` | عرض فهرس Library للقراءة فقط من بحث Core السلطوي داخل سطح P4.5 المعزول | P4.5-UX-IMPLEMENTATION-004 / PR #22 | COMPLETE / MERGED | merged into `develop` as `0912af0` after GitHub checks 5/5 PASS؛ facade يكشف بحث `AcademicRepository.searchLibrary` فقط؛ same-origin وphysical-browser boundaries محفوظة؛ لا PDF/file-byte opening أو viewer أو Notes أو Core/P3/Worker/Schema/Storage/Ink/route cutover/Phase 5 |
+| `S5-UX-P45-LIBRARY-NOTE-001` | عرض تفصيل Note داخل Library للقراءة فقط | P4.5-UX-IMPLEMENTATION-005 | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `AcademicRepository.getNote` facade; inline loading/ready/missing/retry/close; no Workspace/Notes-write parity; same-origin and physical-device boundaries retained |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

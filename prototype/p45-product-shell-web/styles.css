@@ -359,6 +359,22 @@ p {
   margin-block: var(--space-3) 0;
 }
 
+.library-card .secondary-action,
+.library-note-detail .secondary-action,
+.library-note-detail .primary-action {
+  margin-block-start: var(--space-4);
+}
+
+.library-note-detail {
+  display: grid;
+  justify-items: start;
+}
+
+.note-body {
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+}
+
 .library-card p {
   color: var(--color-text-muted);
   margin-block: var(--space-2) 0;

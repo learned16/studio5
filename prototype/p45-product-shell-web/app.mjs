@@ -1,5 +1,6 @@
 import { destinations, routeFromHash, routeHash } from "./routes.mjs";
 import { openCanonicalLibraryReadFacade } from "./library-read-facade.mjs";
+import { openCanonicalLibraryNoteReadFacade } from "./library-note-read-facade.mjs";
 import { openCanonicalStudySubjectsReadFacade } from "./study-subjects-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
@@ -8,7 +9,9 @@ const mainContent = document.querySelector("#main-content");
 const routeLabel = document.querySelector("#route-label");
 const navigationRegions = [...document.querySelectorAll("[data-navigation]")];
 let renderVersion = 0;
+let libraryDetailRequestVersion = 0;
 let libraryFacadePromise = null;
+let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
 let todayFacadePromise = null;
 
@@ -61,6 +64,16 @@ function libraryFacade() {
     });
   }
   return libraryFacadePromise;
+}
+
+function libraryNoteFacade() {
+  if (!libraryNoteFacadePromise) {
+    libraryNoteFacadePromise = openCanonicalLibraryNoteReadFacade().catch((error) => {
+      libraryNoteFacadePromise = null;
+      throw error;
+    });
+  }
+  return libraryNoteFacadePromise;
 }
 
 function todayQueryOptions() {
@@ -124,6 +137,7 @@ async function renderLibrary(destination, version, focusHeading) {
       status: "ready",
       results,
     }), focusHeading);
+    bindLibraryNoteActions(destination, version, focusHeading, results);
   } catch {
     if (version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
     updateRouteContent(destination, destinationView("library", { status: "error" }), focusHeading);
@@ -131,6 +145,44 @@ async function renderLibrary(destination, version, focusHeading) {
       renderRoute({ focusHeading: true });
     });
   }
+}
+
+function bindLibraryNoteActions(destination, version, focusHeading, results) {
+  for (const button of mainContent.querySelectorAll("[data-library-note-open]")) {
+    button.addEventListener("click", () => {
+      void renderLibraryNoteDetail(destination, version, focusHeading, results, button.dataset.libraryNoteOpen);
+    });
+  }
+}
+
+function bindLibraryDetailControls(destination, version, focusHeading, results, noteId) {
+  mainContent.querySelector("[data-library-note-close]")?.addEventListener("click", () => {
+    libraryDetailRequestVersion += 1;
+    updateRouteContent(destination, destinationView("library", { status: "ready", results }), focusHeading);
+    bindLibraryNoteActions(destination, version, focusHeading, results);
+  });
+  mainContent.querySelector("[data-library-note-retry]")?.addEventListener("click", () => {
+    void renderLibraryNoteDetail(destination, version, focusHeading, results, noteId);
+  });
+}
+
+async function renderLibraryNoteDetail(destination, version, focusHeading, results, noteId) {
+  if (version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
+  const requestVersion = libraryDetailRequestVersion + 1;
+  libraryDetailRequestVersion = requestVersion;
+  updateRouteContent(destination, destinationView("library", { status: "ready", results, detail: { status: "loading" } }), focusHeading);
+  bindLibraryNoteActions(destination, version, focusHeading, results);
+  bindLibraryDetailControls(destination, version, focusHeading, results, noteId);
+  try {
+    const note = await (await libraryNoteFacade()).getNote(noteId);
+    if (requestVersion !== libraryDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
+    updateRouteContent(destination, destinationView("library", { status: "ready", results, detail: { status: note ? "ready" : "missing", note } }), focusHeading);
+  } catch {
+    if (requestVersion !== libraryDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "library") return;
+    updateRouteContent(destination, destinationView("library", { status: "ready", results, detail: { status: "error" } }), focusHeading);
+  }
+  bindLibraryNoteActions(destination, version, focusHeading, results);
+  bindLibraryDetailControls(destination, version, focusHeading, results, noteId);
 }
 
 function renderRoute({ focusHeading = false } = {}) {

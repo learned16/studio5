@@ -1,4 +1,5 @@
 import { projectLibraryResults } from "./library-results-projection.mjs";
+import { projectLibraryNoteDetail } from "./library-note-detail-projection.mjs";
 import { projectStudySubjects } from "./study-subjects-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
@@ -147,14 +148,27 @@ function libraryReadyView(results) {
     const subtitle = result.subtitle
       ? `<p dir="auto">${escaped(result.subtitle)}</p>`
       : "";
-    return `<li><article class="paper-card library-card" aria-labelledby="${headingId}"><span class="eyebrow">${escaped(libraryKindLabel(result.targetKind))}</span><h3 id="${headingId}" dir="auto">${escaped(result.title)}</h3>${subtitle}</article></li>`;
+    const openControl = result.targetKind === "note"
+      ? `<button class="secondary-action" type="button" data-library-note-open="${escaped(result.targetId)}">Open note</button>`
+      : "";
+    return `<li><article class="paper-card library-card" aria-labelledby="${headingId}"><span class="eyebrow">${escaped(libraryKindLabel(result.targetKind))}</span><h3 id="${headingId}" dir="auto">${escaped(result.title)}</h3>${subtitle}${openControl}</article></li>`;
   }).join("");
   return `<section class="screen">${pageIntroduction("Local academic data", "Library", "Your canonical resource index, read from this device without opening or changing items.", "Local data")}<section aria-labelledby="library-items"><div class="section-heading"><div><span class="section-number">01</span><h2 id="library-items">Library index</h2></div><span>${projectedResults.length} ${projectedResults.length === 1 ? "item" : "items"}</span></div><ul class="library-grid">${cards}</ul></section></section>`;
 }
 
+function libraryNoteDetailView(detail) {
+  if (!detail) return "";
+  const close = `<button class="secondary-action" type="button" data-library-note-close>Close</button>`;
+  if (detail.status === "loading") return `<article class="paper-card library-note-detail" aria-busy="true" role="status"><h2>Loading note…</h2><p>Reading this note without changing it.</p>${close}</article>`;
+  if (detail.status === "missing") return `<article class="paper-card library-note-detail" role="alert"><h2>Note is unavailable</h2><p>This note is no longer available in local academic data.</p>${close}</article>`;
+  if (detail.status === "error") return `<article class="paper-card library-note-detail" role="alert"><h2>Note could not be opened</h2><p>Try the local read again without changing the note.</p><button class="primary-action" type="button" data-library-note-retry>Retry</button>${close}</article>`;
+  const note = projectLibraryNoteDetail(detail.note);
+  return `<article class="paper-card library-note-detail" aria-labelledby="library-note-title"><span class="eyebrow">Read-only note${note.pageNumber ? ` · Page ${escaped(note.pageNumber)}` : ""}</span><h2 id="library-note-title" dir="auto">${escaped(note.title)}</h2><p class="note-body" dir="auto">${escaped(note.body)}</p>${close}</article>`;
+}
+
 function libraryView(state = { status: "loading" }) {
   if (state.status === "error") return libraryErrorView();
-  if (state.status === "ready") return libraryReadyView(state.results);
+  if (state.status === "ready") return `${libraryReadyView(state.results)}${libraryNoteDetailView(state.detail)}`;
   return libraryLoadingView();
 }
 
