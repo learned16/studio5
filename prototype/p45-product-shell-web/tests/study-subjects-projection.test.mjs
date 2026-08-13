@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { projectStudySubjects } from "../study-subjects-projection.mjs";
+import { projectStudySubjectLectures } from "../study-subject-lectures-projection.mjs";
 import { destinationView } from "../views.mjs";
 
 function subjectsFixture() {
@@ -58,4 +59,38 @@ test("Study escapes hostile titles while preserving automatic direction", () => 
     ready,
     /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; مراجعة/,
   );
+});
+
+test("Study subject lectures retain canonical order and only literal lecture fields", () => {
+  const lectures = [
+    { id: "lecture:later", title: "Later", startsAt: "2026-09-14T09:00:00+03:00", endsAt: "2026-09-14T10:00:00+03:00", status: "planned", ignored: "no" },
+    { id: "lecture:first", title: '<img src=x onerror="unsafe()"> & محاضرة', startsAt: "2026-09-07T09:00:00+03:00", endsAt: "2026-09-07T10:00:00+03:00", status: "completed" },
+  ];
+  const projection = projectStudySubjectLectures(lectures);
+  const ready = destinationView("study", {
+    status: "ready",
+    subjects: subjectsFixture(),
+    detail: { status: "ready", subject: subjectsFixture()[0], lectures: { status: "ready", lectures } },
+  });
+
+  assert.deepEqual(projection, lectures.map(({ id, title, startsAt, endsAt, status }) => ({ id, title, startsAt, endsAt, status })));
+  assert.equal(projection.every(Object.isFrozen), true);
+  assert.ok(ready.indexOf("Later") < ready.indexOf("&lt;img src=x"));
+  assert.match(ready, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; محاضرة/);
+  assert.match(ready, /2026-09-14T09:00:00\+03:00/);
+  assert.match(ready, /<dd>planned<\/dd>/);
+  assert.doesNotMatch(ready, /ignored/);
+});
+
+test("Study subject lecture loading, empty, and error states are explicit", () => {
+  const subject = subjectsFixture()[0];
+  const state = (lectures) => destinationView("study", {
+    status: "ready",
+    subjects: subjectsFixture(),
+    detail: { status: "ready", subject, lectures },
+  });
+
+  assert.match(state({ status: "loading" }), /Loading lectures/);
+  assert.match(state({ status: "ready", lectures: [] }), /No lectures are available/);
+  assert.match(state({ status: "error" }), /data-study-subject-retry/);
 });

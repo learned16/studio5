@@ -131,6 +131,7 @@ test("read adapters use only the local canonical Core build alias", async () => 
     readFile(new URL("library-read-facade.mjs", root), "utf8"),
     readFile(new URL("today-read-facade.mjs", root), "utf8"),
     readFile(new URL("study-subjects-read-facade.mjs", root), "utf8"),
+    readFile(new URL("study-subject-lectures-read-facade.mjs", root), "utf8"),
   ]);
   assert.match(canonicalRepository, /\.\/core\/browser-storage-profile\.mjs/);
   assert.match(canonicalRepository, /\.\/core\/browser-storage-migration\.mjs/);

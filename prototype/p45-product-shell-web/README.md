@@ -3,9 +3,10 @@
 This isolated replacement-candidate surface implements the first approved
 Phase 4.5 foundation: an English LTR application shell with five responsive
 primary destinations. Today reads the canonical Core projection and Study lists
-canonical Core subjects. Library lists the canonical Core library index without
-opening resource bytes. All reads use records available to the surface's
-current browser origin.
+canonical Core subjects; an opened Study subject reads its canonical lectures
+without changing them. Library lists the canonical Core library index without
+opening resource bytes. All reads use records available to the surface's current
+browser origin.
 Each destination uses a surface-local facade that exposes no mutator.
 IndexedDB is origin-scoped: localhost or an isolated preview cannot see records
 stored by P3 or production on a different origin. A later same-origin hosting
