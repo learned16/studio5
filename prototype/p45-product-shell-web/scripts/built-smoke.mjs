@@ -637,11 +637,28 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Metadata route file");
     harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
     await waitForMarkup(harness.mainContent, "Loading file information");
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:2", title: "Route pending subject", code: "S2" });
+    await waitForMarkup(harness.mainContent, "Route pending subject");
+    await waitForMarkup(harness.mainContent, "Loading schedule entries");
     harness.navigate("#/library");
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     pendingFileMetadataReads.shift().resolve({ id: "file-artifact:metadata-route", displayName: "Route changed stale metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
+    for (const pendingRead of pendingScheduleReads.splice(0)) {
+      pendingRead.resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route changed stale schedule" }]);
+    }
+    for (const pendingRead of pendingStudyNoteReads.splice(0)) {
+      pendingRead.resolve([{ id: "note:route", title: "Route changed stale note", body: "stale" }]);
+    }
+    for (const pendingRead of pendingStudyFileReads.splice(0)) {
+      pendingRead.resolve([{ targetId: "file-artifact:route", title: "Route changed stale file", subtitle: "stale" }]);
+    }
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale metadata/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale schedule/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale note/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale file/);
     await waitForMarkup(harness.mainContent, "Library could not be opened");
     harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
