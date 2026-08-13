@@ -120,7 +120,7 @@ class SmokeMainContent {
       button.dataset = { studySubjectFileMetadataOpen: match[1] };
       return button;
     });
-    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-notes-retry]", "[data-study-subject-files-retry]", "[data-study-subject-file-metadata-retry]", "[data-study-subject-file-metadata-close]", "[data-study-subject-close]"]) {
+    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-notes-retry]", "[data-study-subject-files-retry]", "[data-study-subject-file-metadata-retry]", "[data-study-subject-file-versions-retry]", "[data-study-subject-file-metadata-close]", "[data-study-subject-close]"]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -264,6 +264,7 @@ async function verifyBuiltNavigation() {
   const originalListScheduleEntries = AcademicRepository.prototype.listScheduleEntries;
   const originalListNotes = AcademicRepository.prototype.listNotes;
   const originalGetFileArtifact = AcademicRepository.prototype.getFileArtifact;
+  const originalListFileVersions = AcademicRepository.prototype.listFileVersions;
   const originalInitialize = AcademicRepository.prototype.initialize;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
@@ -375,6 +376,15 @@ async function verifyBuiltNavigation() {
   };
   const pendingStudyFileReads = [];
   const pendingFileMetadataReads = [];
+  const pendingFileVersionReads = [];
+  let fileVersionReadCount = 0;
+  AcademicRepository.prototype.listFileVersions = function listFileVersions({ artifactId }) {
+    fileVersionReadCount += 1;
+    if (fileVersionReadCount === 1) return Promise.reject(new Error("controlled file versions read failure"));
+    const pendingRead = deferredNoteRead(artifactId);
+    pendingFileVersionReads.push(pendingRead);
+    return pendingRead.promise;
+  };
   let fileMetadataReadCount = 0;
   AcademicRepository.prototype.getFileArtifact = function getFileArtifact(artifactId) {
     fileMetadataReadCount += 1;
@@ -533,6 +543,22 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "File information could not be opened");
     harness.mainContent.querySelector("[data-study-subject-file-metadata-retry]").click();
     await waitForMarkup(harness.mainContent, "2026-08-13T09:00:00.000Z");
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    await waitForMarkup(harness.mainContent, "File versions could not be opened");
+    assert.match(harness.mainContent.innerHTML, /Display name/);
+    const retryFileVersions = harness.mainContent.querySelector("[data-study-subject-file-versions-retry]");
+    retryFileVersions.click();
+    retryFileVersions.click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingFileVersionReads.shift().resolve([{ id: "file-version:stale-retry", versionNumber: 1, mediaType: "Retry stale version", byteSize: 1, originalModifiedAt: null }]);
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Retry stale version/);
+    pendingFileVersionReads.shift().resolve([{ id: "file-version:2", versionNumber: 2, mediaType: "application/pdf", byteSize: 2048, originalModifiedAt: "2026-08-13T09:01:00.000Z" }]);
+    await waitForMarkup(harness.mainContent, "2048");
+    retryFileVersions.click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingFileVersionReads.shift().resolve([]);
+    await waitForMarkup(harness.mainContent, "No file versions are available");
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Display/);
     harness.mainContent.querySelector("[data-study-subject-file-metadata-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
@@ -543,9 +569,22 @@ async function verifyBuiltNavigation() {
     assert.doesNotMatch(harness.mainContent.innerHTML, /First stale metadata/);
     pendingFileMetadataReads.shift().resolve({ id: "file-artifact:2", displayName: "Second current metadata", originalName: "second", sourceType: "upload", archivedAt: null });
     await waitForMarkup(harness.mainContent, "Second current metadata");
+    harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
+    pendingFileVersionReads.shift().resolve([{ id: "file-version:stale-selection", versionNumber: 3, mediaType: "Selection stale version", byteSize: 3, originalModifiedAt: null }]);
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Selection stale version/);
+    await waitForMarkup(harness.mainContent, "File information is unavailable");
     harness.mainContent.querySelector("[data-study-subject-file-metadata-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
-    await waitForMarkup(harness.mainContent, "File information is unavailable");
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:1", displayName: "Close version current metadata", originalName: "close", sourceType: "upload", archivedAt: null });
+    await waitForMarkup(harness.mainContent, "Close version current metadata");
+    harness.mainContent.querySelector("[data-study-subject-file-metadata-close]").click();
+    pendingFileVersionReads.shift().resolve([{ id: "file-version:stale-close", versionNumber: 6, mediaType: "Closed stale version", byteSize: 6, originalModifiedAt: null }]);
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale version/);
+    harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading file information");
     harness.mainContent.querySelector("[data-study-subject-file-metadata-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
     await waitForMarkup(harness.mainContent, "Loading file information");
@@ -554,6 +593,9 @@ async function verifyBuiltNavigation() {
     pendingFileMetadataReads.shift().resolve({ id: "file-artifact:1", displayName: "Closed stale metadata", originalName: "closed", sourceType: "upload", archivedAt: null });
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale metadata/);
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:1", displayName: "Second closed stale metadata", originalName: "closed", sourceType: "upload", archivedAt: null });
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Second closed stale metadata/);
     assert.deepEqual(studyNoteCallArguments.slice(0, 2), [{ subjectId: "subject:1" }, { subjectId: "subject:1" }]);
     assert.deepEqual(studyFileCallArguments.slice(0, 2), [
       { query: "", subjectId: "subject:1", targetKinds: ["file-artifact"], limit: 500 },
@@ -633,11 +675,13 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Switch current file");
     harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
     await waitForMarkup(harness.mainContent, "Loading file information");
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:switched-current", displayName: "Subject version current metadata", originalName: "subject", sourceType: "upload", archivedAt: null });
+    await waitForMarkup(harness.mainContent, "Subject version current metadata");
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
-    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:switched-current", displayName: "Subject switched stale metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
+    pendingFileVersionReads.shift().resolve([{ id: "file-version:stale-subject", versionNumber: 4, mediaType: "Subject switched stale version", byteSize: 4, originalModifiedAt: null }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
-    assert.doesNotMatch(harness.mainContent.innerHTML, /Subject switched stale metadata/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Subject switched stale version/);
     pendingSubjects.shift().resolve({ id: "subject:1", title: "Metadata route subject", code: "S1" });
     await waitForMarkup(harness.mainContent, "Metadata route subject");
     await waitForMarkup(harness.mainContent, "Metadata route file");
@@ -654,9 +698,17 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Route current file");
     harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
     await waitForMarkup(harness.mainContent, "Loading file information");
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:route-current", displayName: "Route version current metadata", originalName: "route", sourceType: "upload", archivedAt: null });
+    await waitForMarkup(harness.mainContent, "Route version current metadata");
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.equal(pendingFileVersionReads.length, 1);
+    harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading file information");
+    assert.equal(pendingFileMetadataReads.length, 1);
     harness.navigate("#/library");
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     pendingFileMetadataReads.shift().resolve({ id: "file-artifact:route-current", displayName: "Route changed stale metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
+    pendingFileVersionReads.shift().resolve([{ id: "file-version:stale-route", versionNumber: 5, mediaType: "Route changed stale version", byteSize: 5, originalModifiedAt: null }]);
     for (const pendingRead of pendingScheduleReads.splice(0)) {
       pendingRead.resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route changed stale schedule" }]);
     }
@@ -667,6 +719,7 @@ async function verifyBuiltNavigation() {
       pendingRead.resolve([{ targetId: "file-artifact:route", title: "Route changed stale file", subtitle: "stale" }]);
     }
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale version/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale metadata/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale schedule/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale note/);
@@ -742,6 +795,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.listScheduleEntries = originalListScheduleEntries;
     AcademicRepository.prototype.listNotes = originalListNotes;
     AcademicRepository.prototype.getFileArtifact = originalGetFileArtifact;
+    AcademicRepository.prototype.listFileVersions = originalListFileVersions;
     AcademicRepository.prototype.initialize = originalInitialize;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
@@ -791,6 +845,8 @@ try {
     "/study-subject-files-projection.mjs",
     "/study-subject-file-metadata-read-facade.mjs",
     "/study-subject-file-metadata-projection.mjs",
+    "/study-subject-file-versions-read-facade.mjs",
+    "/study-subject-file-versions-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);
@@ -807,4 +863,4 @@ try {
 }
 
 await verifyBuiltNavigation();
-console.log("Built smoke passed: HTTP closure + five routes + Today, Study, Library, and inline Note/File/file-metadata failure/retry/missing/stale states");
+console.log("Built smoke passed: HTTP closure + five routes + Today, Study, Library, and inline Note/File/file-metadata/file-versions failure/retry/ready/empty/stale states");
