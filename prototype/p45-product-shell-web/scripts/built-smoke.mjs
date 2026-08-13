@@ -325,17 +325,25 @@ async function verifyBuiltNavigation() {
       status: "open",
     }]);
   };
+  const pendingScheduleReads = [];
+  let scheduleReadCount = 0;
   AcademicRepository.prototype.listScheduleEntries = function listScheduleEntries(options) {
-    assert.deepEqual(options, { subjectId: "subject:1" });
-    return Promise.resolve([{
-      id: "schedule-entry:1",
-      dayOfWeek: 1,
-      startTime: "09:00",
-      endTime: "10:00",
-      effectiveFrom: "2026-09-01",
-      effectiveUntil: null,
-      location: '<img src=x onerror="unsafe()"> & Room',
-    }]);
+    scheduleReadCount += 1;
+    if (scheduleReadCount === 1) return Promise.reject(new Error("controlled schedule read failure"));
+    if (scheduleReadCount === 2) {
+      return Promise.resolve([{
+        id: "schedule-entry:1",
+        dayOfWeek: 1,
+        startTime: "09:00",
+        endTime: "10:00",
+        effectiveFrom: "2026-09-01",
+        effectiveUntil: null,
+        location: '<img src=x onerror="unsafe()"> & Room',
+      }]);
+    }
+    const pendingRead = deferredNoteRead(options.subjectId);
+    pendingScheduleReads.push(pendingRead);
+    return pendingRead.promise;
   };
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
     libraryCallArguments.push(structuredClone(options));
@@ -429,6 +437,9 @@ async function verifyBuiltNavigation() {
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Lecture/);
     await waitForMarkup(harness.mainContent, "&amp; Task");
     await waitForMarkup(harness.mainContent, "Schedule entries");
+    await waitForMarkup(harness.mainContent, "Schedule entries could not be opened");
+    harness.mainContent.querySelector("[data-study-subject-schedule-retry]").click();
+    await waitForMarkup(harness.mainContent, "&amp; Room");
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Room/);
     assert.match(harness.mainContent.innerHTML, /<dd>null<\/dd>/);
     harness.mainContent.querySelector("[data-study-subject-close]").click();
@@ -450,8 +461,10 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Loading tasks");
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     pendingTaskReads.shift().resolve([{ id: "task:stale", title: "Stale task", dueAt: null, status: "open" }]);
+    pendingScheduleReads.shift().resolve([{ id: "schedule-entry:stale", dayOfWeek: 1, startTime: "09:00", endTime: "10:00", effectiveFrom: null, effectiveUntil: null, location: "Closed stale schedule" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Stale task/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale schedule/);
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -460,14 +473,37 @@ async function verifyBuiltNavigation() {
     assert.doesNotMatch(harness.mainContent.innerHTML, /First stale subject/);
     pendingSubjects.shift().resolve({ id: "subject:2", title: "Current subject", code: "S2" });
     await waitForMarkup(harness.mainContent, "Current subject");
+    pendingScheduleReads.shift().resolve([{ id: "schedule-entry:current", dayOfWeek: 2, startTime: "11:00", endTime: "12:00", effectiveFrom: null, effectiveUntil: null, location: "Current subject schedule" }]);
+    await waitForMarkup(harness.mainContent, "Current subject schedule");
     for (const navigation of harness.navigations) {
       const studyLinks = navigation.links.filter(
         (link) => link.attributes.get("aria-current") === "page",
       );
       assert.deepEqual(studyLinks.map((link) => link.dataset.route), ["study"]);
     }
-
+    harness.mainContent.querySelector("[data-study-subject-close]").click();
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:1", title: "Switch first subject", code: "S1" });
+    await waitForMarkup(harness.mainContent, "Loading schedule entries");
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:2", title: "Switch current subject", code: "S2" });
+    await waitForMarkup(harness.mainContent, "Switch current subject");
+    pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched", dayOfWeek: 3, startTime: "13:00", endTime: "14:00", effectiveFrom: null, effectiveUntil: null, location: "Switched stale schedule" }]);
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale schedule/);
+    pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched-current", dayOfWeek: 4, startTime: "15:00", endTime: "16:00", effectiveFrom: null, effectiveUntil: null, location: "Switch current schedule" }]);
+    await waitForMarkup(harness.mainContent, "Switch current schedule");
+    harness.mainContent.querySelector("[data-study-subject-close]").click();
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:1", title: "Route stale subject", code: "S1" });
+    await waitForMarkup(harness.mainContent, "Loading schedule entries");
     harness.navigate("#/library");
+    pendingScheduleReads.shift().resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route stale schedule" }]);
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale schedule/);
     await waitForMarkup(harness.mainContent, "Library could not be opened");
     harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
