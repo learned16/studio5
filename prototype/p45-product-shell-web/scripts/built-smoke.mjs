@@ -645,6 +645,9 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Loading file information");
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:metadata-route", displayName: "Subject switched stale route metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Subject switched stale route metadata/);
     pendingSubjects.shift().resolve({ id: "subject:2", title: "Route pending subject", code: "S2" });
     await waitForMarkup(harness.mainContent, "Route pending subject");
     await waitForMarkup(harness.mainContent, "Loading schedule entries");
