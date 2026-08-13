@@ -25,6 +25,8 @@ const modules = [
   "study-subject-notes-projection.mjs",
   "study-subject-files-read-facade.mjs",
   "study-subject-files-projection.mjs",
+  "study-subject-file-metadata-read-facade.mjs",
+  "study-subject-file-metadata-projection.mjs",
   "today-projection.mjs",
   "today-read-facade.mjs",
   "views.mjs",

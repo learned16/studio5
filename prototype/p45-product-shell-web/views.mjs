@@ -7,6 +7,7 @@ import { projectStudySubjectTasks } from "./study-subject-tasks-projection.mjs";
 import { projectStudySubjectSchedule } from "./study-subject-schedule-projection.mjs";
 import { projectStudySubjectNotes } from "./study-subject-notes-projection.mjs";
 import { projectStudySubjectFiles } from "./study-subject-files-projection.mjs";
+import { projectStudySubjectFileMetadata } from "./study-subject-file-metadata-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
 function statusBadge(tone, symbol, label) {
@@ -101,7 +102,7 @@ function studyDetailView(detail) {
   if (detail.status === "missing") return `<article class="paper-card study-detail" role="alert"><h2>Subject is unavailable</h2>${close}</article>`;
   if (detail.status === "error") return `<article class="paper-card study-detail" role="alert"><h2>Subject could not be opened</h2><button class="primary-action" type="button" data-study-subject-retry>Retry</button>${close}</article>`;
   const subject = projectStudySubjectDetail(detail.subject);
-  return `<article class="paper-card study-detail" aria-labelledby="study-detail-title"><h2 id="study-detail-title" dir="auto">${escaped(subject.title)}</h2>${subject.code ? `<p dir="auto">${escaped(subject.code)}</p>` : ""}${studyLecturesView(detail.lectures)}${studyTasksView(detail.tasks)}${studyScheduleView(detail.schedule)}${studyNotesView(detail.notes)}${studyFilesView(detail.files)}${close}</article>`;
+  return `<article class="paper-card study-detail" aria-labelledby="study-detail-title"><h2 id="study-detail-title" dir="auto">${escaped(subject.title)}</h2>${subject.code ? `<p dir="auto">${escaped(subject.code)}</p>` : ""}${studyLecturesView(detail.lectures)}${studyTasksView(detail.tasks)}${studyScheduleView(detail.schedule)}${studyNotesView(detail.notes)}${studyFilesView(detail.files)}${studyFileMetadataView(detail.fileMetadata)}${close}</article>`;
 }
 
 function studyLecturesView(lectures) {
@@ -143,7 +144,17 @@ function studyFilesView(files) {
   if (files.status === "error") return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><p role="alert">Files could not be opened. <button class="primary-action" type="button" data-study-subject-files-retry>Retry</button></p></section>`;
   const projectedFiles = projectStudySubjectFiles(files.files);
   if (projectedFiles.length === 0) return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><p>No files are available in local academic data.</p></section>`;
-  return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><ul class="content-list">${projectedFiles.map((file) => `<li><h4 dir="auto">${escaped(file.title)}</h4>${file.subtitle ? `<p dir="auto">${escaped(file.subtitle)}</p>` : ""}</li>`).join("")}</ul></section>`;
+  return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><ul class="content-list">${projectedFiles.map((file) => `<li><h4 dir="auto">${escaped(file.title)}</h4>${file.subtitle ? `<p dir="auto">${escaped(file.subtitle)}</p>` : ""}<button class="secondary-action" type="button" data-study-subject-file-metadata-open="${escaped(file.targetId)}">File information</button></li>`).join("")}</ul></section>`;
+}
+
+function studyFileMetadataView(metadata) {
+  if (!metadata) return "";
+  const close = `<button class="secondary-action" type="button" data-study-subject-file-metadata-close>Close file information</button>`;
+  if (metadata.status === "loading") return `<section aria-labelledby="study-file-metadata" aria-busy="true"><h3 id="study-file-metadata">File information</h3><p role="status">Loading file information…</p>${close}</section>`;
+  if (metadata.status === "missing") return `<section aria-labelledby="study-file-metadata" role="alert"><h3 id="study-file-metadata">File information</h3><p>File information is unavailable.</p>${close}</section>`;
+  if (metadata.status === "error") return `<section aria-labelledby="study-file-metadata" role="alert"><h3 id="study-file-metadata">File information</h3><p>File information could not be opened. <button class="primary-action" type="button" data-study-subject-file-metadata-retry>Retry</button></p>${close}</section>`;
+  const file = projectStudySubjectFileMetadata(metadata.fileArtifact);
+  return `<section aria-labelledby="study-file-metadata"><h3 id="study-file-metadata">File information</h3><dl><dt>Display name</dt><dd dir="auto">${escaped(file.displayName)}</dd><dt>Original name</dt><dd dir="auto">${escaped(file.originalName)}</dd><dt>Source type</dt><dd dir="auto">${escaped(file.sourceType)}</dd><dt>Archived at</dt><dd>${escaped(String(file.archivedAt))}</dd></dl>${close}</section>`;
 }
 
 function studyView(state = { status: "loading" }) {
