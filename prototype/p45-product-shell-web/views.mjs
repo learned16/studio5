@@ -6,6 +6,7 @@ import { projectStudySubjectLectures } from "./study-subject-lectures-projection
 import { projectStudySubjectTasks } from "./study-subject-tasks-projection.mjs";
 import { projectStudySubjectSchedule } from "./study-subject-schedule-projection.mjs";
 import { projectStudySubjectNotes } from "./study-subject-notes-projection.mjs";
+import { projectStudySubjectFiles } from "./study-subject-files-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
 function statusBadge(tone, symbol, label) {
@@ -100,7 +101,7 @@ function studyDetailView(detail) {
   if (detail.status === "missing") return `<article class="paper-card study-detail" role="alert"><h2>Subject is unavailable</h2>${close}</article>`;
   if (detail.status === "error") return `<article class="paper-card study-detail" role="alert"><h2>Subject could not be opened</h2><button class="primary-action" type="button" data-study-subject-retry>Retry</button>${close}</article>`;
   const subject = projectStudySubjectDetail(detail.subject);
-  return `<article class="paper-card study-detail" aria-labelledby="study-detail-title"><h2 id="study-detail-title" dir="auto">${escaped(subject.title)}</h2>${subject.code ? `<p dir="auto">${escaped(subject.code)}</p>` : ""}${studyLecturesView(detail.lectures)}${studyTasksView(detail.tasks)}${studyScheduleView(detail.schedule)}${studyNotesView(detail.notes)}${close}</article>`;
+  return `<article class="paper-card study-detail" aria-labelledby="study-detail-title"><h2 id="study-detail-title" dir="auto">${escaped(subject.title)}</h2>${subject.code ? `<p dir="auto">${escaped(subject.code)}</p>` : ""}${studyLecturesView(detail.lectures)}${studyTasksView(detail.tasks)}${studyScheduleView(detail.schedule)}${studyNotesView(detail.notes)}${studyFilesView(detail.files)}${close}</article>`;
 }
 
 function studyLecturesView(lectures) {
@@ -135,6 +136,14 @@ function studyNotesView(notes) {
   const projectedNotes = projectStudySubjectNotes(notes.notes);
   if (projectedNotes.length === 0) return `<section aria-labelledby="study-notes"><h3 id="study-notes">Notes</h3><p>No notes are available in local academic data.</p></section>`;
   return `<section aria-labelledby="study-notes"><h3 id="study-notes">Notes</h3><ul class="content-list">${projectedNotes.map((note) => `<li><h4 dir="auto">${escaped(note.title)}</h4><p dir="auto">${escaped(note.body)}</p></li>`).join("")}</ul></section>`;
+}
+
+function studyFilesView(files) {
+  if (!files || files.status === "loading") return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><p role="status" aria-busy="true">Loading files…</p></section>`;
+  if (files.status === "error") return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><p role="alert">Files could not be opened. <button class="primary-action" type="button" data-study-subject-files-retry>Retry</button></p></section>`;
+  const projectedFiles = projectStudySubjectFiles(files.files);
+  if (projectedFiles.length === 0) return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><p>No files are available in local academic data.</p></section>`;
+  return `<section aria-labelledby="study-files"><h3 id="study-files">Files</h3><ul class="content-list">${projectedFiles.map((file) => `<li><h4 dir="auto">${escaped(file.title)}</h4>${file.subtitle ? `<p dir="auto">${escaped(file.subtitle)}</p>` : ""}</li>`).join("")}</ul></section>`;
 }
 
 function studyView(state = { status: "loading" }) {

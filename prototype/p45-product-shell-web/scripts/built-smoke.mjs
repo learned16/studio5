@@ -115,7 +115,7 @@ class SmokeMainContent {
       button.dataset = { studySubjectOpen: match[1] };
       return button;
     });
-    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-notes-retry]", "[data-study-subject-close]"]) {
+    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-notes-retry]", "[data-study-subject-files-retry]", "[data-study-subject-close]"]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -366,7 +366,28 @@ async function verifyBuiltNavigation() {
     pendingStudyNoteReads.push(pendingRead);
     return pendingRead.promise;
   };
+  const pendingStudyFileReads = [];
+  const studyFileCallArguments = [];
+  let studyFileReadCount = 0;
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
+    if (options.targetKinds?.length === 1 && options.targetKinds[0] === "file-artifact") {
+      studyFileCallArguments.push(structuredClone(options));
+      studyFileReadCount += 1;
+      if (studyFileReadCount === 1) return Promise.reject(new Error("controlled files read failure"));
+      if (studyFileReadCount === 2) {
+        return Promise.resolve([{
+          targetKind: "file-artifact",
+          targetId: "file-artifact:1",
+          title: '<img src=x onerror="unsafe()"> & File',
+          subtitle: '<script>alert("unsafe")</script> & Source',
+          artifactId: "hidden",
+        }]);
+      }
+      if (studyFileReadCount === 4) return Promise.resolve([]);
+      const pendingRead = deferredNoteRead(options.subjectId);
+      pendingStudyFileReads.push(pendingRead);
+      return pendingRead.promise;
+    }
     libraryCallArguments.push(structuredClone(options));
     if (libraryCallArguments.length === 1) {
       return Promise.reject(new Error("controlled library read failure"));
@@ -464,8 +485,16 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Notes could not be opened");
     harness.mainContent.querySelector("[data-study-subject-notes-retry]").click();
     await waitForMarkup(harness.mainContent, "&amp; Body");
+    await waitForMarkup(harness.mainContent, "Files could not be opened");
+    harness.mainContent.querySelector("[data-study-subject-files-retry]").click();
+    await waitForMarkup(harness.mainContent, "&amp; Source");
     assert.deepEqual(studyNoteCallArguments.slice(0, 2), [{ subjectId: "subject:1" }, { subjectId: "subject:1" }]);
+    assert.deepEqual(studyFileCallArguments.slice(0, 2), [
+      { query: "", subjectId: "subject:1", targetKinds: ["file-artifact"], limit: 500 },
+      { query: "", subjectId: "subject:1", targetKinds: ["file-artifact"], limit: 500 },
+    ]);
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;script&gt;alert\(&quot;unsafe&quot;\)&lt;\/script&gt; &amp; Body/);
+    assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;script&gt;alert\(&quot;unsafe&quot;\)&lt;\/script&gt; &amp; Source/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /artifactId/);
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Room/);
     assert.match(harness.mainContent.innerHTML, /<dd>null<\/dd>/);
@@ -490,10 +519,12 @@ async function verifyBuiltNavigation() {
     pendingTaskReads.shift().resolve([{ id: "task:stale", title: "Stale task", dueAt: null, status: "open" }]);
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:stale", dayOfWeek: 1, startTime: "09:00", endTime: "10:00", effectiveFrom: null, effectiveUntil: null, location: "Closed stale schedule" }]);
     pendingStudyNoteReads.shift().resolve([{ id: "note:stale", title: "Closed stale note", body: "stale" }]);
+    pendingStudyFileReads.shift().resolve([{ targetId: "file-artifact:stale", title: "Closed stale file", subtitle: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Stale task/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale schedule/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale note/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale file/);
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -505,6 +536,7 @@ async function verifyBuiltNavigation() {
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:current", dayOfWeek: 2, startTime: "11:00", endTime: "12:00", effectiveFrom: null, effectiveUntil: null, location: "Current subject schedule" }]);
     await waitForMarkup(harness.mainContent, "Current subject schedule");
     await waitForMarkup(harness.mainContent, "No notes are available");
+    await waitForMarkup(harness.mainContent, "No files are available");
     for (const navigation of harness.navigations) {
       const studyLinks = navigation.links.filter(
         (link) => link.attributes.get("aria-current") === "page",
@@ -522,13 +554,17 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Switch current subject");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched", dayOfWeek: 3, startTime: "13:00", endTime: "14:00", effectiveFrom: null, effectiveUntil: null, location: "Switched stale schedule" }]);
     pendingStudyNoteReads.shift().resolve([{ id: "note:switched", title: "Switched stale note", body: "stale" }]);
+    pendingStudyFileReads.shift().resolve([{ targetId: "file-artifact:switched", title: "Switched stale file", subtitle: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale schedule/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale note/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale file/);
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched-current", dayOfWeek: 4, startTime: "15:00", endTime: "16:00", effectiveFrom: null, effectiveUntil: null, location: "Switch current schedule" }]);
     pendingStudyNoteReads.shift().resolve([{ id: "note:switched-current", title: "Switch current note", body: "current" }]);
+    pendingStudyFileReads.shift().resolve([{ targetId: "file-artifact:switched-current", title: "Switch current file", subtitle: "current" }]);
     await waitForMarkup(harness.mainContent, "Switch current schedule");
     await waitForMarkup(harness.mainContent, "Switch current note");
+    await waitForMarkup(harness.mainContent, "Switch current file");
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -537,9 +573,11 @@ async function verifyBuiltNavigation() {
     harness.navigate("#/library");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route stale schedule" }]);
     pendingStudyNoteReads.shift().resolve([{ id: "note:route", title: "Route stale note", body: "stale" }]);
+    pendingStudyFileReads.shift().resolve([{ targetId: "file-artifact:route", title: "Route stale file", subtitle: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale schedule/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale note/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale file/);
     await waitForMarkup(harness.mainContent, "Library could not be opened");
     harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
@@ -655,6 +693,8 @@ try {
     "/study-subject-schedule-projection.mjs",
     "/study-subject-notes-read-facade.mjs",
     "/study-subject-notes-projection.mjs",
+    "/study-subject-files-read-facade.mjs",
+    "/study-subject-files-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);
@@ -671,4 +711,4 @@ try {
 }
 
 await verifyBuiltNavigation();
-console.log("Built smoke passed: HTTP closure + five routes + Today, Study, Library, and inline Note failure/retry/escaped ready/close states");
+console.log("Built smoke passed: HTTP closure + five routes + Today, Study, Library, and inline Note/File failure/retry/escaped ready/close states");
