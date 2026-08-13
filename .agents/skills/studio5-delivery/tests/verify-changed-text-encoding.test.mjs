@@ -45,3 +45,7 @@ test("failure evidence names repository-relative path, line, and category", () =
 test("added and modified files are scanned", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), "modified\n"); writeFileSync(path.join(cwd, "added.txt"), `bad ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1); }));
 test("renamed text files are scanned", () => withFixture((cwd) => { renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `bad ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1); }));
 test("new invalid UTF-8 bytes fail deterministically", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3, 0x28])); assert.equal(run(cwd), 1); }));
+test("a different invalid byte is introduced despite an invalid baseline", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc2])); assert.equal(run(cwd), 1);
+}));

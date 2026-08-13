@@ -58,8 +58,11 @@ export function findTextDefects(bytes, baselineBytes = null) {
   try {
     text = decoder.decode(bytes);
   } catch {
-    const baseline = baselineBytes ? invalidByteSequences(baselineBytes).map(String) : [];
-    const introduced = invalidByteSequences(bytes).some((sequence) => !baseline.includes(String(sequence)));
+    const baseline = new Set(baselineBytes
+      ? invalidByteSequences(baselineBytes).map((sequence) => sequence.toString("hex"))
+      : []);
+    const introduced = invalidByteSequences(bytes)
+      .some((sequence) => !baseline.has(sequence.toString("hex")));
     return introduced ? [{ line: 1, category: "invalid-utf8" }] : [];
   }
   const defects = [];
