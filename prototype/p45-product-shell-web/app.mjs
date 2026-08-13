@@ -4,6 +4,7 @@ import { openCanonicalLibraryNoteReadFacade } from "./library-note-read-facade.m
 import { openCanonicalStudySubjectsReadFacade } from "./study-subjects-read-facade.mjs";
 import { openCanonicalStudySubjectDetailReadFacade } from "./study-subject-detail-read-facade.mjs";
 import { openCanonicalStudySubjectLecturesReadFacade } from "./study-subject-lectures-read-facade.mjs";
+import { openCanonicalStudySubjectTasksReadFacade } from "./study-subject-tasks-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
@@ -14,11 +15,13 @@ let renderVersion = 0;
 let libraryDetailRequestVersion = 0;
 let librarySearchQuery = "";
 let studyDetailRequestVersion = 0;
+let studyTasksRequestVersion = 0;
 let libraryFacadePromise = null;
 let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
 let studyDetailFacadePromise = null;
 let studyLecturesFacadePromise = null;
+let studyTasksFacadePromise = null;
 let todayFacadePromise = null;
 
 function navigationLink(destination) {
@@ -80,6 +83,16 @@ function studyLecturesFacade() {
     });
   }
   return studyLecturesFacadePromise;
+}
+
+function studyTasksFacade() {
+  if (!studyTasksFacadePromise) {
+    studyTasksFacadePromise = openCanonicalStudySubjectTasksReadFacade().catch((error) => {
+      studyTasksFacadePromise = null;
+      throw error;
+    });
+  }
+  return studyTasksFacadePromise;
 }
 
 function libraryFacade() {
@@ -161,13 +174,28 @@ function bindStudyDetailActions(destination, version, focusHeading, subjects) {
   }
 }
 
-function bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId) {
+function bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId, studyDetailContext) {
   mainContent.querySelector("[data-study-subject-close]")?.addEventListener("click", () => {
     studyDetailRequestVersion += 1;
+    studyTasksRequestVersion += 1;
     updateRouteContent(destination, destinationView("study", { status: "ready", subjects }), focusHeading);
     bindStudyDetailActions(destination, version, focusHeading, subjects);
   });
   mainContent.querySelector("[data-study-subject-retry]")?.addEventListener("click", () => void renderStudyDetail(destination, version, focusHeading, subjects, subjectId));
+  mainContent.querySelector("[data-study-subject-tasks-retry]")?.addEventListener("click", () => {
+    void renderStudyTasks(studyDetailContext);
+  });
+}
+
+function renderStudyDetailState(studyDetailContext) {
+  const { destination, version, focusHeading, subjects, subjectId, detail } = studyDetailContext;
+  updateRouteContent(destination, destinationView("study", {
+    status: "ready",
+    subjects,
+    detail,
+  }), focusHeading);
+  bindStudyDetailActions(destination, version, focusHeading, subjects);
+  bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId, studyDetailContext);
 }
 
 async function renderStudyDetail(destination, version, focusHeading, subjects, subjectId) {
@@ -185,39 +213,49 @@ async function renderStudyDetail(destination, version, focusHeading, subjects, s
       bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
       return;
     }
-    updateRouteContent(destination, destinationView("study", {
-      status: "ready",
-      subjects,
-      detail: { status: "ready", subject, lectures: { status: "loading" } },
-    }), focusHeading);
-    bindStudyDetailActions(destination, version, focusHeading, subjects);
-    bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
-    await renderStudyLectures(destination, version, focusHeading, subjects, subject, requestVersion);
+    const studyDetailContext = {
+      destination, version, focusHeading, subjects, subjectId, subject, requestVersion,
+      detail: { status: "ready", subject, lectures: { status: "loading" }, tasks: { status: "loading" } },
+    };
+    renderStudyDetailState(studyDetailContext);
+    void renderStudyTasks(studyDetailContext);
+    await renderStudyLectures(studyDetailContext);
   } catch {
     if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
     updateRouteContent(destination, destinationView("study", { status: "ready", subjects, detail: { status: "error" } }), focusHeading);
+    bindStudyDetailActions(destination, version, focusHeading, subjects);
+    bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
   }
-  bindStudyDetailActions(destination, version, focusHeading, subjects);
-  bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
 }
 
-async function renderStudyLectures(destination, version, focusHeading, subjects, subject, requestVersion) {
+async function renderStudyLectures(studyDetailContext) {
+  const { destination, version, focusHeading, subjects, subjectId, subject, requestVersion, detail } = studyDetailContext;
   try {
     const lectures = await (await studyLecturesFacade()).listLectures({ subjectId: subject.id });
     if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
-    updateRouteContent(destination, destinationView("study", {
-      status: "ready",
-      subjects,
-      detail: { status: "ready", subject, lectures: { status: "ready", lectures } },
-    }), focusHeading);
+    detail.lectures = { status: "ready", lectures };
   } catch {
     if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
-    updateRouteContent(destination, destinationView("study", {
-      status: "ready",
-      subjects,
-      detail: { status: "ready", subject, lectures: { status: "error" } },
-    }), focusHeading);
+    detail.lectures = { status: "error" };
   }
+  renderStudyDetailState(studyDetailContext);
+}
+
+async function renderStudyTasks(studyDetailContext) {
+  const { destination, version, focusHeading, subjects, subjectId, subject, requestVersion, detail } = studyDetailContext;
+  const tasksRequestVersion = studyTasksRequestVersion + 1;
+  studyTasksRequestVersion = tasksRequestVersion;
+  detail.tasks = { status: "loading" };
+  renderStudyDetailState(studyDetailContext);
+  try {
+    const tasks = await (await studyTasksFacade()).listTasks({ subjectId: subject.id });
+    if (tasksRequestVersion !== studyTasksRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.tasks = { status: "ready", tasks };
+  } catch {
+    if (tasksRequestVersion !== studyTasksRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.tasks = { status: "error" };
+  }
+  renderStudyDetailState(studyDetailContext);
 }
 
 async function renderLibrary(destination, version, focusHeading, query = librarySearchQuery) {
@@ -302,6 +340,8 @@ async function renderLibraryNoteDetail(destination, version, focusHeading, resul
 function renderRoute({ focusHeading = false } = {}) {
   const destination = routeFromHash(window.location.hash);
   renderVersion += 1;
+  studyDetailRequestVersion += 1;
+  studyTasksRequestVersion += 1;
   if (destination.id === "today") {
     updateRouteContent(destination, destinationView("today", { status: "loading" }), focusHeading);
     void renderToday(destination, renderVersion, focusHeading);
