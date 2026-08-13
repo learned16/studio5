@@ -3,6 +3,7 @@ import { openCanonicalLibraryReadFacade } from "./library-read-facade.mjs";
 import { openCanonicalLibraryNoteReadFacade } from "./library-note-read-facade.mjs";
 import { openCanonicalStudySubjectsReadFacade } from "./study-subjects-read-facade.mjs";
 import { openCanonicalStudySubjectDetailReadFacade } from "./study-subject-detail-read-facade.mjs";
+import { openCanonicalStudySubjectLecturesReadFacade } from "./study-subject-lectures-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
@@ -17,6 +18,7 @@ let libraryFacadePromise = null;
 let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
 let studyDetailFacadePromise = null;
+let studyLecturesFacadePromise = null;
 let todayFacadePromise = null;
 
 function navigationLink(destination) {
@@ -68,6 +70,16 @@ function studyDetailFacade() {
     });
   }
   return studyDetailFacadePromise;
+}
+
+function studyLecturesFacade() {
+  if (!studyLecturesFacadePromise) {
+    studyLecturesFacadePromise = openCanonicalStudySubjectLecturesReadFacade().catch((error) => {
+      studyLecturesFacadePromise = null;
+      throw error;
+    });
+  }
+  return studyLecturesFacadePromise;
 }
 
 function libraryFacade() {
@@ -167,13 +179,45 @@ async function renderStudyDetail(destination, version, focusHeading, subjects, s
   try {
     const subject = await (await studyDetailFacade()).getSubject(subjectId);
     if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
-    updateRouteContent(destination, destinationView("study", { status: "ready", subjects, detail: { status: subject ? "ready" : "missing", subject } }), focusHeading);
+    if (!subject) {
+      updateRouteContent(destination, destinationView("study", { status: "ready", subjects, detail: { status: "missing" } }), focusHeading);
+      bindStudyDetailActions(destination, version, focusHeading, subjects);
+      bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
+      return;
+    }
+    updateRouteContent(destination, destinationView("study", {
+      status: "ready",
+      subjects,
+      detail: { status: "ready", subject, lectures: { status: "loading" } },
+    }), focusHeading);
+    bindStudyDetailActions(destination, version, focusHeading, subjects);
+    bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
+    await renderStudyLectures(destination, version, focusHeading, subjects, subject, requestVersion);
   } catch {
     if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
     updateRouteContent(destination, destinationView("study", { status: "ready", subjects, detail: { status: "error" } }), focusHeading);
   }
   bindStudyDetailActions(destination, version, focusHeading, subjects);
   bindStudyDetailControls(destination, version, focusHeading, subjects, subjectId);
+}
+
+async function renderStudyLectures(destination, version, focusHeading, subjects, subject, requestVersion) {
+  try {
+    const lectures = await (await studyLecturesFacade()).listLectures({ subjectId: subject.id });
+    if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    updateRouteContent(destination, destinationView("study", {
+      status: "ready",
+      subjects,
+      detail: { status: "ready", subject, lectures: { status: "ready", lectures } },
+    }), focusHeading);
+  } catch {
+    if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    updateRouteContent(destination, destinationView("study", {
+      status: "ready",
+      subjects,
+      detail: { status: "ready", subject, lectures: { status: "error" } },
+    }), focusHeading);
+  }
 }
 
 async function renderLibrary(destination, version, focusHeading, query = librarySearchQuery) {

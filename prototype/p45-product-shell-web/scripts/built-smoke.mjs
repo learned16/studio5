@@ -253,6 +253,7 @@ async function verifyBuiltNavigation() {
   const originalGetNote = AcademicRepository.prototype.getNote;
   const originalListSubjects = AcademicRepository.prototype.listSubjects;
   const originalGetSubject = AcademicRepository.prototype.getSubject;
+  const originalListLectures = AcademicRepository.prototype.listLectures;
   const originalInitialize = AcademicRepository.prototype.initialize;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
@@ -295,6 +296,16 @@ async function verifyBuiltNavigation() {
     const promise = new Promise((resolveRead) => { resolve = resolveRead; });
     pendingSubjects.push({ id, resolve });
     return promise;
+  };
+  AcademicRepository.prototype.listLectures = function listLectures(options) {
+    assert.deepEqual(options, { subjectId: "subject:1" });
+    return Promise.resolve([{
+      id: "lecture:1",
+      title: '<img src=x onerror="unsafe()"> & Lecture',
+      startsAt: "2026-09-07T09:00:00+03:00",
+      endsAt: "2026-09-07T10:00:00+03:00",
+      status: "planned",
+    }]);
   };
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
     libraryCallArguments.push(structuredClone(options));
@@ -384,6 +395,8 @@ async function verifyBuiltNavigation() {
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     pendingSubjects.shift().resolve({ id: "subject:1", title: "Ready subject", code: "S1" });
     await waitForMarkup(harness.mainContent, "Ready subject");
+    await waitForMarkup(harness.mainContent, "2026-09-07T09:00:00+03:00");
+    assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Lecture/);
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -479,6 +492,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.getNote = originalGetNote;
     AcademicRepository.prototype.listSubjects = originalListSubjects;
     AcademicRepository.prototype.getSubject = originalGetSubject;
+    AcademicRepository.prototype.listLectures = originalListLectures;
     AcademicRepository.prototype.initialize = originalInitialize;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
@@ -516,6 +530,8 @@ try {
     "/study-subjects-read-facade.mjs",
     "/study-subject-detail-read-facade.mjs",
     "/study-subject-detail-projection.mjs",
+    "/study-subject-lectures-read-facade.mjs",
+    "/study-subject-lectures-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);
