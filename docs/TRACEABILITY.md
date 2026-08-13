@@ -11,8 +11,8 @@ PR #21 merged `P4.5-UX-IMPLEMENTATION-003` into `develop` as `54c4f48` after
 GitHub checks `5/5 PASS`. PR #22 merged `P4.5-UX-IMPLEMENTATION-004` as
 `0912af0` with GitHub checks `5/5 PASS`. PR #23 merged `OPS-AUTOPILOT-007` as
 `eebeb35`; the automation freeze remains active. `P4.5-UX-IMPLEMENTATION-005`
-merged as PR #24 at `454ad9d`. `P4.5-UX-IMPLEMENTATION-009` is active:
-a read-only Study subject-tasks projection.
+merged as PR #24 at `454ad9d`. `P4.5-UX-IMPLEMENTATION-010` is active:
+a read-only Study subject-schedule projection.
 IndexedDB remains origin-scoped: an isolated localhost/preview does not prove
 access to P3 or production-origin records, and the physical browser-driver read
 remains unverified. PDF opening/viewing and Notes are not implemented by this
@@ -92,6 +92,7 @@ coverage finding only.
 | `S5-UX-P45-STUDY-DETAIL-001` | عرض تفصيل Study subject للقراءة فقط | P4.5-UX-IMPLEMENTATION-007 | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `getSubject` facade; inline states and stale-response protection; no mutators |
 | `S5-UX-P45-STUDY-LECTURES-001` | عرض محاضرات Study subject للقراءة فقط | P4.5-UX-IMPLEMENTATION-008 | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listLectures({subjectId})` facade; inline ordered read-only projection with loading, empty, error, Retry, and stale-response protection |
 | `S5-UX-P45-STUDY-TASKS-001` | عرض مهام Study subject للقراءة فقط | P4.5-UX-IMPLEMENTATION-009 | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listTasks({subjectId})` facade; inline ordered read-only projection with loading, empty, error, Retry, and stale-response protection |
+| `S5-UX-P45-STUDY-SCHEDULE-001` | عرض جدول Study subject للقراءة فقط | P4.5-UX-IMPLEMENTATION-010 | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listScheduleEntries({subjectId})` facade; inline ordered read-only projection with loading, empty, error, Retry, and stale-response protection |
 | `S5-NATIVE-001` | فصل Core عن Browser adapters للتغليف لاحقاً | PRE-P5-FOUNDATION-001 | DOCUMENTED | `NATIVE_READINESS_AR.md` |
 | `S5-DC-SPEC-001` | مواصفة Drawing Coach القابلة للقياس | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_5_DRAWING_COACH_SPEC_AR.md` |
 | `S5-P6-SPEC-001` | مواصفة التكامل والاستقرار وRelease Candidate | PRE-P5-FOUNDATION-001 | READY FOR USER REVIEW | `PHASE_6_FINAL_INTEGRATION_SPEC_AR.md` |

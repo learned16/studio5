@@ -5,6 +5,7 @@ import { openCanonicalStudySubjectsReadFacade } from "./study-subjects-read-faca
 import { openCanonicalStudySubjectDetailReadFacade } from "./study-subject-detail-read-facade.mjs";
 import { openCanonicalStudySubjectLecturesReadFacade } from "./study-subject-lectures-read-facade.mjs";
 import { openCanonicalStudySubjectTasksReadFacade } from "./study-subject-tasks-read-facade.mjs";
+import { openCanonicalStudySubjectScheduleReadFacade } from "./study-subject-schedule-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
@@ -16,12 +17,14 @@ let libraryDetailRequestVersion = 0;
 let librarySearchQuery = "";
 let studyDetailRequestVersion = 0;
 let studyTasksRequestVersion = 0;
+let studyScheduleRequestVersion = 0;
 let libraryFacadePromise = null;
 let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
 let studyDetailFacadePromise = null;
 let studyLecturesFacadePromise = null;
 let studyTasksFacadePromise = null;
+let studyScheduleFacadePromise = null;
 let todayFacadePromise = null;
 
 function navigationLink(destination) {
@@ -93,6 +96,16 @@ function studyTasksFacade() {
     });
   }
   return studyTasksFacadePromise;
+}
+
+function studyScheduleFacade() {
+  if (!studyScheduleFacadePromise) {
+    studyScheduleFacadePromise = openCanonicalStudySubjectScheduleReadFacade().catch((error) => {
+      studyScheduleFacadePromise = null;
+      throw error;
+    });
+  }
+  return studyScheduleFacadePromise;
 }
 
 function libraryFacade() {
@@ -178,12 +191,16 @@ function bindStudyDetailControls(destination, version, focusHeading, subjects, s
   mainContent.querySelector("[data-study-subject-close]")?.addEventListener("click", () => {
     studyDetailRequestVersion += 1;
     studyTasksRequestVersion += 1;
+    studyScheduleRequestVersion += 1;
     updateRouteContent(destination, destinationView("study", { status: "ready", subjects }), focusHeading);
     bindStudyDetailActions(destination, version, focusHeading, subjects);
   });
   mainContent.querySelector("[data-study-subject-retry]")?.addEventListener("click", () => void renderStudyDetail(destination, version, focusHeading, subjects, subjectId));
   mainContent.querySelector("[data-study-subject-tasks-retry]")?.addEventListener("click", () => {
     void renderStudyTasks(studyDetailContext);
+  });
+  mainContent.querySelector("[data-study-subject-schedule-retry]")?.addEventListener("click", () => {
+    void renderStudySchedule(studyDetailContext);
   });
 }
 
@@ -215,10 +232,11 @@ async function renderStudyDetail(destination, version, focusHeading, subjects, s
     }
     const studyDetailContext = {
       destination, version, focusHeading, subjects, subjectId, subject, requestVersion,
-      detail: { status: "ready", subject, lectures: { status: "loading" }, tasks: { status: "loading" } },
+      detail: { status: "ready", subject, lectures: { status: "loading" }, tasks: { status: "loading" }, schedule: { status: "loading" } },
     };
     renderStudyDetailState(studyDetailContext);
     void renderStudyTasks(studyDetailContext);
+    void renderStudySchedule(studyDetailContext);
     await renderStudyLectures(studyDetailContext);
   } catch {
     if (requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
@@ -254,6 +272,23 @@ async function renderStudyTasks(studyDetailContext) {
   } catch {
     if (tasksRequestVersion !== studyTasksRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
     detail.tasks = { status: "error" };
+  }
+  renderStudyDetailState(studyDetailContext);
+}
+
+async function renderStudySchedule(studyDetailContext) {
+  const { destination, version, focusHeading, subjects, subject, requestVersion, detail } = studyDetailContext;
+  const scheduleRequestVersion = studyScheduleRequestVersion + 1;
+  studyScheduleRequestVersion = scheduleRequestVersion;
+  detail.schedule = { status: "loading" };
+  renderStudyDetailState(studyDetailContext);
+  try {
+    const entries = await (await studyScheduleFacade()).listScheduleEntries({ subjectId: subject.id });
+    if (scheduleRequestVersion !== studyScheduleRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.schedule = { status: "ready", entries };
+  } catch {
+    if (scheduleRequestVersion !== studyScheduleRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.schedule = { status: "error" };
   }
   renderStudyDetailState(studyDetailContext);
 }
@@ -342,6 +377,7 @@ function renderRoute({ focusHeading = false } = {}) {
   renderVersion += 1;
   studyDetailRequestVersion += 1;
   studyTasksRequestVersion += 1;
+  studyScheduleRequestVersion += 1;
   if (destination.id === "today") {
     updateRouteContent(destination, destinationView("today", { status: "loading" }), focusHeading);
     void renderToday(destination, renderVersion, focusHeading);

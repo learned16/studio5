@@ -19,6 +19,8 @@ const modules = [
   "study-subject-lectures-projection.mjs",
   "study-subject-tasks-read-facade.mjs",
   "study-subject-tasks-projection.mjs",
+  "study-subject-schedule-read-facade.mjs",
+  "study-subject-schedule-projection.mjs",
   "today-projection.mjs",
   "today-read-facade.mjs",
   "views.mjs",
