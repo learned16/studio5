@@ -26,6 +26,10 @@ progress snapshots where they conflict.
 - `.github/workflows/ci.yml` currently runs Core, P0, P3, and Worker checks;
   it has no independent P4.5 job. This is a material coverage finding, not a
   claim that the workflow was changed.
+- PRs #29, #30, and #33 are merged encoding repairs. `OPS-QUALITY-UTF8-001`
+  is the active bounded recurring-defect prevention task; the Automation
+  Optimization Freeze remains active and, after this task merges, routing
+  returns to the eligible Phase 4.5 product path.
 
 آخر تحديث: 2026-08-12
 المرحلة الحالية: `OPS-AUTOPILOT-007 — PROVEN-PATTERN ROUTING CALIBRATION IN PROGRESS`

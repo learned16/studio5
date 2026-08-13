@@ -74,6 +74,7 @@ Choose by diff:
 - Tests: `$test-guard`.
 - Documentation: `$docs-guard`.
 - Mixed diff: every applicable guard.
+- Changed text: `node .agents/skills/studio5-delivery/scripts/verify-changed-text-encoding.mjs --base <base>`; it checks only introduced changed-text defects, skips deleted/binary files, and is additive to product regression tests.
 
 Guards are a second pass. They do not replace native tests, the task card, the
 scope tool, the B mutation guard, or independent B review.
