@@ -53,7 +53,7 @@ function invalidByteSequences(bytes) {
     if (valid) index += expectedLength || 1;
     else {
       const length = expectedLength || 1;
-      sequences.push(bytes.subarray(index, Math.min(bytes.length, index + length)));
+      sequences.push({ bytes: bytes.subarray(index, Math.min(bytes.length, index + length)), offset: index });
       index += length;
     }
   }
@@ -80,6 +80,51 @@ function lineAt(text, offset) {
   return text.slice(0, offset).split("\n").length;
 }
 
+function byteLineAt(bytes, offset) {
+  let line = 1;
+  for (let index = 0; index < offset; index += 1) if (bytes[index] === 0x0a) line += 1;
+  return line;
+}
+
+function columnAt(text, offset) {
+  return offset - text.lastIndexOf("\n", offset - 1);
+}
+
+function byteColumnAt(bytes, offset) {
+  let start = offset;
+  while (start > 0 && bytes[start - 1] !== 0x0a) start -= 1;
+  return offset - start + 1;
+}
+
+function pairedLineNumbers(baselineText, currentText) {
+  const baselineLines = baselineText.split("\n");
+  const currentLines = currentText.split("\n");
+  const matrix = Array.from({ length: baselineLines.length + 1 }, () => new Uint32Array(currentLines.length + 1));
+  for (let baselineIndex = baselineLines.length - 1; baselineIndex >= 0; baselineIndex -= 1) {
+    for (let currentIndex = currentLines.length - 1; currentIndex >= 0; currentIndex -= 1) {
+      matrix[baselineIndex][currentIndex] = baselineLines[baselineIndex] === currentLines[currentIndex]
+        ? matrix[baselineIndex + 1][currentIndex + 1] + 1
+        : Math.max(matrix[baselineIndex + 1][currentIndex], matrix[baselineIndex][currentIndex + 1]);
+    }
+  }
+  const pairs = new Map();
+  let baselineIndex = 0; let currentIndex = 0;
+  while (baselineIndex < baselineLines.length && currentIndex < currentLines.length) {
+    if (baselineLines[baselineIndex] === currentLines[currentIndex]) {
+      pairs.set(currentIndex + 1, baselineIndex + 1); baselineIndex += 1; currentIndex += 1;
+    } else if (matrix[baselineIndex + 1][currentIndex] >= matrix[baselineIndex][currentIndex + 1]) baselineIndex += 1;
+    else currentIndex += 1;
+  }
+  const mapped = [...pairs.entries()].sort(([left], [right]) => left - right);
+  let previousCurrent = 0; let previousBaseline = 0;
+  for (const [nextCurrent, nextBaseline] of [...mapped, [currentLines.length + 1, baselineLines.length + 1]]) {
+    const count = Math.min(nextCurrent - previousCurrent - 1, nextBaseline - previousBaseline - 1);
+    for (let offset = 1; offset <= count; offset += 1) pairs.set(previousCurrent + offset, previousBaseline + offset);
+    previousCurrent = nextCurrent; previousBaseline = nextBaseline;
+  }
+  return pairs;
+}
+
 function collectTextDefects(bytes) {
   const text = decoder.decode(bytes);
   const defects = [];
@@ -87,10 +132,26 @@ function collectTextDefects(bytes) {
     pattern.lastIndex = 0;
     for (let match = pattern.exec(text); match; match = pattern.exec(text)) {
       const category = match[0] === "\ufffd" ? "replacement-character" : "mojibake-signature";
-      defects.push({ line: lineAt(text, match.index), category, signature: `${category}:${match[0]}` });
+      defects.push({ line: lineAt(text, match.index), column: columnAt(text, match.index), category, signature: `${category}:${match[0]}` });
     }
   }
   return defects;
+}
+
+function introducedOccurrences(current, baseline, linePairs) {
+  const historical = new Map();
+  for (const defect of baseline) {
+    const key = `${defect.line}:${defect.column}:${defect.signature}`;
+    historical.set(key, (historical.get(key) ?? 0) + 1);
+  }
+  return current.filter((defect) => {
+    const baselineLine = linePairs.get(defect.line);
+    const key = `${baselineLine}:${defect.column}:${defect.signature}`;
+    const count = historical.get(key) ?? 0;
+    if (!count) return true;
+    historical.set(key, count - 1);
+    return false;
+  });
 }
 
 function introducedTextDefects(bytes, baselineBytes) {
@@ -103,16 +164,7 @@ function introducedTextDefects(bytes, baselineBytes) {
   } catch {
     return defects;
   }
-  const historicalCounts = new Map();
-  for (const defect of historical) {
-    historicalCounts.set(defect.signature, (historicalCounts.get(defect.signature) ?? 0) + 1);
-  }
-  return defects.filter((defect) => {
-    const remaining = historicalCounts.get(defect.signature) ?? 0;
-    if (!remaining) return true;
-    historicalCounts.set(defect.signature, remaining - 1);
-    return false;
-  });
+  return introducedOccurrences(defects, historical, pairedLineNumbers(decoder.decode(baselineBytes), decoder.decode(bytes)));
 }
 
 export function findTextDefects(bytes, baselineBytes = null) {
@@ -120,18 +172,14 @@ export function findTextDefects(bytes, baselineBytes = null) {
   try {
     return introducedTextDefects(bytes, baselineBytes).map(({ line, category }) => ({ line, category }));
   } catch {
-    const baseline = new Map();
-    for (const sequence of baselineBytes ? invalidByteSequences(baselineBytes) : []) {
-      const signature = sequence.toString("hex");
-      baseline.set(signature, (baseline.get(signature) ?? 0) + 1);
-    }
-    const observed = new Map();
-    for (const sequence of invalidByteSequences(bytes)) {
-      const signature = sequence.toString("hex");
-      observed.set(signature, (observed.get(signature) ?? 0) + 1);
-    }
-    const introduced = [...observed].some(([signature, count]) => count > (baseline.get(signature) ?? 0));
-    return introduced ? [{ line: 1, category: "invalid-utf8" }] : [];
+    const occurrences = (source) => invalidByteSequences(source).map((sequence) => ({
+      line: byteLineAt(source, sequence.offset), column: byteColumnAt(source, sequence.offset), signature: sequence.bytes.toString("hex"), category: "invalid-utf8",
+    }));
+    const current = occurrences(bytes);
+    if (!baselineBytes) return current.map(({ line, category }) => ({ line, category }));
+    const baseline = occurrences(baselineBytes);
+    const pairs = pairedLineNumbers(Buffer.from(baselineBytes).toString("latin1"), Buffer.from(bytes).toString("latin1"));
+    return introducedOccurrences(current, baseline, pairs).map(({ line, category }) => ({ line, category }));
   }
 }
 
@@ -155,11 +203,29 @@ function baselinePaths(entries, base, cwd) {
     const current = currentBytes(currentPath, cwd);
     const matches = deleted.filter((sourcePath) => {
       const historical = baseBytes(base, sourcePath, cwd);
-      return historical && Buffer.compare(historical, current) === 0;
+      return historical && preservesBaselineIdentity(historical, current);
     });
     if (matches.length === 1) paths.set(currentPath, matches[0]);
   }
   return paths;
+}
+
+function preservesBaselineIdentity(historical, current) {
+  if (Buffer.compare(historical, current) === 0) return true;
+  try {
+    const historicalText = decoder.decode(historical);
+    const currentText = decoder.decode(current);
+    const historicalDefects = collectTextDefects(historical);
+    const pairs = pairedLineNumbers(historicalText, currentText);
+    const defectLines = new Set(historicalDefects.map((defect) => defect.line));
+    const preservedHistoricalLines = new Set(pairs.values());
+    const historicalLines = historicalText.split("\n");
+    return historicalDefects.length > 0
+      && historicalDefects.every((defect) => preservedHistoricalLines.has(defect.line))
+      && [...pairs].some(([, historicalLine]) => !defectLines.has(historicalLine) && historicalLines[historicalLine - 1] !== "");
+  } catch {
+    return false;
+  }
 }
 
 function defectsForEntry(entry, base, cwd, baselinePath) {

@@ -55,6 +55,14 @@ test("additional mojibake beside a preserved historical defect fails", () => wit
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake} label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake} and new ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1);
 }));
+test("relocated same-signature mojibake fails", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\nkeep\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), `clean\nnew ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1);
+}));
+test("new same-signature mojibake before preserved historical occurrence fails", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `first\nold ${ellipsisMojibake}\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), `new ${ellipsisMojibake}\nold ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1);
+}));
 test("deleted file passes", () => withFixture((cwd) => { rmSync(path.join(cwd, "sample.txt")); assert.equal(run(cwd), 0); }));
 test("binary content is skipped", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0, 0xff])); assert.equal(run(cwd), 0); }));
 test("NUL-free JPEG binary content is skipped", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xff, 0xd8, 0xff, 0xc3])); assert.equal(run(cwd), 0); }));
@@ -71,6 +79,18 @@ test("pure working-tree rename preserves historical mojibake baseline", () => wi
 test("working-tree renamed file with new mojibake fails", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
   renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `old ${ellipsisMojibake} new ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1);
+}));
+test("working-tree rename with valid edit preserves historical baseline", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\nold label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `old ${ellipsisMojibake}\nnew label\n`); assert.equal(run(cwd), 0);
+}));
+test("working-tree rename with valid edit and new defect fails", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\nold label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `old ${ellipsisMojibake}\nnew ${ellipsisMojibake} label\n`); assert.equal(run(cwd), 1);
+}));
+test("unrelated deletion cannot suppress a new file defect", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  rmSync(path.join(cwd, "sample.txt")); writeFileSync(path.join(cwd, "unrelated.txt"), `new ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1);
 }));
 test("tracked rename preserves historical mojibake baseline", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
@@ -89,4 +109,12 @@ test("a different invalid byte is introduced despite an invalid baseline", () =>
 test("an additional identical invalid sequence exceeds the baseline count", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
   writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3, 0x62, 0xc3])); assert.equal(run(cwd), 1);
+}));
+test("relocated identical invalid UTF-8 sequence fails", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xc3, 0x0a, 0x61])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3, 0x0a])); assert.equal(run(cwd), 1);
+}));
+test("preserved invalid UTF-8 with valid edit passes", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xc3, 0x0a, 0x61])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xc3, 0x0a, 0x62])); assert.equal(run(cwd), 0);
 }));
