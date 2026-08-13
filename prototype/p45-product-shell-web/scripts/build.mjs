@@ -27,6 +27,8 @@ const staticAssets = [
   "study-subject-schedule-projection.mjs",
   "study-subject-notes-read-facade.mjs",
   "study-subject-notes-projection.mjs",
+  "study-subject-files-read-facade.mjs",
+  "study-subject-files-projection.mjs",
   "today-projection.mjs",
   "today-read-facade.mjs",
   "views.mjs",
