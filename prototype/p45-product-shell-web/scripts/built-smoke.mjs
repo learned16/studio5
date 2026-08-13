@@ -115,7 +115,7 @@ class SmokeMainContent {
       button.dataset = { studySubjectOpen: match[1] };
       return button;
     });
-    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-close]"]) {
+    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-close]"]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -255,6 +255,7 @@ async function verifyBuiltNavigation() {
   const originalGetSubject = AcademicRepository.prototype.getSubject;
   const originalListLectures = AcademicRepository.prototype.listLectures;
   const originalListTasks = AcademicRepository.prototype.listTasks;
+  const originalListScheduleEntries = AcademicRepository.prototype.listScheduleEntries;
   const originalInitialize = AcademicRepository.prototype.initialize;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
@@ -322,6 +323,18 @@ async function verifyBuiltNavigation() {
       title: '<img src=x onerror="unsafe()"> & Task',
       dueAt: null,
       status: "open",
+    }]);
+  };
+  AcademicRepository.prototype.listScheduleEntries = function listScheduleEntries(options) {
+    assert.deepEqual(options, { subjectId: "subject:1" });
+    return Promise.resolve([{
+      id: "schedule-entry:1",
+      dayOfWeek: 1,
+      startTime: "09:00",
+      endTime: "10:00",
+      effectiveFrom: "2026-09-01",
+      effectiveUntil: null,
+      location: '<img src=x onerror="unsafe()"> & Room',
     }]);
   };
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
@@ -415,6 +428,8 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "2026-09-07T09:00:00+03:00");
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Lecture/);
     await waitForMarkup(harness.mainContent, "&amp; Task");
+    await waitForMarkup(harness.mainContent, "Schedule entries");
+    assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Room/);
     assert.match(harness.mainContent.innerHTML, /<dd>null<\/dd>/);
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
@@ -521,6 +536,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.getSubject = originalGetSubject;
     AcademicRepository.prototype.listLectures = originalListLectures;
     AcademicRepository.prototype.listTasks = originalListTasks;
+    AcademicRepository.prototype.listScheduleEntries = originalListScheduleEntries;
     AcademicRepository.prototype.initialize = originalInitialize;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
@@ -562,6 +578,8 @@ try {
     "/study-subject-lectures-projection.mjs",
     "/study-subject-tasks-read-facade.mjs",
     "/study-subject-tasks-projection.mjs",
+    "/study-subject-schedule-read-facade.mjs",
+    "/study-subject-schedule-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);

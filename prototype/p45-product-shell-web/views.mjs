@@ -4,6 +4,7 @@ import { projectStudySubjects } from "./study-subjects-projection.mjs";
 import { projectStudySubjectDetail } from "./study-subject-detail-projection.mjs";
 import { projectStudySubjectLectures } from "./study-subject-lectures-projection.mjs";
 import { projectStudySubjectTasks } from "./study-subject-tasks-projection.mjs";
+import { projectStudySubjectSchedule } from "./study-subject-schedule-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
 function statusBadge(tone, symbol, label) {
@@ -98,7 +99,7 @@ function studyDetailView(detail) {
   if (detail.status === "missing") return `<article class="paper-card study-detail" role="alert"><h2>Subject is unavailable</h2>${close}</article>`;
   if (detail.status === "error") return `<article class="paper-card study-detail" role="alert"><h2>Subject could not be opened</h2><button class="primary-action" type="button" data-study-subject-retry>Retry</button>${close}</article>`;
   const subject = projectStudySubjectDetail(detail.subject);
-  return `<article class="paper-card study-detail" aria-labelledby="study-detail-title"><h2 id="study-detail-title" dir="auto">${escaped(subject.title)}</h2>${subject.code ? `<p dir="auto">${escaped(subject.code)}</p>` : ""}${studyLecturesView(detail.lectures)}${studyTasksView(detail.tasks)}${close}</article>`;
+  return `<article class="paper-card study-detail" aria-labelledby="study-detail-title"><h2 id="study-detail-title" dir="auto">${escaped(subject.title)}</h2>${subject.code ? `<p dir="auto">${escaped(subject.code)}</p>` : ""}${studyLecturesView(detail.lectures)}${studyTasksView(detail.tasks)}${studyScheduleView(detail.schedule)}${close}</article>`;
 }
 
 function studyLecturesView(lectures) {
@@ -115,6 +116,16 @@ function studyTasksView(tasks) {
   const projectedTasks = projectStudySubjectTasks(tasks.tasks);
   if (projectedTasks.length === 0) return `<section aria-labelledby="study-tasks"><h3 id="study-tasks">Tasks</h3><p>No tasks are available in local academic data.</p></section>`;
   return `<section aria-labelledby="study-tasks"><h3 id="study-tasks">Tasks</h3><ul class="content-list">${projectedTasks.map((task) => `<li><span dir="auto">${escaped(task.title)}</span><dl><dt>Due</dt><dd>${escaped(String(task.dueAt))}</dd><dt>Status</dt><dd>${escaped(String(task.status))}</dd></dl></li>`).join("")}</ul></section>`;
+}
+
+const weekdayLabels = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+function studyScheduleView(schedule) {
+  if (!schedule || schedule.status === "loading") return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><p role="status" aria-busy="true">Loading schedule entriesâ€¦</p></section>`;
+  if (schedule.status === "error") return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><p role="alert">Schedule entries could not be opened. <button class="primary-action" type="button" data-study-subject-schedule-retry>Retry</button></p></section>`;
+  const projectedEntries = projectStudySubjectSchedule(schedule.entries);
+  if (projectedEntries.length === 0) return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><p>No schedule entries are available in local academic data.</p></section>`;
+  return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><ul class="content-list">${projectedEntries.map((entry) => `<li><dl><dt>Day</dt><dd>${escaped(weekdayLabels[entry.dayOfWeek])}</dd><dt>Starts</dt><dd>${escaped(entry.startTime)}</dd><dt>Ends</dt><dd>${escaped(entry.endTime)}</dd><dt>Effective from</dt><dd>${escaped(String(entry.effectiveFrom))}</dd><dt>Effective until</dt><dd>${escaped(String(entry.effectiveUntil))}</dd><dt>Location</dt><dd dir="auto">${escaped(String(entry.location))}</dd></dl></li>`).join("")}</ul></section>`;
 }
 
 function studyView(state = { status: "loading" }) {
