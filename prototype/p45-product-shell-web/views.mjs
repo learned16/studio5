@@ -130,7 +130,7 @@ function studyScheduleView(schedule) {
 }
 
 function studyNotesView(notes) {
-  if (!notes || notes.status === "loading") return `<section aria-labelledby="study-notes"><h3 id="study-notes">Notes</h3><p role="status" aria-busy="true">Loading notesâ€¦</p></section>`;
+  if (!notes || notes.status === "loading") return `<section aria-labelledby="study-notes"><h3 id="study-notes">Notes</h3><p role="status" aria-busy="true">Loading notes…</p></section>`;
   if (notes.status === "error") return `<section aria-labelledby="study-notes"><h3 id="study-notes">Notes</h3><p role="alert">Notes could not be opened. <button class="primary-action" type="button" data-study-subject-notes-retry>Retry</button></p></section>`;
   const projectedNotes = projectStudySubjectNotes(notes.notes);
   if (projectedNotes.length === 0) return `<section aria-labelledby="study-notes"><h3 id="study-notes">Notes</h3><p>No notes are available in local academic data.</p></section>`;

@@ -47,7 +47,8 @@ test("Study subject notes retain Core order and only render escaped text", () =>
   assert.match(ready, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; ملاحظة/);
   assert.match(ready, /dir="auto">&lt;script&gt;alert\(&quot;unsafe&quot;\)&lt;\/script&gt; &amp; نص/);
   assert.doesNotMatch(ready, /ignored|artifactId|lectureId|fileVersionId|updatedAt|createdAt|recent|count/i);
-  assert.match(state({ status: "loading" }), /Loading notes/);
+  assert.match(state({ status: "loading" }), /Loading notes…/u);
+  assert.doesNotMatch(state({ status: "loading" }), /Loading notesâ€¦/u);
   assert.match(state({ status: "ready", notes: [] }), /No notes are available/);
   assert.match(state({ status: "error" }), /data-study-subject-notes-retry/);
 });

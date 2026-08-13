@@ -361,6 +361,7 @@ async function verifyBuiltNavigation() {
         artifactId: "file-artifact:hidden",
       }]);
     }
+    if (studyNoteReadCount === 4) return Promise.resolve([]);
     const pendingRead = deferredNoteRead(options.subjectId);
     pendingStudyNoteReads.push(pendingRead);
     return pendingRead.promise;
@@ -503,6 +504,7 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Current subject");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:current", dayOfWeek: 2, startTime: "11:00", endTime: "12:00", effectiveFrom: null, effectiveUntil: null, location: "Current subject schedule" }]);
     await waitForMarkup(harness.mainContent, "Current subject schedule");
+    await waitForMarkup(harness.mainContent, "No notes are available");
     for (const navigation of harness.navigations) {
       const studyLinks = navigation.links.filter(
         (link) => link.attributes.get("aria-current") === "page",
@@ -519,10 +521,14 @@ async function verifyBuiltNavigation() {
     pendingSubjects.shift().resolve({ id: "subject:2", title: "Switch current subject", code: "S2" });
     await waitForMarkup(harness.mainContent, "Switch current subject");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched", dayOfWeek: 3, startTime: "13:00", endTime: "14:00", effectiveFrom: null, effectiveUntil: null, location: "Switched stale schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:switched", title: "Switched stale note", body: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale schedule/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale note/);
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched-current", dayOfWeek: 4, startTime: "15:00", endTime: "16:00", effectiveFrom: null, effectiveUntil: null, location: "Switch current schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:switched-current", title: "Switch current note", body: "current" }]);
     await waitForMarkup(harness.mainContent, "Switch current schedule");
+    await waitForMarkup(harness.mainContent, "Switch current note");
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -530,8 +536,10 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Loading schedule entries");
     harness.navigate("#/library");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route stale schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:route", title: "Route stale note", body: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale schedule/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale note/);
     await waitForMarkup(harness.mainContent, "Library could not be opened");
     harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
