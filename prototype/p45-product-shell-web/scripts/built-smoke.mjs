@@ -396,7 +396,7 @@ async function verifyBuiltNavigation() {
       sourceType: "upload",
       archivedAt: "2026-08-13T09:00:00.000Z",
     });
-    if (fileMetadataReadCount === 5) return Promise.resolve({ id: artifactId, displayName: "Close version current metadata", originalName: "close", sourceType: "upload", archivedAt: null });
+    if (fileMetadataReadCount === 5) return Promise.resolve(null);
     const pendingRead = deferredNoteRead(artifactId);
     pendingFileMetadataReads.push(pendingRead);
     return pendingRead.promise;
@@ -573,6 +573,11 @@ async function verifyBuiltNavigation() {
     pendingFileVersionReads.shift().resolve([{ id: "file-version:stale-selection", versionNumber: 3, mediaType: "Selection stale version", byteSize: 3, originalModifiedAt: null }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Selection stale version/);
+    await waitForMarkup(harness.mainContent, "File information is unavailable");
+    harness.mainContent.querySelector("[data-study-subject-file-metadata-close]").click();
+    harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:1", displayName: "Close version current metadata", originalName: "close", sourceType: "upload", archivedAt: null });
     await waitForMarkup(harness.mainContent, "Close version current metadata");
     harness.mainContent.querySelector("[data-study-subject-file-metadata-close]").click();
     pendingFileVersionReads.shift().resolve([{ id: "file-version:stale-close", versionNumber: 6, mediaType: "Closed stale version", byteSize: 6, originalModifiedAt: null }]);

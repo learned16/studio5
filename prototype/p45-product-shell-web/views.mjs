@@ -159,7 +159,7 @@ function studyFileMetadataView(metadata) {
 }
 
 function studyFileVersionsView(versions) {
-  if (!versions || versions.status === "loading") return `<section aria-labelledby="study-file-versions"><h4 id="study-file-versions">File versions</h4><p role="status" aria-busy="true">Loading file versionsâ€¦</p></section>`;
+  if (!versions || versions.status === "loading") return `<section aria-labelledby="study-file-versions"><h4 id="study-file-versions">File versions</h4><p role="status" aria-busy="true">Loading file versions…</p></section>`;
   if (versions.status === "error") return `<section aria-labelledby="study-file-versions" role="alert"><h4 id="study-file-versions">File versions</h4><p>File versions could not be opened. <button class="primary-action" type="button" data-study-subject-file-versions-retry>Retry</button></p></section>`;
   const projectedVersions = projectStudySubjectFileVersions(versions.versions);
   if (projectedVersions.length === 0) return `<section aria-labelledby="study-file-versions"><h4 id="study-file-versions">File versions</h4><p>No file versions are available.</p></section>`;

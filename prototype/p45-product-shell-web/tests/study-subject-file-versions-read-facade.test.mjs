@@ -39,7 +39,9 @@ test("Study file versions preserve Core order and render only canonical values",
   assert.match(ready, /&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt;/);
   assert.doesNotMatch(ready, /fileHashId|storageKey|artifactId|file-artifact:1|current|latest/i);
   assert.doesNotMatch(ready, /data-study-subject-file-versions-(?:open|download|view)/);
-  assert.match(state({ status: "loading" }), /Loading file versionsâ€¦/u);
+  const loading = state({ status: "loading" });
+  assert.match(loading, /Loading file versions…/u);
+  assert.doesNotMatch(loading, /Loading file versions\u00e2\u20ac\u00a6/u);
   assert.match(state({ status: "ready", versions: [] }), /No file versions are available/);
   assert.match(state({ status: "error" }), /data-study-subject-file-versions-retry/);
 });
