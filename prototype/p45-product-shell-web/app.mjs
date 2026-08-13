@@ -8,6 +8,7 @@ import { openCanonicalStudySubjectTasksReadFacade } from "./study-subject-tasks-
 import { openCanonicalStudySubjectScheduleReadFacade } from "./study-subject-schedule-read-facade.mjs";
 import { openCanonicalStudySubjectNotesReadFacade } from "./study-subject-notes-read-facade.mjs";
 import { openCanonicalStudySubjectFilesReadFacade } from "./study-subject-files-read-facade.mjs";
+import { openCanonicalStudySubjectFileMetadataReadFacade } from "./study-subject-file-metadata-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
@@ -22,6 +23,7 @@ let studyTasksRequestVersion = 0;
 let studyScheduleRequestVersion = 0;
 let studyNotesRequestVersion = 0;
 let studyFilesRequestVersion = 0;
+let studyFileMetadataRequestVersion = 0;
 let libraryFacadePromise = null;
 let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
@@ -31,6 +33,7 @@ let studyTasksFacadePromise = null;
 let studyScheduleFacadePromise = null;
 let studyNotesFacadePromise = null;
 let studyFilesFacadePromise = null;
+let studyFileMetadataFacadePromise = null;
 let todayFacadePromise = null;
 
 function navigationLink(destination) {
@@ -134,6 +137,16 @@ function studyFilesFacade() {
   return studyFilesFacadePromise;
 }
 
+function studyFileMetadataFacade() {
+  if (!studyFileMetadataFacadePromise) {
+    studyFileMetadataFacadePromise = openCanonicalStudySubjectFileMetadataReadFacade().catch((error) => {
+      studyFileMetadataFacadePromise = null;
+      throw error;
+    });
+  }
+  return studyFileMetadataFacadePromise;
+}
+
 function libraryFacade() {
   if (!libraryFacadePromise) {
     libraryFacadePromise = openCanonicalLibraryReadFacade().catch((error) => {
@@ -220,6 +233,7 @@ function bindStudyDetailControls(destination, version, focusHeading, subjects, s
     studyScheduleRequestVersion += 1;
     studyNotesRequestVersion += 1;
     studyFilesRequestVersion += 1;
+    studyFileMetadataRequestVersion += 1;
     updateRouteContent(destination, destinationView("study", { status: "ready", subjects }), focusHeading);
     bindStudyDetailActions(destination, version, focusHeading, subjects);
   });
@@ -236,6 +250,19 @@ function bindStudyDetailControls(destination, version, focusHeading, subjects, s
   mainContent.querySelector("[data-study-subject-files-retry]")?.addEventListener("click", () => {
     void renderStudyFiles(studyDetailContext);
   });
+  mainContent.querySelector("[data-study-subject-file-metadata-retry]")?.addEventListener("click", () => {
+    void renderStudyFileMetadata(studyDetailContext, studyDetailContext.detail.fileMetadata?.artifactId);
+  });
+  mainContent.querySelector("[data-study-subject-file-metadata-close]")?.addEventListener("click", () => {
+    studyFileMetadataRequestVersion += 1;
+    studyDetailContext.detail.fileMetadata = null;
+    renderStudyDetailState(studyDetailContext);
+  });
+  for (const button of mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")) {
+    button.addEventListener("click", () => {
+      void renderStudyFileMetadata(studyDetailContext, button.dataset.studySubjectFileMetadataOpen);
+    });
+  }
 }
 
 function renderStudyDetailState(studyDetailContext) {
@@ -266,7 +293,7 @@ async function renderStudyDetail(destination, version, focusHeading, subjects, s
     }
     const studyDetailContext = {
       destination, version, focusHeading, subjects, subjectId, subject, requestVersion,
-      detail: { status: "ready", subject, lectures: { status: "loading" }, tasks: { status: "loading" }, schedule: { status: "loading" }, notes: { status: "loading" }, files: { status: "loading" } },
+      detail: { status: "ready", subject, lectures: { status: "loading" }, tasks: { status: "loading" }, schedule: { status: "loading" }, notes: { status: "loading" }, files: { status: "loading" }, fileMetadata: null },
     };
     renderStudyDetailState(studyDetailContext);
     void renderStudyTasks(studyDetailContext);
@@ -363,6 +390,24 @@ async function renderStudyFiles(studyDetailContext) {
   renderStudyDetailState(studyDetailContext);
 }
 
+async function renderStudyFileMetadata(studyDetailContext, artifactId) {
+  const { version, requestVersion, detail } = studyDetailContext;
+  if (!artifactId) return;
+  const metadataRequestVersion = studyFileMetadataRequestVersion + 1;
+  studyFileMetadataRequestVersion = metadataRequestVersion;
+  detail.fileMetadata = { status: "loading", artifactId };
+  renderStudyDetailState(studyDetailContext);
+  try {
+    const fileArtifact = await (await studyFileMetadataFacade()).getFileArtifact(artifactId);
+    if (metadataRequestVersion !== studyFileMetadataRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.fileMetadata = fileArtifact ? { status: "ready", artifactId, fileArtifact } : { status: "missing", artifactId };
+  } catch {
+    if (metadataRequestVersion !== studyFileMetadataRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.fileMetadata = { status: "error", artifactId };
+  }
+  renderStudyDetailState(studyDetailContext);
+}
+
 async function renderLibrary(destination, version, focusHeading, query = librarySearchQuery) {
   try {
     const facade = await libraryFacade();
@@ -450,6 +495,7 @@ function renderRoute({ focusHeading = false } = {}) {
   studyScheduleRequestVersion += 1;
   studyNotesRequestVersion += 1;
   studyFilesRequestVersion += 1;
+  studyFileMetadataRequestVersion += 1;
   if (destination.id === "today") {
     updateRouteContent(destination, destinationView("today", { status: "loading" }), focusHeading);
     void renderToday(destination, renderVersion, focusHeading);
