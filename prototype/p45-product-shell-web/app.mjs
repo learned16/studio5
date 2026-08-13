@@ -9,6 +9,7 @@ import { openCanonicalStudySubjectScheduleReadFacade } from "./study-subject-sch
 import { openCanonicalStudySubjectNotesReadFacade } from "./study-subject-notes-read-facade.mjs";
 import { openCanonicalStudySubjectFilesReadFacade } from "./study-subject-files-read-facade.mjs";
 import { openCanonicalStudySubjectFileMetadataReadFacade } from "./study-subject-file-metadata-read-facade.mjs";
+import { openCanonicalStudySubjectFileVersionsReadFacade } from "./study-subject-file-versions-read-facade.mjs";
 import { openCanonicalTodayReadFacade } from "./today-read-facade.mjs";
 import { destinationView } from "./views.mjs";
 
@@ -24,6 +25,7 @@ let studyScheduleRequestVersion = 0;
 let studyNotesRequestVersion = 0;
 let studyFilesRequestVersion = 0;
 let studyFileMetadataRequestVersion = 0;
+let studyFileVersionsRequestVersion = 0;
 let libraryFacadePromise = null;
 let libraryNoteFacadePromise = null;
 let studyFacadePromise = null;
@@ -34,6 +36,7 @@ let studyScheduleFacadePromise = null;
 let studyNotesFacadePromise = null;
 let studyFilesFacadePromise = null;
 let studyFileMetadataFacadePromise = null;
+let studyFileVersionsFacadePromise = null;
 let todayFacadePromise = null;
 
 function navigationLink(destination) {
@@ -147,6 +150,16 @@ function studyFileMetadataFacade() {
   return studyFileMetadataFacadePromise;
 }
 
+function studyFileVersionsFacade() {
+  if (!studyFileVersionsFacadePromise) {
+    studyFileVersionsFacadePromise = openCanonicalStudySubjectFileVersionsReadFacade().catch((error) => {
+      studyFileVersionsFacadePromise = null;
+      throw error;
+    });
+  }
+  return studyFileVersionsFacadePromise;
+}
+
 function libraryFacade() {
   if (!libraryFacadePromise) {
     libraryFacadePromise = openCanonicalLibraryReadFacade().catch((error) => {
@@ -234,6 +247,7 @@ function bindStudyDetailControls(destination, version, focusHeading, subjects, s
     studyNotesRequestVersion += 1;
     studyFilesRequestVersion += 1;
     studyFileMetadataRequestVersion += 1;
+    studyFileVersionsRequestVersion += 1;
     updateRouteContent(destination, destinationView("study", { status: "ready", subjects }), focusHeading);
     bindStudyDetailActions(destination, version, focusHeading, subjects);
   });
@@ -253,8 +267,12 @@ function bindStudyDetailControls(destination, version, focusHeading, subjects, s
   mainContent.querySelector("[data-study-subject-file-metadata-retry]")?.addEventListener("click", () => {
     void renderStudyFileMetadata(studyDetailContext, studyDetailContext.detail.fileMetadata?.artifactId);
   });
+  mainContent.querySelector("[data-study-subject-file-versions-retry]")?.addEventListener("click", () => {
+    void renderStudyFileVersions(studyDetailContext, studyDetailContext.detail.fileMetadata?.artifactId);
+  });
   mainContent.querySelector("[data-study-subject-file-metadata-close]")?.addEventListener("click", () => {
     studyFileMetadataRequestVersion += 1;
+    studyFileVersionsRequestVersion += 1;
     studyDetailContext.detail.fileMetadata = null;
     renderStudyDetailState(studyDetailContext);
   });
@@ -395,15 +413,35 @@ async function renderStudyFileMetadata(studyDetailContext, artifactId) {
   if (!artifactId) return;
   const metadataRequestVersion = studyFileMetadataRequestVersion + 1;
   studyFileMetadataRequestVersion = metadataRequestVersion;
+  studyFileVersionsRequestVersion += 1;
   detail.fileMetadata = { status: "loading", artifactId };
   renderStudyDetailState(studyDetailContext);
   try {
     const fileArtifact = await (await studyFileMetadataFacade()).getFileArtifact(artifactId);
     if (metadataRequestVersion !== studyFileMetadataRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
-    detail.fileMetadata = fileArtifact ? { status: "ready", artifactId, fileArtifact } : { status: "missing", artifactId };
+    detail.fileMetadata = fileArtifact ? { status: "ready", artifactId, fileArtifact, versions: { status: "loading" } } : { status: "missing", artifactId };
   } catch {
     if (metadataRequestVersion !== studyFileMetadataRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
     detail.fileMetadata = { status: "error", artifactId };
+  }
+  renderStudyDetailState(studyDetailContext);
+  if (detail.fileMetadata?.status === "ready") void renderStudyFileVersions(studyDetailContext, artifactId);
+}
+
+async function renderStudyFileVersions(studyDetailContext, artifactId) {
+  const { version, requestVersion, detail } = studyDetailContext;
+  if (!artifactId || detail.fileMetadata?.status !== "ready") return;
+  const versionsRequestVersion = studyFileVersionsRequestVersion + 1;
+  studyFileVersionsRequestVersion = versionsRequestVersion;
+  detail.fileMetadata.versions = { status: "loading" };
+  renderStudyDetailState(studyDetailContext);
+  try {
+    const versions = await (await studyFileVersionsFacade()).listFileVersions({ artifactId });
+    if (versionsRequestVersion !== studyFileVersionsRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.fileMetadata.versions = { status: "ready", versions };
+  } catch {
+    if (versionsRequestVersion !== studyFileVersionsRequestVersion || requestVersion !== studyDetailRequestVersion || version !== renderVersion || routeFromHash(window.location.hash).id !== "study") return;
+    detail.fileMetadata.versions = { status: "error" };
   }
   renderStudyDetailState(studyDetailContext);
 }
@@ -496,6 +534,7 @@ function renderRoute({ focusHeading = false } = {}) {
   studyNotesRequestVersion += 1;
   studyFilesRequestVersion += 1;
   studyFileMetadataRequestVersion += 1;
+  studyFileVersionsRequestVersion += 1;
   if (destination.id === "today") {
     updateRouteContent(destination, destinationView("today", { status: "loading" }), focusHeading);
     void renderToday(destination, renderVersion, focusHeading);

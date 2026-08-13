@@ -8,6 +8,7 @@ import { projectStudySubjectSchedule } from "./study-subject-schedule-projection
 import { projectStudySubjectNotes } from "./study-subject-notes-projection.mjs";
 import { projectStudySubjectFiles } from "./study-subject-files-projection.mjs";
 import { projectStudySubjectFileMetadata } from "./study-subject-file-metadata-projection.mjs";
+import { projectStudySubjectFileVersions } from "./study-subject-file-versions-projection.mjs";
 import { projectTodayQuery } from "./today-projection.mjs";
 
 function statusBadge(tone, symbol, label) {
@@ -154,7 +155,15 @@ function studyFileMetadataView(metadata) {
   if (metadata.status === "missing") return `<section aria-labelledby="study-file-metadata" role="alert"><h3 id="study-file-metadata">File information</h3><p>File information is unavailable.</p>${close}</section>`;
   if (metadata.status === "error") return `<section aria-labelledby="study-file-metadata" role="alert"><h3 id="study-file-metadata">File information</h3><p>File information could not be opened. <button class="primary-action" type="button" data-study-subject-file-metadata-retry>Retry</button></p>${close}</section>`;
   const file = projectStudySubjectFileMetadata(metadata.fileArtifact);
-  return `<section aria-labelledby="study-file-metadata"><h3 id="study-file-metadata">File information</h3><dl><dt>Display name</dt><dd dir="auto">${escaped(file.displayName)}</dd><dt>Original name</dt><dd dir="auto">${escaped(file.originalName)}</dd><dt>Source type</dt><dd dir="auto">${escaped(file.sourceType)}</dd><dt>Archived at</dt><dd>${escaped(String(file.archivedAt))}</dd></dl>${close}</section>`;
+  return `<section aria-labelledby="study-file-metadata"><h3 id="study-file-metadata">File information</h3><dl><dt>Display name</dt><dd dir="auto">${escaped(file.displayName)}</dd><dt>Original name</dt><dd dir="auto">${escaped(file.originalName)}</dd><dt>Source type</dt><dd dir="auto">${escaped(file.sourceType)}</dd><dt>Archived at</dt><dd>${escaped(String(file.archivedAt))}</dd></dl>${studyFileVersionsView(metadata.versions)}${close}</section>`;
+}
+
+function studyFileVersionsView(versions) {
+  if (!versions || versions.status === "loading") return `<section aria-labelledby="study-file-versions"><h4 id="study-file-versions">File versions</h4><p role="status" aria-busy="true">Loading file versionsâ€¦</p></section>`;
+  if (versions.status === "error") return `<section aria-labelledby="study-file-versions" role="alert"><h4 id="study-file-versions">File versions</h4><p>File versions could not be opened. <button class="primary-action" type="button" data-study-subject-file-versions-retry>Retry</button></p></section>`;
+  const projectedVersions = projectStudySubjectFileVersions(versions.versions);
+  if (projectedVersions.length === 0) return `<section aria-labelledby="study-file-versions"><h4 id="study-file-versions">File versions</h4><p>No file versions are available.</p></section>`;
+  return `<section aria-labelledby="study-file-versions"><h4 id="study-file-versions">File versions</h4><ul class="content-list">${projectedVersions.map((version) => `<li><dl><dt>Version</dt><dd>${escaped(String(version.versionNumber))}</dd><dt>Media type</dt><dd>${escaped(String(version.mediaType))}</dd><dt>Byte size</dt><dd>${escaped(String(version.byteSize))}</dd><dt>Original modified at</dt><dd>${escaped(String(version.originalModifiedAt))}</dd></dl></li>`).join("")}</ul></section>`;
 }
 
 function studyView(state = { status: "loading" }) {

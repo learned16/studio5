@@ -225,6 +225,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | P4.5-UX-IMPLEMENTATION-011 | Read-Only Study Subject Notes Projection | `feat/p45-readonly-study-subject-notes` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listNotes({subjectId})` only; inline notes projection with stale-response protection; no detail navigation, mutators, files, or route cutover |
 | P4.5-UX-IMPLEMENTATION-012 | Read-Only Study Subject Files Projection | `feat/p45-readonly-study-subject-files` | Codex | COMPLETE / MERGED | frozen surface-local `searchLibrary({query:"",subjectId,targetKinds:["file-artifact"],limit:500})` only; inline files projection with stale-response protection; no file opening, PDF/viewer, joins, mutators, or route cutover |
 | P4.5-UX-IMPLEMENTATION-013 | Read-Only Study File Metadata Detail | `feat/p45-readonly-study-file-metadata` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen surface-local `getFileArtifact(artifactId)` only; projected file identity/metadata with stale-response protection; no file content, opening, versions, joins, mutators, or route cutover |
+| P4.5-UX-IMPLEMENTATION-014 | Read-Only Study File Versions | `feat/p45-readonly-study-file-versions` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen surface-local `listFileVersions({artifactId})` only; nested ordered version metadata projection with stale-response protection; no file content, opening, download, joins, mutators, or route cutover |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
