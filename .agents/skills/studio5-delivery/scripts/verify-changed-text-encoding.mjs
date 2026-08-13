@@ -8,7 +8,7 @@ const HELP = `Usage: node verify-changed-text-encoding.mjs --base <ref>\n\nValid
 const decoder = new TextDecoder("utf-8", { fatal: true });
 const mojibakePatterns = [
   /\u00e2\u20ac\u00a6/g, // UTF-8 ellipsis decoded as Windows-1252.
-  /\u00e2\u20ac\u2014/g, // UTF-8 em dash decoded as Windows-1252.
+  /\u00e2\u20ac\u201d/g, // UTF-8 em dash decoded as Windows-1252.
   /\u00c3\u00a2\u00e2\u201a\u00ac(?:\u00a6|\u201d|\u2014|\u0153)/g,
   /\ufffd/g,
 ];
@@ -80,11 +80,45 @@ function lineAt(text, offset) {
   return text.slice(0, offset).split("\n").length;
 }
 
+function collectTextDefects(bytes) {
+  const text = decoder.decode(bytes);
+  const defects = [];
+  for (const pattern of mojibakePatterns) {
+    pattern.lastIndex = 0;
+    for (let match = pattern.exec(text); match; match = pattern.exec(text)) {
+      const category = match[0] === "\ufffd" ? "replacement-character" : "mojibake-signature";
+      defects.push({ line: lineAt(text, match.index), category, signature: `${category}:${match[0]}` });
+    }
+  }
+  return defects;
+}
+
+function introducedTextDefects(bytes, baselineBytes) {
+  const defects = collectTextDefects(bytes);
+  if (!baselineBytes) return defects;
+
+  let historical;
+  try {
+    historical = collectTextDefects(baselineBytes);
+  } catch {
+    return defects;
+  }
+  const historicalCounts = new Map();
+  for (const defect of historical) {
+    historicalCounts.set(defect.signature, (historicalCounts.get(defect.signature) ?? 0) + 1);
+  }
+  return defects.filter((defect) => {
+    const remaining = historicalCounts.get(defect.signature) ?? 0;
+    if (!remaining) return true;
+    historicalCounts.set(defect.signature, remaining - 1);
+    return false;
+  });
+}
+
 export function findTextDefects(bytes, baselineBytes = null) {
   if (bytes.includes(0)) return [];
-  let text;
   try {
-    text = decoder.decode(bytes);
+    return introducedTextDefects(bytes, baselineBytes).map(({ line, category }) => ({ line, category }));
   } catch {
     const baseline = new Map();
     for (const sequence of baselineBytes ? invalidByteSequences(baselineBytes) : []) {
@@ -99,14 +133,6 @@ export function findTextDefects(bytes, baselineBytes = null) {
     const introduced = [...observed].some(([signature, count]) => count > (baseline.get(signature) ?? 0));
     return introduced ? [{ line: 1, category: "invalid-utf8" }] : [];
   }
-  const defects = [];
-  for (const pattern of mojibakePatterns) {
-    pattern.lastIndex = 0;
-    for (let match = pattern.exec(text); match; match = pattern.exec(text)) {
-      defects.push({ line: lineAt(text, match.index), category: match[0] === "\ufffd" ? "replacement-character" : "mojibake-signature" });
-    }
-  }
-  return defects;
 }
 
 function currentBytes(filePath, cwd) {
@@ -118,33 +144,38 @@ function baseBytes(base, filePath, cwd) {
   return result.status === 0 ? result.stdout : null;
 }
 
-function addedLines(base, filePath, cwd, untracked) {
-  if (untracked) return decoder.decode(currentBytes(filePath, cwd)).split("\n").map((text, index) => ({ line: index + 1, text }));
-  const diff = git(["diff", "--no-ext-diff", "--unified=0", base, "--", filePath], cwd, "utf8");
-  const lines = [];
-  let nextLine = 0;
-  for (const line of diff.split("\n")) {
-    const header = /^@@ -\d+(?:,\d+)? \+(\d+)/.exec(line);
-    if (header) nextLine = Number(header[1]);
-    else if (line.startsWith("+") && !line.startsWith("+++")) lines.push({ line: nextLine++, text: line.slice(1) });
-    else if (!line.startsWith("-")) nextLine += line && !line.startsWith("@@") ? 1 : 0;
+function baselinePaths(entries, base, cwd) {
+  const paths = new Map();
+  const deleted = entries.filter((entry) => entry.status[0] === "D").map((entry) => entry.paths[0]);
+  for (const entry of entries) {
+    const status = entry.status[0];
+    const currentPath = normalizeRepoPath(entry.paths.at(-1));
+    if (status === "R") paths.set(currentPath, entry.paths[0]);
+    if (status !== "?") continue;
+    const current = currentBytes(currentPath, cwd);
+    const matches = deleted.filter((sourcePath) => {
+      const historical = baseBytes(base, sourcePath, cwd);
+      return historical && Buffer.compare(historical, current) === 0;
+    });
+    if (matches.length === 1) paths.set(currentPath, matches[0]);
   }
-  return lines;
+  return paths;
 }
 
-function defectsForEntry(entry, base, cwd) {
+function defectsForEntry(entry, base, cwd, baselinePath) {
   const status = entry.status[0];
   if (status === "D") return [];
   const filePath = normalizeRepoPath(entry.paths.at(-1));
   const bytes = currentBytes(filePath, cwd);
   if (isBinaryBytes(bytes) || (status !== "?" && isBinaryDiff(base, filePath, cwd))) return [];
-  const baseline = status === "?" || status === "A" ? null : baseBytes(base, filePath, cwd);
+  const baseline = baselinePath ? baseBytes(base, baselinePath, cwd) : status === "?" || status === "A" ? null : baseBytes(base, filePath, cwd);
   const wholeFileDefects = findTextDefects(bytes, baseline);
-  if (wholeFileDefects.some((defect) => defect.category === "invalid-utf8")) {
-    return wholeFileDefects.map((defect) => ({ filePath, ...defect }));
-  }
-  const introducedLines = new Set(addedLines(base, filePath, cwd, status === "?").filter(({ text }) => findTextDefects(Buffer.from(text)).length).map(({ line }) => line));
-  return wholeFileDefects.filter((defect) => introducedLines.has(defect.line)).map((defect) => ({ filePath, ...defect }));
+  return wholeFileDefects.map((defect) => ({ filePath, ...defect }));
+}
+
+function defectsForEntries(entries, base, cwd) {
+  const baselines = baselinePaths(entries, base, cwd);
+  return entries.flatMap((entry) => defectsForEntry(entry, base, cwd, baselines.get(normalizeRepoPath(entry.paths.at(-1)))));
 }
 
 export function main(argv = process.argv.slice(2), cwd = process.cwd()) {
@@ -155,7 +186,7 @@ export function main(argv = process.argv.slice(2), cwd = process.cwd()) {
     if (!options.base) throw new Error("--base is required.");
   } catch (error) { process.stderr.write(`verify-changed-text-encoding: ${error.message}\n${HELP}`); return 2; }
   try {
-    const defects = collectChangedEntries(options.base, cwd).flatMap((entry) => defectsForEntry(entry, options.base, cwd));
+    const defects = defectsForEntries(collectChangedEntries(options.base, cwd), options.base, cwd);
     if (!defects.length) { process.stdout.write("Changed text encoding PASS.\n"); return 0; }
     for (const defect of defects) process.stderr.write(`${defect.filePath}:${defect.line}: ${defect.category}\n`);
     return 1;
