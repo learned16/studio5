@@ -115,7 +115,7 @@ class SmokeMainContent {
       button.dataset = { studySubjectOpen: match[1] };
       return button;
     });
-    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-close]"]) {
+    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-close]"]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -254,6 +254,7 @@ async function verifyBuiltNavigation() {
   const originalListSubjects = AcademicRepository.prototype.listSubjects;
   const originalGetSubject = AcademicRepository.prototype.getSubject;
   const originalListLectures = AcademicRepository.prototype.listLectures;
+  const originalListTasks = AcademicRepository.prototype.listTasks;
   const originalInitialize = AcademicRepository.prototype.initialize;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
@@ -305,6 +306,22 @@ async function verifyBuiltNavigation() {
       startsAt: "2026-09-07T09:00:00+03:00",
       endsAt: "2026-09-07T10:00:00+03:00",
       status: "planned",
+    }]);
+  };
+  const pendingTaskReads = [];
+  let taskReadCount = 0;
+  AcademicRepository.prototype.listTasks = function listTasks(options) {
+    taskReadCount += 1;
+    if (taskReadCount === 2) {
+      const pendingRead = deferredNoteRead(options.subjectId);
+      pendingTaskReads.push(pendingRead);
+      return pendingRead.promise;
+    }
+    return Promise.resolve([{
+      id: `task:${options.subjectId}`,
+      title: '<img src=x onerror="unsafe()"> & Task',
+      dueAt: null,
+      status: "open",
     }]);
   };
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
@@ -397,6 +414,8 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Ready subject");
     await waitForMarkup(harness.mainContent, "2026-09-07T09:00:00+03:00");
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Lecture/);
+    await waitForMarkup(harness.mainContent, "&amp; Task");
+    assert.match(harness.mainContent.innerHTML, /<dd>null<\/dd>/);
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -410,6 +429,14 @@ async function verifyBuiltNavigation() {
     pendingSubjects.shift().resolve({ id: "subject:1", title: "Stale subject", code: "S1" });
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Stale subject/);
+    harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingSubjects.shift().resolve({ id: "subject:1", title: "Task stale subject", code: "S1" });
+    await waitForMarkup(harness.mainContent, "Loading tasks");
+    harness.mainContent.querySelector("[data-study-subject-close]").click();
+    pendingTaskReads.shift().resolve([{ id: "task:stale", title: "Stale task", dueAt: null, status: "open" }]);
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Stale task/);
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -493,6 +520,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.listSubjects = originalListSubjects;
     AcademicRepository.prototype.getSubject = originalGetSubject;
     AcademicRepository.prototype.listLectures = originalListLectures;
+    AcademicRepository.prototype.listTasks = originalListTasks;
     AcademicRepository.prototype.initialize = originalInitialize;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
@@ -532,6 +560,8 @@ try {
     "/study-subject-detail-projection.mjs",
     "/study-subject-lectures-read-facade.mjs",
     "/study-subject-lectures-projection.mjs",
+    "/study-subject-tasks-read-facade.mjs",
+    "/study-subject-tasks-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);
