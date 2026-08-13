@@ -39,6 +39,10 @@ test("actual Windows-1252 em dash mojibake fails while a valid em dash passes", 
 test("replacement character fails", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), `bad ${replacement}\n`); assert.equal(run(cwd), 1); }));
 test("legitimate Latin Unicode passes", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), "François and Ãƒ are valid text\n"); assert.equal(run(cwd), 0); }));
 test("large context does not alter a clean result", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), `${"context\n".repeat(2000)}مرحبا\n`); assert.equal(run(cwd), 0); }));
+test("large clean modified text avoids occurrence comparison", () => withFixture((cwd) => {
+  const baseline = `${"context\n".repeat(12000)}`; writeFileSync(path.join(cwd, "sample.txt"), baseline); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "large baseline"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), `${baseline}valid change\n`); assert.equal(run(cwd), 0);
+}));
 test("unchanged historical mojibake does not block an unrelated changed line", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\nbase\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\nchanged\n`); assert.equal(run(cwd), 0);
@@ -46,6 +50,14 @@ test("unchanged historical mojibake does not block an unrelated changed line", (
 test("unchanged historical mojibake on a modified line remains non-blocking", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake} label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake} renamed label\n`); assert.equal(run(cwd), 0);
+}));
+test("historical mojibake survives a same-line valid prefix shift", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `prefix ${ellipsisMojibake} label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), `longer valid prefix ${ellipsisMojibake} label\n`); assert.equal(run(cwd), 0);
+}));
+test("shifted historical mojibake plus an additional occurrence fails", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `prefix ${ellipsisMojibake} label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), `longer prefix ${ellipsisMojibake} and ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1);
 }));
 test("new mojibake on a modified line fails", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), "clean label\n");
@@ -84,6 +96,14 @@ test("working-tree rename with valid edit preserves historical baseline", () => 
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\nold label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
   renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `old ${ellipsisMojibake}\nnew label\n`); assert.equal(run(cwd), 0);
 }));
+test("working-tree rename with same-line valid edit preserves historical baseline", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake} label\nstable\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `old ${ellipsisMojibake} new label\nstable\n`); assert.equal(run(cwd), 0);
+}));
+test("working-tree rename with same-line valid edit and new defect fails", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake} label\nstable\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
+  renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `old ${ellipsisMojibake} new ${ellipsisMojibake}\nstable\n`); assert.equal(run(cwd), 1);
+}));
 test("working-tree rename with valid edit and new defect fails", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), `old ${ellipsisMojibake}\nold label\n`); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "historical"], { cwd });
   renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `old ${ellipsisMojibake}\nnew ${ellipsisMojibake} label\n`); assert.equal(run(cwd), 1);
@@ -117,4 +137,8 @@ test("relocated identical invalid UTF-8 sequence fails", () => withFixture((cwd)
 test("preserved invalid UTF-8 with valid edit passes", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xc3, 0x0a, 0x61])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
   writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xc3, 0x0a, 0x62])); assert.equal(run(cwd), 0);
+}));
+test("preserved invalid UTF-8 survives a valid prefix shift", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3, 0x0a])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x62, 0x61, 0xc3, 0x0a])); assert.equal(run(cwd), 0);
 }));
