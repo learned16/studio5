@@ -121,7 +121,7 @@ function studyTasksView(tasks) {
 const weekdayLabels = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 function studyScheduleView(schedule) {
-  if (!schedule || schedule.status === "loading") return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><p role="status" aria-busy="true">Loading schedule entriesâ€¦</p></section>`;
+  if (!schedule || schedule.status === "loading") return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><p role="status" aria-busy="true">Loading schedule entries…</p></section>`;
   if (schedule.status === "error") return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><p role="alert">Schedule entries could not be opened. <button class="primary-action" type="button" data-study-subject-schedule-retry>Retry</button></p></section>`;
   const projectedEntries = projectStudySubjectSchedule(schedule.entries);
   if (projectedEntries.length === 0) return `<section aria-labelledby="study-schedule"><h3 id="study-schedule">Schedule entries</h3><p>No schedule entries are available in local academic data.</p></section>`;

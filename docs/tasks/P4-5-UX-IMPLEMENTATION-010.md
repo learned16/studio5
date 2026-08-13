@@ -1,8 +1,8 @@
-# P4.5-UX-IMPLEMENTATION-010 â€” Read-Only Study Subject Schedule Projection
+# P4.5-UX-IMPLEMENTATION-010 — Read-Only Study Subject Schedule Projection
 
 ## Status
 
-`LOCAL IMPLEMENTATION VERIFIED â€” PARENT REVIEW PENDING`
+`LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING`
 
 Base: `origin/develop@30f3084`. Branch: `feat/p45-readonly-study-subject-schedule`.
 

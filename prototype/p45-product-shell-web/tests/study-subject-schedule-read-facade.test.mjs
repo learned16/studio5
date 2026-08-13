@@ -48,7 +48,9 @@ test("Study subject schedule retains Core order, literal fields, and read-only s
   assert.match(ready, /<dd>null<\/dd>/);
   assert.match(ready, /2026-09-01/);
   assert.doesNotMatch(ready, /ignored|active|current|next|relative|timezone|recurrence|overlap|count|rank/i);
-  assert.match(state({ status: "loading" }), /Loading schedule entries/);
+  // Regression: PR #29 emitted mojibake in visible schedule-loading text.
+  assert.match(state({ status: "loading" }), /Loading schedule entries…/u);
+  assert.doesNotMatch(state({ status: "loading" }), /Loading schedule entriesâ€¦/u);
   assert.match(state({ status: "ready", entries: [] }), /No schedule entries are available/);
   assert.match(state({ status: "error" }), /data-study-subject-schedule-retry/);
 });
