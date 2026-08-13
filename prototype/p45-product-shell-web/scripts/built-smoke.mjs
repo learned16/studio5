@@ -115,7 +115,7 @@ class SmokeMainContent {
       button.dataset = { studySubjectOpen: match[1] };
       return button;
     });
-    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-close]"]) {
+    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-notes-retry]", "[data-study-subject-close]"]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -256,6 +256,7 @@ async function verifyBuiltNavigation() {
   const originalListLectures = AcademicRepository.prototype.listLectures;
   const originalListTasks = AcademicRepository.prototype.listTasks;
   const originalListScheduleEntries = AcademicRepository.prototype.listScheduleEntries;
+  const originalListNotes = AcademicRepository.prototype.listNotes;
   const originalInitialize = AcademicRepository.prototype.initialize;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
@@ -343,6 +344,25 @@ async function verifyBuiltNavigation() {
     }
     const pendingRead = deferredNoteRead(options.subjectId);
     pendingScheduleReads.push(pendingRead);
+    return pendingRead.promise;
+  };
+  const pendingStudyNoteReads = [];
+  const studyNoteCallArguments = [];
+  let studyNoteReadCount = 0;
+  AcademicRepository.prototype.listNotes = function listNotes(options) {
+    studyNoteCallArguments.push(structuredClone(options));
+    studyNoteReadCount += 1;
+    if (studyNoteReadCount === 1) return Promise.reject(new Error("controlled notes read failure"));
+    if (studyNoteReadCount === 2) {
+      return Promise.resolve([{
+        id: "note:1",
+        title: '<img src=x onerror="unsafe()"> & Note',
+        body: '<script>alert("unsafe")</script> & Body',
+        artifactId: "file-artifact:hidden",
+      }]);
+    }
+    const pendingRead = deferredNoteRead(options.subjectId);
+    pendingStudyNoteReads.push(pendingRead);
     return pendingRead.promise;
   };
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
@@ -440,6 +460,12 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Schedule entries could not be opened");
     harness.mainContent.querySelector("[data-study-subject-schedule-retry]").click();
     await waitForMarkup(harness.mainContent, "&amp; Room");
+    await waitForMarkup(harness.mainContent, "Notes could not be opened");
+    harness.mainContent.querySelector("[data-study-subject-notes-retry]").click();
+    await waitForMarkup(harness.mainContent, "&amp; Body");
+    assert.deepEqual(studyNoteCallArguments.slice(0, 2), [{ subjectId: "subject:1" }, { subjectId: "subject:1" }]);
+    assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;script&gt;alert\(&quot;unsafe&quot;\)&lt;\/script&gt; &amp; Body/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /artifactId/);
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Room/);
     assert.match(harness.mainContent.innerHTML, /<dd>null<\/dd>/);
     harness.mainContent.querySelector("[data-study-subject-close]").click();
@@ -462,9 +488,11 @@ async function verifyBuiltNavigation() {
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     pendingTaskReads.shift().resolve([{ id: "task:stale", title: "Stale task", dueAt: null, status: "open" }]);
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:stale", dayOfWeek: 1, startTime: "09:00", endTime: "10:00", effectiveFrom: null, effectiveUntil: null, location: "Closed stale schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:stale", title: "Closed stale note", body: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Stale task/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale schedule/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale note/);
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -573,6 +601,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.listLectures = originalListLectures;
     AcademicRepository.prototype.listTasks = originalListTasks;
     AcademicRepository.prototype.listScheduleEntries = originalListScheduleEntries;
+    AcademicRepository.prototype.listNotes = originalListNotes;
     AcademicRepository.prototype.initialize = originalInitialize;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
@@ -616,6 +645,8 @@ try {
     "/study-subject-tasks-projection.mjs",
     "/study-subject-schedule-read-facade.mjs",
     "/study-subject-schedule-projection.mjs",
+    "/study-subject-notes-read-facade.mjs",
+    "/study-subject-notes-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);

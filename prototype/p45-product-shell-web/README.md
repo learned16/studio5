@@ -13,7 +13,9 @@ stored by P3 or production on a different origin. A later same-origin hosting
 slice is required before those surfaces can share the same canonical records.
 This surface does not change Core data contracts, Ink, Backup, Drawing Coach,
 the production route, or Phase 5 behavior. It does not implement PDF opening,
-a PDF viewer, file-byte access, or Notes.
+a PDF viewer, file-byte access, or Notes creation/editing. Study shows a
+subject's canonical notes as an inline read-only projection without opening
+Library Note detail.
 
 ## Run locally
 

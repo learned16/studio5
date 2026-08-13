@@ -222,6 +222,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | P4.5-UX-IMPLEMENTATION-008 | Read-Only Study Subject Lectures Projection | `feat/p45-readonly-study-subject-lectures` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listLectures({subjectId})` only; inline lecture projection with stale-response protection; no `getLecture`, tasks, mutators, or route cutover |
 | P4.5-UX-IMPLEMENTATION-009 | Read-Only Study Subject Tasks Projection | `feat/p45-readonly-study-subject-tasks` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listTasks({subjectId})` only; inline task projection with stale-response protection; no lecture detail, mutators, or route cutover |
 | P4.5-UX-IMPLEMENTATION-010 | Read-Only Study Subject Schedule Projection | `feat/p45-readonly-study-subject-schedule` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listScheduleEntries({subjectId})` only; inline schedule projection with stale-response protection; no active/current/next interpretation, joins, mutators, or route cutover |
+| P4.5-UX-IMPLEMENTATION-011 | Read-Only Study Subject Notes Projection | `feat/p45-readonly-study-subject-notes` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen `listNotes({subjectId})` only; inline notes projection with stale-response protection; no detail navigation, mutators, files, or route cutover |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
