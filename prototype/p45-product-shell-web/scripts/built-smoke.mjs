@@ -413,6 +413,12 @@ async function verifyBuiltNavigation() {
         }]);
       }
       if (studyFileReadCount === 4) return Promise.resolve([]);
+      if (studyFileReadCount === 7) return Promise.resolve([{
+        targetKind: "file-artifact",
+        targetId: "file-artifact:metadata-route",
+        title: "Metadata route file",
+        subtitle: null,
+      }]);
       const pendingRead = deferredNoteRead(options.subjectId);
       pendingStudyFileReads.push(pendingRead);
       return pendingRead.promise;
@@ -619,19 +625,23 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Switch current schedule");
     await waitForMarkup(harness.mainContent, "Switch current note");
     await waitForMarkup(harness.mainContent, "Switch current file");
-    harness.mainContent.querySelector("[data-study-subject-close]").click();
+    harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading file information");
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
-    pendingSubjects.shift().resolve({ id: "subject:1", title: "Route stale subject", code: "S1" });
-    await waitForMarkup(harness.mainContent, "Loading schedule entries");
-    harness.navigate("#/library");
-    pendingScheduleReads.shift().resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route stale schedule" }]);
-    pendingStudyNoteReads.shift().resolve([{ id: "note:route", title: "Route stale note", body: "stale" }]);
-    pendingStudyFileReads.shift().resolve([{ targetId: "file-artifact:route", title: "Route stale file", subtitle: "stale" }]);
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:switched-current", displayName: "Subject switched stale metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
-    assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale schedule/);
-    assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale note/);
-    assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale file/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Subject switched stale metadata/);
+    pendingSubjects.shift().resolve({ id: "subject:1", title: "Metadata route subject", code: "S1" });
+    await waitForMarkup(harness.mainContent, "Metadata route subject");
+    await waitForMarkup(harness.mainContent, "Metadata route file");
+    harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading file information");
+    harness.navigate("#/library");
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:metadata-route", displayName: "Route changed stale metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
+    await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route changed stale metadata/);
     await waitForMarkup(harness.mainContent, "Library could not be opened");
     harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
