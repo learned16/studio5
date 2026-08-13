@@ -419,6 +419,12 @@ async function verifyBuiltNavigation() {
         title: "Metadata route file",
         subtitle: null,
       }]);
+      if (studyFileReadCount === 8) return Promise.resolve([{
+        targetKind: "file-artifact",
+        targetId: "file-artifact:route-current",
+        title: "Route current file",
+        subtitle: null,
+      }]);
       const pendingRead = deferredNoteRead(options.subjectId);
       pendingStudyFileReads.push(pendingRead);
       return pendingRead.promise;
@@ -642,9 +648,12 @@ async function verifyBuiltNavigation() {
     pendingSubjects.shift().resolve({ id: "subject:2", title: "Route pending subject", code: "S2" });
     await waitForMarkup(harness.mainContent, "Route pending subject");
     await waitForMarkup(harness.mainContent, "Loading schedule entries");
+    await waitForMarkup(harness.mainContent, "Route current file");
+    harness.mainContent.querySelectorAll("[data-study-subject-file-metadata-open]")[0].click();
+    await waitForMarkup(harness.mainContent, "Loading file information");
     harness.navigate("#/library");
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
-    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:metadata-route", displayName: "Route changed stale metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
+    pendingFileMetadataReads.shift().resolve({ id: "file-artifact:route-current", displayName: "Route changed stale metadata", originalName: "stale", sourceType: "upload", archivedAt: null });
     for (const pendingRead of pendingScheduleReads.splice(0)) {
       pendingRead.resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route changed stale schedule" }]);
     }
