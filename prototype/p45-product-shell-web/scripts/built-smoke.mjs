@@ -115,7 +115,7 @@ class SmokeMainContent {
       button.dataset = { studySubjectOpen: match[1] };
       return button;
     });
-    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-close]"]) {
+    for (const selector of ["[data-library-note-retry]", "[data-library-note-close]", "[data-study-subject-retry]", "[data-study-subject-tasks-retry]", "[data-study-subject-schedule-retry]", "[data-study-subject-notes-retry]", "[data-study-subject-close]"]) {
       const attribute = selector.slice(1, -1);
       if (markup.includes(attribute)) this.retryButtons.set(selector, new SmokeButton());
     }
@@ -256,6 +256,7 @@ async function verifyBuiltNavigation() {
   const originalListLectures = AcademicRepository.prototype.listLectures;
   const originalListTasks = AcademicRepository.prototype.listTasks;
   const originalListScheduleEntries = AcademicRepository.prototype.listScheduleEntries;
+  const originalListNotes = AcademicRepository.prototype.listNotes;
   const originalInitialize = AcademicRepository.prototype.initialize;
   const originalDateNow = Date.now;
   const originalTimezoneOffset = Date.prototype.getTimezoneOffset;
@@ -343,6 +344,26 @@ async function verifyBuiltNavigation() {
     }
     const pendingRead = deferredNoteRead(options.subjectId);
     pendingScheduleReads.push(pendingRead);
+    return pendingRead.promise;
+  };
+  const pendingStudyNoteReads = [];
+  const studyNoteCallArguments = [];
+  let studyNoteReadCount = 0;
+  AcademicRepository.prototype.listNotes = function listNotes(options) {
+    studyNoteCallArguments.push(structuredClone(options));
+    studyNoteReadCount += 1;
+    if (studyNoteReadCount === 1) return Promise.reject(new Error("controlled notes read failure"));
+    if (studyNoteReadCount === 2) {
+      return Promise.resolve([{
+        id: "note:1",
+        title: '<img src=x onerror="unsafe()"> & Note',
+        body: '<script>alert("unsafe")</script> & Body',
+        artifactId: "file-artifact:hidden",
+      }]);
+    }
+    if (studyNoteReadCount === 4) return Promise.resolve([]);
+    const pendingRead = deferredNoteRead(options.subjectId);
+    pendingStudyNoteReads.push(pendingRead);
     return pendingRead.promise;
   };
   AcademicRepository.prototype.searchLibrary = function searchLibrary(options) {
@@ -440,6 +461,12 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Schedule entries could not be opened");
     harness.mainContent.querySelector("[data-study-subject-schedule-retry]").click();
     await waitForMarkup(harness.mainContent, "&amp; Room");
+    await waitForMarkup(harness.mainContent, "Notes could not be opened");
+    harness.mainContent.querySelector("[data-study-subject-notes-retry]").click();
+    await waitForMarkup(harness.mainContent, "&amp; Body");
+    assert.deepEqual(studyNoteCallArguments.slice(0, 2), [{ subjectId: "subject:1" }, { subjectId: "subject:1" }]);
+    assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;script&gt;alert\(&quot;unsafe&quot;\)&lt;\/script&gt; &amp; Body/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /artifactId/);
     assert.match(harness.mainContent.innerHTML, /dir="auto">&lt;img src=x onerror=&quot;unsafe\(\)&quot;&gt; &amp; Room/);
     assert.match(harness.mainContent.innerHTML, /<dd>null<\/dd>/);
     harness.mainContent.querySelector("[data-study-subject-close]").click();
@@ -462,9 +489,11 @@ async function verifyBuiltNavigation() {
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     pendingTaskReads.shift().resolve([{ id: "task:stale", title: "Stale task", dueAt: null, status: "open" }]);
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:stale", dayOfWeek: 1, startTime: "09:00", endTime: "10:00", effectiveFrom: null, effectiveUntil: null, location: "Closed stale schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:stale", title: "Closed stale note", body: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Stale task/);
     assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale schedule/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Closed stale note/);
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[1].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -475,6 +504,7 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Current subject");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:current", dayOfWeek: 2, startTime: "11:00", endTime: "12:00", effectiveFrom: null, effectiveUntil: null, location: "Current subject schedule" }]);
     await waitForMarkup(harness.mainContent, "Current subject schedule");
+    await waitForMarkup(harness.mainContent, "No notes are available");
     for (const navigation of harness.navigations) {
       const studyLinks = navigation.links.filter(
         (link) => link.attributes.get("aria-current") === "page",
@@ -491,10 +521,14 @@ async function verifyBuiltNavigation() {
     pendingSubjects.shift().resolve({ id: "subject:2", title: "Switch current subject", code: "S2" });
     await waitForMarkup(harness.mainContent, "Switch current subject");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched", dayOfWeek: 3, startTime: "13:00", endTime: "14:00", effectiveFrom: null, effectiveUntil: null, location: "Switched stale schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:switched", title: "Switched stale note", body: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale schedule/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Switched stale note/);
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:switched-current", dayOfWeek: 4, startTime: "15:00", endTime: "16:00", effectiveFrom: null, effectiveUntil: null, location: "Switch current schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:switched-current", title: "Switch current note", body: "current" }]);
     await waitForMarkup(harness.mainContent, "Switch current schedule");
+    await waitForMarkup(harness.mainContent, "Switch current note");
     harness.mainContent.querySelector("[data-study-subject-close]").click();
     harness.mainContent.querySelectorAll("[data-study-subject-open]")[0].click();
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
@@ -502,8 +536,10 @@ async function verifyBuiltNavigation() {
     await waitForMarkup(harness.mainContent, "Loading schedule entries");
     harness.navigate("#/library");
     pendingScheduleReads.shift().resolve([{ id: "schedule-entry:route", dayOfWeek: 5, startTime: "17:00", endTime: "18:00", effectiveFrom: null, effectiveUntil: null, location: "Route stale schedule" }]);
+    pendingStudyNoteReads.shift().resolve([{ id: "note:route", title: "Route stale note", body: "stale" }]);
     await new Promise((resolveWaiting) => setTimeout(resolveWaiting, 0));
     assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale schedule/);
+    assert.doesNotMatch(harness.mainContent.innerHTML, /Route stale note/);
     await waitForMarkup(harness.mainContent, "Library could not be opened");
     harness.mainContent.querySelector("[data-library-search]").submit("second");
     await waitForMarkup(harness.mainContent, "Second canonical result");
@@ -573,6 +609,7 @@ async function verifyBuiltNavigation() {
     AcademicRepository.prototype.listLectures = originalListLectures;
     AcademicRepository.prototype.listTasks = originalListTasks;
     AcademicRepository.prototype.listScheduleEntries = originalListScheduleEntries;
+    AcademicRepository.prototype.listNotes = originalListNotes;
     AcademicRepository.prototype.initialize = originalInitialize;
     Date.now = originalDateNow;
     Date.prototype.getTimezoneOffset = originalTimezoneOffset;
@@ -616,6 +653,8 @@ try {
     "/study-subject-tasks-projection.mjs",
     "/study-subject-schedule-read-facade.mjs",
     "/study-subject-schedule-projection.mjs",
+    "/study-subject-notes-read-facade.mjs",
+    "/study-subject-notes-projection.mjs",
     "/views.mjs",
   ]) {
     const response = await fetch(`${origin}${path}`);
