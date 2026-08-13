@@ -37,6 +37,7 @@ test("unchanged historical mojibake does not block an unrelated changed line", (
 }));
 test("deleted file passes", () => withFixture((cwd) => { rmSync(path.join(cwd, "sample.txt")); assert.equal(run(cwd), 0); }));
 test("binary content is skipped", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0, 0xff])); assert.equal(run(cwd), 0); }));
+test("NUL-free JPEG binary content is skipped", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xff, 0xd8, 0xff, 0xc3])); assert.equal(run(cwd), 0); }));
 test("intentional fixture construction catches malformed data without a bypass", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), `fixture ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1); }));
 test("failure evidence names repository-relative path, line, and category", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), `ok\nbad ${ellipsisMojibake}\n`); const writes = []; const original = process.stderr.write; process.stderr.write = (text) => { writes.push(String(text)); return true; };
@@ -45,7 +46,12 @@ test("failure evidence names repository-relative path, line, and category", () =
 test("added and modified files are scanned", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), "modified\n"); writeFileSync(path.join(cwd, "added.txt"), `bad ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1); }));
 test("renamed text files are scanned", () => withFixture((cwd) => { renameSync(path.join(cwd, "sample.txt"), path.join(cwd, "renamed.txt")); writeFileSync(path.join(cwd, "renamed.txt"), `bad ${ellipsisMojibake}\n`); assert.equal(run(cwd), 1); }));
 test("new invalid UTF-8 bytes fail deterministically", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3, 0x28])); assert.equal(run(cwd), 1); }));
+test("overlong UTF-8 sequences fail deterministically", () => withFixture((cwd) => { writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0xe0, 0x80, 0x80])); assert.equal(run(cwd), 1); }));
 test("a different invalid byte is introduced despite an invalid baseline", () => withFixture((cwd) => {
   writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
   writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc2])); assert.equal(run(cwd), 1);
+}));
+test("an additional identical invalid sequence exceeds the baseline count", () => withFixture((cwd) => {
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3])); execFileSync("git", ["add", "."], { cwd }); execFileSync("git", ["commit", "-qm", "invalid baseline"], { cwd });
+  writeFileSync(path.join(cwd, "sample.txt"), Buffer.from([0x61, 0xc3, 0x62, 0xc3])); assert.equal(run(cwd), 1);
 }));

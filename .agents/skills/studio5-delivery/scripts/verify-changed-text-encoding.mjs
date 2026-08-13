@@ -38,14 +38,42 @@ function invalidByteSequences(bytes) {
   const sequences = [];
   for (let index = 0; index < bytes.length;) {
     const first = bytes[index];
-    const continuation = (offset) => index + offset < bytes.length && (bytes[index + offset] & 0xc0) === 0x80;
-    const length = first <= 0x7f ? 1 : first >= 0xc2 && first <= 0xdf && continuation(1) ? 2
-      : first >= 0xe0 && first <= 0xef && continuation(1) && continuation(2) ? 3
-        : first >= 0xf0 && first <= 0xf4 && continuation(1) && continuation(2) && continuation(3) ? 4 : 0;
-    if (!length) sequences.push(Buffer.from([first]));
-    index += length || 1;
+    const continuation = (offset) => index + offset < bytes.length
+      && bytes[index + offset] >= 0x80 && bytes[index + offset] <= 0xbf;
+    const expectedLength = first >= 0xc2 && first <= 0xdf ? 2
+      : first >= 0xe0 && first <= 0xef ? 3
+        : first >= 0xf0 && first <= 0xf4 ? 4 : 0;
+    const valid = first <= 0x7f || (expectedLength === 2 && continuation(1))
+      || (expectedLength === 3 && continuation(1) && continuation(2)
+        && !(first === 0xe0 && bytes[index + 1] < 0xa0)
+        && !(first === 0xed && bytes[index + 1] > 0x9f))
+      || (expectedLength === 4 && continuation(1) && continuation(2) && continuation(3)
+        && !(first === 0xf0 && bytes[index + 1] < 0x90)
+        && !(first === 0xf4 && bytes[index + 1] > 0x8f));
+    if (valid) index += expectedLength || 1;
+    else {
+      const length = expectedLength || 1;
+      sequences.push(bytes.subarray(index, Math.min(bytes.length, index + length)));
+      index += length;
+    }
   }
   return sequences;
+}
+
+function hasPrefix(bytes, signature) {
+  return signature.every((byte, index) => bytes[index] === byte);
+}
+
+function isBinaryBytes(bytes) {
+  return bytes.includes(0)
+    || hasPrefix(bytes, [0xff, 0xd8, 0xff])
+    || hasPrefix(bytes, [0x89, 0x50, 0x4e, 0x47]);
+}
+
+function isBinaryDiff(base, filePath, cwd) {
+  return git(["diff", "--numstat", "--no-ext-diff", base, "--", filePath], cwd, "utf8")
+    .split("\n")
+    .some((line) => line.startsWith("-\t-\t"));
 }
 
 function lineAt(text, offset) {
@@ -58,11 +86,17 @@ export function findTextDefects(bytes, baselineBytes = null) {
   try {
     text = decoder.decode(bytes);
   } catch {
-    const baseline = new Set(baselineBytes
-      ? invalidByteSequences(baselineBytes).map((sequence) => sequence.toString("hex"))
-      : []);
-    const introduced = invalidByteSequences(bytes)
-      .some((sequence) => !baseline.has(sequence.toString("hex")));
+    const baseline = new Map();
+    for (const sequence of baselineBytes ? invalidByteSequences(baselineBytes) : []) {
+      const signature = sequence.toString("hex");
+      baseline.set(signature, (baseline.get(signature) ?? 0) + 1);
+    }
+    const observed = new Map();
+    for (const sequence of invalidByteSequences(bytes)) {
+      const signature = sequence.toString("hex");
+      observed.set(signature, (observed.get(signature) ?? 0) + 1);
+    }
+    const introduced = [...observed].some(([signature, count]) => count > (baseline.get(signature) ?? 0));
     return introduced ? [{ line: 1, category: "invalid-utf8" }] : [];
   }
   const defects = [];
@@ -103,9 +137,10 @@ function defectsForEntry(entry, base, cwd) {
   if (status === "D") return [];
   const filePath = normalizeRepoPath(entry.paths.at(-1));
   const bytes = currentBytes(filePath, cwd);
+  if (isBinaryBytes(bytes) || (status !== "?" && isBinaryDiff(base, filePath, cwd))) return [];
   const baseline = status === "?" || status === "A" ? null : baseBytes(base, filePath, cwd);
   const wholeFileDefects = findTextDefects(bytes, baseline);
-  if (wholeFileDefects.some((defect) => defect.category === "invalid-utf8") || bytes.includes(0)) {
+  if (wholeFileDefects.some((defect) => defect.category === "invalid-utf8")) {
     return wholeFileDefects.map((defect) => ({ filePath, ...defect }));
   }
   const introducedLines = new Set(addedLines(base, filePath, cwd, status === "?").filter(({ text }) => findTextDefects(Buffer.from(text)).length).map(({ line }) => line));
