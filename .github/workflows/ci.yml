@@ -50,6 +50,23 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  p45-product-shell-web:
+    name: P4.5 Product Shell Web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototype/p45-product-shell-web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run smoke
+
   lecture-capture-web:
     name: P3 Lecture Capture Web
     runs-on: ubuntu-latest

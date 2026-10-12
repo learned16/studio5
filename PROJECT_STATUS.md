@@ -23,11 +23,12 @@ progress snapshots where they conflict.
   `454ad9d`. `P4.5-UX-IMPLEMENTATION-010` is `IN PROGRESS`: an isolated
   read-only Study subject-schedule projection. Ink Batch 3 remains deferred and
   Phase 5 remains blocked.
-- `.github/workflows/ci.yml` currently runs Core, P0, P3, and Worker checks;
-  it has no independent P4.5 job. This is a material coverage finding, not a
-  claim that the workflow was changed.
+- `.github/workflows/ci.yml` previously ran only Core, P0, P3, and Worker
+  checks. `OPS-QUALITY-CI-P45-001` adds an independent `P4.5 Product Shell Web`
+  job (lint, typecheck, tests, build, built smoke); it awaits PR CI evidence and
+  the owner merge gate.
 - PRs #29, #30, and #33 are merged encoding repairs. `OPS-QUALITY-UTF8-001`
-  is the active bounded recurring-defect prevention task; the Automation
+  merged into `develop` as PR #34 (`5547c5f`); the Automation
   Optimization Freeze remains active and, after this task merges, routing
   returns to the eligible Phase 4.5 product path.
 
@@ -230,6 +231,7 @@ Phase 4 مكتملة وفق أدلة Automated/CI ودليل المالك على
 | P4.5-UX-IMPLEMENTATION-012 | Read-Only Study Subject Files Projection | `feat/p45-readonly-study-subject-files` | Codex | COMPLETE / MERGED | frozen surface-local `searchLibrary({query:"",subjectId,targetKinds:["file-artifact"],limit:500})` only; inline files projection with stale-response protection; no file opening, PDF/viewer, joins, mutators, or route cutover |
 | P4.5-UX-IMPLEMENTATION-013 | Read-Only Study File Metadata Detail | `feat/p45-readonly-study-file-metadata` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen surface-local `getFileArtifact(artifactId)` only; projected file identity/metadata with stale-response protection; no file content, opening, versions, joins, mutators, or route cutover |
 | P4.5-UX-IMPLEMENTATION-014 | Read-Only Study File Versions | `feat/p45-readonly-study-file-versions` | Codex | LOCAL IMPLEMENTATION VERIFIED — PARENT REVIEW PENDING | frozen surface-local `listFileVersions({artifactId})` only; nested ordered version metadata projection with stale-response protection; no file content, opening, download, joins, mutators, or route cutover |
+| OPS-QUALITY-CI-P45-001 | P4.5 Product Shell CI coverage | `claude/zen-bell-oqcqtr` | Claude | IMPLEMENTED — LOCAL 50/50 + BUILD + SMOKE PASS / PR CI PENDING | `.github/workflows/ci.yml` only; no product, Core, contract, or schema change |
 
 ### نتيجة P2-CORE-001 المطلوبة
 
