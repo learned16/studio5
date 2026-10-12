@@ -1,0 +1,23 @@
+{
+  "name": "Laptop Remote",
+  "short_name": "Laptop",
+  "description": "Control your laptop from the phone or iPad — video, keyboard, mouse.",
+  "start_url": "/remote/",
+  "scope": "/remote/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#15181e",
+  "theme_color": "#15181e",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

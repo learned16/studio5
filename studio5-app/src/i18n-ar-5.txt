@@ -248,3 +248,11 @@ updates itself	يتحدث تلقائياً
 Studio5 updated — reloading	تحدّث Studio5 — يعيد التحميل
 The laptop already has the latest version	اللابتوب عنده آخر نسخة
 Phone keyboard	كيبورد الموبايل
+Best	أعلى جودة
+Balanced	متوازن
+Light	خفيف
+Keyboard	الكيبورد
+Touchpad	لوحة اللمس
+Add this app to the Home Screen for full screen	أضف التطبيق للشاشة الرئيسية حتى يصير ملء الشاشة
+No video yet — using pictures. Make sure Chrome or Edge is installed on the laptop.	ماكو فيديو بعد — رجعنا للصور. تأكد Chrome أو Edge منصّب على اللابتوب.
+Video link failed on this network — using pictures	رابط الفيديو ما اشتغل على هالشبكة — رجعنا للصور

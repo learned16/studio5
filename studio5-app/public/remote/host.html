@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio5 video link</title>
+<style>body{margin:0;font:13px system-ui,sans-serif;background:#15181e;color:#e5e8ee;padding:10px}b{color:#86a8ff}</style>
+</head><body>
+<b>Studio5 video link</b>
+<div id="st">Starting…</div>
+<script>
+/* Runs on the laptop, opened by the Studio5 Companion. Captures the screen with the laptop's own video encoder
+   and sends it to the paired phone over WebRTC. Set-up messages and input go through the Companion on 127.0.0.1. */
+"use strict";
+const P = new URLSearchParams(location.hash.slice(1)), BASE = `http://127.0.0.1:${P.get("port")}`, K = P.get("k");
+const st = (t) => { document.getElementById("st").textContent = t; post("/log", { msg: t }); };
+const post = (path, body) => fetch(`${BASE}${path}?k=${K}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).catch(() => {});
+let pc = null, stream = null, cfg = null, inq = [], busy = false;
+const QUALITY = { high: 16e6, balanced: 8e6, low: 3e6 };
+async function flushInput() { if (busy || !inq.length) return; busy = true; const batch = inq.splice(0); await post("/input", batch); busy = false; flushInput(); }
+async function start(c) {
+  cfg = c; stop();
+  try {
+    if (!stream || !stream.active) stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: c.fps, max: c.fps }, width: { max: c.maxWidth }, cursor: "always" }, audio: false, selfBrowserSurface: "exclude", surfaceSwitching: "exclude", monitorTypeSurfaces: "include" });
+  } catch (e) { st("Screen capture refused: " + e.message); post("/signal", { error: "capture: " + e.message }); return; }
+  const track = stream.getVideoTracks()[0]; track.contentHint = c.quality === "high" ? "motion" : "detail";
+  pc = new RTCPeerConnection({ iceServers: [{ urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"] }] });
+  const tr = pc.addTransceiver(track, { direction: "sendonly", streams: [stream] });
+  const caps = RTCRtpSender.getCapabilities("video").codecs; // H.264 first: hardware encode here, hardware decode on iPad/iPhone
+  tr.setCodecPreferences([...caps.filter((x) => /h264/i.test(x.mimeType)), ...caps.filter((x) => !/h264/i.test(x.mimeType))]);
+  const dc = pc.createDataChannel("input", { ordered: true });
+  dc.onmessage = (e) => { try { inq.push(...[].concat(JSON.parse(e.data))); flushInput(); } catch {} };
+  pc.onicecandidate = (e) => { if (e.candidate) post("/signal", { candidate: e.candidate.toJSON() }); };
+  pc.onconnectionstatechange = () => st("Video link: " + pc.connectionState);
+  const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+  const p = tr.sender.getParameters(); p.degradationPreference = c.quality === "low" ? "maintain-framerate" : "balanced"; p.encodings = (p.encodings && p.encodings.length ? p.encodings : [{}]).map((x) => ({ ...x, maxBitrate: QUALITY[c.quality] || QUALITY.high, maxFramerate: c.fps }));
+  try { await tr.sender.setParameters(p); } catch {}
+  post("/signal", { sdp: pc.localDescription.toJSON() });
+  st("Waiting for the phone…");
+}
+function stop() { if (pc) { try { pc.close(); } catch {} pc = null; } }
+async function onSignal(d) {
+  if (!pc) return;
+  if (d.sdp) await pc.setRemoteDescription(d.sdp);
+  else if (d.candidate) try { await pc.addIceCandidate(d.candidate); } catch {}
+  else if (d.quality && cfg) { const tr = pc.getSenders()[0]; const p = tr.getParameters(); p.encodings = p.encodings.map((x) => ({ ...x, maxBitrate: QUALITY[d.quality] || QUALITY.high })); tr.setParameters(p).catch(() => {}); }
+}
+const es = new EventSource(`${BASE}/events?k=${K}`);
+es.onmessage = (e) => { const m = JSON.parse(e.data); if (m.t === "start") start(m); else if (m.t === "signal") onSignal(m.data); else if (m.t === "stop") { stop(); st("Paused"); } };
+es.onerror = () => { document.getElementById("st").textContent = "Companion not reachable"; };
+</script>
+</body></html>

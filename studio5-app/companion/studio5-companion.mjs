@@ -10,9 +10,10 @@ import { fileURLToPath } from "node:url";
 import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, statSync, appendFileSync, createReadStream, renameSync } from "node:fs";
 import { join, resolve, relative, extname, basename, isAbsolute } from "node:path";
 import os from "node:os";
+import http from "node:http";
 import readline from "node:readline";
 
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf("--" + k); return i >= 0 ? (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true) : d; };
 const IS_WIN = process.platform === "win32";
@@ -91,8 +92,10 @@ class NutDriver {
       case "moveabs": await M.setPosition(P(a.x | 0, a.y | 0)); return;
       case "movefrac": { const [sw, sh] = await this.size(); await M.setPosition(P(Math.round(Math.min(Math.max(a.fx, 0), 1) * (sw - 1)), Math.round(Math.min(Math.max(a.fy, 0), 1) * (sh - 1)))); return; }
       case "click": { const b = this.btn(a.b); if (a.dbl) await M.doubleClick(b); else await M.click(b); return; }
-      case "down": await M.pressButton(this.n.Button.LEFT); return;
-      case "up": await M.releaseButton(this.n.Button.LEFT); return;
+      case "down": await M.pressButton(this.btn(a.b)); return;
+      case "up": await M.releaseButton(this.btn(a.b)); return;
+      case "kdown": await K.pressKey(this.keyOf(a.key)); return;
+      case "kup": await K.releaseKey(this.keyOf(a.key)); return;
       case "wheel": { const d = a.d | 0; if (d >= 0) await M.scrollDown(d); else await M.scrollUp(-d); return; }
       case "hwheel": { const d = a.d | 0; if (d >= 0) await M.scrollRight(d); else await M.scrollLeft(-d); return; }
       case "keys": { const keys = a.keys.map((n) => this.keyOf(n)); await K.pressKey(...keys); await K.releaseKey(...keys.reverse()); return; }
@@ -153,12 +156,14 @@ const ACTIONS = {
   "mouse.click": async (b) => drv.call("click", { b: b.button || "left", dbl: !!b.double }),
   "mouse.toFrac": async (b) => drv.call("movefrac", { fx: +b.fx, fy: +b.fy }),
   "mouse.clickAt": async (b) => { await drv.call("movefrac", { fx: +b.fx, fy: +b.fy }); return drv.call("click", { b: b.button || "left", dbl: !!b.double }); },
-  "mouse.down": async () => drv.call("down"), "mouse.up": async () => drv.call("up"),
+  "mouse.down": async (b) => drv.call("down", { b: b.button || "left" }), "mouse.up": async (b) => drv.call("up", { b: b.button || "left" }),
+  "key.down": async (b) => drv.call("kdown", { key: String(b.key) }), "key.up": async (b) => drv.call("kup", { key: String(b.key) }),
+  "rtc.start": async (b) => rtcStart(b), "rtc.signal": async (b) => { hostPush({ t: "signal", data: b.data }); return true; }, "rtc.stop": async () => { hostPush({ t: "stop" }); return true; },
   "mouse.scroll": async (b) => drv.call(b.horizontal ? "hwheel" : "wheel", { d: Math.round(b.dy) }),
   "key.combo": async (b) => drv.call("keys", { keys: b.keys }),
   "key.type": async (b) => drv.call("type", { text: String(b.text).slice(0, 5000) }),
   "screen.shot": async (b) => drv.call("shot", { w: Math.min(b.width || 1280, 2560), q: Math.min(Math.max(b.quality || 60, 20), 90) }),
-  "screen.stream": async (b) => { if (!b.on) { stream.until = 0; return { on: false }; } stream.w = Math.min(Math.max(b.width | 0 || 1024, 320), 2560); stream.q = Math.min(Math.max(b.quality | 0 || 50, 20), 85); stream.until = Date.now() + 9000; if (!stream.running) runStream(); return { on: true }; },
+  "screen.stream": async (b) => { if (!b.on) { stream.until = 0; return { on: false }; } stream.w = Math.min(Math.max(b.width | 0 || 960, 320), 1280); stream.q = Math.min(Math.max(b.quality | 0 || 50, 20), 85); stream.until = Date.now() + 9000; if (!stream.running) runStream(); return { on: true }; },
   "screen.ack": async (b) => { stream.acked = Math.max(stream.acked, b.seq | 0); },
   "sys.update": async () => checkUpdate(true),
   "clip.get": async () => drv.call("clipget"), "clip.set": async (b) => drv.call("clipset", { text: String(b.text).slice(0, 100000) }),
@@ -220,11 +225,66 @@ async function runStream() {
       const f = await drv.call("shot", { w: Math.round(stream.w * stream.scale), q: stream.q, ifChanged: Date.now() - lastSent < 3000 ? last : 0 });
       const dt = Date.now() - t0;
       if (!f.same) { stream.scale = dt > 220 ? Math.max(0.5, stream.scale * 0.85) : dt < 90 ? Math.min(1, stream.scale * 1.1) : stream.scale; last = f.hash; lastSent = Date.now(); await send({ stream: "screen", seq: ++stream.seq, ...f }); }
-      await new Promise((r) => setTimeout(r, f.same ? 90 : Math.max(0, 70 - dt)));
+      await new Promise((r) => setTimeout(r, f.same ? 250 : Math.max(120, 330 - dt))); // fallback only: keep the laptop light
     }
   } catch (e) { log("Screen stream stopped:", e.message); }
   stream.running = false;
 }
+
+/* ---------- video link (WebRTC) ----------
+   For smooth, full-quality video the laptop's own browser captures the screen and sends it straight to the phone
+   with the laptop's hardware video encoder (WebRTC, encrypted end to end by DTLS). The Companion only:
+   - opens that capture page (Chrome or Edge, a separate profile, off-screen),
+   - passes the connection set-up between the page and the phone through the encrypted relay,
+   - performs the mouse/keyboard input the page receives from the phone.
+   The page is served by the Companion on 127.0.0.1 and uses a random secret; nothing else on the machine can use it. */
+const HOST = { port: 0, key: hex(16), clients: new Set(), server: null, proc: null };
+function hostPush(msg) { const line = `data: ${JSON.stringify(msg)}\n\n`; for (const c of HOST.clients) c.write(line); return HOST.clients.size; }
+const INPUT_OK = /^(mouse|key)\./;
+function hostServer() {
+  if (HOST.server) return Promise.resolve(HOST.port);
+  return new Promise((res) => {
+    HOST.server = http.createServer(async (req, rs) => {
+      const u = new URL(req.url, "http://127.0.0.1");
+      if (req.method === "GET" && u.pathname === "/host.html") { // the capture page, fetched from your site and served here (same origin, secure context)
+        try { HOST.page = HOST.page || (await (await fetch(cfg.server + "/remote/host.html", { cache: "no-store" })).text()); } catch (e) { rs.writeHead(502); return rs.end("Cannot reach " + cfg.server); }
+        rs.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }); return rs.end(HOST.page);
+      }
+      if (u.searchParams.get("k") !== HOST.key || (req.headers.origin && req.headers.origin !== `http://127.0.0.1:${HOST.port}`)) { rs.writeHead(403); return rs.end(); }
+      if (u.pathname === "/events") {
+        rs.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache" }); rs.write(": hi\n\n");
+        HOST.clients.add(rs); req.on("close", () => HOST.clients.delete(rs));
+        if (HOST.pending) { rs.write(`data: ${JSON.stringify(HOST.pending)}\n\n`); HOST.pending = null; }
+        return;
+      }
+      let body = ""; for await (const c of req) { body += c; if (body.length > 2e6) return rs.destroy(); }
+      let m; try { m = JSON.parse(body || "{}"); } catch { rs.writeHead(400); return rs.end(); }
+      if (u.pathname === "/signal") { await send({ rtc: m }); rs.writeHead(204); return rs.end(); }
+      if (u.pathname === "/input") { // a batch of input events from the phone, in order
+        for (const ev of [].concat(m)) { if (INPUT_OK.test(ev.a) && ACTIONS[ev.a] && !cfg.disabled.includes(ev.a)) { try { await ACTIONS[ev.a](ev.args || {}, () => {}); } catch (e) { log("✗", ev.a, e.message); } } }
+        rs.writeHead(204); return rs.end();
+      }
+      if (u.pathname === "/log") { log("Video:", String(m.msg || "").slice(0, 200)); rs.writeHead(204); return rs.end(); }
+      rs.writeHead(404); rs.end();
+    });
+    HOST.server.listen(0, "127.0.0.1", () => { HOST.port = HOST.server.address().port; res(HOST.port); });
+  });
+}
+const BROWSERS = IS_WIN ? [join(process.env["ProgramFiles"] || "C:\\Program Files", "Google\\Chrome\\Application\\chrome.exe"), join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Google\\Chrome\\Application\\chrome.exe"), join(process.env.LOCALAPPDATA || "", "Google\\Chrome\\Application\\chrome.exe"), join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Microsoft\\Edge\\Application\\msedge.exe"), join(process.env["ProgramFiles"] || "C:\\Program Files", "Microsoft\\Edge\\Application\\msedge.exe")] : ["/usr/bin/chromium", "/usr/bin/google-chrome", "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"];
+async function rtcStart(b) {
+  const port = await hostServer();
+  const start = { t: "start", quality: b.quality || "high", fps: Math.min(Math.max(b.fps | 0 || 60, 15), 60), maxWidth: Math.min(Math.max(b.maxWidth | 0 || 1920, 640), 3840) };
+  if (hostPush(start)) return { started: true, reused: true };
+  HOST.pending = start;
+  if (HOST.proc && HOST.proc.exitCode === null) return { started: true, waiting: true };
+  const exe = (typeof arg("browser") === "string" ? [arg("browser")] : BROWSERS).find((f) => existsSync(f)); if (!exe) throw new Error("Chrome or Edge not found on the laptop — video needs one of them");
+  const url = `http://127.0.0.1:${port}/host.html#port=${port}&k=${HOST.key}`;
+  const flags = [`--app=${url}`, `--user-data-dir=${join(HOME, "video-profile")}`, "--auto-select-desktop-capture-source=Entire screen", "--lang=en-US", "--no-first-run", "--no-default-browser-check", "--disable-background-timer-throttling", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--autoplay-policy=no-user-gesture-required", "--window-size=360,200", arg("host-visible") ? "--window-position=40,40" : "--window-position=-3000,-3000", ...(process.env.S5_HOST_FLAGS ? process.env.S5_HOST_FLAGS.split(" ") : [])];
+  HOST.proc = spawn(exe, flags, { stdio: "ignore", detached: false }); HOST.proc.on("error", (e) => log("Video page failed to open:", e.message));
+  log("Opening the video link (" + basename(exe) + ")");
+  return { started: true, launched: basename(exe) };
+}
+process.on("exit", () => { try { HOST.proc && HOST.proc.kill(); } catch {} });
 
 /* ---------- self-update ----------
    The Companion keeps itself current from YOUR site (the same place the installer came from), so you never
@@ -263,7 +323,7 @@ function connect() {
     if (!ACTIONS[action]) return send({ re: id, ok: false, error: "Unknown action" });
     if (cfg.disabled.includes(action)) { log("Blocked (disabled in config):", action); return send({ re: id, ok: false, error: "This action is turned off on the laptop" }); }
     if (SENSITIVE.has(action) && !a.confirmed) return send({ re: id, ok: false, error: "Needs confirmation" });
-    if (!/^(mouse|screen|key)\./.test(action) && action !== "file.put") log("▶", action, JSON.stringify(a).slice(0, 120));
+    if (!/^(mouse|screen|key|rtc)\./.test(action) && action !== "file.put") log("▶", action, JSON.stringify(a).slice(0, 120));
     const LONG = action.startsWith("file.") || action === "job.run";
     const limit = new Promise((_, rej) => setTimeout(() => rej(new Error(`${action} took too long on the laptop`)), LONG ? 280000 : 15000));
     try { const data = await Promise.race([ACTIONS[action](a, reply), limit]); await send({ re: id, ok: true, data }); }

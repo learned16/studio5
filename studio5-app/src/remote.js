@@ -54,6 +54,7 @@ S5.remote = {
       let body; try { body = await this.open(env); } catch (e) { this.lastReject = e.message; if (!this._rejToast) { this._rejToast = 1; S5.ui.toast(e.message === "stale" ? "Laptop reply rejected: the phone and laptop clocks differ by more than 2 minutes — set both to automatic time" : "Laptop reply rejected (" + e.message + ") — re-pair if this continues"); setTimeout(() => (this._rejToast = 0), 10000); } return; }
       if (body.hello && this.pair && !this.pair.confirmed) { await S5.store.setMeta("remote", { ...this.pair, confirmed: true }); S5.ui.toast("Laptop accepted the pairing"); this.hello(); this.emit(); return; }
       if (body.stream === "screen") { S5.rmFrame(body); return; }
+      if (body.rtc) { S5.rtcSignal(body.rtc).catch((e) => console.warn(e)); return; }
       const w = this.pending.get(body.re); if (!w) return;
       if (body.partial) { w.onPartial && w.onPartial(body.data); return; }
       this.pending.delete(body.re); clearTimeout(w.timer);
@@ -156,9 +157,9 @@ S5.remotePairView = () => `<div class="page-head"><div class="titles"><span clas
 S5.bindTouchpad = (el) => {
   if (!el) return; const R = S5.remote; const pts = new Map(); let acc = { x: 0, y: 0 }, sc = 0, t0 = 0, moved = 0, maxP = 0, dragging = false, lp = null, flushT = null;
   const speed = () => +(document.getElementById("rm-speed")?.value || 2.5);
-  const flush = () => { flushT = null; if (Math.abs(acc.x) >= 1 || Math.abs(acc.y) >= 1) { R.fire("mouse.move", { dx: acc.x, dy: acc.y }); acc = { x: 0, y: 0 }; } if (Math.abs(sc) >= 1) { R.fire("mouse.scroll", { dy: -Math.round(sc) * 3 }); sc = 0; } };
+  const flush = () => { flushT = null; if (Math.abs(acc.x) >= 1 || Math.abs(acc.y) >= 1) { R.input("mouse.move", { dx: acc.x, dy: acc.y }); acc = { x: 0, y: 0 }; } if (Math.abs(sc) >= 1) { R.input("mouse.scroll", { dy: -Math.round(sc) * 3 }); sc = 0; } };
   const q = () => { if (!flushT) flushT = setTimeout(flush, 16); };
-  el.addEventListener("pointerdown", (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); maxP = Math.max(maxP, pts.size); if (pts.size === 1) { t0 = Date.now(); moved = 0; lp = setTimeout(() => { if (moved < 8) { dragging = true; R.fire("mouse.down"); el.style.outline = "2px solid var(--cobalt)"; } }, 550); } });
+  el.addEventListener("pointerdown", (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); maxP = Math.max(maxP, pts.size); if (pts.size === 1) { t0 = Date.now(); moved = 0; lp = setTimeout(() => { if (moved < 8) { dragging = true; R.input("mouse.down"); el.style.outline = "2px solid var(--cobalt)"; } }, 550); } });
   el.addEventListener("pointermove", (e) => {
     const p = pts.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
     if (pts.size >= 2) { sc += dy / 8; q(); return; }
@@ -167,15 +168,15 @@ S5.bindTouchpad = (el) => {
   const end = (e) => {
     pts.delete(e.pointerId); clearTimeout(lp); if (pts.size) return;
     const dt = Date.now() - t0;
-    if (dragging) { dragging = false; R.fire("mouse.up"); el.style.outline = ""; }
-    else if (moved < 10 && dt < 250) { if (maxP >= 2) R.fire("mouse.click", { button: "right" }); else R.fire("mouse.click", { button: "left" }); }
+    if (dragging) { dragging = false; R.input("mouse.up"); el.style.outline = ""; }
+    else if (moved < 10 && dt < 250) { if (maxP >= 2) R.input("mouse.click", { button: "right" }); else R.input("mouse.click", { button: "left" }); }
     maxP = 0; flush();
   };
   el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
   document.getElementById("rm-speed")?.addEventListener("input", (e) => S5.ls.set("rmSpeed", +e.target.value));
 };
 /* ---------- the laptop in front of you: live screen + keyboard + touchpad ---------- */
-// [label, key name, Arabic label, width]
+// [label, key name, Arabic label, width, modifier]
 S5.KB_ROWS = [
   [["Esc", "esc"], ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => ["F" + n, "f" + n]), ["Del", "delete"]],
   [["`", "`", "ذ"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["0", "0"], ["-", "-"], ["=", "="], ["⌫", "backspace", "", 1.6]],
@@ -185,102 +186,159 @@ S5.KB_ROWS = [
   [["Ctrl", "ctrl", "", 1.3, 1], ["Win", "win", "", 1.2, 1], ["Alt", "alt", "", 1.2, 1], ["EN/ع", "lang", "", 1.4], ["", "space", "", 5], ["⌨", "ime", "", 1.2], ["←", "left"], ["↓", "down"], ["→", "right"]],
 ];
 S5.laptopHTML = () => {
-  const live = S5.ls.get("rmLive", true), sharp = S5.ls.get("rmSharp", false);
-  const kb = S5.KB_ROWS.map((row, i) => `<div class="kb-row${i === 0 ? " fn" : ""}">${row.map(([l, k, ar, w, mod]) => `<button type="button" class="kb-key${mod ? " mod" : ""}" data-k="${S5.esc(k)}" style="flex:${w || 1}">${S5.esc(l)}${ar ? `<i>${ar}</i>` : ""}</button>`).join("")}</div>`).join("");
-  return `<div class="lap" id="lap">
+  const L = S5.ls, live = L.get("rmLive", true), q = L.get("rmQuality", "high"), kb = L.get("rmShowKb", innerWidth < innerHeight), pad = L.get("rmShowPad", true);
+  const rows = S5.KB_ROWS.map((row, i) => `<div class="kb-row${i === 0 ? " fn" : ""}">${row.map(([l, k, ar, w, mod]) => `<button type="button" class="kb-key${mod ? " mod" : ""}" data-k="${S5.esc(k)}" style="flex:${w || 1}">${S5.esc(l)}${ar ? `<i>${ar}</i>` : ""}</button>`).join("")}</div>`).join("");
+  const qn = { high: "Best", balanced: "Balanced", low: "Light" }[q];
+  return `<div class="lap${kb ? " show-kb" : ""}${pad ? " show-pad" : ""}" id="lap">
     <div class="lap-lid">
-      <div class="lap-bar" dir="ltr"><button class="btn sm ${live ? "primary" : ""}" data-lap="live">${live ? "Live ●" : "Live off"}</button><button class="btn sm" data-lap="sharp">${sharp ? "Sharp" : "Fast"}</button><button class="btn sm" data-lap="fit">Fit</button><button class="btn sm" data-lap="full">⛶</button><span class="tiny muted" id="lap-info">Connecting…</span></div>
-      <div class="lap-screen" id="lap-screen"><img id="rm-screen" alt="Laptop screen" draggable="false"><span class="lap-hint" id="lap-hint">Tap = click · hold = right click · drag = drag<br>two fingers: scroll · pinch: zoom</span></div>
+      <div class="lap-bar" dir="ltr"><button class="btn sm ${live ? "primary" : ""}" data-lap="live">${live ? "Live ●" : "Live off"}</button><button class="btn sm" data-lap="quality">${qn}</button><button class="btn sm ${kb ? "primary" : ""}" data-lap="kb" title="Keyboard">⌨</button><button class="btn sm ${pad ? "primary" : ""}" data-lap="pad" title="Touchpad">🖱</button><button class="btn sm" data-lap="fit">Fit</button><button class="btn sm" data-lap="full">⛶</button><span class="tiny muted" id="lap-info">Connecting…</span></div>
+      <div class="lap-screen" id="lap-screen"><div class="lap-view" id="lap-view"><div class="lap-stage" id="lap-stage"><video id="rm-video" playsinline muted autoplay></video><img id="rm-screen" alt="Laptop screen" draggable="false"></div></div><span class="lap-hint" id="lap-hint">Tap = click · hold = right click · drag = drag<br>two fingers: scroll · pinch: zoom</span></div>
     </div>
     <div class="lap-base">
-      <div class="kb" id="kb">${kb}</div>
+      <div class="kb" id="kb">${rows}</div>
       <div class="lap-pad"><div id="touchpad" class="pad"></div><div class="pad-btns"><button type="button" data-b="left"></button><button type="button" data-b="right"></button></div></div>
       <textarea id="lap-ime" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" dir="auto" aria-label="Phone keyboard"></textarea>
     </div>
   </div>`;
 };
+/* video link (WebRTC): the laptop's browser sends real video; set-up messages go through the encrypted relay */
+S5.rtc = { pc: null, dc: null, live: false, early: [] };
+S5.remote.input = (a, args) => { const dc = S5.rtc.dc; if (dc && dc.readyState === "open") dc.send(JSON.stringify({ a, args })); else S5.remote.fire(a, args); };
+S5.rtcSignal = async (m) => {
+  const T = S5.rtc, R = S5.remote;
+  if (m.error) { T.failed = m.error; S5.ui.toast("Video link unavailable (" + m.error + ") — using pictures", true); T.onFail && T.onFail(); return; }
+  if (m.sdp && m.sdp.type === "offer") {
+    S5.rtcClose(false);
+    const pc = (T.pc = new RTCPeerConnection({ iceServers: [{ urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"] }] }));
+    pc.ontrack = (e) => { const v = document.getElementById("rm-video"); if (v) { v.srcObject = e.streams[0] || new MediaStream([e.track]); v.play().catch(() => {}); } };
+    pc.ondatachannel = (e) => { T.dc = e.channel; };
+    pc.onicecandidate = (e) => { if (e.candidate) R.fire("rtc.signal", { data: { candidate: e.candidate.toJSON() } }); };
+    pc.onconnectionstatechange = () => { if (pc.connectionState === "failed") { S5.ui.toast("Video link failed on this network — using pictures", true); T.onFail && T.onFail(); } };
+    await pc.setRemoteDescription(m.sdp);
+    for (const c of T.early.splice(0)) pc.addIceCandidate(c).catch(() => {});
+    const ans = await pc.createAnswer(); await pc.setLocalDescription(ans);
+    R.fire("rtc.signal", { data: { sdp: pc.localDescription.toJSON() } });
+  } else if (m.candidate) { if (T.pc && T.pc.remoteDescription) T.pc.addIceCandidate(m.candidate).catch(() => {}); else T.early.push(m.candidate); }
+};
+S5.rtcClose = (tell) => { const T = S5.rtc; if (T.pc) { try { T.pc.close(); } catch {} } T.pc = null; T.dc = null; T.live = false; if (tell) S5.remote.fire("rtc.stop"); };
 S5.rmView = { z: 1, px: 0, py: 0 };
 S5.bindLaptop = () => {
-  const R = S5.remote, scr = document.getElementById("lap-screen"), img = document.getElementById("rm-screen"); if (!scr) return;
-  const V = S5.rmView; V.z = 1; V.px = 0; V.py = 0;
-  const apply = () => { const r = scr.getBoundingClientRect(); V.px = Math.min(0, Math.max(r.width * (1 - V.z), V.px)); V.py = Math.min(0, Math.max(r.height * (1 - V.z), V.py)); img.style.transform = `translate(${V.px}px,${V.py}px) scale(${V.z})`; };
-  const frac = (cx, cy) => { const r = scr.getBoundingClientRect(); return { fx: (cx - r.left - V.px) / V.z / r.width, fy: (cy - r.top - V.py) / V.z / r.height }; };
-  /* stream */
-  const want = () => { const sharp = S5.ls.get("rmSharp", false); return { on: true, width: Math.min(1920, Math.round(scr.clientWidth * (window.devicePixelRatio || 1) * (sharp ? 1.3 : 0.8) * Math.min(V.z, 2))), quality: sharp ? 68 : 45 }; };
-  const old = () => !!R.info && (!R.info.version || R.info.version < "1.1");
-  let pollT = null, alive = true;
-  const poll = async () => { if (!alive || !S5.ls.get("rmLive", true) || !old()) { pollT = null; return; } try { const d = await R.send("screen.shot", { width: want().width, quality: want().quality }, { quiet: true, timeout: 20000 }); S5.rmFrame(d); } catch {} pollT = setTimeout(poll, 600); };
-  const renew = () => { if (!alive) return; if (!S5.ls.get("rmLive", true) || document.hidden) { R.fire("screen.stream", { on: false }); return; } if (!R.info) return; if (old()) { if (!pollT) poll(); return; } R.fire("screen.stream", want()); };
-  renew(); const iv = setInterval(renew, 3000); const vis = () => renew(); document.addEventListener("visibilitychange", vis);
-  if (!S5.ls.get("rmLive", true)) R.send("screen.shot", { width: want().width, quality: 60 }, { quiet: true }).then(S5.rmFrame).catch(() => {});
-  /* touch on the screen: tap = click there, hold = right click, drag = drag, 2 fingers = scroll / pinch-zoom */
+  const R = S5.remote, T = S5.rtc, L = S5.ls, lap = document.getElementById("lap"), scr = document.getElementById("lap-screen"), view = document.getElementById("lap-view"), stage = document.getElementById("lap-stage"), img = document.getElementById("rm-screen"), vid = document.getElementById("rm-video"); if (!scr) return;
+  const V = S5.rmView; V.z = 1; V.px = 0; V.py = 0; let aspect = 16 / 9, alive = true;
+  /* fit the whole laptop to the window: screen gets what is left after the bar, keyboard and touchpad */
+  const fit = () => { if (!alive) return; const top = lap.getBoundingClientRect().top; lap.style.height = Math.max(320, innerHeight - Math.max(0, top) - 8) + "px"; const w = scr.clientWidth, h = scr.clientHeight; let vw = w, vh = w / aspect; if (vh > h) { vh = h; vw = h * aspect; } view.style.width = vw + "px"; view.style.height = vh + "px"; apply(); };
+  const ro = new ResizeObserver(fit); ro.observe(scr); addEventListener("resize", fit);
+  const setAspect = (w, h) => { if (w && h && Math.abs(w / h - aspect) > 0.01) { aspect = w / h; fit(); } };
+  const apply = () => { const vw = view.clientWidth, vh = view.clientHeight; V.px = Math.min(0, Math.max(vw * (1 - V.z), V.px)); V.py = Math.min(0, Math.max(vh * (1 - V.z), V.py)); stage.style.transform = `translate(${V.px}px,${V.py}px) scale(${V.z})`; };
+  const frac = (cx, cy) => { const r = view.getBoundingClientRect(); return { fx: (cx - r.left - V.px) / V.z / r.width, fy: (cy - r.top - V.py) / V.z / r.height }; };
+  S5.rmOnAspect = setAspect;
+  /* video first; pictures as the fallback (older Companion, no Chrome/Edge, or a network that blocks it) */
+  const ver = () => (R.info && R.info.version) || "0"; let mode = "none", pollT = null, iv = null;
+  const want = () => ({ on: true, width: Math.min(1280, Math.round(view.clientWidth * (devicePixelRatio || 1) * 0.8)), quality: 50 });
+  const poll = async () => { if (!alive || mode !== "pics-old" || !L.get("rmLive", true)) { pollT = null; return; } try { S5.rmFrame(await R.send("screen.shot", want(), { quiet: true, timeout: 20000 })); } catch {} pollT = setTimeout(poll, 800); };
+  const pics = () => { if (!alive) return; mode = ver() >= "1.1" ? "pics" : "pics-old"; img.hidden = false; vid.hidden = true; if (mode === "pics-old") { if (!pollT) poll(); } else R.fire("screen.stream", want()); };
+  T.onFail = () => { if (alive && mode === "video") { S5.rtcClose(true); pics(); } };
+  const startVideo = () => {
+    if (!alive || !L.get("rmLive", true) || document.hidden) return;
+    if (ver() < "1.2" || !window.RTCPeerConnection) return pics();
+    mode = "video"; vid.hidden = false; img.hidden = true; T.failed = null;
+    R.send("rtc.start", { quality: L.get("rmQuality", "high"), fps: 60, maxWidth: 1920 }, { quiet: true, timeout: 20000 }).catch((e) => { S5.ui.toast("Video link: " + e.message + " — using pictures", true); pics(); });
+    clearTimeout(T.watch); T.watch = setTimeout(() => { if (alive && mode === "video" && !T.live) { S5.ui.toast("No video yet — using pictures. Make sure Chrome or Edge is installed on the laptop.", true); S5.rtcClose(true); pics(); } }, 25000);
+  };
+  const renew = () => { if (!alive) return; if (!L.get("rmLive", true) || document.hidden) { R.fire("screen.stream", { on: false }); return; } if (mode === "pics") R.fire("screen.stream", want()); };
+  const begin = () => { if (!R.info) { setTimeout(begin, 400); return; } if (mode === "none") startVideo(); };
+  begin(); iv = setInterval(renew, 3000);
+  vid.addEventListener("playing", () => { T.live = true; img.hidden = true; vid.hidden = false; R.fire("screen.stream", { on: false }); });
+  vid.addEventListener("resize", () => setAspect(vid.videoWidth, vid.videoHeight)); vid.addEventListener("loadedmetadata", () => setAspect(vid.videoWidth, vid.videoHeight));
+  const vis = () => { if (document.hidden) { if (mode === "video") { S5.rtcClose(true); mode = "none"; } renew(); } else if (mode === "none") startVideo(); else renew(); };
+  document.addEventListener("visibilitychange", vis);
+  const stats = setInterval(async () => {
+    if (!T.pc || mode !== "video") return; let fps = 0, kbps = 0, rtt = 0, w = 0, h = 0;
+    (await T.pc.getStats()).forEach((s) => { if (s.type === "inbound-rtp" && s.kind === "video") { fps = Math.round(s.framesPerSecond || 0); w = s.frameWidth; h = s.frameHeight; const now = s.timestamp, b = s.bytesReceived; if (T.lastB) kbps = Math.round(((b - T.lastB.b) * 8) / (now - T.lastB.t)); T.lastB = { b, t: now }; } if (s.type === "candidate-pair" && s.nominated && s.state === "succeeded") rtt = Math.round((s.currentRoundTripTime || 0) * 1000); });
+    const i = document.getElementById("lap-info"); if (i && T.live) i.textContent = `Video ${w}×${h} · ${fps} fps · ${(kbps / 1000).toFixed(1)} Mb/s · ${rtt} ms`;
+  }, 2000);
+  /* touch on the screen: tap = click there, hold = right click, drag = drag, 2 fingers = scroll / pinch-zoom.
+     A real mouse or trackpad (iPad Magic Keyboard, Bluetooth mouse) moves the laptop pointer directly. */
   const pts = new Map(); let st = null, lastMove = 0, scAcc = 0;
   scr.addEventListener("pointerdown", (e) => {
-    e.preventDefault(); scr.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    document.getElementById("lap-hint")?.remove();
-    if (pts.size === 1) { st = { x: e.clientX, y: e.clientY, mode: "tap", t: Date.now() }; st.lp = setTimeout(() => { if (st && st.mode === "tap") { st.mode = "done"; R.fire("mouse.clickAt", { ...frac(st.x, st.y), button: "right" }); navigator.vibrate && navigator.vibrate(15); } }, 520); }
-    else if (pts.size === 2 && st) { clearTimeout(st.lp); if (st.mode === "drag") R.fire("mouse.up"); const [a, b] = [...pts.values()]; st = { mode: "two", d0: Math.hypot(a.x - b.x, a.y - b.y), z0: V.z, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, pinch: false }; }
+    e.preventDefault(); scr.setPointerCapture(e.pointerId); document.getElementById("lap-hint")?.remove();
+    if (e.pointerType === "mouse") { const b = ["left", "middle", "right"][e.button] || "left"; R.input("mouse.toFrac", frac(e.clientX, e.clientY)); R.input("mouse.down", { button: b }); return; }
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 1) { st = { x: e.clientX, y: e.clientY, mode: "tap", t: Date.now() }; st.lp = setTimeout(() => { if (st && st.mode === "tap") { st.mode = "done"; R.input("mouse.clickAt", { ...frac(st.x, st.y), button: "right" }); navigator.vibrate && navigator.vibrate(15); } }, 520); }
+    else if (pts.size === 2 && st) { clearTimeout(st.lp); if (st.mode === "drag") R.input("mouse.up"); const [a, b] = [...pts.values()]; st = { mode: "two", d0: Math.hypot(a.x - b.x, a.y - b.y), z0: V.z, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, pinch: false }; }
   });
   scr.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "mouse") { if (Date.now() - lastMove > 12) { lastMove = Date.now(); R.input("mouse.toFrac", frac(e.clientX, e.clientY)); } return; }
     const p = pts.get(e.pointerId); if (!p || !st) return; p.x = e.clientX; p.y = e.clientY;
     if (st.mode === "two" && pts.size >= 2) {
       const [a, b] = [...pts.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
       if (!st.pinch && Math.abs(d / st.d0 - 1) > 0.15) st.pinch = true;
-      if (st.pinch || V.z > 1) { const r = scr.getBoundingClientRect(); const nz = st.pinch ? Math.min(4, Math.max(1, st.z0 * d / st.d0)) : V.z; const ox = cx - r.left, oy = cy - r.top; V.px = ox - ((ox - V.px) * nz) / V.z + (cx - st.cx); V.py = oy - ((oy - V.py) * nz) / V.z + (cy - st.cy); V.z = nz; apply(); }
-      else { scAcc += (cy - st.cy) / 12; if (Math.abs(scAcc) >= 1) { R.fire("mouse.scroll", { dy: -Math.round(scAcc) * 2 }); scAcc = 0; } }
+      if (st.pinch || V.z > 1) { const r = view.getBoundingClientRect(); const nz = st.pinch ? Math.min(4, Math.max(1, st.z0 * d / st.d0)) : V.z; const ox = cx - r.left, oy = cy - r.top; V.px = ox - ((ox - V.px) * nz) / V.z + (cx - st.cx); V.py = oy - ((oy - V.py) * nz) / V.z + (cy - st.cy); V.z = nz; apply(); }
+      else { scAcc += (cy - st.cy) / 12; if (Math.abs(scAcc) >= 1) { R.input("mouse.scroll", { dy: -Math.round(scAcc) * 2 }); scAcc = 0; } }
       st.cx = cx; st.cy = cy; return;
     }
-    if (st.mode === "tap" && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 10) { clearTimeout(st.lp); st.mode = "drag"; R.fire("mouse.toFrac", frac(st.x, st.y)); R.fire("mouse.down"); }
-    if (st.mode === "drag" && Date.now() - lastMove > 30) { lastMove = Date.now(); R.fire("mouse.toFrac", frac(e.clientX, e.clientY)); }
+    if (st.mode === "tap" && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 10) { clearTimeout(st.lp); st.mode = "drag"; R.input("mouse.toFrac", frac(st.x, st.y)); R.input("mouse.down"); }
+    if (st.mode === "drag" && Date.now() - lastMove > 16) { lastMove = Date.now(); R.input("mouse.toFrac", frac(e.clientX, e.clientY)); }
   });
   const end = (e) => {
+    if (e.pointerType === "mouse") { R.input("mouse.toFrac", frac(e.clientX, e.clientY)); R.input("mouse.up", { button: ["left", "middle", "right"][e.button] || "left" }); return; }
     const p = pts.get(e.pointerId); pts.delete(e.pointerId); if (!st) return;
-    if (st.mode === "two") { if (!pts.size) { st = null; if (V.z > 1) renew(); } return; }
+    if (st.mode === "two") { if (!pts.size) st = null; return; }
     clearTimeout(st.lp);
-    if (st.mode === "tap") R.fire("mouse.clickAt", { ...frac(st.x, st.y), button: "left" });
-    else if (st.mode === "drag") { R.fire("mouse.toFrac", frac(p ? p.x : st.x, p ? p.y : st.y)); R.fire("mouse.up"); }
+    if (st.mode === "tap") R.input("mouse.clickAt", { ...frac(st.x, st.y), button: "left" });
+    else if (st.mode === "drag") { R.input("mouse.toFrac", frac(p ? p.x : st.x, p ? p.y : st.y)); R.input("mouse.up"); }
     st = null;
   };
   scr.addEventListener("pointerup", end); scr.addEventListener("pointercancel", end);
   scr.addEventListener("contextmenu", (e) => e.preventDefault());
+  scr.addEventListener("wheel", (e) => { e.preventDefault(); scAcc += e.deltaY / 40; if (Math.abs(scAcc) >= 1) { R.input("mouse.scroll", { dy: Math.round(scAcc) }); scAcc = 0; } }, { passive: false });
+  /* a physical keyboard (iPad Magic Keyboard, Bluetooth): real key down/up, so held keys work in games */
+  const CODE = (c) => { let m; if ((m = /^Key([A-Z])$/.exec(c))) return m[1].toLowerCase(); if ((m = /^Digit(\d)$/.exec(c))) return m[1]; if ((m = /^(F\d{1,2})$/.exec(c))) return m[1].toLowerCase(); if ((m = /^Arrow(\w+)$/.exec(c))) return m[1].toLowerCase(); return { Space: "space", Enter: "enter", NumpadEnter: "enter", Backspace: "backspace", Tab: "tab", Escape: "esc", Delete: "delete", Home: "home", End: "end", PageUp: "pageup", PageDown: "pagedown", ShiftLeft: "shift", ShiftRight: "shift", ControlLeft: "ctrl", ControlRight: "ctrl", AltLeft: "alt", AltRight: "alt", MetaLeft: "win", MetaRight: "win", Minus: "-", Equal: "=", BracketLeft: "[", BracketRight: "]", Backslash: "\\", Semicolon: ";", Quote: "'", Comma: ",", Period: ".", Slash: "/", Backquote: "`", CapsLock: "capslock", Insert: "insert" }[c]; };
+  const held = new Set();
+  const kd = (e) => { if (e.target.closest && e.target.closest("input,textarea,select") && e.target.id !== "lap-ime") return; const k = CODE(e.code); if (!k) return; e.preventDefault(); if (e.repeat || held.has(k)) return; held.add(k); R.input("key.down", { key: k }); };
+  const ku = (e) => { const k = CODE(e.code); if (!k || !held.has(k)) return; e.preventDefault(); held.delete(k); R.input("key.up", { key: k }); };
+  const blur = () => { for (const k of held) R.input("key.up", { key: k }); held.clear(); };
+  document.addEventListener("keydown", kd, true); document.addEventListener("keyup", ku, true); addEventListener("blur", blur);
   /* toolbar */
   document.querySelector(".lap-bar").addEventListener("click", (e) => {
     const b = e.target.closest("[data-lap]"); if (!b) return; const k = b.dataset.lap;
-    if (k === "live") { const on = !S5.ls.get("rmLive", true); S5.ls.set("rmLive", on); b.textContent = on ? "Live ●" : "Live off"; b.classList.toggle("primary", on); renew(); }
-    if (k === "sharp") { const on = !S5.ls.get("rmSharp", false); S5.ls.set("rmSharp", on); b.textContent = on ? "Sharp" : "Fast"; renew(); }
-    if (k === "fit") { V.z = 1; V.px = V.py = 0; apply(); renew(); }
-    if (k === "full") { const el = document.getElementById("lap"); if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen && el.requestFullscreen().then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape").catch(() => {})).catch(() => {}); }
+    if (k === "live") { const on = !L.get("rmLive", true); L.set("rmLive", on); b.textContent = on ? "Live ●" : "Live off"; b.classList.toggle("primary", on); if (on) { mode = "none"; startVideo(); } else { S5.rtcClose(true); mode = "none"; renew(); } }
+    if (k === "quality") { const order = ["high", "balanced", "low"], cur = L.get("rmQuality", "high"), nx = order[(order.indexOf(cur) + 1) % 3]; L.set("rmQuality", nx); b.textContent = { high: "Best", balanced: "Balanced", low: "Light" }[nx]; if (mode === "video") R.fire("rtc.signal", { data: { quality: nx } }); }
+    if (k === "kb" || k === "pad") { const key = k === "kb" ? "rmShowKb" : "rmShowPad", cls = k === "kb" ? "show-kb" : "show-pad"; const on = !lap.classList.contains(cls); lap.classList.toggle(cls, on); L.set(key, on); b.classList.toggle("primary", on); requestAnimationFrame(fit); }
+    if (k === "fit") { V.z = 1; V.px = V.py = 0; apply(); }
+    if (k === "full") { if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document); else { const f = lap.requestFullscreen || lap.webkitRequestFullscreen; if (f) Promise.resolve(f.call(lap)).then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape").catch(() => {})).catch(() => {}); else S5.ui.toast("Add this app to the Home Screen for full screen"); } setTimeout(fit, 300); }
   });
-  /* keyboard */
-  const mods = new Set(), locked = new Set(); let lastMod = {};
+  /* on-screen keyboard */
+  const mods = new Set(), locked = new Set(); const lastMod = {};
   const paint = () => document.querySelectorAll(".kb-key.mod").forEach((b) => b.classList.toggle("on", mods.has(b.dataset.k)));
   document.getElementById("kb").addEventListener("pointerdown", (e) => {
     const b = e.target.closest(".kb-key"); if (!b) return; e.preventDefault(); const k = b.dataset.k;
     b.classList.add("down"); setTimeout(() => b.classList.remove("down"), 120); navigator.vibrate && navigator.vibrate(8);
     if (b.classList.contains("mod")) { const now = Date.now(); if (mods.has(k)) { if (now - (lastMod[k] || 0) < 400) locked.add(k); else { mods.delete(k); locked.delete(k); } } else mods.add(k); lastMod[k] = now; paint(); return; }
     if (k === "ime") { const t = document.getElementById("lap-ime"); t.value = "_"; t.focus(); return; }
-    if (k === "lang") { R.fire("key.combo", { keys: ["win", "space"] }); return; }
-    R.fire("key.combo", { keys: [...mods, k] });
+    if (k === "lang") { R.input("key.combo", { keys: ["win", "space"] }); return; }
+    R.input("key.combo", { keys: [...mods, k] });
     for (const m of [...mods]) if (!locked.has(m)) mods.delete(m); paint();
   });
   /* the phone's own keyboard (Arabic, emoji, voice typing): typed text goes straight to the laptop */
   const ime = document.getElementById("lap-ime"); let buf = "", bt = null;
-  const flushT = () => { bt = null; const parts = buf.split("\n"); buf = ""; parts.forEach((t, i) => { if (t) R.fire("key.type", { text: t }); if (i < parts.length - 1) R.fire("key.combo", { keys: ["enter"] }); }); };
-  ime.addEventListener("input", () => { const v = ime.value; if (!v.startsWith("_")) { if (bt) { clearTimeout(bt); flushT(); } R.fire("key.combo", { keys: ["backspace"] }); } else { buf += v.slice(1); if (!bt) bt = setTimeout(flushT, 220); } ime.value = "_"; });
+  const flushT = () => { bt = null; const parts = buf.split("\n"); buf = ""; parts.forEach((t, i) => { if (t) R.input("key.type", { text: t }); if (i < parts.length - 1) R.input("key.combo", { keys: ["enter"] }); }); };
+  ime.addEventListener("input", () => { const v = ime.value; if (!v.startsWith("_")) { if (bt) { clearTimeout(bt); flushT(); } R.input("key.combo", { keys: ["backspace"] }); } else { buf += v.slice(1); if (!bt) bt = setTimeout(flushT, 220); } ime.value = "_"; });
   /* touchpad + buttons */
   S5.bindTouchpad(document.getElementById("touchpad"));
-  document.querySelector(".pad-btns").addEventListener("pointerdown", (e) => { const b = e.target.closest("[data-b]"); if (!b) return; e.preventDefault(); R.fire("mouse.click", { button: b.dataset.b }); navigator.vibrate && navigator.vibrate(10); });
-  return () => { alive = false; clearInterval(iv); clearTimeout(pollT); document.removeEventListener("visibilitychange", vis); R.fire("screen.stream", { on: false }); };
+  document.querySelector(".pad-btns").addEventListener("pointerdown", (e) => { const b = e.target.closest("[data-b]"); if (!b) return; e.preventDefault(); R.input("mouse.click", { button: b.dataset.b }); navigator.vibrate && navigator.vibrate(10); });
+  requestAnimationFrame(fit);
+  return () => { alive = false; ro.disconnect(); removeEventListener("resize", fit); clearInterval(iv); clearInterval(stats); clearTimeout(pollT); clearTimeout(T.watch); document.removeEventListener("visibilitychange", vis); document.removeEventListener("keydown", kd, true); document.removeEventListener("keyup", ku, true); removeEventListener("blur", blur); blur(); R.fire("screen.stream", { on: false }); S5.rtcClose(true); };
 };
-/* a frame from the laptop: decode off the main path, show, then acknowledge so the next one comes */
+/* a picture frame from the laptop (fallback path): show, then acknowledge so the next one comes */
 S5.rmFrame = (f) => {
-  const img = document.getElementById("rm-screen"); if (!img || !f || f.same || !f.jpeg) return;
+  const img = document.getElementById("rm-screen"); if (!img || !f || f.same || !f.jpeg || S5.rtc.live) return;
   const bin = atob(f.jpeg), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
   const url = URL.createObjectURL(new Blob([u8], { type: "image/jpeg" })); const prev = img.dataset.url;
   img.onload = () => { if (prev) URL.revokeObjectURL(prev); if (f.seq) S5.remote.fire("screen.ack", { seq: f.seq }); };
-  img.src = url; img.dataset.url = url; if (f.sw && f.sh) img.parentNode.style.aspectRatio = `${f.sw} / ${f.sh}`;
+  img.src = url; img.dataset.url = url; S5.rmOnAspect && S5.rmOnAspect(f.sw, f.sh);
   const s = (S5.rmStats = S5.rmStats || { n: 0, t: Date.now(), fps: 0 }); s.n++; if (Date.now() - s.t > 1000) { s.fps = Math.round((s.n * 1000) / (Date.now() - s.t)); s.n = 0; s.t = Date.now(); }
-  const i = document.getElementById("lap-info"); if (i) i.textContent = `${f.sw}×${f.sh} · ${f.w}px · ${s.fps} fps · ${Math.round(f.jpeg.length / 1370)} KB`;
+  const i = document.getElementById("lap-info"); if (i) i.textContent = `Pictures ${f.sw}×${f.sh} · ${s.fps} fps · ${Math.round(f.jpeg.length / 1370)} KB`;
 };
 S5.rmFiles = async (path) => {
   const box = document.getElementById("rm-files"); if (!box) return; S5.rmPath = path;

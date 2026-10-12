@@ -23,6 +23,11 @@ const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta na
 </head><body>
 ${content}</body></html>`;
 out("./public/index.html", doc);
+// the separate Laptop Remote app (same pairing, nothing else of Studio5 on screen) + the laptop's video page
+mkdirSync(new URL("./public/remote/", import.meta.url), { recursive: true });
+out("./public/remote/index.html", doc.replace('<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png">', '<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="/icon-192.png"><link rel="apple-touch-icon" href="/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><title>Laptop Remote</title>').replace('<script>var S5_BUILD', '<script>var S5_APP = "remote";</script><script>var S5_BUILD'));
+out("./public/remote/manifest.webmanifest", JSON.stringify({ name: "Laptop Remote", short_name: "Laptop", description: "Control your laptop from the phone or iPad — video, keyboard, mouse.", start_url: "/remote/", scope: "/remote/", display: "fullscreen", orientation: "any", background_color: "#15181e", theme_color: "#15181e", icons: [{ src: "/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "/icon-512.png", sizes: "512x512", type: "image/png" }] }, null, 2));
+out("./public/remote/host.html", read("host.html"));
 out("./public/manifest.webmanifest", JSON.stringify({
   name: "Studio5", short_name: "Studio5", description: "Study, drawing and project studio — architecture & civil engineering.",
   start_url: "./", scope: "./", display: "standalone", background_color: "#e9ebe7", theme_color: "#1f3a68",
@@ -30,7 +35,7 @@ out("./public/manifest.webmanifest", JSON.stringify({
 }, null, 2));
 out("./public/sw.js", `// Studio5 offline cache — version ${version}
 const CACHE = "studio5-${version}";
-const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
+const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "/remote/", "/remote/manifest.webmanifest"];
 const CDN = ["https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then(async (c) => { await c.addAll(SHELL); for (const u of CDN) { try { await c.add(new Request(u, { mode: "no-cors" })); } catch {} } }).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
@@ -40,7 +45,8 @@ self.addEventListener("fetch", (e) => {
   if (url.origin === location.origin && (url.pathname.startsWith("/api/") || url.pathname.startsWith("/companion/") || url.pathname === "/version.json")) return; // relay, companion, version: always live
   if (req.mode === "navigate" || (url.origin === location.origin && url.pathname.endsWith("/"))) {
     // the app page: network first so updates arrive, cache when offline
-    e.respondWith(fetch(req).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put("./index.html", copy)); return r; }).catch(() => caches.match("./index.html")));
+    const key = url.pathname.startsWith("/remote/") ? "/remote/" : "./index.html";
+    e.respondWith(fetch(req).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(key, copy)); return r; }).catch(() => caches.match(key)));
     return;
   }
   // everything else (icons, pdf.js, fonts): cache first

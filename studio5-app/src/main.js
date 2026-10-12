@@ -1,7 +1,7 @@
 /* Boot, event delegation, live re-rendering. */
 // Standalone = served from its own site (Cloudflare), not inside a claude.ai artifact viewer.
 S5.standalone = !(window.claude && typeof window.claude.use === "function");
-if (S5.standalone && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("./sw.js").catch(() => {});
+if (S5.standalone && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
 /* Automatic updates: every new deploy is picked up without reinstalling. The app checks quietly (on open,
    when you come back to it, and every 10 minutes) and reloads itself only when you are not in the middle of
    something (nothing typed or drawn for 20 s); your work is already saved on the device. */
@@ -12,7 +12,7 @@ S5.autoUpdate = () => {
   const apply = () => { if (document.hidden || Date.now() - lastUse > 20000) { S5.ui.toast("Studio5 updated — reloading"); setTimeout(() => location.reload(), 900); } else setTimeout(apply, 5000); };
   const check = async () => {
     if (pending) return;
-    try { const r = await fetch("./version.json", { cache: "no-store" }); const { v } = await r.json(); if (v && v !== S5_BUILD) { pending = true; const reg = await navigator.serviceWorker?.getRegistration(); await reg?.update().catch(() => {}); apply(); } } catch {}
+    try { const r = await fetch("/version.json", { cache: "no-store" }); const { v } = await r.json(); if (v && v !== S5_BUILD) { pending = true; const reg = await navigator.serviceWorker?.getRegistration(); await reg?.update().catch(() => {}); apply(); } } catch {}
   };
   setTimeout(check, 4000); setInterval(check, 10 * 60000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); }); window.addEventListener("online", check);
@@ -74,12 +74,14 @@ new MutationObserver(() => { if (S5.pendingRender && !document.querySelector(".s
     S5.applyTheme();
     await S5.seedCurriculum();
     await S5.seedCivil();
-    if (!S5.store.meta.demoSeeded && !S5.store.meta.demoCleared && !S5.store.list("slot").length) await S5.seedDemo();
+    S5.app = typeof S5_APP !== "undefined" ? S5_APP : "studio5";
+    if (S5.app === "remote") document.documentElement.classList.add("app-remote");
+    if (S5.app !== "remote" && !S5.store.meta.demoSeeded && !S5.store.meta.demoCleared && !S5.store.list("slot").length) await S5.seedDemo();
     // daily automatic snapshot (device-local recovery point)
     const snaps = S5.store.meta.snapshots || [];
     if (!snaps.length || S5.daysBetween(snaps[0].at.slice(0, 10), S5.todayISO()) >= 1) S5.store.snapshot("Daily automatic snapshot");
     const h = (location.hash || "").replace("#", "");
-    S5.ui.route = { v: S5.views[h] && ["today", "study", "projects", "practice", "library", "system", "remote"].includes(h) ? h : "today" };
+    S5.ui.route = S5.app === "remote" ? { v: "remote" } : { v: S5.views[h] && ["today", "study", "projects", "practice", "library", "system", "remote"].includes(h) ? h : "today" };
     S5.ui.render();
     S5.i18n.start();
     S5.sync.init();
