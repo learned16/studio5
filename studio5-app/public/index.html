@@ -3761,7 +3761,47 @@ S5.rmFiles = async (path) => {
 };
 S5.rmInstaller = () => {
   const origin = location.origin;
-  return `@echo off\r\nsetlocal\r\ntitle Studio5 Companion setup\r\nset "SERVER=${origin}"\r\nset "DIR=%LOCALAPPDATA%\\Studio5Companion"\r\necho.\r\necho  Studio5 Companion setup\r\necho  Server: %SERVER%\r\necho.\r\nwhere node >nul 2>nul\r\nif errorlevel 1 (\r\n  echo Installing Node.js LTS with winget...\r\n  winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements\r\n  set "PATH=%PATH%;%ProgramFiles%\\nodejs"\r\n)\r\nwhere node >nul 2>nul\r\nif errorlevel 1 (\r\n  echo Node.js could not be installed automatically. Install it from https://nodejs.org then run this file again.\r\n  pause\r\n  exit /b 1\r\n)\r\nif not exist "%DIR%" mkdir "%DIR%"\r\ncurl -fsSL "%SERVER%/companion/studio5-companion.mjs" -o "%DIR%\\studio5-companion.mjs"\r\nif errorlevel 1 (\r\n  echo Download failed. Check your internet connection.\r\n  pause\r\n  exit /b 1\r\n)\r\n> "%DIR%\\Studio5 Companion.cmd" echo @echo off\r\n>> "%DIR%\\Studio5 Companion.cmd" echo title Studio5 Companion - phone control is ON while this window is open\r\n>> "%DIR%\\Studio5 Companion.cmd" echo node "%DIR%\\studio5-companion.mjs" --server %SERVER%\r\ncopy /y "%DIR%\\Studio5 Companion.cmd" "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Studio5 Companion.cmd" >nul\r\necho.\r\necho Installed. The Companion starts at login (a visible window - close it to stop phone control).\r\necho Starting it now for pairing...\r\nstart "Studio5 Companion" cmd /k node "%DIR%\\studio5-companion.mjs" --server %SERVER% --pair\r\n`;
+  const lines = [
+    "@echo off", "setlocal", "title Studio5 Companion setup",
+    `set "SERVER=${origin}"`, 'set "DIR=%LOCALAPPDATA%\\Studio5Companion"',
+    "echo.", "echo  Studio5 Companion setup", "echo  Server: %SERVER%", "echo.",
+    "where node >nul 2>nul",
+    "if errorlevel 1 (",
+    "  echo Installing Node.js LTS with winget...",
+    "  winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements",
+    '  set "PATH=%PATH%;%ProgramFiles%\\nodejs"',
+    ")",
+    "where node >nul 2>nul",
+    "if errorlevel 1 (",
+    "  echo Node.js could not be installed automatically. Install it from https://nodejs.org then run this file again.",
+    "  pause", "  exit /b 1", ")",
+    'if not exist "%DIR%" mkdir "%DIR%"',
+    'curl -fsSL "%SERVER%/companion/studio5-companion.mjs" -o "%DIR%\\studio5-companion.mjs"',
+    "if errorlevel 1 (", "  echo Download failed. Check your internet connection.", "  pause", "  exit /b 1", ")",
+    // package.json pinning the open-source input library, then a normal npm install (downloads prebuilt binaries)
+    '> "%DIR%\\package.json" echo {"name":"studio5-companion","version":"1.0.0","type":"module","private":true,"dependencies":{"@nut-tree-fork/nut-js":"4.2.6","jimp":"0.22.10"}}',
+    "echo Installing the input library (nut-js) and image tools...",
+    'pushd "%DIR%"',
+    "call npm install --no-audit --no-fund --loglevel=error",
+    "set NPMERR=%errorlevel%",
+    "popd",
+    "if not %NPMERR%==0 (",
+    "  echo.",
+    "  echo The input library could not be installed. Mouse/keyboard/screen control will be off,",
+    "  echo but files, apps and jobs still work. You can re-run this installer later to add it.",
+    "  echo.",
+    ")",
+    '> "%DIR%\\Studio5 Companion.cmd" echo @echo off',
+    '>> "%DIR%\\Studio5 Companion.cmd" echo title Studio5 Companion - phone control is ON while this window is open',
+    '>> "%DIR%\\Studio5 Companion.cmd" echo cd /d "%DIR%"',
+    '>> "%DIR%\\Studio5 Companion.cmd" echo node "%DIR%\\studio5-companion.mjs" --server %SERVER%',
+    'copy /y "%DIR%\\Studio5 Companion.cmd" "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Studio5 Companion.cmd" >nul',
+    "echo.",
+    "echo Installed. The Companion starts at login (a visible window - close it to stop phone control).",
+    "echo Starting it now for pairing...",
+    'start "Studio5 Companion" cmd /k "cd /d "%DIR%" && node "%DIR%\\studio5-companion.mjs" --server %SERVER% --pair"',
+  ];
+  return lines.join("\r\n") + "\r\n";
 };
 /* actions */
 Object.assign(S5.act, {

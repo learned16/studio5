@@ -5,7 +5,7 @@
    - Only listed actions exist. No arbitrary shell commands. File access is limited to the workspace folder.
    - Every command is written to the activity log. Press Ctrl+C to stop; delete config.json to unpair.
    Usage: node studio5-companion.mjs --server https://studio5-app.<you>.workers.dev [--pair] [--simulate] */
-import { spawn, execFile } from "node:child_process";
+import { execFile } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, statSync, appendFileSync, createReadStream } from "node:fs";
 import { join, resolve, relative, extname, basename, isAbsolute } from "node:path";
 import os from "node:os";
@@ -61,81 +61,65 @@ async function open(env) {
   return m.body;
 }
 
-/* ---------- Windows driver: one persistent PowerShell with a small user32 helper ---------- */
-const PS_HELPER = String.raw`
-$ErrorActionPreference = 'Stop'
-Add-Type -AssemblyName System.Windows.Forms, System.Drawing
-Add-Type @"
-using System; using System.Runtime.InteropServices;
-public static class S5W {
-  [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X; public int Y; }
-  [DllImport("user32.dll")] public static extern bool SetCursorPos(int X, int Y);
-  [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT p);
-  [DllImport("user32.dll")] public static extern void mouse_event(uint f, int dx, int dy, int d, UIntPtr e);
-  [DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte sc, uint f, UIntPtr e);
-  [DllImport("user32.dll")] public static extern bool LockWorkStation();
-  [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
-  public static void Move(int dx, int dy) { POINT p; GetCursorPos(out p); SetCursorPos(p.X + dx, p.Y + dy); }
-  public static void M(uint f) { mouse_event(f, 0, 0, 0, UIntPtr.Zero); }
-  public static void Wheel(int d) { mouse_event(0x0800, 0, 0, d, UIntPtr.Zero); }
-  public static void HWheel(int d) { mouse_event(0x01000, 0, 0, d, UIntPtr.Zero); }
-  public static void Key(byte vk, bool up) { keybd_event(vk, 0, up ? 2u : 0u, UIntPtr.Zero); }
-}
-"@
-[S5W]::SetProcessDPIAware() | Out-Null
-function Out-R($r) { [Console]::Out.WriteLine(($r | ConvertTo-Json -Compress -Depth 5)); [Console]::Out.Flush() }
-while (($line = [Console]::In.ReadLine()) -ne $null) {
-  $c = $null
-  try {
-    $c = $line | ConvertFrom-Json; $r = @{ id = $c.id; ok = $true }
-    switch ($c.op) {
-      'move'   { [S5W]::Move([int]$c.dx, [int]$c.dy) }
-      'moveabs'{ $b = [System.Windows.Forms.SystemInformation]::VirtualScreen; [S5W]::SetCursorPos($b.Left + [int]$c.x, $b.Top + [int]$c.y) | Out-Null }
-      'click'  { if ($c.b -eq 'right') { [S5W]::M(8); [S5W]::M(16) } elseif ($c.b -eq 'middle') { [S5W]::M(0x20); [S5W]::M(0x40) } else { [S5W]::M(2); [S5W]::M(4); if ($c.dbl) { [S5W]::M(2); [S5W]::M(4) } } }
-      'down'   { [S5W]::M(2) }
-      'up'     { [S5W]::M(4) }
-      'wheel'  { [S5W]::Wheel([int]$c.d) }
-      'hwheel' { [S5W]::HWheel([int]$c.d) }
-      'keys'   { foreach ($k in $c.vks) { [S5W]::Key([byte]$k, $false) }; $rev = @($c.vks); [array]::Reverse($rev); foreach ($k in $rev) { [S5W]::Key([byte]$k, $true) } }
-      'paste'  { $old = $null; try { $old = Get-Clipboard -Raw } catch {}; Set-Clipboard -Value $c.text; Start-Sleep -Milliseconds 60; [S5W]::Key(0x11,$false); [S5W]::Key(0x56,$false); [S5W]::Key(0x56,$true); [S5W]::Key(0x11,$true); Start-Sleep -Milliseconds 120; if ($old -ne $null) { Set-Clipboard -Value $old } }
-      'shot'   {
-        $b = [System.Windows.Forms.SystemInformation]::VirtualScreen
-        $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height; $g = [System.Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen($b.Left, $b.Top, 0, 0, $bmp.Size)
-        $p = [System.Windows.Forms.Cursor]::Position; $g.FillEllipse([System.Drawing.Brushes]::Red, $p.X - $b.Left - 6, $p.Y - $b.Top - 6, 12, 12)
-        $w = [int]$c.w; if ($w -le 0 -or $w -gt $b.Width) { $w = $b.Width }; $h = [int]($b.Height * $w / $b.Width)
-        $small = New-Object System.Drawing.Bitmap $bmp, $w, $h
-        $enc = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq 'image/jpeg' }
-        $ep = New-Object System.Drawing.Imaging.EncoderParameters 1; $ep.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter ([System.Drawing.Imaging.Encoder]::Quality), ([long]$c.q)
-        $ms = New-Object System.IO.MemoryStream; $small.Save($ms, $enc, $ep)
-        $r.data = @{ jpeg = [Convert]::ToBase64String($ms.ToArray()); w = $w; h = $h; sw = $b.Width; sh = $b.Height }
-        $g.Dispose(); $bmp.Dispose(); $small.Dispose(); $ms.Dispose()
-      }
-      'clipget' { $r.data = @{ text = (Get-Clipboard -Raw) } }
-      'clipset' { Set-Clipboard -Value $c.text }
-      'lock'    { [S5W]::LockWorkStation() | Out-Null }
-      'status'  {
-        $bat = Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue | Select-Object -First 1
-        $os = Get-CimInstance Win32_OperatingSystem
-        $r.data = @{ battery = $(if ($bat) { [int]$bat.EstimatedChargeRemaining } else { $null }); charging = $(if ($bat) { $bat.BatteryStatus -eq 2 } else { $true }); freeMemMB = [int]($os.FreePhysicalMemory / 1024); totalMemMB = [int]($os.TotalVisibleMemorySize / 1024); uptimeH = [math]::Round(((Get-Date) - $os.LastBootUpTime).TotalHours, 1) }
-      }
-      'windows' { $r.data = @(Get-Process | Where-Object { $_.MainWindowTitle } | Select-Object -First 30 | ForEach-Object { @{ pid = $_.Id; app = $_.ProcessName; title = $_.MainWindowTitle } }) }
-      'focus'   { $sh = New-Object -ComObject WScript.Shell; $r.data = $sh.AppActivate([int]$c.pid) }
-      default { throw "unknown op $($c.op)" }
-    }
-  } catch { $r = @{ id = $(if ($c) { $c.id } else { $null }); ok = $false; error = $_.Exception.Message } }
-  Out-R $r
-}
-`;
-class WinDriver {
-  constructor() {
-    const f = join(HOME, "helper.ps1"); writeFileSync(f, "﻿" + PS_HELPER);
-    this.ps = spawn("powershell.exe", ["-NoProfile", "-NoLogo", "-STA", "-ExecutionPolicy", "Bypass", "-File", f], { stdio: ["pipe", "pipe", "pipe"], windowsHide: true });
-    this.wait = new Map(); this.seq = 0; let buf = "";
-    this.ps.stdout.setEncoding("utf8"); this.ps.stdout.on("data", (d) => { buf += d; let i; while ((i = buf.indexOf("\n")) >= 0) { const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (!line) continue; try { const r = JSON.parse(line); const w = this.wait.get(r.id); if (w) { this.wait.delete(r.id); r.ok ? w.res(r.data) : w.rej(new Error(r.error)); } } catch {} } });
-    this.ps.stderr.on("data", (d) => log("powershell:", String(d).trim()));
-    this.ps.on("exit", (c) => { log("helper exited", c, "— restarting"); setTimeout(() => Object.assign(this, new WinDriver()), 1000); });
+/* ---------- Windows input & screen driver ----------
+   Uses nut-js — an open-source, widely used desktop-automation library that ships prebuilt, signed native
+   binaries — for the pointer, keyboard and screen capture. Nothing is generated or compiled at runtime, so
+   there is no script for antivirus to flag. Clipboard, lock, status and window focus use ordinary Windows
+   commands. If the library cannot load, those three input features report a clear error and everything else
+   (files, apps, jobs) keeps working. */
+const psOut = (cmd) => new Promise((res, rej) => execFile("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", cmd], { windowsHide: true, maxBuffer: 8e6 }, (e, out) => (e ? rej(e) : res(String(out)))));
+const NAME2KEY = { ctrl: "LeftControl", control: "LeftControl", shift: "LeftShift", alt: "LeftAlt", win: "LeftWin", meta: "LeftWin", tab: "Tab", enter: "Enter", return: "Enter", esc: "Escape", escape: "Escape", space: "Space", backspace: "Backspace", delete: "Delete", del: "Delete", left: "Left", right: "Right", up: "Up", down: "Down", home: "Home", end: "End", pageup: "PageUp", pagedown: "PageDown", mute: "AudioMute", voldown: "AudioVolDown", volup: "AudioVolUp", next: "AudioNext", prev: "AudioPrev", playpause: "AudioPlay" };
+class NutDriver {
+  constructor() { this.ready = this.load(); this.ready.catch((e) => log("Input library not available:", e.message, "— mouse/keyboard/screen are off; files, apps and jobs still work.")); }
+  async ensure() { try { await this.ready; } catch { throw new Error("Input control is off (the nut-js library did not load). Re-run the installer to add it. Files, apps and jobs still work."); } }
+  async load() {
+    const nut = await import("@nut-tree-fork/nut-js");
+    this.n = nut; this.mouse = nut.mouse; this.keyboard = nut.keyboard; this.screen = nut.screen;
+    this.mouse.config.autoDelayMs = 0; this.mouse.config.mouseSpeed = 4000; this.keyboard.config.autoDelayMs = 0;
+    const jimpMod = await import("jimp"); this.Jimp = jimpMod.default || jimpMod;
+    log("Input library ready (nut-js).");
   }
-  call(op, a = {}, timeout = 15000) { const id = ++this.seq; return new Promise((res, rej) => { this.wait.set(id, { res, rej }); this.ps.stdin.write(JSON.stringify({ id, op, ...a }) + "\n"); setTimeout(() => { if (this.wait.has(id)) { this.wait.delete(id); rej(new Error("timeout")); } }, timeout); }); }
+  keyOf(name) { const k = String(name).toLowerCase(); let key = NAME2KEY[k]; if (!key && /^[a-z0-9]$/.test(k)) key = k.toUpperCase(); if (!key && /^f([1-9]|1[0-2])$/.test(k)) key = "F" + k.slice(1); const v = this.n.Key[key]; if (v === undefined) throw new Error("unknown key " + name); return v; }
+  btn(b) { return b === "right" ? this.n.Button.RIGHT : b === "middle" ? this.n.Button.MIDDLE : this.n.Button.LEFT; }
+  async call(op, a = {}) {
+    await this.ensure();
+    const M = this.mouse, K = this.keyboard, S = this.screen, P = (x, y) => new this.n.Point(x, y);
+    switch (op) {
+      case "move": { const p = await M.getPosition(); await M.setPosition(P(p.x + (a.dx | 0), p.y + (a.dy | 0))); return; }
+      case "moveabs": await M.setPosition(P(a.x | 0, a.y | 0)); return;
+      case "click": { const b = this.btn(a.b); if (a.dbl) await M.doubleClick(b); else await M.click(b); return; }
+      case "down": await M.pressButton(this.n.Button.LEFT); return;
+      case "up": await M.releaseButton(this.n.Button.LEFT); return;
+      case "wheel": { const d = a.d | 0; if (d >= 0) await M.scrollDown(d); else await M.scrollUp(-d); return; }
+      case "hwheel": { const d = a.d | 0; if (d >= 0) await M.scrollRight(d); else await M.scrollLeft(-d); return; }
+      case "keys": { const keys = a.keys.map((n) => this.keyOf(n)); await K.pressKey(...keys); await K.releaseKey(...keys.reverse()); return; }
+      case "type": { // paste for reliable Arabic/Unicode: set clipboard, Ctrl+V, restore
+        const old = await psOut("Get-Clipboard -Raw").catch(() => "");
+        await this.call("clipset", { text: a.text });
+        await new Promise((r) => setTimeout(r, 50));
+        await K.pressKey(this.n.Key.LeftControl, this.n.Key.V); await K.releaseKey(this.n.Key.V, this.n.Key.LeftControl);
+        await new Promise((r) => setTimeout(r, 120)); await this.call("clipset", { text: old });
+        return;
+      }
+      case "shot": {
+        const img = await S.grab(); const w = img.width, h = img.height, ch = img.channels, src = img.data; // BGR(A)
+        const jimg = new this.Jimp(w, h); const dst = jimg.bitmap.data;
+        for (let i = 0, n = w * h; i < n; i++) { const s = i * ch, d = i * 4; dst[d] = src[s + 2]; dst[d + 1] = src[s + 1]; dst[d + 2] = src[s]; dst[d + 3] = 255; }
+        try { const pt = await M.getPosition(); const sx = Math.round((pt.x / (S.width ? await S.width() : w)) * w) || pt.x, sy = Math.round((pt.y / (S.height ? await S.height() : h)) * h) || pt.y; for (let yy = -6; yy <= 6; yy++) for (let xx = -6; xx <= 6; xx++) if (xx * xx + yy * yy <= 36) { const px = sx + xx, py = sy + yy; if (px >= 0 && px < w && py >= 0 && py < h) { const d = (py * w + px) * 4; dst[d] = 220; dst[d + 1] = 40; dst[d + 2] = 40; } } } catch {}
+        const target = Math.min(a.w || 1280, w); if (target < w) jimg.resize(target, this.Jimp.AUTO);
+        jimg.quality(Math.min(Math.max(a.q || 60, 20), 90));
+        const buf = await jimg.getBufferAsync(this.Jimp.MIME_JPEG);
+        return { jpeg: buf.toString("base64"), w: jimg.bitmap.width, h: jimg.bitmap.height, sw: w, sh: h };
+      }
+      case "clipget": return { text: await psOut("Get-Clipboard -Raw").catch(() => "") };
+      case "clipset": { const b64 = Buffer.from(String(a.text ?? ""), "utf8").toString("base64"); await psOut(`Set-Clipboard -Value ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}')))`); return; }
+      case "lock": execFile("rundll32.exe", ["user32.dll,LockWorkStation"], { windowsHide: true }); return;
+      case "status": { const o = JSON.parse(await psOut("$b=Get-CimInstance Win32_Battery -EA SilentlyContinue|Select -First 1;$o=Get-CimInstance Win32_OperatingSystem;[pscustomobject]@{battery=if($b){[int]$b.EstimatedChargeRemaining}else{$null};charging=if($b){$b.BatteryStatus -eq 2}else{$true};freeMemMB=[int]($o.FreePhysicalMemory/1024);totalMemMB=[int]($o.TotalVisibleMemorySize/1024);uptimeH=[math]::Round(((Get-Date)-$o.LastBootUpTime).TotalHours,1)}|ConvertTo-Json -Compress")); return o; }
+      case "windows": { const t = (await psOut("Get-Process|?{$_.MainWindowTitle}|Select -First 30 Id,ProcessName,MainWindowTitle|ConvertTo-Json -Compress")).trim(); const arr = t ? [].concat(JSON.parse(t)) : []; return arr.map((p) => ({ pid: p.Id, app: p.ProcessName, title: p.MainWindowTitle })); }
+      case "focus": await psOut(`(New-Object -ComObject WScript.Shell).AppActivate(${a.pid | 0})`); return true;
+      default: throw new Error("unknown op " + op);
+    }
+  }
 }
 class SimDriver { // for testing on non-Windows machines: logs every action
   async call(op, a = {}) {
@@ -147,11 +131,9 @@ class SimDriver { // for testing on non-Windows machines: logs every action
     SimDriver.last = { op, ...a }; return null;
   }
 }
-const drv = SIM ? new SimDriver() : new WinDriver();
+const drv = SIM ? new SimDriver() : new NutDriver();
 
 /* ---------- actions ---------- */
-const VK = { ctrl: 0x11, shift: 0x10, alt: 0x12, win: 0x5b, tab: 0x09, enter: 0x0d, esc: 0x1b, space: 0x20, backspace: 0x08, delete: 0x2e, left: 0x25, up: 0x26, right: 0x27, down: 0x28, home: 0x24, end: 0x23, pageup: 0x21, pagedown: 0x22, f5: 0x74, f11: 0x77, mute: 0xad, voldown: 0xae, volup: 0xaf, next: 0xb0, prev: 0xb1, playpause: 0xb3 };
-const vkOf = (k) => { k = String(k).toLowerCase(); if (VK[k]) return VK[k]; if (/^[a-z0-9]$/.test(k)) return k.toUpperCase().charCodeAt(0); if (/^f([1-9]|1[0-2])$/.test(k)) return 0x6f + +k.slice(1); throw new Error("unknown key " + k); };
 const inWorkspace = (p) => { const full = resolve(cfg.workspace, String(p || ".")); const rel = relative(cfg.workspace, full); if (rel === ".." || rel.startsWith("../") || rel.startsWith("..\\") || isAbsolute(rel)) throw new Error("outside the workspace folder"); return full; };
 const start = (target) => new Promise((res, rej) => { if (SIM) { log("SIM open", target); return res(); } execFile("cmd.exe", ["/c", "start", "", target], { windowsHide: true }, (e) => (e ? rej(e) : res())); });
 const SENSITIVE = new Set(["sys.shutdown", "sys.sleep", "sys.restart"]);
@@ -164,8 +146,8 @@ const ACTIONS = {
   "mouse.click": async (b) => drv.call("click", { b: b.button || "left", dbl: !!b.double }),
   "mouse.down": async () => drv.call("down"), "mouse.up": async () => drv.call("up"),
   "mouse.scroll": async (b) => drv.call(b.horizontal ? "hwheel" : "wheel", { d: Math.round(b.dy) }),
-  "key.combo": async (b) => drv.call("keys", { vks: b.keys.map(vkOf) }),
-  "key.type": async (b) => drv.call("paste", { text: String(b.text).slice(0, 5000) }),
+  "key.combo": async (b) => drv.call("keys", { keys: b.keys }),
+  "key.type": async (b) => drv.call("type", { text: String(b.text).slice(0, 5000) }),
   "screen.shot": async (b) => drv.call("shot", { w: Math.min(b.width || 1280, 2560), q: Math.min(Math.max(b.quality || 60, 20), 90) }, 20000),
   "clip.get": async () => drv.call("clipget"), "clip.set": async (b) => drv.call("clipset", { text: String(b.text).slice(0, 100000) }),
   "win.list": async () => drv.call("windows"), "win.focus": async (b) => drv.call("focus", { pid: b.pid }),
