@@ -21,7 +21,7 @@ S5.views.today = () => {
   const lectureCard = (s, label) => { const sub = S5.store.get(s.subjectId); return `<div class="row between"><div class="stack" style="gap:2px"><span class="eyebrow">${label} · ${s.start}–${s.end}${s.room ? " · " + S5.esc(s.room) : ""}</span><h2>${S5.esc(sub?.name || "")}</h2>${H.subjAr(s.subjectId)}</div><div class="row">${H.btn("Open lecture workspace", "lecture-now", { subject: s.subjectId }, "primary")}${H.btn("Capture", "capture", { subject: s.subjectId })}</div></div>`; };
   return `
   ${demo ? `<div class="sheet flat" style="margin-bottom:14px;border-style:dashed"><div class="row between"><p class="small"><strong>You're looking at example data.</strong> A sample week (timetable, a project, an exam) shows how Studio5 works. Your curriculum for all five years is real.</p>${H.btn("Remove examples", "clear-demo", {}, "sm")}</div></div>` : ""}
-  <div class="page-head"><div class="titles"><span class="eyebrow">${now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })} · Year ${y} · Semester ${sem}</span><h1>Today</h1></div>
+  <div class="page-head"><div class="titles"><span class="eyebrow">${now.toLocaleDateString(S5.locale(), { weekday: "long", day: "numeric", month: "long" })} · Year ${y} · Semester ${sem}</span><h1>Today</h1></div>
     <div class="row">${H.btn("Plan a session", "new-session")}${H.btn("End-of-day review", "day-review")}</div></div>
   <div class="split">
     <div class="stack">
@@ -59,7 +59,7 @@ S5.views.focus = (r) => {
     <div class="clock" id="focus-clock">00:00</div>
     <div style="width:min(420px,90%)"><div class="meter"><i id="focus-bar" style="width:0"></i></div></div>
     <div class="row" style="justify-content:center">${run && run.running ? H.btn("Pause", "focus-pause", { id: s.id }) : H.btn(run ? "Resume" : "Start", "focus-start", { id: s.id }, "primary")}${H.btn("Finish session", "focus-finish", { id: s.id })}</div>
-    <dl class="kv" style="text-align:left;max-width:520px"><dt>Output</dt><dd dir="auto">${S5.esc(s.output || "—")}</dd><dt>Done when</dt><dd dir="auto">${S5.esc(s.criterion || "—")}</dd></dl>
+    <dl class="kv" style="text-align:start;max-width:520px"><dt>Output</dt><dd dir="auto">${S5.esc(s.output || "—")}</dd><dt>Done when</dt><dd dir="auto">${S5.esc(s.criterion || "—")}</dd></dl>
     <p class="tiny muted">Non-critical alerts are hidden while you focus. The screen stays awake when your device allows it.</p>
   </div>`;
 };

@@ -4,10 +4,12 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 const order = ["core.js", "curriculum.js", "ink.js", "pdf.js", "ai.js", "ui.js", "tools.js",
   "view-today.js", "view-study.js", "view-projects.js", "view-practice.js", "view-library.js",
-  "view-system.js", "main.js"];
+  "view-system.js", "remote.js", "i18n.js", "main.js"];
 const read = (f) => readFileSync(new URL("./src/" + f, import.meta.url), "utf8");
 const out = (p, s) => writeFileSync(new URL(p, import.meta.url), s);
-const js = order.map((f) => `// ---- ${f} ----\n${read(f)}`).join("\n");
+const dict = {};
+for (const f of ["i18n-ar-1.txt", "i18n-ar-2.txt", "i18n-ar-3.txt", "i18n-ar-4.txt"]) for (const line of read(f).split("\n")) { const i = line.indexOf("\t"); if (i > 0) dict[line.slice(0, i)] = line.slice(i + 1).trim(); }
+const js = `var S5_I18N_PENDING = ${JSON.stringify(dict)};\n` + order.map((f) => `// ---- ${f} ----\n${read(f)}`).join("\n");
 const content = read("head.html") + `<style>\n${read("styles.css")}\n</style>\n` + read("body.html") + `<script>\n"use strict";\n${js}\n</script>\n`;
 mkdirSync(new URL("./dist/", import.meta.url), { recursive: true });
 mkdirSync(new URL("./public/", import.meta.url), { recursive: true });
@@ -34,6 +36,7 @@ self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) =
 self.addEventListener("fetch", (e) => {
   const req = e.request; if (req.method !== "GET") return;
   const url = new URL(req.url);
+  if (url.origin === location.origin && (url.pathname.startsWith("/api/") || url.pathname.startsWith("/companion/"))) return; // relay & companion: always live
   if (req.mode === "navigate" || (url.origin === location.origin && url.pathname.endsWith("/"))) {
     // the app page: network first so updates arrive, cache when offline
     e.respondWith(fetch(req).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put("./index.html", copy)); return r; }).catch(() => caches.match("./index.html")));
@@ -43,5 +46,7 @@ self.addEventListener("fetch", (e) => {
   e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok || r.type === "opaque") { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return r; })));
 });
 `);
+mkdirSync(new URL("./public/companion/", import.meta.url), { recursive: true });
+out("./public/companion/studio5-companion.mjs", readFileSync(new URL("./companion/studio5-companion.mjs", import.meta.url), "utf8"));
 out("./public/_headers", `/sw.js\n  Cache-Control: no-cache\n/index.html\n  Cache-Control: no-cache\n/\n  Cache-Control: no-cache\n`);
 console.log("built dist/studio5.html and public/ —", (content.length / 1024).toFixed(0) + " KB");

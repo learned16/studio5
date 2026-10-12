@@ -1,0 +1,300 @@
+Edit	تعديل
+Edit gap	تعديل الفجوة
+Element it applies to	العنصر المعني
+Elements to look for	عناصر للملاحظة
+Elevation	واجهة
+End	النهاية
+End-of-day review	مراجعة نهاية اليوم
+Engineering	هندسي
+Engineering drawing	الرسم الهندسي
+Engineering economics (NPV / IRR)	الاقتصاد الهندسي (NPV / IRR)
+Engineering sheet	لوحة هندسية
+Engineering tools	الأدوات الهندسية
+Engineering track	المسار الهندسي
+Enter the code shown on the laptop:	أدخل الرمز الظاهر على اللابتوب:
+Eraser — removes only the part you touch (E)	ممحاة — تمسح الجزء الذي تلمسه فقط (E)
+Error pattern	نمط الأخطاء
+Error type	نوع الخطأ
+Est.	تقدير
+Estimate	التقدير
+Estimate (min)	التقدير (دقيقة)
+Estimated	تقديري
+Evaluated	مُقيّم
+Evaluation	التقييم النهائي
+Every alert has an action	كل تنبيه له إجراء
+Every change to how Studio# works: proposal, reason, impact, alternatives, decision. Proposed → under review → approved / deferred / rejected → implemented / replaced.	كل تغيير في طريقة عمل Studio5: المقترح، السبب، الأثر، البدائل، القرار. مقترح ← قيد المراجعة ← معتمد / مؤجل / مرفوض ← منفّذ / مستبدل.
+Every conclusion links to evidence. Every measurement says actual or estimated, method, date and accuracy. Measurements from photos are never used for execution.	كل استنتاج مرتبط بدليل. كل قياس يذكر فعلي أو تقديري، الطريقة، التاريخ والدقة. القياس من الصور لا يُستخدم للتنفيذ أبداً.
+Everything captured but not organised	كل ما التُقط ولم يُنظم
+Everything, in the browser's private database for this page (indexeddb).	كل شيء، في قاعدة بيانات المتصفح الخاصة بهذه الصفحة (indexeddb).
+Everything: lectures, PDF pages, feedback, errors, projects, site notes, exercises	كل شيء: محاضرات، صفحات PDF، ملاحظات، أخطاء، مشاريع، ملاحظات موقع، تمارين
+Evidence	الدليل
+Evidence (photo, map, measurement)	الدليل (صورة، خريطة، قياس)
+Exact quote	الاقتباس الحرفي
+Exact words	الكلام الحرفي
+Exam conditions (time, reading)	ظروف الامتحان (الوقت، القراءة)
+Exam day sheet	ورقة يوم الامتحان
+Exam plan	خطة الامتحان
+Exam scope	نطاق الامتحان
+Exam scope & mastery	نطاق الامتحان والإتقان
+Excluded	مستبعد
+Execution / arithmetic	التنفيذ / الحساب
+Experience	الخبرة
+Experience memory	ذاكرة الخبرة
+Experience memory (Markdown)	ذاكرة الخبرة (Markdown)
+Experiment	تجربة
+Explain it a different way	اشرحها بطريقة ثانية
+Explained too fast	شُرح بسرعة
+Export PNG	تصدير PNG
+Export for other tools	تصدير لبرامج أخرى
+Export full backup	تصدير نسخة احتياطية كاملة
+Export type to collect (e.g. .pdf)	نوع الملف المُصدّر للجلب (مثلاً .pdf)
+External distance E	المسافة الخارجية E
+Facade facing (S/E/W/N)	اتجاه الواجهة (S/E/W/N)
+Failed	فشل
+Fall	هبوط
+Feedback	ملاحظات الأستاذ
+Feedback and rules from this professor. Kept separate: scientific rule, official requirement, personal preference, project note, uncertain. Patterns are probabilities, not guarantees.	ملاحظات وقواعد هذا الأستاذ، مفصولة: قاعدة علمية، متطلب رسمي، تفضيل شخصي، ملاحظة مشروع، غير مؤكد. الأنماط احتمالات لا ضمانات.
+Feedback received	الملاحظات المستلمة
+Feedback that influenced it	الملاحظات التي أثرت عليه
+Feedback → understand → task → change → new version → before/after → confirmed at the next review. Exact words stay separate from your interpretation.	ملاحظة ← فهم ← مهمة ← تعديل ← نسخة جديدة ← قبل/بعد ← تأكيد في المراجعة التالية. الكلام الحرفي يبقى منفصلاً عن تفسيرك.
+File	ملف
+File format, naming and resolution as requested	صيغة الملف والتسمية والدقة حسب المطلوب
+Files	الملفات
+Files & PDFs	الملفات وPDF
+Fill the page with ellipses at # different degrees, # passes each.	املأ الصفحة بأشكال بيضوية بـ# درجات مختلفة، # مرات لكل منها.
+Findings (during)	المشاهدات (أثناء)
+Finish attempt	إنهاء المحاولة
+Finish session	إنهاء الجلسة
+First attempt.	المحاولة الأولى.
+First note	ملاحظة أولية
+First note → tried once → repeated → confirmed in context → approved experience. A project-specific professor preference is not a general rule. Conflicting memories are kept side by side, never overwritten.	ملاحظة أولية ← جُربت مرة ← تكررت ← مؤكدة في سياقها ← خبرة معتمدة. تفضيل أستاذ لمشروع معين ليس قاعدة عامة. الخبرات المتعارضة تُحفظ جنباً إلى جنب ولا تُستبدل.
+First step tomorrow	أول خطوة غداً
+Fit	ملاءمة
+Fit page	ملاءمة الصفحة
+Flange thickness (mm, I only)	سمك الشفة (ملم، I فقط)
+Float	الفائض
+Floor area ratio (FAR)	نسبة المساحة الطابقية (FAR)
+Floor-to-floor height (mm)	ارتفاع الطابق (ملم)
+Follow device	حسب الجهاز
+Fonts, materials, links embedded — export opens on another computer	الخطوط والخامات والروابط مضمّنة — الملف يفتح على كمبيوتر آخر
+For each: why it was chosen, the idea learned, what must not be copied, its context.	لكل مرجع: لماذا اختير، الفكرة المستفادة، ما لا يجوز نسخه، وسياقه.
+Formula or drawing	قانون أو رسم
+Freehand	الرسم الحر
+Freehand track	مسار الرسم الحر
+Freeze submission	تجميد التسليم
+Freezing creates a fixed version with a manifest of every file and deliverable, their hashes, and a device snapshot. Later edits never alter what you submitted.	التجميد ينشئ نسخة ثابتة مع قائمة بكل ملف ومخرج وبصماتها ولقطة للجهاز. التعديلات اللاحقة لا تغيّر ما سلّمته.
+Fri	الجمعة
+From photo (not for execution)	من صورة (ليس للتنفيذ)
+From the start	من البداية
+Full backup	نسخة احتياطية كاملة
+General	عام
+Glazing	الزجاج
+Goal	الهدف
+Going G (#R + G = #)	النائمة G (#R + G = #)
+Grade	الدرجة
+Graded weight	الوزن المقيّم
+Grades	الدرجات
+Grades (CSV)	الدرجات (CSV)
+Graduation project	مشروع التخرج
+Graduation project, research methodology, project management & economics, sustainability, criticism	مشروع التخرج، منهجية البحث، إدارة المشاريع والاقتصاد، الاستدامة، النقد
+Grid	شبكة
+Grid # mm	شبكة # ملم
+Gross density	الكثافة الإجمالية
+Group	جماعي
+Guide	الدليل
+Guide lines	خطوط إرشادية
+Hand drawing	رسم يدوي
+Health	الحالة
+Healthy	سليمة
+Heavy CAD/BIM files stay in your Windows workspace; record them by relative path in a computer job.	ملفات CAD/BIM الثقيلة تبقى في مجلد عملك على ويندوز؛ سجّلها بمسارها النسبي في مهمة كمبيوتر.
+Help ladder	سلّم المساعدة
+High	عالية
+Highest risk	الأعلى خطراً
+Highlighter (H)	قلم تظليل (H)
+Hint → which step → the principle → part of the solution → full solution	تلميح ← أي خطوة ← المبدأ ← جزء من الحل ← الحل الكامل
+History (#)	السجل (#)
+Home	الرئيسية
+Horizontal road curve	المنحنى الأفقي للطريق
+Horizontal run (excl. landings)	الامتداد الأفقي (بدون البسطات)
+Housing density	الكثافة السكنية
+How I use it	كيف أستخدمه
+How well did you understand it?	ما مدى فهمك لها؟
+I enjoy drawing & visual design	أستمتع بالرسم والتصميم البصري
+I enjoy mathematics & calculation	أستمتع بالرياضيات والحساب
+I understand it	فهمتها
+Idea	الفكرة
+Idea learned	الفكرة المستفادة
+Ignored feedback	تجاهل الملاحظات
+Image	صورة
+Image / file	صورة / ملف
+Image or file	صورة أو ملف
+Images	الصور
+Impact	الأثر
+Implemented	منفّذ
+Implemented does not mean enabled. A year's subjects, tools and views exist now; turning a year on shows them in your daily screens.	المنفّذ لا يعني المفعّل. مواد السنة وأدواتها موجودة الآن؛ تفعيل السنة يظهرها في شاشاتك اليومية.
+In Chrome or Edge, use the install icon in the address bar (or menu → “Install Studio#”) to add it as a desktop app that works offline.	في Chrome أو Edge استخدم أيقونة التنصيب في شريط العنوان (أو القائمة ← «Install Studio5») لتضيفه كبرنامج يعمل بدون إنترنت.
+In progress	قيد التنفيذ
+In scope	ضمن النطاق
+Inbox	الوارد
+Individual	فردي
+Install on this computer	التنصيب على هذا الكمبيوتر
+Interior & exterior design, advanced technologies, quantity surveying, housing, climate, theory	التصميم الداخلي والخارجي، التقنيات المتقدمة، المسح الكمي، الإسكان، المناخ، النظرية
+Interior, Exterior, Quantities, Climate & Theory	الداخل والخارج والكميات والمناخ والنظرية
+Isometric	أيزومتري
+Item	البند
+Items: description, unit, qty, rate (IQD)	البنود: الوصف، الوحدة، الكمية، السعر (دينار)
+Job	مهمة
+Job market where I want to work	سوق العمل حيث أريد أن أعمل
+Job type	نوع المهمة
+Key example / decision	مثال مهم / قرار
+Kind	النوع
+Know the basics	أعرف الأساس
+Knowledge	المعرفة
+Known problems	مشاكل معروفة
+Lab / workshop	مختبر / ورشة
+Land per dwelling	الأرض لكل وحدة سكنية
+Landings (count)	البسطات (العدد)
+Languages & general	اللغات والعامة
+Laptop	اللابتوب
+Laptop control	التحكم باللابتوب
+Lasso select / move (L)	تحديد حر / تحريك (L)
+Last backup	آخر نسخة احتياطية
+Last restore test	آخر اختبار استعادة
+Latitude (sun tools)	خط العرض (أدوات الشمس)
+Latitude (°N)	خط العرض (°شمال)
+Layer	الطبقة
+Layers: name, thickness (mm), k (W/m·K)	الطبقات: الاسم، السمك (ملم)، k (واط/م·ك)
+Learning	أتعلم
+Lecture	المحاضرة
+Lecture PDF	PDF المحاضرة
+Lecture PDFs, handouts, photos of the board.	ملفات المحاضرات، الملازم، صور السبورة.
+Lecture title / topic	عنوان / موضوع المحاضرة
+Lectures	المحاضرات
+Lectures / pages / examples	محاضرات / صفحات / أمثلة
+Lectures today	محاضرات اليوم
+Lesson	درس
+Lessons to keep	دروس للحفظ
+Lessons → experience memory	الدروس ← ذاكرة الخبرة
+Level	المستوى
+Levelling book (rise & fall)	دفتر التسوية (ارتفاع وهبوط)
+Levels	المناسيب
+Library	المكتبة
+Life-cycle cost comparison	مقارنة كلفة دورة الحياة
+Light	فاتح
+Lighting (lumen method)	الإنارة (طريقة اللومن)
+Limit L/#	الحد L/#
+Line width	سمك الخط
+Link	الرابط
+Linked work	أعمال مرتبطة
+Live measurements	قياسات مباشرة
+Lost	ضايع
+Low	منخفضة
+Lumens per luminaire	لومن لكل وحدة إنارة
+Luminaire height above work plane (m)	ارتفاع وحدة الإنارة فوق سطح العمل (م)
+Luminaires needed N	عدد وحدات الإنارة N
+Lumion / renderer	Lumion / برنامج إظهار
+MEDIUM risk.	خطر متوسط.
+Main image / file	الصورة / الملف الرئيسي
+Main navigation	التنقل الرئيسي
+Maintenance factor	معامل الصيانة
+Make Year # my current year	اجعل السنة # سنتي الحالية
+Make a portfolio case study	اصنع دراسة حالة للـPortfolio
+Management & economics	الإدارة والاقتصاد
+Mandatory	إلزامي
+Mark asked	علّم كمسؤول
+Mark project evaluated	علّم المشروع كمقيّم
+Mark “didn't understand” during a lecture; it lands here.	علّم «ما فهمت» أثناء المحاضرة؛ يظهر هنا.
+Masonry	البناء بالطابوق
+Mastery	الإتقان
+Material	مادة
+Material card	بطاقة مادة
+Material cards	بطاقات المواد
+Material cards, tests and construction details. Starter cards are marked — verify them against your own lectures.	بطاقات المواد والفحوص والتفاصيل الإنشائية. البطاقات الأولية معلّمة — تحقق منها مقابل محاضراتك.
+Material data	بيانات مادة
+Materials & construction	المواد والإنشاء
+Mathematics	الرياضيات
+Max AI requests per day	أقصى طلبات ذكاء اصطناعي يومياً
+Max moment	أقصى عزم
+Max shear	أقصى قص
+Max spacing ≈ # × Hm	أقصى تباعد ≈ # × Hm
+Max study sessions per day	أقصى جلسات دراسة يومياً
+Mean	المتوسط
+Measured on paper (mm)	المقاس على الورق (ملم)
+Measured value	القيمة المقاسة
+Mechanics & structures	الميكانيك والإنشاءات
+Median	الوسيط
+Medium	متوسطة
+Memory pack	حزمة الذاكرة
+Met	متحقق
+Metals	المعادن
+Method	الطريقة
+Methodology	المنهجية
+Mid-span deflection	الهطول في منتصف الفضاء
+Middle ordinate M	الإحداثي الأوسط M
+Min / Max	الأدنى / الأعلى
+Minimum radius for V	أقل نصف قطر للسرعة V
+Minutes	دقائق
+Missing prerequisite	متطلب سابق ناقص
+Missing step / application	خطوة ناقصة / تطبيق
+Mistake	خطأ
+Mock exams	امتحانات تجريبية
+Mode	النمط
+Model	مجسم
+Moderate	متوسط
+Mon	الاثنين
+Mostly clear	واضح غالباً
+Multiple contexts	سياقات متعددة
+My attempt	محاولتي
+My contribution	مساهمتي
+My deadline	موعدي
+My internal deadline	موعدي الداخلي
+My interpretation	تفسيري
+My interpretation (kept separate)	تفسيري (منفصل)
+My results so far in the shared subjects	نتائجي حتى الآن في المواد المشتركة
+My role	دوري
+My target %	هدفي %
+N near	N قريب
+Name	الاسم
+Name (Arabic)	الاسم (عربي)
+Name (English)	الاسم (إنكليزي)
+Name, student ID, subject, professor on every sheet	الاسم والرقم الجامعي والمادة والأستاذ على كل لوحة
+Named version	نسخة مسماة
+Near	قريب
+Near exams and submissions: hides experimental tools and non-critical alerts, increases backup reminders, blocks big changes. Critical fixes only.	قرب الامتحانات والتسليمات: يخفي الأدوات التجريبية والتنبيهات غير الحرجة، يزيد تذكير النسخ الاحتياطي، ويمنع التغييرات الكبيرة. إصلاحات حرجة فقط.
+Needs action	يحتاج إجراء
+Needs confirmation	يحتاج تأكيد
+Neighbours	الجوار
+Net total	المجموع الصافي
+New	جديد
+Next action	الخطوة التالية
+Next action (one)	الخطوة التالية (واحدة)
+No AI requests yet.	لا توجد طلبات ذكاء اصطناعي بعد.
+No PDF attached.	لا يوجد PDF مرفق.
+No changes recorded.	لا توجد تغييرات مسجلة.
+No decisions recorded.	لا توجد قرارات مسجلة.
+No details yet.	لا توجد تفاصيل بعد.
+No error	لا خطأ
+No files yet.	لا توجد ملفات بعد.
+No files.	لا توجد ملفات.
+No full backup yet	لا توجد نسخة احتياطية كاملة بعد
+No gaps — or not captured yet.	لا توجد فجوات — أو لم تُلتقط بعد.
+No mock exams yet.	لا توجد امتحانات تجريبية بعد.
+No more lectures today.	لا محاضرات أخرى اليوم.
+No notebooks yet.	لا توجد دفاتر بعد.
+No open gaps.	لا فجوات مفتوحة.
+No open questions.	لا أسئلة مفتوحة.
+No portfolio items yet.	لا أعمال في الـPortfolio بعد.
+No projects linked.	لا مشاريع مرتبطة.
+No questions yet.	لا أسئلة بعد.
+No references yet.	لا مراجع بعد.
+No research yet.	لا بحوث بعد.
+No site visits yet.	لا زيارات موقع بعد.
+No sketchbooks.	لا دفاتر رسم.
+No sources yet.	لا مصادر بعد.
+No tasks for this subject.	لا مهام لهذه المادة.
+No versions yet.	لا نسخ بعد.
+No.	العدد
+Noise	الضوضاء
+Non-critical alerts are hidden while you focus. The screen stays awake when your device allows it.	التنبيهات غير الحرجة مخفية أثناء التركيز. الشاشة تبقى مضاءة إذا سمح جهازك.
+None	لا شيء
+None yet.	لا شيء بعد.

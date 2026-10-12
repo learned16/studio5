@@ -1,0 +1,351 @@
+None. Use “Never send this record to AI” when editing any record.	لا شيء. استخدم «لا ترسل هذا السجل للذكاء الاصطناعي» عند تعديل أي سجل.
+Normal	عادية
+North / orientation	الشمال / التوجيه
+Not applied (reason)	لم تُطبق (السبب)
+Not available in the installed app — open the claude.ai version for AI	غير متاح في النسخة المنصّبة — افتح نسخة claude.ai للذكاء الاصطناعي
+Not connected — remote jobs are queued as plans until a companion exists	غير متصل — المهام تنتظر كخطط حتى يتصل المرافق
+Not evaluated yet.	لم يُقيّم بعد.
+Not started	لم يبدأ
+Note	ملاحظة
+Note for this project	ملاحظة لهذا المشروع
+Notebook	دفتر
+Notebooks	الدفاتر
+Notebooks & notes	الدفاتر والملاحظات
+Notes	ملاحظات
+Notes / professor remarks	ملاحظات / تعليقات الأستاذ
+Notes — what would change my mind?	ملاحظات — ما الذي يغيّر رأيي؟
+Nothing captured yet.	لم يُلتقط شيء بعد.
+Nothing is deleted automatically. Items stay here until you restore them or delete them for good.	لا يُحذف شيء تلقائياً. العناصر تبقى هنا حتى تستعيدها أو تحذفها نهائياً.
+Nothing remembered yet.	لا شيء محفوظ بعد.
+Nothing submitted yet.	لم يُسلّم شيء بعد.
+Nothing to retry today.	لا شيء للإعادة اليوم.
+Nothing yet.	لا شيء بعد.
+Notifications	الإشعارات
+Number of boards/sheets and sizes match the brief	عدد اللوحات وقياساتها مطابق للتكليف
+Observation / conclusion	ملاحظة / استنتاج
+Observations / tests	ملاحظات / فحوص
+Occupants	الشاغلون
+Off	مطفأ
+Off — sign in to claude.ai to mirror to your private store	مطفأ — سجّل دخول claude.ai للنسخ إلى مخزنك الخاص
+Official deadline	الموعد الرسمي
+Official requirement	متطلب رسمي
+On the laptop	على اللابتوب
+On the phone	على الموبايل
+On-device snapshots	لقطات على الجهاز
+One file with every record, setting and original file (PDFs, images), plus a SHA-# checksum. Keep copies off this device.	ملف واحد فيه كل سجل وإعداد وملف أصلي (PDF، صور) مع بصمة SHA-256. احفظ نسخاً خارج هذا الجهاز.
+One ink engine for lecture notes, sketches, problem solving and markup.	محرك قلم واحد لملاحظات المحاضرات والاسكتشات وحل المسائل والتعليق.
+One-point room	غرفة بمنظور نقطة واحدة
+Only architecture has: design studio, art, rendering, interior & exterior design, planning theory. Only civil has: geology, soil, hydraulics & hydrology, steel & foundation design.	العمارة وحدها فيها: مرسم التصميم، الفن، الإظهار، التصميم الداخلي والخارجي، نظرية التخطيط. المدني وحده فيه: الجيولوجيا، التربة، الهيدروليك والهيدرولوجي، تصميم الحديد والأسس.
+Only on this device (and in backups).	على هذا الجهاز فقط (وفي النسخ الاحتياطية).
+Only the text shown in the log below is sent, only when you press an AI button. Project files are never sent automatically.	يُرسل فقط النص الظاهر في السجل أدناه، وفقط عند ضغطك زر ذكاء اصطناعي. ملفات المشاريع لا تُرسل تلقائياً أبداً.
+Open	فتح
+Open Studio# signed in to claude.ai and allow AI to use the council. Everything else works without it.	افتح Studio5 وأنت مسجّل في claude.ai واسمح للذكاء الاصطناعي لاستخدام المجلس. كل شيء آخر يعمل بدونه.
+Open a lecture to capture beside its PDF, then close it out.	افتح محاضرة لتلتقط بجانب ملفها ثم أغلقها.
+Open and start presenting (F#)	افتح وابدأ العرض (F5)
+Open professor feedback	ملاحظات الأستاذ المفتوحة
+Open the file / app	افتح الملف / البرنامج
+Open this same site on the laptop (Chrome/Edge), go to	افتح نفس الموقع على اللابتوب (Chrome/Edge)، اذهب إلى
+Opening the app is not work time. Log actual minutes when you finish a piece.	فتح البرنامج ليس وقت عمل. سجّل الدقائق الفعلية عند إنهاء أي جزء.
+Options (your decision — scope is never changed for you): freeze the design now; order deliverables by weight; drop secondary refinement; simplify renders.	خيارات (القرار لك — النطاق لا يتغير بدونك): ثبّت التصميم الآن؛ رتّب المخرجات حسب الوزن؛ اترك التحسينات الثانوية؛ بسّط الإظهار.
+Original brief	التكليف الأصلي
+Originals are stored unchanged with a SHA-# hash; duplicates are detected. Your notes and ink live separately.	الأصول تُحفظ دون تغيير ببصمة SHA-256؛ والمكرر يُكشف. ملاحظاتك وكتابتك تُحفظ منفصلة.
+Other	أخرى
+Other semester this year	الفصل الآخر من هذه السنة
+Out of	من
+Outdoor relation	العلاقة بالخارج
+Output	المخرَج
+Overhang to shade full window now	البروز اللازم لتظليل الشباك الآن
+Override	تجاوز
+P at distance a (m)	P على مسافة a (م)
+PDF export	تصدير PDF
+PDFs & notebooks	الملفات والدفاتر
+Page	الصفحة
+Pages	الصفحات
+Pair	اقتران
+Pan / zoom (space)	تحريك / تكبير
+Paper	الورق
+Partly	جزئياً
+Paste the assignment text or attach the brief sheet.	الصق نص التكليف أو أرفق ورقته.
+Paused	موقوف
+Peak factor	معامل الذروة
+Peak flow	تدفق الذروة
+Pedestrian & car movement	حركة المشاة والسيارات
+Pen & display	القلم والعرض
+Pen (P)	قلم (P)
+Pen only	القلم فقط
+Pen-only drawing (fingers pan and zoom; palms never draw)	الرسم بالقلم فقط (الأصابع للتحريك والتكبير؛ الكف لا يرسم)
+Pen-only: fingers pan and zoom, palm never draws	القلم فقط: الأصابع للتحريك والتكبير، والكف لا يرسم
+Persons per dwelling	أفراد لكل وحدة سكنية
+Perspective	المنظور
+Perspective track	مسار المنظور
+Phase	المرحلة
+Photo	صورة
+Photo / page	صورة / صفحة
+Photo of physical work	صورة عمل يدوي
+Photo or file	صورة أو ملف
+Photograph boards, models, workshop pieces and corrected sheets. Originals are kept; mark up a copy in ink.	صوّر اللوحات والمجسمات وقطع الورشة والأوراق المصححة. الأصل محفوظ؛ علّق على نسخة بالقلم.
+Physical model	مجسم
+Physical work	الأعمال اليدوية
+Pitch	الميل
+Place & time	المكان والوقت
+Plan	مسقط
+Plan a render, export or print job against a specific version. Jobs wait as plans until a Windows companion connects; nothing runs on your computer from here.	خطّط مهمة إظهار أو تصدير أو طباعة على نسخة محددة. المهام تُنفّذ عبر مرافق ويندوز على اللابتوب.
+Plan a session	خطط جلسة
+Plan session	خطط جلسة
+Plan symbols	رموز المسقط
+Plan, section, elevation, render and site agree with each other	المسقط والمقطع والواجهة والإظهار والموقع متطابقة
+Planned (min)	المخطط (دقيقة)
+Planning	التخطيط
+Please confirm	يرجى التأكيد
+Point load P (kN)	حمل مركز P (كن)
+Population density	الكثافة السكانية
+Portfolio	الـPortfolio
+Post-evaluation	التقييم بعد التسليم
+Practical	عملي
+Practical factors (city, cost, family)	عوامل عملية (المدينة، الكلفة، العائلة)
+Practice	التطبيق
+Practice / Tools	التطبيق / الأدوات
+Practice lab	مختبر التطبيق
+Precise question	سؤال دقيق
+Preference	تفضيل
+Preferred riser (mm)	القائمة المفضلة (ملم)
+Preflight	الفحص المسبق
+Preflight checks	فحوص مسبقة
+Prepare a question for the professor	جهّز سؤالاً للأستاذ
+Presentation	العرض
+Preview this year	معاينة هذه السنة
+Print & submit	الطباعة والتسليم
+Priority	الأولوية
+Privacy	الخصوصية
+Privacy & AI	الخصوصية والذكاء الاصطناعي
+Private	خاص
+Private circulation	حركة خاصة
+Probably	محتمل
+Problem	المشكلة
+Problem & error notebook	دفتر المسائل والأخطاء
+Problem sheet	ورقة مسائل
+Problem type	نوع المشكلة
+Problems & errors	المسائل والأخطاء
+Problems to retry	مسائل للإعادة
+Professor	الأستاذ
+Professor & feedback	الأستاذ والملاحظات
+Professor correction	تصحيح الأستاذ
+Professor feedback	ملاحظات الأستاذ
+Professor note	ملاحظة أستاذ
+Professor preference	تفضيل الأستاذ
+Professor question cycle	دورة أسئلة الأستاذ
+Professor reviews	مراجعات الأستاذ
+Professor said	الأستاذ قال
+Professor's exact words	كلام الأستاذ الحرفي
+Professor's words	كلام الأستاذ
+Professor: not set	الأستاذ: غير محدد
+Proficient	متقن
+Profile	الملف التعريفي
+Program	البرنامج
+Program & relations	البرنامج والعلاقات
+Project	المشروع
+Project duration: # days.	مدة المشروع: # يوم.
+Project name	اسم المشروع
+Project note	ملاحظة مشروع
+Project schedule (critical path)	جدولة المشروع (المسار الحرج)
+Project version	نسخة المشروع
+Project-specific or a general rule?	خاص بالمشروع أم قاعدة عامة؟
+Projects	المشاريع
+Proof	الإثبات
+Proof it is met	إثبات التحقق
+Properties	الخواص
+Proposed	مقترح
+Proposed change	التغيير المقترح
+Provisional (not confirmed by the department)	مؤقت (غير مؤكد من القسم)
+Public	عام
+Qty	الكمية
+Quantities & management	الكميات والإدارة
+Quantity & specs	الكميات والمواصفات
+Question	سؤال
+Question cycle	دورة السؤال
+Question for the professor	سؤال للأستاذ
+Questions	الأسئلة
+Questions (one per line) — or generate with AI	الأسئلة (سؤال بكل سطر) — أو ولّدها بالذكاء الاصطناعي
+Questions for professors	أسئلة للأساتذة
+Questions to ask	أسئلة للطرح
+Queued	بالانتظار
+Quick capture	التقاط سريع
+Quick capture (C)	التقاط سريع (C)
+Quick text	نص سريع
+Quiz, midterm, project, report…	كوز، نصف السنة، مشروع، تقرير…
+Radius R (m)	نصف القطر R (م)
+Radius of gyration r	نصف قطر الدوران r
+Rate	السعر
+Reaction A	رد الفعل A
+Reaction B	رد الفعل B
+Readable exports. They are not backups.	تصديرات مقروءة. ليست نسخاً احتياطية.
+Readiness	الجاهزية
+Real length (m)	الطول الحقيقي (م)
+Real → paper	حقيقي ← ورق
+Realistic study capacity per day (min)	طاقتك الواقعية للدراسة يومياً (دقيقة)
+Reason	السبب
+Recent activity log	سجل النشاط الأخير
+Record	سجّل
+Record a wall section, a foundation or a stair detail: layers, materials, what the professor stressed.	سجّل مقطع جدار أو أساس أو تفصيلة درج: الطبقات، المواد، وما ركّز عليه الأستاذ.
+Record the grade, the professor's words, and where marks were lost. Studio# then updates your experience memory, recurring errors and estimates.	سجّل الدرجة وكلام الأستاذ وأين خسرت الدرجات. Studio5 يحدّث ذاكرة خبرتك وأخطاءك المتكررة وتقديراتك.
+Records excluded from AI	سجلات مستثناة من الذكاء الاصطناعي
+Recurring errors	أخطاء متكررة
+Redo (Ctrl+Y)	إعادة (Ctrl+Y)
+References	المراجع
+References & precedents	المراجع والسوابق
+References & site	المراجع والموقع
+Rejected	مرفوض
+Relation between ideas	العلاقة بين الأفكار
+Relationship	علاقة
+Relationships	العلاقات
+Remark	ملاحظة
+Remember	احفظ
+Remember this	احفظ هذا
+Remind me to back up every (days)	ذكّرني بالنسخ الاحتياطي كل (أيام)
+Remote work	العمل عن بعد
+Remove examples	حذف الأمثلة
+Render	إظهار
+Render & board	الإظهار واللوحة
+Render & export log	سجل الإظهار والتصدير
+Repeated	تكررت
+Replaced	مستبدل
+Report	تقرير
+Reproduce visible, hidden, centre, section and dimension lines at correct weights.	ارسم الخطوط الظاهرة والمخفية والمحورية والمقطعية وخطوط الأبعاد بالسماكات الصحيحة.
+Required / due	مطلوب / موعد
+Required area from brief (m²)	المساحة المطلوبة في التكليف (م²)
+Required illuminance (lux)	شدة الإضاءة المطلوبة (لوكس)
+Requirement	متطلب
+Requirements	المتطلبات
+Rescue later	إنقاذ لاحقاً
+Research	البحث
+Research & evidence workspace	مساحة البحث والأدلة
+Research & graduation	البحث والتخرج
+Research question	سؤال البحث
+Research question, sources, literature notes, claims, evidence, quotes, methodology, source conflicts and citations — with an honest record of what AI contributed. (Year # workspace — available now as a preview.)	سؤال البحث، المصادر، ملاحظات القراءة، الادعاءات، الأدلة، الاقتباسات، المنهجية، تعارض المصادر والتوثيق — مع سجل صادق لمساهمة الذكاء الاصطناعي. (مساحة السنة الخامسة — متاحة الآن كمعاينة.)
+Research, Delivery & Graduation	البحث والإدارة والتخرج
+Resolved	محلول
+Restore	استعادة
+Result	النتيجة
+Result / artifact	النتيجة / الملف الناتج
+Retry on	أعد المحاولة في
+Reverberation time (Sabine)	زمن الارتداد (سابين)
+Review preparation	التحضير للمراجعة
+Review queue	قائمة المراجعة
+Review version	نسخة مراجعة
+Rise	ارتفاع
+Riser height R	ارتفاع القائمة R
+Risers	القوائم
+Roads & access	الطرق والوصول
+Roads, water, bridges interest me	الطرق والمياه والجسور تهمني
+Room	القاعة
+Room index k	دليل الغرفة k
+Room length (m)	طول الغرفة (م)
+Room volume (m³)	حجم القاعة (م³)
+Room width (m)	عرض الغرفة (م)
+Rows: BS, IS, FS, remark	الأسطر: BS، IS، FS، ملاحظة
+Rubric / criteria	معايير التقييم
+Ruled	مسطّر
+Run restore test	شغّل اختبار الاستعادة
+Running	قيد التشغيل
+S service	S خدمة
+Safety	السلامة
+Safety checklist	قائمة السلامة
+Sat	السبت
+Save	حفظ
+Save calculation	حفظ الحساب
+Save capture	حفظ الالتقاط
+Save review	حفظ المراجعة
+Scale	المقياس
+Scale # :	المقياس # :
+Scale & dimension converter	محوّل المقياس والأبعاد
+Scales and north arrows correct on every drawing	المقاييس وأسهم الشمال صحيحة بكل رسم
+Scientific rule	قاعدة علمية
+Score	الدرجة
+Search	بحث
+Second moment Ixx	عزم القصور الذاتي Ixx
+Section	مقطع
+Section modulus Zxx	معامل المقطع Zxx
+Section properties (I, Z, area)	خواص المقطع (I، Z، المساحة)
+Self readiness (#–#)	الجاهزية الذاتية (#–#)
+Self-check	فحص ذاتي
+Self-check items (one per line)	بنود الفحص الذاتي (بند بكل سطر)
+Semester	الفصل
+Semester #	الفصل #
+Semester #. Tap a slot to edit. Today's board reads this timetable.	الفصل #. اضغط على حصة لتعديلها. شاشة اليوم تقرأ هذا الجدول.
+Semi-public	شبه عام
+Separate	منفصل
+Service	خدمي
+Set up	إعداد
+Settings	الإعدادات
+Shape (rect / I)	الشكل (rect / I)
+Shapes	الأشكال
+Shear force V (kN)	قوة القص V (كن)
+Short report	تقرير قصير
+Short summary (#–# lines)	ملخص قصير (#–# أسطر)
+Show / hide current	إظهار / إخفاء الحالية
+Side friction f	الاحتكاك الجانبي f
+Simple payback	فترة الاسترداد البسيطة
+Simply-supported beam (V, M, deflection)	عتبة بسيطة الإسناد (القص، العزم، الهطول)
+Single glazing	زجاج مفرد
+Site	الموقع
+Site / survey work	عمل موقعي / مساحي
+Site area (ha)	مساحة الموقع (هكتار)
+Site plan	مخطط الموقع
+Site sketch (draw over a map photo)	اسكتش الموقع (ارسم فوق صورة خريطة)
+Site visits	زيارات الموقع
+Sketch	اسكتش
+Sketchbooks	دفاتر الاسكتش
+Sketches & files	الاسكتشات والملفات
+Skill	مهارة
+Skills map	خريطة المهارات
+Skills shown	المهارات الظاهرة
+Software	البرامج
+Solar time (h)	التوقيت الشمسي (ساعة)
+Solution	حل
+Solve alone	أحل وحدي
+Solve under time	أحل تحت الوقت
+Solve with help	أحل بمساعدة
+Solved alone	حُلّت وحدي
+Solved under time	حُلّت تحت الوقت
+Solved with help	حُلّت بمساعدة
+Sorted by risk, deadline and weight	مرتبة حسب الخطر والموعد والوزن
+Source	المصدر
+Source (page, quote, who said it)	المصدر (صفحة، اقتباس، من قاله)
+Source discrepancy	تعارض في المصدر
+Source note	ملاحظة مصدر
+Source of the weight	مصدر الوزن
+Source version	النسخة المصدر
+Sources	المصادر
+Sources (citations)	المصادر (توثيق)
+Sources conflict	تعارض المصادر
+Sources, files, memory and growth	المصادر والملفات والذاكرة والتطور
+Space	فضاء
+Space A	الفضاء A
+Space B	الفضاء B
+Space program	البرنامج الفضائي
+Spacing	التباعد
+Span L (m)	الفضاء L (م)
+Stable after a gap	ثابت بعد مدة
+Stage	المرحلة
+Stage #	المرحلة #
+Stage # — Design & infrastructure	المرحلة # — التصميم والبنى التحتية
+Stage # — Engineering foundations	المرحلة # — الأسس الهندسية
+Stage # — Materials, mechanics & surveying	المرحلة # — المواد والميكانيك والمساحة
+Stage # — Structures, soils & water	المرحلة # — الإنشاءات والتربة والمياه
+Stair designer (Blondel #R+G)	مصمم الدرج (بلونديل 2R+G)
+Stair width (mm)	عرض الدرج (ملم)
+Standard / code	مواصفة / كود
+Start	ابدأ
+Start a notebook page	ابدأ صفحة دفتر
+Start drawing — straightness, angle spread, convergence and feathering update as you go.	ابدأ الرسم — الاستقامة وتشتت الزوايا والتلاقي والتقطيع تتحدث وأنت ترسم.
+Start today's lecture	ابدأ محاضرة اليوم
+Starts in year one. Publishing outside Studio# is always manual. Original files stay untouched.	يبدأ من السنة الأولى. النشر خارج Studio5 يدوي دائماً. الملفات الأصلية لا تُمس.
+State	الحالة
+Statistics workbench	منضدة الإحصاء
+Status	الحالة
+Std. deviation (sample)	الانحراف المعياري (عينة)
+Still unclear	ما زالت غير واضحة
+Storage (days)	الخزن (أيام)
+Storage volume	حجم الخزان
+Strength	القوة
+Strengths	نقاط القوة

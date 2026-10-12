@@ -1,0 +1,349 @@
+# ECTS	# ECTS
+# ECTS listed	# ECTS مدرجة
+# KB used of # MB	مستخدم # KB من # MB
+# captures	# التقاطات
+# declared	# معلنة
+# drawing drills	# تمارين رسم
+# evidence	# أدلة
+# lectures	# محاضرات
+# left	# متبقية
+# min	# دقيقة
+# mm	# ملم
+# not understood	# غير مفهومة
+# of #	# من #
+# of max #	# من أقصى #
+# open	# مفتوحة
+# open feedback	# ملاحظات مفتوحة
+# open tasks	# مهام مفتوحة
+# problems solved alone	# مسائل محلولة لوحدك
+# pt	# نقطة
+# records	# سجلات
+# stages	# مراحل
+# steps to “can explain it”	# خطوات إلى «أستطيع الشرح»
+# strokes	# خطوط
+# subjects	# مواد
+# to close out	# للإغلاق
+# topic(s) below “solve under time”.	# مواضيع أقل من «الحل تحت الوقت».
+# units	# وحدات
+# years	# سنوات
+#% is no longer reachable; best possible ≈ #%.	#% لم يعد ممكناً؛ أفضل نتيجة ممكنة ≈ #%.
+#% of the weight is unconfirmed — results are a range until you confirm it.	#% من الوزن غير مؤكد — النتائج مدى تقريبي حتى تؤكده.
+#-point	#-نقطة
+#. Alternatives & decision	#. البدائل والقرار
+#. Brief & requirements	#. التكليف والمتطلبات
+#. Development	#. التطوير
+#. Drawing & production	#. الرسم والإنتاج
+#. Evaluated	#. تم التقييم
+#. Program & relations	#. البرنامج والعلاقات
+#. References & site	#. المراجع والموقع
+#. Submission gate	#. بوابة التسليم
+#. Submitted (frozen)	#. سُلّم (مجمّد)
+#. Time & phases	#. الوقت والمراحل
+#/# deliverables	#/# مخرجات
+#/# mandatory met	#/# إلزامية متحققة
+#/# pts	#/# نقطة
+#d overdue	متأخر # يوم
+#m planned	# د مخطط
++ Add slot	+ إضافة حصة
++ Alternative	+ بديل
++ Assessment	+ تقييم
++ Assumption	+ افتراض
++ Construction detail	+ تفصيلة إنشائية
++ Criterion	+ معيار
++ Custom drill	+ تمرين مخصص
++ Decision	+ قرار
++ Deliverable	+ مخرج
++ Evaluation	+ تقييم نهائي
++ Feedback	+ ملاحظة أستاذ
++ Gap	+ فجوة فهم
++ Gap I don't understand	+ شيء ما فهمته
++ Job	+ مهمة كمبيوتر
++ Lecture	+ محاضرة
++ Material	+ مادة بناء
++ Memory	+ خبرة
++ Mock exam	+ امتحان تجريبي
++ New layer	+ طبقة جديدة
++ New project	+ مشروع جديد
++ Notebook	+ دفتر
++ Physical work	+ عمل يدوي
++ Portfolio item	+ عمل للـPortfolio
++ Problem	+ مسألة
++ Proposal	+ مقترح
++ Question	+ سؤال
++ Reference	+ مرجع
++ Requirement	+ متطلب
++ Research	+ بحث
++ Site visit	+ زيارة موقع
++ Source	+ مصدر
++ Space	+ فضاء
++ Task	+ مهمة
++ Topic	+ موضوع
++ Version	+ نسخة
++ circulation #–#% ≈ #–# m² gross	+ حركة #–#% ≈ #–# م² إجمالي
+. Little history yet — using a default buffer of +#%. Includes # h for printing, export and transport.	. السجل قليل بعد — نستخدم احتياطاً افتراضياً +#%. يشمل # ساعة للطباعة والتصدير والنقل.
+. Record the level you needed; it shows how independent you are.	. سجّل المستوى الذي احتجته؛ يبيّن مدى استقلاليتك.
+? units	? وحدات
+A checkable criterion	معيار يمكن التحقق منه
+A difference of a few points is a tie — talk to students and professors in both departments before deciding.	فرق بضع نقاط يعني تعادل — تكلّم مع طلاب وأساتذة القسمين قبل القرار.
+A form (be careful)	شكل (انتبه)
+A named version has a reason, the files, decisions, feedback and time.	النسخة المسماة لها سبب وملفات وقرارات وملاحظات ووقت.
+A principle	مبدأ
+A quotation (cite it)	اقتباس (وثّقه)
+A relationship	علاقة
+A sample week (timetable, a project, an exam) shows how Studio# works. Your curriculum for all five years is real.	أسبوع تجريبي (جدول، مشروع، امتحان) يوضح كيف يعمل Studio5. منهج السنوات الخمس حقيقي.
+A skill rises only with evidence: an exercise, a project, a file, a test, a professor's assessment, or doing it alone. At most three active goals keep you focused. Active now:	المهارة ترتفع بدليل فقط: تمرين، مشروع، ملف، اختبار، تقييم أستاذ، أو إنجازها وحدك. ثلاثة أهداف نشطة كحد أقصى تبقيك مركّزاً. النشطة الآن:
+A# sheet covers	لوحة A# تغطي
+AI	الذكاء الاصطناعي
+AI in Studio# explains, quizzes and suggests. It does not write work you submit. Research records keep an honest line between your contribution and AI's. During real exams, follow the exam rules — Exam Day mode shows only your own notes.	الذكاء الاصطناعي في Studio5 يشرح ويختبر ويقترح، ولا يكتب عملاً تسلّمه. سجلات البحث تفصل بأمانة بين مساهمتك ومساهمته. في الامتحانات الحقيقية التزم بالتعليمات — وضع يوم الامتحان يعرض ملاحظاتك فقط.
+AI is not available here. Use the method as a self-study prompt: write the explanation yourself in that style, then answer a check question.	الذكاء الاصطناعي غير متاح هنا. استخدم الطريقة كتمرين ذاتي: اكتب الشرح بنفسك بهذا الأسلوب ثم أجب سؤال تحقق.
+AI is not available in this view.	الذكاء الاصطناعي غير متاح في هذه النسخة.
+AI output (not a source)	ناتج ذكاء اصطناعي (ليس مصدراً)
+AI request log	سجل طلبات الذكاء الاصطناعي
+About	حول
+Absorption to reach target	الامتصاص المطلوب للوصول للهدف
+Academic Safe Mode	الوضع الأكاديمي الآمن
+Academic integrity	النزاهة الأكاديمية
+Accuracy	الدقة
+Active	نشط
+Active goal (max #)	هدف نشط (أقصى #)
+Activity	النشاط
+Actual	الفعلي
+Actual (min)	الفعلي (دقيقة)
+Actual or estimated	فعلي أو تقديري
+Add	إضافة
+Add PDF	إضافة PDF
+Add PDF or image	إضافة PDF أو صورة
+Add files / photos	إضافة ملفات / صور
+After a project is evaluated, turn it into a case study: problem, idea, role, before/after, feedback, what you learned.	بعد تقييم المشروع حوّله إلى دراسة حالة: المشكلة، الفكرة، دورك، قبل/بعد، الملاحظات، وما تعلمته.
+After this attempt	بعد هذه المحاولة
+Aim for #–# minutes right after the lecture. The summary is your own; an AI draft is marked and only uses your captures.	خصص #–# دقائق بعد المحاضرة مباشرة. الملخص لك؛ مسودة الذكاء الاصطناعي معلّمة وتعتمد على التقاطاتك فقط.
+Alerts	التنبيهات
+All	الكل
+All captures processed.	تمت معالجة كل الالتقاطات.
+All five years are implemented. Implemented does not mean enabled: your current year is on, later years stay off until you need them. Disabled never means missing, and nothing is deleted when you switch.	السنوات الخمس كلها منفّذة. المنفّذ لا يعني المفعّل: سنتك الحالية مفعّلة والسنوات اللاحقة مطفأة حتى تحتاجها. المطفأ لا يعني المفقود، ولا يُحذف شيء عند التبديل.
+Allow AI features	السماح بميزات الذكاء الاصطناعي
+Allowed tools / open questions	الأدوات المسموحة / أسئلة مفتوحة
+Alone	وحدي
+Alternative	بديل
+Alternatives	البدائل
+Alternatives & decision	البدائل والقرار
+Alternatives: name, initial cost, annual cost	البدائل: الاسم، الكلفة الأولية، الكلفة السنوية
+Always on	مفعّل دائماً
+Amount	المبلغ
+Analysis	التحليل
+Announcement, course description, professor, manual	إعلان، وصف المادة، الأستاذ، يدوي
+Answered	أُجيب
+Anything ambiguous becomes a question or an assumption — never an invented number.	أي غموض يصبح سؤالاً أو افتراضاً — لا رقماً مخترعاً.
+Application	التطبيق
+Applied	طُبّق
+Applied alone	طبقت وحدي
+Applied under time	طبقت تحت الوقت
+Applied with help	طبقت بمساعدة
+Approved	معتمد
+Approved current	المعتمدة الحالية
+Approved experience	خبرة معتمدة
+Approved version	النسخة المعتمدة
+Arabic name	الاسم العربي
+Architect / source	المعماري / المصدر
+Architectural	معماري
+Architectural track	المسار المعماري
+Architecture	العمارة
+Architecture #–#	العمارة #–#
+Architecture & Building Technologies	هندسة تقنيات العمارة والبناء
+Architecture Foundation	التأسيس المعماري
+Architecture average (# graded)	معدل العمارة (# مقيّمة)
+Archived	مؤرشف
+Area	المساحة
+Area A	المساحة A
+Area each (m²)	مساحة الواحد (م²)
+Area m²	المساحة م²
+Article	مقالة
+Ask professor	اسأل الأستاذ
+Ask the AI council	اسأل مجلس الذكاء الاصطناعي
+Asked	سُئل
+Aspect	الجانب
+Assessment	التقييم
+Assessment map	خريطة التقييمات
+Assessments & exams	التقييمات والامتحانات
+Assignment	واجب
+Assignment / project lite	واجب / مشروع مصغّر
+Assumption	افتراض
+Assumption register	سجل الافتراضات
+Attach the lecture slides to capture against pages.	أرفق شرائح المحاضرة لتلتقط على صفحاتها.
+Attempt	محاولة
+Attempts	المحاولات
+Author / body	المؤلف / الجهة
+Automatic checks	فحوص تلقائية
+Backup & restore	النسخ الاحتياطي والاستعادة
+Becomes a task	تصبح مهمة
+Before (photo)	قبل (صورة)
+Before the next review, bring: the version, what changed, which feedback you applied, the alternatives and your questions.	قبل المراجعة القادمة جهّز: النسخة، ما تغيّر، الملاحظات المطبّقة، البدائل، وأسئلتك.
+Before you start: your past mistakes, professor preferences and what worked, collected from your own records.	قبل أن تبدأ: أخطاؤك السابقة وتفضيلات الأستاذ وما نجح، مجمّعة من سجلاتك.
+Before: goal, elements, questions, safety. During: photos, notes, measurements, what you didn't understand. After: theory vs reality, report.	قبل: الهدف، العناصر، الأسئلة، السلامة. أثناء: صور، ملاحظات، قياسات، ما لم تفهمه. بعد: النظرية مقابل الواقع، التقرير.
+Benchmark RL (m)	منسوب الروبير (م)
+Bending moment M (kN·m)	عزم الانحناء M (كن·م)
+Bill of quantities	جدول الكميات
+Binders	المواد الرابطة
+Blank	فارغ
+Blondel check #R+G	فحص بلونديل #R+G
+Board	لوحة
+Book	كتاب
+Both programs	الاختصاصين
+Boundaries	الحدود
+Brick helper: wall length (m)	مساعد الطابوق: طول الجدار (م)
+Brief	التكليف
+Brief & requirements	التكليف والمتطلبات
+Brief & site analysis	التكليف وتحليل الموقع
+Brief (original text)	التكليف (النص الأصلي)
+Brief not entered.	لم يُدخل التكليف.
+Build	تكوين
+Building / case study	مبنى / دراسة حالة
+Building / precedent	مبنى / سابقة تصميمية
+Building construction	إنشاء المباني
+Building materials	مواد البناء
+Building services	خدمات المباني
+By year	حسب السنة
+C private circulation	C حركة خاصة
+Can explain it	أستطيع شرحها
+Can teach it	أستطيع تدريسها
+Cancel	إلغاء
+Cancelled	ملغاة
+Capability packs	حزم القدرات
+Capacity is set in System → Settings. Includes remaining lectures, open sessions and tasks due today.	تُضبط الطاقة من النظام ← الإعدادات. تشمل المحاضرات المتبقية والجلسات المفتوحة ومهام اليوم.
+Capture	التقاط
+Captured but not organised	ملتقط وغير منظم
+Captures to process	التقاطات للمعالجة
+Carry it forward	انقلها للأمام
+Cash flows year #, #, #… (negative = cost)	التدفقات النقدية للسنة #، #، #… (السالب = كلفة)
+Catalogue declares # ECTS for semester #, but the listed subjects add up to # ECTS. No subject was invented to fill the gap; confirm with the department.	الدليل يعلن # ECTS للفصل #، لكن المواد المدرجة مجموعها # ECTS. لم تُخترع مادة لسد الفرق؛ تأكد من القسم.
+Category	الفئة
+Chainage PC	محطة PC
+Chainage PT	محطة PT
+Chainage of PI (m)	محطة PI (م)
+Change ledger	سجل التغييرات
+Change next action	غيّر الخطوة التالية
+Choose	اختر
+Choose a Studio# backup file. It is verified first (checksum, schema, relations). A snapshot of your current data is taken before anything changes.	اختر ملف نسخة احتياطية لـ Studio5. يُفحص أولاً (المجموع، المخطط، العلاقات)، وتُؤخذ لقطة لبياناتك الحالية قبل أي تغيير.
+Choose backup file…	اختر ملف النسخة…
+Chosen	مختار
+Citation	التوثيق
+City	المدينة
+Civil	مدني
+Civil #–#	مدني #–#
+Civil Engineering	الهندسة المدنية
+Civil average (# graded)	معدل المدني (# مقيّمة)
+Civil or architecture?	مدني أم معماري؟
+Claim	ادعاء
+Clear	مسح
+Climate & sustainability	المناخ والاستدامة
+Close	إغلاق
+Close lecture	إغلاق المحاضرة
+Closeout	الإغلاق
+Closeout summary	ملخص الإغلاق
+Cloud mirror	النسخة السحابية
+Coefficient of variation	معامل الاختلاف
+Collect the newest export into Studio#	اجلب أحدث ملف مُصدَّر إلى Studio5
+Computer jobs (Windows companion)	مهام الكمبيوتر (مرافق ويندوز)
+Computing	الحاسوب
+Confidence	الثقة
+Confidence:	الثقة:
+Confirmed	مؤكد
+Confirmed in context	مؤكدة في سياقها
+Confirmed in next review	تأكدت في المراجعة التالية
+Confirmed with department	تأكد مع القسم
+Construct an interior in one-point perspective with a door, window and table.	ارسم فضاءً داخلياً بمنظور نقطة واحدة مع باب وشباك وطاولة.
+Construction	الإنشاء
+Construction detail log	سجل التفاصيل الإنشائية
+Construction details	التفاصيل الإنشائية
+Construction lab	مختبر الإنشاء
+Context (climate, Iraq, program)	السياق (المناخ، العراق، البرنامج)
+Context (lecture, page, problem…)	السياق (محاضرة، صفحة، مسألة…)
+Context / scope	السياق / النطاق
+Contingency #%	احتياط #%
+Contingency %	نسبة الاحتياط %
+Control your laptop	تحكم باللابتوب
+Control your laptop from this phone: touchpad, keyboard, live screen, apps, files and jobs.	تحكّم باللابتوب من هذا الموبايل: لوحة لمس، كيبورد، شاشة مباشرة، برامج، ملفات ومهام.
+Convert three orthographic views into an isometric drawing.	حوّل ثلاثة مساقط عمودية إلى رسم أيزومتري.
+Core concept	مفهوم أساسي
+Correct solution	الحل الصحيح
+Count	العدد
+Course code	رمز المادة
+Course description	وصف المادة
+Coverage:	التغطية:
+Create	إنشاء
+Create reverse plan	أنشئ خطة عكسية
+Create review version	أنشئ نسخة مراجعة
+Credit-weighted average of current percentages:	المعدل الموزون بالوحدات للنسب الحالية:
+Credits	الوحدات
+Credits (ECTS or units)	الوحدات (ECTS أو وحدات)
+Criterion	المعيار
+Critical	حرج
+Current %	الحالي %
+Curriculum	المنهج
+Curve length L	طول المنحنى L
+Custom drill	تمرين مخصص
+Daily demand	الطلب اليومي
+Daily planning	التخطيط اليومي
+Dark	داكن
+Date	التاريخ
+Day	اليوم
+Day of year	يوم السنة
+Decide by (registration deadline)	قرر قبل (موعد التسجيل)
+Decision	قرار
+Decision & who approved	القرار ومن وافق
+Decision log	سجل القرارات
+Decision matrix	مصفوفة القرار
+Declination	الميل الشمسي
+Deferred	مؤجل
+Deflection angle Δ (°)	زاوية الانحراف Δ (°)
+Deliverable	مخرج
+Deliverables	المخرجات
+Demand per person (L/day)	الاستهلاك للفرد (لتر/يوم)
+Design	التصميم
+Design project	مشروع تصميم
+Design speed (km/h)	السرعة التصميمية (كم/س)
+Design studio	مرسم التصميم
+Design studio, mechanics, construction, history, digital rendering, statistics	مرسم التصميم، الميكانيك، الإنشاء، التاريخ، الإظهار الرقمي، الإحصاء
+Design, Construction & Representation	التصميم والإنشاء والإظهار
+Designing spaces for people interests me	تصميم فضاءات للناس يهمني
+Detail	تفصيلة
+Details	التفاصيل
+Developing	قيد التطوير
+Development	التطوير
+Diagnose first	شخّص أولاً
+Diagnostic	تشخيص
+Didn't understand	ما فهمت
+Digital representation	الإظهار الرقمي
+Dimension a small plan at #:# with chain and overall dimensions.	ضع أبعاد مخطط صغير بمقياس #:# بأبعاد متسلسلة وكلية.
+Direct	مباشر
+Discount rate %	معدل الخصم %
+Discussion / presentation	المناقشة / العرض
+Divide a receding wall into # equal bays using the diagonal method.	قسّم جداراً متراجعاً إلى # أجزاء متساوية بطريقة الأقطار.
+Doing	قيد العمل
+Don't repeat it: try a method you haven't used, split the idea, go back to the prerequisite, open the exact source page, or ask the professor.	لا تكرره: جرّب طريقة لم تستخدمها، قسّم الفكرة، ارجع للمتطلب السابق، افتح صفحة المصدر بالضبط، أو اسأل الأستاذ.
+Done	تم
+Done when	ينتهي عندما
+Dots	نقاط
+Download installer for Windows	نزّل المثبّت لويندوز
+Draft	مسودة
+Drafted	مُصاغ
+Draw # boxes floating in space; check convergence with extended edges.	ارسم # صناديق طافية؛ افحص التلاقي بتمديد الحواف.
+Draw # parallel lines, # cm, one stroke each, no feathering.	ارسم # خطاً متوازياً، # سم، بضربة واحدة لكل خط، بدون تقطيع.
+Draw a # × # m room plan at #:# with door swing, window, wall hatch.	ارسم مخطط غرفة # × # م بمقياس #:# مع حركة الباب والشباك وتهشير الجدار.
+Draw a building corner with two vanishing points and repeated windows.	ارسم ركن مبنى بنقطتي تلاشٍ وشبابيك متكررة.
+Draw a chair or a plant from life with blind contour then a checked contour.	ارسم كرسياً أو نبتة من الواقع بخط أعمى ثم بخط مُتحقق.
+Draw a section with floor slab, walls, opening and ground line at #:#.	ارسم مقطعاً مع السقف والجدران والفتحة وخط الأرض بمقياس #:#.
+Draw plan, front and side views of a stepped block in first-angle projection.	ارسم المسقط الأفقي والأمامي والجانبي لكتلة مدرجة بإسقاط الزاوية الأولى.
+Drawing	الرسم
+Drawing & production	الرسم والإنتاج
+Drawing Coach	مدرب الرسم
+Drawing Coach Lite measures what can be measured (line straightness, angle consistency, convergence to a vanishing point, feathering, speed) and asks you to self-check the rest. Advanced critique comes later in the five-year plan.	مدرب الرسم يقيس ما يمكن قياسه (استقامة الخط، ثبات الزوايا، التلاقي بنقطة التلاشي، التقطيع، السرعة) ويطلب منك فحص الباقي بنفسك. النقد المتقدم يأتي لاحقاً ضمن خطة السنوات الخمس.
+Drawing, design principles, art, engineering drawing, workshops, materials, calculus	الرسم، مبادئ التصميم، الفن، الرسم الهندسي، الورش، المواد، التفاضل
+Drawings	الرسومات
+Drop PDFs or images here, or	أفلت ملفات PDF أو صور هنا، أو
+Dropped	متروكة
+Due	الموعد
+Due in the next # days	مستحق خلال # أيام
+Dwellings	الوحدات السكنية
+Earlier than the official one	أبكر من الرسمي
+Earned	المُكتسب
