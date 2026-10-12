@@ -4,7 +4,7 @@ Library = `kb/*.json` (format: `kb/SCHEMA.md`). `node build.mjs` merges every fi
 Weekly plan: **every Thursday at dawn (Baghdad time) one study year is completed** — both programs —
 then the app is rebuilt, tested, committed and pushed to `claude/zen-bell-oqcqtr`.
 
-Total now: **406 lessons** (updated 2026-10-12).
+Total now: **409 lessons** (updated 2026-10-12).
 
 ## Year 1 — DONE ✅ (101 lessons)
 - Architecture: Architectural Drawing & Design / Principles of Architectural Design (12), Freehand Drawing 2D/3D (7),
@@ -27,13 +27,13 @@ Total now: **406 lessons** (updated 2026-10-12).
 - **Missing:** arch "Electrical Services" (4) → `arch-y3b.json`, prefix `a3b-`;
   civil "Engineering Statistics" (6), "Transportation Engineering" (8) → `civil-y3.json`, prefix `c3-`
 
-## Year 4 — Thursday run #3
+## Year 4 — DONE ✅
 - Done: arch Architectural Design IV/V (5), Interior Space Design (5), Architecture & Climate (6), Advanced Building
   Technologies / Technical Construction (7), Theories of Architecture (6), Quantity Surveying (5), Housing Planning (4),
-  Exterior Space Design (4); civil RC Design II (9), Foundation (9), Steel (9), Highway (9), Sanitary (9), Construction Methods (8), Hydraulic Structures (7), Hydrology (7)
-- **Missing:** civil "Engineering Project" (3) → `civil-y4b.json`, prefix `c4b-`
+  Exterior Space Design (4); civil RC Design II (9), Foundation (9), Steel (9), Highway (9), Sanitary (9), Construction Methods (8), Hydraulic Structures (7), Hydrology (7), Engineering Project (3)
+- To review (facts written from memory): Iraqi contract instructions (c4b-cme-08), IQS 417 limits, ACI 347 formwork formula, AASHTO K values, gravity-dam sliding example.
 
-## Year 5 — Thursday run #4 (architecture only; civil at Kirkuk is 4 years)
+## Year 5 — Thursday run #3 (architecture only; civil at Kirkuk is 4 years)
 - Done: Project Management & Engineering Economics (5), Sustainable Architecture (5)
 - **Missing:** "Research Methodology" (4), "Preliminary Graduation Project" + "Graduation Project" (3),
   "Architectural Design VI" studio topics (4) → `arch-y45b.json`, prefix `a45b-`
