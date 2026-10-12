@@ -94,7 +94,7 @@ p { margin: 0; }
 @media (max-width: 760px) {
   .app { grid-template-columns: minmax(0,1fr); }
   .rail { display: none; }
-  .tabbar { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--paper); border-top: 1px solid var(--rule); padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px)); }
+  .tabbar { display: grid; grid-template-columns: repeat(6, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--paper); border-top: 1px solid var(--rule); padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px)); }
   .topbar { padding: 8px 16px; }
   .topbar .hide-sm { display: none; }
   .view { padding: 16px 16px 140px; }
@@ -322,3 +322,21 @@ html.app-remote .app { display: block !important; } html.app-remote, html.app-re
 html.app-remote #rm-status { font-size: 12px; }
 html.app-remote .view { padding: 6px 8px env(safe-area-inset-bottom, 0px) !important; max-width: none !important; }
 html.app-remote #rm-status { padding: 6px 10px; margin-bottom: 6px !important; }
+
+/* ---------- Tutor ---------- */
+.tutor-chat { display: flex; flex-direction: column; gap: 8px; max-width: 900px; }
+.tc-log { min-height: 40vh; max-height: 62vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 6px 2px; }
+html.app-remote .tc-log { max-height: calc(100dvh - 260px); }
+.tc-msg { padding: 10px 12px; border-radius: 12px; line-height: 1.7; max-width: 92%; white-space: normal; word-wrap: break-word; }
+.tc-msg.me { align-self: flex-end; background: var(--cobalt); color: #fff; }
+.tc-msg.ai { align-self: flex-start; background: var(--paper); border: 1px solid var(--rule); }
+.tc-msg code { background: var(--paper-2); padding: 1px 4px; border-radius: 4px; }
+.tc-msg .tc-act, .tc-msg .btn { margin: 4px 0; }
+.tc-empty { padding: 14px; border: 1px dashed var(--rule-strong); border-radius: 12px; }
+.tc-bar { display: flex; gap: 8px; align-items: stretch; }
+.tc-bar textarea { flex: 1; min-width: 0; padding: 10px; border: 1px solid var(--rule-strong); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; resize: vertical; }
+.tc-bar .col { display: flex; flex-direction: column; gap: 6px; }
+.lesson-text { line-height: 1.9; font-size: 1.05rem; }
+.lesson ul li, .lesson-steps li { margin: 4px 0; line-height: 1.8; }
+.quiz { padding: 8px 0; border-bottom: 1px solid var(--rule); }
+.meter { height: 5px; background: var(--paper-2); border-radius: 3px; margin-top: 6px; overflow: hidden; } .meter i { display: block; height: 100%; background: var(--green); }

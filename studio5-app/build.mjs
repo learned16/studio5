@@ -1,19 +1,24 @@
 // Builds two outputs from src/:
 //   dist/studio5.html  — page content for the claude.ai artifact (the viewer adds the document skeleton)
 //   public/            — the installable app for Cloudflare (full document, manifest, service worker, icons)
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 const order = ["core.js", "curriculum.js", "ink.js", "pdf.js", "ai.js", "ui.js", "tools.js",
   "view-today.js", "view-study.js", "view-projects.js", "view-practice.js", "lab.js", "atelier.js", "view-library.js",
-  "view-system.js", "remote.js", "selftest.js", "i18n.js", "main.js"];
+  "view-system.js", "remote.js", "tutor.js", "selftest.js", "i18n.js", "main.js"];
 const read = (f) => readFileSync(new URL("./src/" + f, import.meta.url), "utf8");
 const out = (p, s) => writeFileSync(new URL(p, import.meta.url), s);
 const dict = {};
 for (const f of ["i18n-ar-1.txt", "i18n-ar-2.txt", "i18n-ar-3.txt", "i18n-ar-4.txt", "i18n-ar-5.txt"]) for (const line of read(f).split("\n")) { const i = line.indexOf("\t"); if (i > 0) dict[line.slice(0, i)] = line.slice(i + 1).trim(); }
 const js = `var S5_I18N_PENDING = ${JSON.stringify(dict)};\n` + order.map((f) => `// ---- ${f} ----\n${read(f)}`).join("\n");
+// the teaching library: kb/*.json merged (installed app loads it on demand; the claude.ai page embeds it)
+const kb = readdirSync(new URL("./kb/", import.meta.url)).filter((f) => f.endsWith(".json")).sort().flatMap((f) => JSON.parse(readFileSync(new URL("./kb/" + f, import.meta.url), "utf8")));
+const kbIds = new Set(); for (const t of kb) { if (kbIds.has(t.id)) throw new Error("duplicate library id " + t.id); kbIds.add(t.id); }
 const content = read("head.html") + `<style>\n${read("styles.css")}\n</style>\n` + read("body.html") + `<script>\n"use strict";\n${js}\n</script>\n`;
 mkdirSync(new URL("./dist/", import.meta.url), { recursive: true });
 mkdirSync(new URL("./public/", import.meta.url), { recursive: true });
-out("./dist/studio5.html", content);
+out("./dist/studio5.html", content.replace("<script>\n\"use strict\";", `<script>var S5_KB = ${JSON.stringify(kb)};</script>\n<script>\n"use strict";`));
+mkdirSync(new URL("./public/kb/", import.meta.url), { recursive: true });
+out("./public/kb/library.json", JSON.stringify(kb));
 
 const version = new Date().toISOString().replace(/[-:T]/g, "").slice(0, 12);
 const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -57,4 +62,4 @@ mkdirSync(new URL("./public/companion/", import.meta.url), { recursive: true });
 out("./public/companion/studio5-companion.mjs", readFileSync(new URL("./companion/studio5-companion.mjs", import.meta.url), "utf8"));
 out("./public/version.json", JSON.stringify({ v: version }));
 out("./public/_headers", `/version.json\n  Cache-Control: no-store\n/companion/*\n  Cache-Control: no-cache\n/sw.js\n  Cache-Control: no-cache\n/index.html\n  Cache-Control: no-cache\n/\n  Cache-Control: no-cache\n`);
-console.log("built dist/studio5.html and public/ —", (content.length / 1024).toFixed(0) + " KB");
+console.log("built dist/studio5.html and public/ —", (content.length / 1024).toFixed(0) + " KB · library", kb.length, "lessons");

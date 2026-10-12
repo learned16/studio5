@@ -276,3 +276,51 @@ Sending the update to the laptop…	جارٍ إرسال التحديث للاب�
 Updating on the laptop — it reconnects in about a minute	اللابتوب يتحدّث — يرجع يتصل خلال دقيقة تقريباً
 Update could not be sent:	ما انرسل التحديث:
 Laptop updated to	تحدّث اللابتوب إلى
+Tutor	المعلّم
+Your teacher · library on this device · AI on your Cloudflare	معلمك · المكتبة على جهازك · الذكاء على Cloudflare مالتك
+Ask the teacher	اسأل المعلّم
+Lessons	الدروس
+Review	المراجعة
+Loading the library…	جارٍ تحميل المكتبة…
+Ask anything	اسأل أي شي
+about your subjects — I'll teach it step by step.	عن موادك — أعلمك خطوة بخطوة.
+Write your question… (Arabic or English)	اكتب سؤالك… (عربي أو إنكليزي)
+Send	إرسال
+👁 Laptop screen	👁 شاشة اللابتوب
+Answers come from your Cloudflare account's free daily allowance and are grounded on the library. Without internet you still get the library lessons.	الأجوبة من الحصة اليومية المجانية بحساب Cloudflare مالتك ومبنية على المكتبة. بدون إنترنت تبقى دروس المكتبة شغالة.
+Inside claude.ai the teacher uses the built-in model.	داخل claude.ai المعلم يستخدم النموذج المدمج.
+Start	ابدأ
+Continue	كمّل
+All years	كل السنوات
+Formulas	القوانين
+Worked example	مثال محلول
+Next step	الخطوة الجاية
+Answer:	الجواب:
+Common mistakes	أخطاء شائعة
+Check yourself	اختبر نفسك
+Show model answer	اعرض الجواب النموذجي
+✓ I got it	✓ عرفته
+✗ Not yet	✗ بعد لا
+Ask the teacher about this	اسأل المعلّم عن هذا الدرس
+Next lesson →	الدرس الجاي ←
+← Lessons	→ الدروس
+Your progress	تقدّمك
+Nothing due — learn a new lesson.	ماكو مراجعة اليوم — تعلّم درس جديد.
+Lesson not found.	الدرس مو موجود.
+Lesson mastered — it comes back for review later	أتقنت الدرس — يرجعلك للمراجعة بعدين
+Saved — this lesson comes back soon for practice	انحفظ — الدرس يرجعلك قريباً للتمرين
+Open	افتح
+Opened on the laptop	انفتح على اللابتوب
+Looking at the laptop screen…	جارٍ النظر لشاشة اللابتوب…
+Link another device	اربط جهاز ثاني
+Give your iPad or another phone the laptop pairing and the tutor with a one-time code.	انطِ الآيباد أو موبايل ثاني ربط اللابتوب والمعلّم برمز لمرة وحدة.
+Make a link code	سوّ رمز ربط
+Use a code	استخدم رمز
+This device is not allowed to use the tutor yet.	هذا الجهاز بعده ما مسموح له يستخدم المعلّم.
+Nothing to link from this device yet	ماكو شي ينربط من هذا الجهاز بعد
+#/# lessons	#/# دروس
+teach me	علّمني
+# lessons studied	# درس درستها
+# mastered	# متقن
+library: # lessons	المكتبة: # درس
+Due for review today (#)	مراجعة اليوم (#)

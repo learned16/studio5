@@ -4,6 +4,11 @@
 S5.ai = {
   fn: null, state: "checking",
   async init() {
+    if (S5.standalone) { // installed app: the same AI features run on your Cloudflare account (Workers AI), no Claude tokens
+      const run = async (input, opts = {}) => ({ text: await S5.tutor.ask([{ role: "user", content: input }], { onText: opts.onText }) });
+      run.json = (input) => S5.tutor.ask([{ role: "user", content: input + "\n\nReturn only valid JSON." }], { json: true });
+      this.fn = run; this.state = "ready"; S5.bus.emit("ai", this.state); return;
+    }
     if (!window.claude || typeof window.claude.use !== "function") { this.state = "none"; return; }
     try { this.fn = await window.claude.use("sample"); this.state = this.fn ? "ready" : "none"; } catch { this.state = "none"; }
     S5.bus.emit("ai", this.state);

@@ -42,8 +42,11 @@ S5.remote = {
   async makeLink() {
     const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", r = crypto.getRandomValues(new Uint8Array(10)); const code = [...r].map((b) => A[b % A.length]).join("");
     const { key, id } = await this.linkKey(code); const iv = crypto.getRandomValues(new Uint8Array(12));
-    const { device, token, name, laptopPub, pub, priv, check } = this.pair;
-    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify({ device, token, name, laptopPub, pub, priv, check })));
+    const payload = {};
+    if (this.pair) { const { device, token, name, laptopPub, pub, priv, check } = this.pair; Object.assign(payload, { device, token, name, laptopPub, pub, priv, check }); }
+    if (S5.store.meta.tutorKey) { try { const k = await fetch("/api/tutor/addkey", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key: S5.store.meta.tutorKey }) }).then((x) => x.json()); if (k.key) payload.tutorKey = k.key; } catch {} }
+    if (!payload.device && !payload.tutorKey) throw new Error("Nothing to link from this device yet");
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(payload)));
     const r2 = await fetch("/api/pair/link-put", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, blob: this.b64(iv) + "." + this.b64(ct) }) }).then((x) => x.json());
     if (r2.error) throw new Error(r2.error); return code.slice(0, 5) + "-" + code.slice(5);
   },
@@ -53,8 +56,8 @@ S5.remote = {
     if (r.error) throw new Error(r.error);
     const [iv, ct] = r.blob.split("."); let p;
     try { p = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: this.unb64(iv) }, key, this.unb64(ct)))); } catch { throw new Error("Wrong link code"); }
-    await S5.store.setMeta("remote", { ...p, pairedAt: S5.now(), confirmed: true, linked: true });
-    this.key = null; try { this.ws && this.ws.close(); } catch {} this.ws = null; this.connect(); S5.audit("remote", "This device was linked to " + p.name);
+    if (p.tutorKey) await S5.store.setMeta("tutorKey", p.tutorKey);
+    if (p.device) { const { tutorKey, ...pair } = p; await S5.store.setMeta("remote", { ...pair, pairedAt: S5.now(), confirmed: true, linked: true }); this.key = null; try { this.ws && this.ws.close(); } catch {} this.ws = null; this.connect(); S5.audit("remote", "This device was linked to " + p.name); }
   },
   async unpair() { try { this.ws && this.ws.close(); } catch {} this.ws = null; this.key = null; this.state = "off"; await S5.store.setMeta("remote", null); S5.audit("remote", "Laptop unpaired on this phone"); },
   async connect() {
@@ -128,7 +131,7 @@ S5.views.remote = (r) => {
   if (!p) return S5.remotePairView();
   if (!p.confirmed) return `<div class="page-head"><div class="titles"><span class="eyebrow">Pairing</span><h1>Confirm on the laptop</h1></div></div><section class="sheet now" style="max-width:520px"><p>The check number on your laptop must be identical to this one:</p><p class="clock" style="font-size:3rem;margin:12px 0">${S5.esc(p.check)}</p><p class="small muted">If it matches, type <b>y</b> in the Companion window on the laptop. If it doesn't, cancel — someone else may be trying to pair.</p><div class="row" style="margin-top:12px">${H.btn("Cancel pairing", "rm-unpair", {}, "danger")}</div></section>`;
   R.connect();
-  const tabs = [["laptop", "Laptop"], ["control", "Big touchpad"], ["apps", "Apps & files"], ["jobs", "Jobs"], ["system", "System"], ["log", "Activity"]];
+  const tabs = [["laptop", "Laptop"], ["teacher", "Tutor"], ["control", "Big touchpad"], ["apps", "Apps & files"], ["jobs", "Jobs"], ["system", "System"], ["log", "Activity"]];
   let body = "";
   if (tab === "control") {
     S5.ui.mount(() => S5.bindTouchpad(document.getElementById("touchpad")));
@@ -140,6 +143,8 @@ S5.views.remote = (r) => {
       ${H.section("Keyboard", `<div class="row nowrap"><input id="rm-text" dir="auto" placeholder="Type here — Arabic works" style="flex:1;min-width:0;padding:10px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--paper)">${H.btn("Send", "rm-type")}${H.btn("Send + Enter", "rm-type", { enter: 1 }, "primary")}</div><p class="tiny muted" style="margin-top:4px">“Send + Enter” runs commands in AutoCAD's command line.</p><div class="chips" style="margin-top:10px">${keys.map(([n, k]) => `<button class="btn sm" data-act="rm-keys" data-keys="${k.join(",")}">${n}</button>`).join("")}</div>`)}
       ${H.section("Media & presentation", `<div class="chips">${[["⏮", "prev"], ["⏯", "playpause"], ["⏭", "next"], ["🔉", "voldown"], ["🔇", "mute"], ["🔊", "volup"]].map(([n, k]) => `<button class="btn" data-act="rm-keys" data-keys="${k}">${n}</button>`).join("")}<button class="btn" data-act="rm-keys" data-keys="pageup">◀ Slide</button><button class="btn" data-act="rm-keys" data-keys="pagedown">Slide ▶</button></div>`)}
     </div></div>`;
+  } else if (tab === "teacher") {
+    if (!S5.kb.topics) { S5.kb.load().then(() => S5.ui.render()); body = `<p class="small muted">Loading the library…</p>`; } else body = S5.tutorChatHTML();
   } else if (tab === "laptop") {
     S5.ui.mount(() => S5.bindLaptop());
     body = S5.laptopHTML();

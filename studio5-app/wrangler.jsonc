@@ -17,6 +17,8 @@
       { "name": "PAIRING", "class_name": "Pairing" }
     ]
   },
+  // Workers AI (free daily allowance) for the Studio5 tutor
+  "ai": { "binding": "AI" },
   "migrations": [
     { "tag": "v1", "new_sqlite_classes": ["Room", "Pairing"] }
   ]
