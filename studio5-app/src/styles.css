@@ -391,3 +391,10 @@ html.app-remote .tc-log { max-height: calc(100dvh - 260px); }
 html.app-remote .studio { height: auto; }
 .st-tray { flex-wrap: nowrap; overflow-x: auto; } #st-pen { white-space: nowrap; min-width: 150px; text-align: end; }
 .st-paper .ink-wrap { grid-template-rows: minmax(0, 1fr); }
+.st-ai:empty { display: none; } .st-ai { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--cobalt-wash); line-height: 1.8; font-size: .92rem; }
+.st-ai p { margin: 0; white-space: pre-wrap; }
+.st-askbar { display: flex; gap: 6px; margin-top: 8px; } .st-askbar input { flex: 1; min-width: 0; padding: 7px 9px; border: 1px solid var(--rule-strong); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
+.studio { grid-template-columns: minmax(0, 1fr); } .st-wall, .st-desk, .st-board > *, .st-teacher, .st-bubble { min-width: 0; }
+@media (max-width: 760px) { .st-board { grid-template-columns: minmax(0, 1fr); } .st-bubble .row { flex-wrap: wrap; } }
+@media (orientation: landscape) and (min-width: 900px) { .studio { grid-template-columns: minmax(300px, 34%) minmax(0, 1fr); } }
+.st-ai p { overflow-wrap: anywhere; }

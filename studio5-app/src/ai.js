@@ -5,7 +5,11 @@ S5.ai = {
   fn: null, state: "checking",
   async init() {
     if (S5.standalone) { // installed app: the same AI features run on your Cloudflare account (Workers AI), no Claude tokens
-      const run = async (input, opts = {}) => ({ text: await S5.tutor.ask([{ role: "user", content: input }], { onText: opts.onText }) });
+      const toUrl = (b) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+      const run = async (input, opts = {}) => { // images (drawings, screenshots) go to the vision model as data URLs
+        const content = opts.images && opts.images.length ? [{ type: "text", text: input }, ...(await Promise.all(opts.images.map(toUrl))).map((url) => ({ type: "image_url", image_url: { url } }))] : input;
+        return { text: await S5.tutor.ask([{ role: "user", content }], { onText: opts.onText }) };
+      };
       run.json = (input) => S5.tutor.ask([{ role: "user", content: input + "\n\nReturn only valid JSON." }], { json: true });
       this.fn = run; this.state = "ready"; S5.bus.emit("ai", this.state); return;
     }

@@ -35,5 +35,17 @@ if (n) {
   res.searchEnglish = await A.evaluate(() => S5.kb.search("bending moment diagram", { k: 3 }).map((x) => x.id));
   await A.evaluate(() => S5.ui.go({ v: "tutor", tab: "learn" })); await A.waitForTimeout(500); await A.screenshot({ path: S + "/shots/50-tutor-lessons.png" });
 }
+// the studio teacher looks at the drawing: wrong lines → measured, correction drawn on the board, AI explanation with the image
+await A.setViewportSize({ width: 1280, height: 800 }); await A.evaluate(() => S5.ui.go({ v: "studio", id: "L2" })); await A.waitForTimeout(800);
+const m = await A.evaluate(() => { const i = S5.studio.ink, r = i.stage.getBoundingClientRect(); return { l: r.left, t: r.top, s: i.s, ox: i.ox, oy: i.oy }; });
+for (let i = 0; i < 8; i++) { const P = Array.from({ length: 9 }, (_, k) => [m.l + m.ox + (150 + k * 85) * m.s, m.t + m.oy + (100 + i * 60 + k * 8) * m.s]); await A.mouse.move(...P[0]); await A.mouse.down(); for (const p of P.slice(1)) await A.mouse.move(p[0], p[1], { steps: 2 }); await A.mouse.up(); }
+await A.click('[data-act="st-check"]');
+for (let i = 0; i < 30 && !(await A.evaluate(() => /شرح تجريبي/.test(document.getElementById("st-ai").innerText))); i++) await A.waitForTimeout(200);
+res.studioTeacherSawImage = await A.evaluate(() => /صورة مستلمة/.test(document.getElementById("st-ai").innerText));
+res.studioHabitRemembered = await A.evaluate(() => (S5.studioProg.all()._errs || {}).tilt >= 1);
+await A.evaluate(() => (document.getElementById("st-ai").innerHTML = "")); await A.fill("#st-q", "ليش خطي يطلع مايل؟"); await A.click('[data-act="st-ask"]');
+for (let i = 0; i < 30 && !(await A.evaluate(() => /شرح تجريبي/.test(document.getElementById("st-ai").innerText))); i++) await A.waitForTimeout(200);
+res.studioAnswersQuestion = await A.evaluate(() => /شرح تجريبي \[صورة مستلمة\]/.test(document.getElementById("st-ai").innerText));
+await A.screenshot({ path: S + "/shots/61-studio-teacher.png" }); await A.setViewportSize({ width: 420, height: 860 });
 await A.evaluate(() => S5.ui.go({ v: "tutor", tab: "chat" })); await A.waitForTimeout(400); await A.screenshot({ path: S + "/shots/51-tutor-chat.png" });
 console.log(JSON.stringify(res, null, 1)); console.log("errors:", errors); await b.close(); process.exit(0);

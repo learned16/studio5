@@ -337,3 +337,9 @@ Level 1 — Basics:	المستوى 1 — الأساسيات:
 Lesson passed ✓	نجحت بالدرس ✓
 Level 1 complete — level 2 (perspective & “draw this”) is next	خلصت المستوى 1 — الجاي المستوى 2 (المنظور و«ارسم…»)
 Voice is not available on this device	الصوت مو متوفر على هذا الجهاز
+🤔 Explain it another way	🤔 اشرحها بطريقة ثانية
+Ask the teacher about your drawing…	اسأل المعلّم عن رسمتك…
+Ask	اسأل
+🧠 Explain my mistake	🧠 اشرحلي غلطتي
+The teacher's AI isn't available here — the measurements above still guide you.	ذكاء المعلّم مو متوفر هنا — القياسات فوك تبقى توجهك.
+The teacher is unavailable right now	المعلّم مو متوفر هسه

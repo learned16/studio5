@@ -71,7 +71,8 @@ async function tutor(req, env, url) {
 const aiText = (r) => (r && (r.response || (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content))) || "";
 function mockTutor(messages, stream) { // for tests without a Cloudflare account
   const last = messages[messages.length - 1]; const q = typeof last.content === "string" ? last.content : JSON.stringify(last.content);
-  const text = /JSON/.test(q) ? JSON.stringify({ ok: true, echo: q.slice(-40) }) : `شرح تجريبي: ${q.slice(-60)}\n[[laptop:open_app acad]]`;
+  const img = Array.isArray(last.content) && last.content.some((c) => c && c.type === "image_url" && /^data:image\//.test(c.image_url && c.image_url.url));
+  const text = /JSON/.test(q) ? JSON.stringify({ ok: true, echo: q.slice(-40) }) : `شرح تجريبي${img ? " [صورة مستلمة]" : ""}: ${q.slice(-60)}\n[[laptop:open_app acad]]`;
   if (!stream) return json({ text });
   const enc = new TextEncoder(); const parts = text.match(/[\s\S]{1,12}/g);
   return new Response(new ReadableStream({ start(c) { for (const p of parts) c.enqueue(enc.encode(`data: ${JSON.stringify({ t: p })}\n\n`)); c.enqueue(enc.encode("data: [DONE]\n\n")); c.close(); } }), { headers: { "content-type": "text/event-stream" } });

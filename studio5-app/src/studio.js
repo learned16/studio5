@@ -176,9 +176,64 @@ S5.studioCheck = (lesson, strokes) => {
 /* ---------- progress ---------- */
 S5.studioProg = {
   all() { return S5.store.meta.studioProg || {}; },
-  async save(id, res) { const all = { ...this.all() }; const p = all[id] || { tries: 0, best: 0 }; p.tries++; p.best = Math.max(p.best, res.score); p.passed = p.passed || res.ok; p.at = S5.now(); all[id] = p; await S5.store.setMeta("studioProg", all); },
+  async save(id, res) {
+    const all = { ...this.all() }; const p = all[id] || { tries: 0, best: 0 }; p.tries++; p.best = Math.max(p.best, res.score); p.passed = p.passed || res.ok; p.at = S5.now(); all[id] = p;
+    const errs = { ...(all._errs || {}) }; for (const t of S5.studioTags(res.notes)) errs[t] = (errs[t] || 0) + 1; all._errs = errs; // recurring mistakes across all lessons
+    await S5.store.setMeta("studioProg", all);
+  },
+  habits() { const e = this.all()._errs || {}; return Object.entries(e).sort((a, b) => b[1] - a[1]).slice(0, 4); },
   unlocked(i) { return i === 0 || !!(this.all()[S5.STUDIO_LESSONS[i - 1].id] || {}).passed; },
   level1Done() { return S5.STUDIO_LESSONS.every((l) => (this.all()[l.id] || {}).passed); },
+};
+
+S5.STUDIO_TAGS = [["tilt", /مايلة|اتجاه/, "lines drift off the target angle"], ["wobble", /الاستقامة|يرجف/, "wobbly, slow lines"], ["short", /قصيرة|طويل/, "lines too short"], ["aim", /ابتعاد|النقطة/, "misses target points"], ["spacing", /متساوية/, "uneven spacing"], ["parallel", /متوازية/, "lines not parallel"], ["pressure", /الضغط/, "little pressure control"], ["oval", /الاستدارة|بيضوية/, "circles come out oval"], ["open", /مسكّرة/, "shapes left open"], ["proportion", /مربعات|مستطيلات|متساوية \(|الطول ضعف/, "proportions off"], ["values", /عدد الخطوط بكل مربع/, "value steps not distinct"]];
+S5.studioTags = (notes) => [...new Set((notes || []).flatMap((n) => S5.STUDIO_TAGS.filter(([, re]) => re.test(n)).map(([k]) => k)))];
+
+/* ---------- the teacher understands: he looks at your drawing, knows the exact measurements and your habits ---------- */
+S5.studioTeacher = async (mode, question) => {
+  const { L, ink, last } = S5.studio; const out = document.getElementById("st-ai"); if (!out || S5.studio.busy) return;
+  if (!S5.ai.on()) { out.innerHTML = `<p class="small muted">${S5.esc(S5.ai.state === "none" ? "The teacher's AI isn't available here — the measurements above still guide you." : "AI is turned off in Settings.")}</p>`; return; }
+  S5.studio.busy = true; out.innerHTML = `<p class="small muted">…</p>`;
+  const habits = S5.studioProg.habits().map(([k, n]) => `${(S5.STUDIO_TAGS.find((t) => t[0] === k) || [])[2] || k} (×${n})`).join("; ");
+  const hasInk = ink && ink.strokes.length;
+  const base = `You are a patient, expert drawing teacher in a virtual studio, teaching an Iraqi architecture/civil student who is a beginner. Speak Iraqi-friendly Arabic, warm and direct, short sentences. Never be generic: refer to what is actually on the page.
+Lesson: "${L.ar}" (${L.title}). What the student was told: ${L.say} Tip: ${L.tip}
+${last ? `The app MEASURED the drawing precisely (trust these numbers over your eyes): score ${Math.round(last.score * 100)}%, ${last.ok ? "passed" : "not passed"}. Findings: ${last.notes.join(" | ") || "none"}.` : "No measurement yet."}
+${habits ? `This student's recurring habits across lessons: ${habits}. Connect today's mistake to these habits when relevant.` : ""}`;
+  const ask = { explain: `${base}
+Look at the attached drawing. In at most 110 words: 1) one thing done well, 2) the single most important correction and WHY it happens (body mechanics: shoulder/elbow/wrist, speed, eye on target, paper angle), 3) a 1-minute mini-exercise to fix it now.`,
+    rephrase: `${base}
+The student did not understand the instruction. Explain the same task in a completely different way: use a vivid everyday analogy from Iraqi life and a step-by-step body movement guide. At most 90 words. Then ask one short question to check understanding.`,
+    ask: `${base}
+The student asks: «${question}». ${hasInk ? "Their current drawing is attached." : ""} Answer like a teacher standing next to them, in at most 110 words, concrete and practical.` }[mode];
+  try {
+    let images; if (hasInk && mode !== "rephrase") { const c = ink.toCanvas(0.8); images = [await new Promise((r) => c.toBlob(r, "image/jpeg", 0.85))]; }
+    const t = await S5.ai.ask("Studio teacher", ask, { images, onText: (x) => { out.innerHTML = `<p>${S5.esc(typeof x === "string" ? x : "")}</p>`; } });
+    out.innerHTML = `<p>${S5.esc(t)}</p>`;
+  } catch (e) { out.innerHTML = `<p class="small" style="color:var(--redline)">${S5.esc(e.message || "The teacher is unavailable right now")}</p>`; }
+  S5.studio.busy = false;
+};
+
+/* the board shows the correction: your strokes in chalk white, the correct version in yellow */
+S5.studioCorrection = (L, strokes) => {
+  const cv = document.getElementById("st-board"); if (!cv) return; const G = S5.sg, pens = G.pens(strokes); if (!pens.length) return;
+  cancelAnimationFrame(S5.studio.raf);
+  const w = cv.clientWidth, h = cv.clientHeight, dpr = devicePixelRatio || 1; const x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, w, h);
+  const s = Math.min(w / S5.STUDIO_W, h / S5.STUDIO_H) * 0.92, ox = (w - S5.STUDIO_W * s) / 2, oy = (h - S5.STUDIO_H * s) / 2; x.save(); x.translate(ox, oy); x.scale(s, s); x.lineCap = "round";
+  const path = (P, col, wd, dash) => { x.strokeStyle = col; x.lineWidth = wd; x.setLineDash(dash || []); x.beginPath(); P.forEach((p, i) => (i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1]))); x.stroke(); };
+  const WHITE = "rgba(245,245,235,.9)", YEL = "rgba(255,214,90,.95)";
+  for (const st of pens) path(G.pts(st), WHITE, 3);
+  const c = L.check;
+  if (c.type === "lines" || c.type === "diagonals" || c.type === "pressure" || c.type === "parallel") {
+    const Ls = pens.map((st) => G.line(st));
+    const tgt = c.type === "lines" ? [c.angle] : c.type === "diagonals" ? [45, 135] : [Ls.reduce((a, l) => a + l.ang, 0) / Ls.length];
+    for (const l of Ls) { const t = tgt.reduce((b, a) => (G.angDiff(l.ang, a) < G.angDiff(l.ang, b) ? a : b)); const r = (t * Math.PI) / 180, half = l.chord / 2; path([[l.mid[0] - Math.cos(r) * half, l.mid[1] + Math.sin(r) * half], [l.mid[0] + Math.cos(r) * half, l.mid[1] - Math.sin(r) * half]], YEL, 2.5, [10, 7]); }
+  }
+  if (c.type === "connect") for (const [a, b, d, e] of c.pairs) path([[a, b], [d, e]], YEL, 2.5, [10, 7]);
+  if (c.type === "circles") for (const st of pens) { const k = G.circle(st); if (k.r > 15) path(scircle(k.cx, k.cy, k.r), YEL, 2.5, [10, 7]); }
+  if (c.type === "shapes") for (const k of G.clusters(pens)) { const [x0, y0, x1, y1] = k.b, w2 = x1 - x0, h2 = y1 - y0; const sq = Math.abs(Math.max(w2, h2) / Math.max(1, Math.min(w2, h2)) - 1) < 0.5; const W = sq ? (w2 + h2) / 2 : w2, H2 = sq ? (w2 + h2) / 2 : w2 / 2; path([[x0, y0], [x0 + W, y0], [x0 + W, y0 + H2], [x0, y0 + H2], [x0, y0]], YEL, 2.5, [10, 7]); }
+  if (c.type === "values") { x.fillStyle = YEL; x.font = "bold 34px sans-serif"; c.boxes.forEach(([bx, by, bw], i) => { x.strokeStyle = YEL; x.setLineDash([8, 6]); x.strokeRect(bx, by, bw, 200); x.fillText(["فاتح", "", "", "غامق"][i] || "", bx + 40, by - 14); }); }
+  x.restore(); x.setLineDash([]); x.fillStyle = "rgba(245,245,235,.85)"; x.font = "600 13px sans-serif"; x.direction = "rtl"; x.fillText("أبيض = رسمتك · أصفر = الصحيح", w - 12, h - 10);
 };
 
 /* ---------- the room ---------- */
@@ -196,7 +251,9 @@ S5.views.studio = (r) => {
     <div class="st-wall">
       <div class="st-window" aria-hidden="true"></div>
       <div class="st-board"><div class="st-board-frame"><canvas id="st-board"></canvas><div class="st-chalk-label">${S5.esc(L.ar)}</div></div>
-        <div class="st-teacher"><div class="st-avatar" aria-hidden="true">👨‍🏫</div><div class="st-bubble" dir="rtl"><b>${S5.esc(L.ar)}</b><p id="st-say">${S5.esc(L.say)}</p><p class="st-tip">💡 ${S5.esc(L.tip)}</p><div class="row">${H.btn("▶ Show me again", "st-demo", {}, "sm")}${H.btn("🔊", "st-voice", {}, "sm")}</div></div></div>
+        <div class="st-teacher"><div class="st-avatar" aria-hidden="true">👨‍🏫</div><div class="st-bubble" dir="rtl"><b>${S5.esc(L.ar)}</b><p id="st-say">${S5.esc(L.say)}</p><p class="st-tip">💡 ${S5.esc(L.tip)}</p><div class="row">${H.btn("▶ Show me again", "st-demo", {}, "sm")}${H.btn("🔊", "st-voice", {}, "sm")}${H.btn("🤔 Explain it another way", "st-rephrase", {}, "sm")}</div>
+          <div class="st-ai" id="st-ai" dir="auto"></div>
+          <div class="st-askbar"><input id="st-q" dir="auto" placeholder="Ask the teacher about your drawing…"><button class="btn sm primary" data-act="st-ask">Ask</button></div></div></div>
       </div>
       <div class="st-ladder" dir="ltr"><span class="tiny">Level 1 — Basics</span>${ladder}<span class="tiny muted">${P.level1Done() ? "Level 2 unlocked ✓" : "Level 2: perspective & “draw this” — after the basics"}</span></div>
     </div>
@@ -243,14 +300,18 @@ S5.studioDemo = (L, still) => {
 };
 Object.assign(S5.act, {
   "st-demo": () => S5.studioDemo(S5.studio.L),
+  "st-explain": () => S5.studioTeacher("explain"),
+  "st-rephrase": () => S5.studioTeacher("rephrase"),
+  "st-ask": () => { const i = document.getElementById("st-q"); const q = i.value.trim(); if (!q) return; i.value = ""; S5.studioTeacher("ask", q); },
   "st-voice": () => { try { const u = new SpeechSynthesisUtterance(S5.studio.L.say + " " + S5.studio.L.tip); u.lang = "ar"; u.rate = 0.95; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch { S5.ui.toast("Voice is not available on this device", true); } },
   "st-undo": () => S5.studio.ink && S5.studio.ink.undo(),
   "st-clear": () => { const ink = S5.studio.ink; if (!ink || !ink.strokes.length) return; ink.commit({ op: "delete", removed: ink.strokes.slice(), added: [] }); document.getElementById("st-result").innerHTML = ""; },
   "st-check": async () => {
     const { L, ink } = S5.studio; if (!ink) return; await ink.flush?.(); const res = S5.studioCheck(L, ink.strokes);
-    await S5.studioProg.save(L.id, res);
+    await S5.studioProg.save(L.id, res); S5.studio.last = res; S5.studioCorrection(L, ink.strokes);
     const el = document.getElementById("st-result");
-    el.innerHTML = `<div class="st-verdict ${res.ok ? "ok" : "no"}" dir="rtl"><b>${res.ok ? "👏 أحسنت — نجحت بهذا الدرس" : "حاول مرة ثانية"}</b> <span class="mono">${Math.round(res.score * 100)}%</span>${res.notes.length ? `<ul>${res.notes.map((n) => `<li>${S5.esc(n)}</li>`).join("")}</ul>` : ""}${res.ok ? "" : `<p class="small">اضغط «Clear» وارسم من جديد — كل محاولة تتسجل.</p>`}</div>`;
+    el.innerHTML = `<div class="st-verdict ${res.ok ? "ok" : "no"}" dir="rtl"><b>${res.ok ? "👏 أحسنت — نجحت بهذا الدرس" : "حاول مرة ثانية"}</b> <span class="mono">${Math.round(res.score * 100)}%</span>${res.notes.length ? `<ul>${res.notes.map((n) => `<li>${S5.esc(n)}</li>`).join("")}</ul>` : ""}${res.ok ? "" : `<p class="small">اضغط «Clear» وارسم من جديد — كل محاولة تتسجل.</p>`}<div class="row" style="margin-top:6px">${H.btn("🧠 Explain my mistake", "st-explain", {}, "sm primary")}</div></div>`;
+    if (!res.ok && S5.ai.on()) S5.studioTeacher("explain");
     if (res.ok) { S5.ui.toast("Lesson passed ✓"); setTimeout(() => { const i = S5.STUDIO_LESSONS.indexOf(L); const nx = S5.STUDIO_LESSONS[i + 1]; const bar = document.querySelector(".st-actions"); if (nx && bar && !bar.querySelector('[data-id="' + nx.id + '"]')) bar.insertAdjacentHTML("afterbegin", H.btn("Next lesson →", "open", { v: "studio", id: nx.id }, "primary")); if (!nx) S5.ui.toast("Level 1 complete — level 2 (perspective & “draw this”) is next"); }, 50); }
   },
 });
