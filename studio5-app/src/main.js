@@ -2,6 +2,22 @@
 // Standalone = served from its own site (Cloudflare), not inside a claude.ai artifact viewer.
 S5.standalone = !(window.claude && typeof window.claude.use === "function");
 if (S5.standalone && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("./sw.js").catch(() => {});
+/* Automatic updates: every new deploy is picked up without reinstalling. The app checks quietly (on open,
+   when you come back to it, and every 10 minutes) and reloads itself only when you are not in the middle of
+   something (nothing typed or drawn for 20 s); your work is already saved on the device. */
+S5.autoUpdate = () => {
+  if (!S5.standalone || typeof S5_BUILD === "undefined" || !/^https?:$/.test(location.protocol)) return;
+  let lastUse = Date.now(), pending = false;
+  for (const ev of ["pointerdown", "keydown", "input"]) document.addEventListener(ev, () => (lastUse = Date.now()), true);
+  const apply = () => { if (document.hidden || Date.now() - lastUse > 20000) { S5.ui.toast("Studio5 updated — reloading"); setTimeout(() => location.reload(), 900); } else setTimeout(apply, 5000); };
+  const check = async () => {
+    if (pending) return;
+    try { const r = await fetch("./version.json", { cache: "no-store" }); const { v } = await r.json(); if (v && v !== S5_BUILD) { pending = true; const reg = await navigator.serviceWorker?.getRegistration(); await reg?.update().catch(() => {}); apply(); } } catch {}
+  };
+  setTimeout(check, 4000); setInterval(check, 10 * 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); }); window.addEventListener("online", check);
+};
+S5.autoUpdate();
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); S5.installPrompt = e; S5.rerender && S5.rerender(); });
 window.addEventListener("appinstalled", () => { S5.installPrompt = null; S5.ui.toast("Studio5 installed on this computer"); });
 S5.act.install = async () => { const p = S5.installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch {} S5.installPrompt = null; S5.ui.render(); };

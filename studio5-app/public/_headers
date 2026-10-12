@@ -1,3 +1,7 @@
+/version.json
+  Cache-Control: no-store
+/companion/*
+  Cache-Control: no-cache
 /sw.js
   Cache-Control: no-cache
 /index.html

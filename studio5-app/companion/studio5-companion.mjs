@@ -5,13 +5,14 @@
    - Only listed actions exist. No arbitrary shell commands. File access is limited to the workspace folder.
    - Every command is written to the activity log. Press Ctrl+C to stop; delete config.json to unpair.
    Usage: node studio5-companion.mjs --server https://studio5-app.<you>.workers.dev [--pair] [--simulate] */
-import { execFile } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, statSync, appendFileSync, createReadStream } from "node:fs";
+import { execFile, spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, statSync, appendFileSync, createReadStream, renameSync } from "node:fs";
 import { join, resolve, relative, extname, basename, isAbsolute } from "node:path";
 import os from "node:os";
 import readline from "node:readline";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf("--" + k); return i >= 0 ? (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true) : d; };
 const IS_WIN = process.platform === "win32";
@@ -68,7 +69,7 @@ async function open(env) {
    commands. If the library cannot load, those three input features report a clear error and everything else
    (files, apps, jobs) keeps working. */
 const psOut = (cmd) => new Promise((res, rej) => execFile("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", cmd], { windowsHide: true, maxBuffer: 8e6 }, (e, out) => (e ? rej(e) : res(String(out)))));
-const NAME2KEY = { ctrl: "LeftControl", control: "LeftControl", shift: "LeftShift", alt: "LeftAlt", win: "LeftWin", meta: "LeftWin", tab: "Tab", enter: "Enter", return: "Enter", esc: "Escape", escape: "Escape", space: "Space", backspace: "Backspace", delete: "Delete", del: "Delete", left: "Left", right: "Right", up: "Up", down: "Down", home: "Home", end: "End", pageup: "PageUp", pagedown: "PageDown", mute: "AudioMute", voldown: "AudioVolDown", volup: "AudioVolUp", next: "AudioNext", prev: "AudioPrev", playpause: "AudioPlay" };
+const NAME2KEY = { ctrl: "LeftControl", control: "LeftControl", shift: "LeftShift", alt: "LeftAlt", win: "LeftWin", meta: "LeftWin", tab: "Tab", enter: "Enter", return: "Enter", esc: "Escape", escape: "Escape", space: "Space", backspace: "Backspace", delete: "Delete", del: "Delete", left: "Left", right: "Right", up: "Up", down: "Down", home: "Home", end: "End", pageup: "PageUp", pagedown: "PageDown", mute: "AudioMute", voldown: "AudioVolDown", volup: "AudioVolUp", next: "AudioNext", prev: "AudioPrev", playpause: "AudioPlay", "`": "Grave", "-": "Minus", "=": "Equal", "[": "LeftBracket", "]": "RightBracket", "\\": "Backslash", ";": "Semicolon", "'": "Quote", ",": "Comma", ".": "Period", "/": "Slash", capslock: "CapsLock", insert: "Insert", printscreen: "Print" };
 class NutDriver {
   constructor() { this.ready = this.load(); this.ready.catch((e) => log("Input library not available:", e.message, "— mouse/keyboard/screen are off; files, apps and jobs still work.")); }
   async ensure() { try { await this.ready; } catch { throw new Error("Input control is off (the nut-js library did not load). Re-run the installer to add it. Files, apps and jobs still work."); } }
@@ -80,6 +81,7 @@ class NutDriver {
     log("Input library ready (nut-js).");
   }
   keyOf(name) { const k = String(name).toLowerCase(); let key = NAME2KEY[k]; if (!key && /^[a-z0-9]$/.test(k)) key = k.toUpperCase(); if (!key && /^f([1-9]|1[0-2])$/.test(k)) key = "F" + k.slice(1); const v = this.n.Key[key]; if (v === undefined) throw new Error("unknown key " + name); return v; }
+  async size() { if (!this._size || Date.now() - this._size.at > 5000) this._size = { at: Date.now(), v: [await this.screen.width(), await this.screen.height()] }; return this._size.v; }
   btn(b) { return b === "right" ? this.n.Button.RIGHT : b === "middle" ? this.n.Button.MIDDLE : this.n.Button.LEFT; }
   async call(op, a = {}) {
     if (!["status", "clipget", "clipset", "lock", "windows", "focus"].includes(op)) await this.ensure();
@@ -87,13 +89,15 @@ class NutDriver {
     switch (op) {
       case "move": { const p = await M.getPosition(); await M.setPosition(P(p.x + (a.dx | 0), p.y + (a.dy | 0))); return; }
       case "moveabs": await M.setPosition(P(a.x | 0, a.y | 0)); return;
+      case "movefrac": { const [sw, sh] = await this.size(); await M.setPosition(P(Math.round(Math.min(Math.max(a.fx, 0), 1) * (sw - 1)), Math.round(Math.min(Math.max(a.fy, 0), 1) * (sh - 1)))); return; }
       case "click": { const b = this.btn(a.b); if (a.dbl) await M.doubleClick(b); else await M.click(b); return; }
       case "down": await M.pressButton(this.n.Button.LEFT); return;
       case "up": await M.releaseButton(this.n.Button.LEFT); return;
       case "wheel": { const d = a.d | 0; if (d >= 0) await M.scrollDown(d); else await M.scrollUp(-d); return; }
       case "hwheel": { const d = a.d | 0; if (d >= 0) await M.scrollRight(d); else await M.scrollLeft(-d); return; }
       case "keys": { const keys = a.keys.map((n) => this.keyOf(n)); await K.pressKey(...keys); await K.releaseKey(...keys.reverse()); return; }
-      case "type": { // paste for reliable Arabic/Unicode: set clipboard, Ctrl+V, restore
+      case "type": { // plain ASCII is typed directly (fast); anything else is pasted for reliable Arabic/Unicode
+        if (/^[\x20-\x7e]*$/.test(a.text)) { await K.type(a.text); return; }
         const old = await psOut("Get-Clipboard -Raw").catch(() => "");
         await this.call("clipset", { text: a.text });
         await new Promise((r) => setTimeout(r, 50));
@@ -101,15 +105,16 @@ class NutDriver {
         await new Promise((r) => setTimeout(r, 120)); await this.call("clipset", { text: old });
         return;
       }
-      case "shot": {
-        const img = await S.grab(); const w = img.width, h = img.height, ch = img.channels, src = img.data; // BGR(A)
-        const jimg = new this.Jimp(w, h); const dst = jimg.bitmap.data;
-        for (let i = 0, n = w * h; i < n; i++) { const s = i * ch, d = i * 4; dst[d] = src[s + 2]; dst[d + 1] = src[s + 1]; dst[d + 2] = src[s]; dst[d + 3] = 255; }
-        try { const pt = await M.getPosition(); const sx = Math.round((pt.x / (S.width ? await S.width() : w)) * w) || pt.x, sy = Math.round((pt.y / (S.height ? await S.height() : h)) * h) || pt.y; for (let yy = -6; yy <= 6; yy++) for (let xx = -6; xx <= 6; xx++) if (xx * xx + yy * yy <= 36) { const px = sx + xx, py = sy + yy; if (px >= 0 && px < w && py >= 0 && py < h) { const d = (py * w + px) * 4; dst[d] = 220; dst[d + 1] = 40; dst[d + 2] = 40; } } } catch {}
-        const target = Math.min(a.w || 1280, w); if (target < w) jimg.resize(target, this.Jimp.AUTO);
+      case "shot": { // grab → downsample while converting BGR(A)→RGBA → JPEG
+        const img = await S.grab(); const w = img.width, h = img.height, ch = img.channels, src = img.data;
+        const tw = Math.max(320, Math.min(a.w || 1280, w)), k = w / tw, th = Math.max(1, Math.round(h / k));
+        const jimg = new this.Jimp(tw, th); const dst = jimg.bitmap.data; let hash = 2166136261;
+        for (let y = 0; y < th; y++) { const sy = Math.min(h - 1, (y * k) | 0); for (let x = 0; x < tw; x++) { const s = (sy * w + Math.min(w - 1, (x * k) | 0)) * ch, d = (y * tw + x) * 4; dst[d] = src[s + 2]; dst[d + 1] = src[s + 1]; dst[d + 2] = src[s]; dst[d + 3] = 255; if (((x | y) & 7) === 0) hash = Math.imul(hash ^ (src[s] + src[s + 1] * 3 + src[s + 2] * 7), 16777619); } }
+        try { const pt = await M.getPosition(); const [mw, mh] = await this.size(); hash = Math.imul(hash ^ (pt.x * 7919 + pt.y), 16777619); const cx = Math.round((pt.x / mw) * tw), cy = Math.round((pt.y / mh) * th), r = Math.max(4, Math.round(tw / 220)); for (let yy = -r; yy <= r; yy++) for (let xx = -r; xx <= r; xx++) if (xx * xx + yy * yy <= r * r) { const px = cx + xx, py = cy + yy; if (px >= 0 && px < tw && py >= 0 && py < th) { const d = (py * tw + px) * 4; dst[d] = 230; dst[d + 1] = 40; dst[d + 2] = 40; } } } catch {}
+        if (a.ifChanged && a.ifChanged === (hash >>> 0)) return { same: true, hash: hash >>> 0 };
         jimg.quality(Math.min(Math.max(a.q || 60, 20), 90));
         const buf = await jimg.getBufferAsync(this.Jimp.MIME_JPEG);
-        return { jpeg: buf.toString("base64"), w: jimg.bitmap.width, h: jimg.bitmap.height, sw: w, sh: h };
+        return { jpeg: buf.toString("base64"), w: tw, h: th, sw: w, sh: h, hash: hash >>> 0 };
       }
       case "clipget": return { text: await psOut("Get-Clipboard -Raw").catch(() => "") };
       case "clipset": { const b64 = Buffer.from(String(a.text ?? ""), "utf8").toString("base64"); await psOut(`Set-Clipboard -Value ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}')))`); return; }
@@ -123,7 +128,9 @@ class NutDriver {
 }
 class SimDriver { // for testing on non-Windows machines: logs every action
   async call(op, a = {}) {
-    if (op === "shot") { const jpeg = "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA="; return { jpeg, w: 1, h: 1, sw: 1920, sh: 1080 }; }
+    if (process.env.S5_TRACE && op !== "shot") console.log("SIM", op, JSON.stringify(a));
+    if (op === "shot") { const jpeg = "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA="; return { jpeg, w: 1, h: 1, sw: 1920, sh: 1080, hash: 1 }; }
+    if (op === "shot" && a.ifChanged) return { same: true, hash: a.ifChanged };
     if (op === "status") return { battery: 87, charging: true, freeMemMB: 4096, totalMemMB: 16384, uptimeH: 3.2 };
     if (op === "clipget") return { text: SimDriver.clip || "" };
     if (op === "clipset") { SimDriver.clip = a.text; return null; }
@@ -144,11 +151,16 @@ const ACTIONS = {
   "mouse.move": async (b) => drv.call("move", { dx: Math.round(b.dx), dy: Math.round(b.dy) }),
   "mouse.to": async (b) => drv.call("moveabs", { x: Math.round(b.x), y: Math.round(b.y) }),
   "mouse.click": async (b) => drv.call("click", { b: b.button || "left", dbl: !!b.double }),
+  "mouse.toFrac": async (b) => drv.call("movefrac", { fx: +b.fx, fy: +b.fy }),
+  "mouse.clickAt": async (b) => { await drv.call("movefrac", { fx: +b.fx, fy: +b.fy }); return drv.call("click", { b: b.button || "left", dbl: !!b.double }); },
   "mouse.down": async () => drv.call("down"), "mouse.up": async () => drv.call("up"),
   "mouse.scroll": async (b) => drv.call(b.horizontal ? "hwheel" : "wheel", { d: Math.round(b.dy) }),
   "key.combo": async (b) => drv.call("keys", { keys: b.keys }),
   "key.type": async (b) => drv.call("type", { text: String(b.text).slice(0, 5000) }),
-  "screen.shot": async (b) => drv.call("shot", { w: Math.min(b.width || 1280, 2560), q: Math.min(Math.max(b.quality || 60, 20), 90) }, 20000),
+  "screen.shot": async (b) => drv.call("shot", { w: Math.min(b.width || 1280, 2560), q: Math.min(Math.max(b.quality || 60, 20), 90) }),
+  "screen.stream": async (b) => { if (!b.on) { stream.until = 0; return { on: false }; } stream.w = Math.min(Math.max(b.width | 0 || 1024, 320), 2560); stream.q = Math.min(Math.max(b.quality | 0 || 50, 20), 85); stream.until = Date.now() + 9000; if (!stream.running) runStream(); return { on: true }; },
+  "screen.ack": async (b) => { stream.acked = Math.max(stream.acked, b.seq | 0); },
+  "sys.update": async () => checkUpdate(true),
   "clip.get": async () => drv.call("clipget"), "clip.set": async (b) => drv.call("clipset", { text: String(b.text).slice(0, 100000) }),
   "win.list": async () => drv.call("windows"), "win.focus": async (b) => drv.call("focus", { pid: b.pid }),
   "app.open": async (b) => { const a = cfg.apps.find((x) => x.id === b.id); if (!a) throw new Error("app not in the list"); await start(a.run); return { opened: a.name }; },
@@ -184,7 +196,7 @@ const ACTIONS = {
     if (checks.some((c) => !c[1])) { await st("failed", { reason: "Preflight failed" }); throw new Error("Preflight failed: " + checks.filter((c) => !c[1]).map((c) => c[0]).join("; ")); }
     await st("running");
     const before = Date.now();
-    if (job.kind === "open" || job.kind === "present") { if (target) await start(target); else if (job.app) await ACTIONS["app.open"]({ id: job.app }); if (job.kind === "present") { await new Promise((r) => setTimeout(r, 6000)); await drv.call("keys", { vks: [VK.f5] }); } }
+    if (job.kind === "open" || job.kind === "present") { if (target) await start(target); else if (job.app) await ACTIONS["app.open"]({ id: job.app }); if (job.kind === "present") { await new Promise((r) => setTimeout(r, 6000)); await drv.call("keys", { keys: ["f5"] }); } }
     await st("verifying");
     if (job.kind === "collect") { // artifact pipeline: newest file in Exports (optionally by extension)
       const ext = (job.ext || "").toLowerCase(); const files = readdirSync(cfg.exports).map((n) => ({ n, s: statSync(join(cfg.exports, n)) })).filter((x) => x.s.isFile() && (!ext || extname(x.n).toLowerCase() === ext)).sort((a, b) => b.s.mtimeMs - a.s.mtimeMs);
@@ -194,6 +206,44 @@ const ACTIONS = {
     await st("done"); return { ok: true };
   },
 };
+
+/* ---------- live screen stream ----------
+   While the phone keeps asking (renewed every few seconds), frames are pushed as fast as the phone acknowledges
+   them (at most 2 in flight), unchanged screens are skipped, and the size adapts to how fast this laptop encodes. */
+const stream = { until: 0, running: false, w: 1024, q: 50, seq: 0, acked: 0, scale: 1 };
+async function runStream() {
+  stream.running = true; let last = 0, lastSent = 0;
+  try {
+    while (Date.now() < stream.until && ws && ws.readyState === 1) {
+      if (stream.seq - stream.acked >= 2 && Date.now() - lastSent < 2500) { await new Promise((r) => setTimeout(r, 15)); continue; }
+      const t0 = Date.now();
+      const f = await drv.call("shot", { w: Math.round(stream.w * stream.scale), q: stream.q, ifChanged: Date.now() - lastSent < 3000 ? last : 0 });
+      const dt = Date.now() - t0;
+      if (!f.same) { stream.scale = dt > 220 ? Math.max(0.5, stream.scale * 0.85) : dt < 90 ? Math.min(1, stream.scale * 1.1) : stream.scale; last = f.hash; lastSent = Date.now(); await send({ stream: "screen", seq: ++stream.seq, ...f }); }
+      await new Promise((r) => setTimeout(r, f.same ? 90 : Math.max(0, 70 - dt)));
+    }
+  } catch (e) { log("Screen stream stopped:", e.message); }
+  stream.running = false;
+}
+
+/* ---------- self-update ----------
+   The Companion keeps itself current from YOUR site (the same place the installer came from), so you never
+   download it again. A new version is syntax-checked before it replaces this file, then the Companion restarts
+   in the same window. Turn off with "autoUpdate": false in config.json. */
+const SELF = fileURLToPath(import.meta.url);
+async function checkUpdate(manual) {
+  if (cfg.autoUpdate === false && !manual) return { updated: false, off: true };
+  const r = await fetch(cfg.server + "/companion/studio5-companion.mjs", { cache: "no-store" }); if (!r.ok) throw new Error("update server answered " + r.status);
+  const code = await r.text(); if (!code.includes("Studio5 Companion") || code === readFileSync(SELF, "utf8")) return { updated: false, version: VERSION };
+  const tmp = SELF + ".new"; writeFileSync(tmp, code);
+  await new Promise((res, rej) => execFile(process.execPath, ["--check", tmp], (e) => (e ? rej(new Error("downloaded update failed its check")) : res())));
+  renameSync(tmp, SELF);
+  const nv = (code.match(/const VERSION = "([^"]+)"/) || [])[1] || "?";
+  log(`Updated Companion ${VERSION} → ${nv}. Restarting…`);
+  setTimeout(() => { const kid = spawn(process.execPath, [SELF, ...args.filter((x) => x !== "--pair")], { stdio: "inherit" }); kid.on("spawn", () => process.exit(0)); }, 400);
+  return { updated: true, version: nv };
+}
+if (!SIM || arg("update-test")) { setTimeout(() => checkUpdate().catch((e) => log("Update check failed:", e.message)), 15000); setInterval(() => checkUpdate().catch(() => {}), 30 * 60000); }
 
 /* ---------- connection ---------- */
 let ws = null, backoff = 1000;
@@ -207,12 +257,13 @@ function connect() {
     if (env.t === "presence") { log(env.phones ? `Phone connected (${env.phones})` : "No phone connected"); return; }
     if (env.t !== "msg") return;
     let body; try { body = await open(env); } catch (e) { log("Rejected message:", e.message); return; }
-    const { id, action, args: a = {} } = body;
+    const { id, action, args: a = {}, nr } = body;
     const reply = (data, partial) => send({ re: id, ok: true, partial: !!partial, data });
+    if (nr && ACTIONS[action] && !SENSITIVE.has(action) && !cfg.disabled.includes(action)) { ACTIONS[action](a, () => {}).catch((e) => log("✗", action, e.message)); return; } // fire-and-forget (pointer moves, acks)
     if (!ACTIONS[action]) return send({ re: id, ok: false, error: "Unknown action" });
     if (cfg.disabled.includes(action)) { log("Blocked (disabled in config):", action); return send({ re: id, ok: false, error: "This action is turned off on the laptop" }); }
     if (SENSITIVE.has(action) && !a.confirmed) return send({ re: id, ok: false, error: "Needs confirmation" });
-    if (!action.startsWith("mouse.") && action !== "screen.shot" && action !== "file.put") log("▶", action, JSON.stringify(a).slice(0, 120));
+    if (!/^(mouse|screen|key)\./.test(action) && action !== "file.put") log("▶", action, JSON.stringify(a).slice(0, 120));
     const LONG = action.startsWith("file.") || action === "job.run";
     const limit = new Promise((_, rej) => setTimeout(() => rej(new Error(`${action} took too long on the laptop`)), LONG ? 280000 : 15000));
     try { const data = await Promise.race([ACTIONS[action](a, reply), limit]); await send({ re: id, ok: true, data }); }
@@ -247,7 +298,7 @@ async function pair() {
 
 (async () => {
   console.log(`Studio5 Companion ${VERSION} · ${os.hostname()} · ${IS_WIN ? "Windows" : process.platform}${SIM ? " · SIMULATION" : ""}\nWorkspace: ${cfg.workspace}\nLog: ${LOG_PATH}`);
-  if (arg("pair") || !cfg.phonePub) { await pair(); }
+  if ((arg("pair") && (!cfg.phonePub || arg("auto-accept"))) || arg("repair") || !cfg.phonePub) { await pair(); }
   else KEY = await deriveKey(cfg.priv, cfg.phonePub, cfg.device);
   connect();
   if (arg("auto-accept")) { /* paired by tests */ }

@@ -233,3 +233,18 @@ Relay reachable (/api/health)	الخادم الوسيط متاح (/api/health)
 Laptop answers (encrypted round-trip)	اللابتوب يجيب (رحلة مشفرة كاملة)
 Translation coverage	تغطية الترجمة
 Every screen renders	كل الشاشات تعمل
+Big touchpad	لوحة لمس كبيرة
+Live ●	مباشر ●
+Live off	المباشر مطفي
+Fast	سريع
+Sharp	واضح
+Fit	ملاءمة
+Connecting…	جارٍ الاتصال…
+Tap = click · hold = right click · drag = drag	نقرة = ضغطة · ضغط مطوّل = زر يمين · سحب = سحب
+two fingers: scroll · pinch: zoom	إصبعين: تمرير · قرص: تكبير
+Update laptop now	حدّث اللابتوب الآن
+Companion	المرافق
+updates itself	يتحدث تلقائياً
+Studio5 updated — reloading	تحدّث Studio5 — يعيد التحميل
+The laptop already has the latest version	اللابتوب عنده آخر نسخة
+Phone keyboard	كيبورد الموبايل

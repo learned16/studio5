@@ -3,7 +3,7 @@ const require = createRequire("/x/"); const { chromium } = require("/opt/node22/
 const S = process.env.S, SERVER = "http://127.0.0.1:8787", HOME = S + "/comp-home", WS_DIR = S + "/comp-ws";
 rmSync(HOME, { recursive: true, force: true }); rmSync(WS_DIR, { recursive: true, force: true }); mkdirSync(HOME, { recursive: true });
 writeFileSync(HOME + "/config.json", JSON.stringify({ workspace: WS_DIR, disabled: ["sys.sleep"] }));
-const comp = spawn("node", [new URL("../companion/studio5-companion.mjs", import.meta.url).pathname, "--server", SERVER, "--home", HOME, "--simulate", "--pair", "--auto-accept", "--name", "Test-Laptop"]);
+const comp = spawn("node", [new URL("../companion/studio5-companion.mjs", import.meta.url).pathname, "--server", SERVER, "--home", HOME, "--simulate", "--pair", "--auto-accept", "--name", "Test-Laptop"], { env: { ...process.env, S5_TRACE: "1" } });
 let out = ""; comp.stdout.on("data", (d) => (out += d)); comp.stderr.on("data", (d) => (out += d));
 const waitFor = async (re, ms = 20000) => { const t = Date.now(); while (Date.now() - t < ms) { const m = out.match(re); if (m) return m; await new Promise((r) => setTimeout(r, 200)); } throw new Error("timeout waiting for " + re + "\n" + out); };
 const code = (await waitFor(/pairing code:\s+(\d{3}) (\d{3})/)).slice(1).join("");
@@ -55,6 +55,23 @@ const tp = await page.$eval("#touchpad", (e) => { const r = e.getBoundingClientR
 await page.mouse.move(tp.x, tp.y); await page.mouse.down(); for (let i = 0; i < 8; i++) await page.mouse.move(tp.x + i * 10, tp.y + i * 4); await page.mouse.up(); await page.waitForTimeout(300);
 await page.screenshot({ path: S + "/shots/30-remote-control.png" });
 await page.evaluate(() => S5.ui.go({ v: "remote", tab: "apps" })); await page.waitForTimeout(800); await page.screenshot({ path: S + "/shots/31-remote-apps.png" });
+// the laptop view: live stream frames arrive, tap = click at that spot, keyboard, phone keyboard, drag order
+await page.evaluate(() => S5.ui.go({ v: "remote", tab: "laptop" })); await page.waitForTimeout(2500);
+res.streamFps = await page.evaluate(() => !!document.getElementById("rm-screen").src && document.getElementById("lap-info").textContent);
+const sc = await page.$eval("#lap-screen", (e) => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
+await page.touchscreen.tap(sc.x + sc.w * 0.25, sc.y + sc.h * 0.5); await page.waitForTimeout(500);
+res.tapClickAt = /SIM movefrac \{"fx":0\.2[45]\d*,"fy":0\.(49|5)\d*\}[\s\S]*SIM click \{"b":"left"/.test(out);
+await page.dispatchEvent('.kb-key[data-k="ctrl"]', "pointerdown"); await page.dispatchEvent('.kb-key[data-k="c"]', "pointerdown"); await page.waitForTimeout(400);
+res.kbCtrlC = out.includes('SIM keys {"keys":["ctrl","c"]}');
+await page.dispatchEvent('.kb-key[data-k="a"]', "pointerdown"); await page.waitForTimeout(400);
+res.kbModReleased = out.includes('SIM keys {"keys":["a"]}');
+await page.evaluate(() => { const t = document.getElementById("lap-ime"); t.value = "_hi"; t.dispatchEvent(new Event("input")); }); await page.waitForTimeout(700);
+res.imeType = out.includes('SIM type {"text":"hi"}');
+const before = out.length;
+await page.mouse.move(sc.x + 50, sc.y + 40); await page.mouse.down(); for (let i = 1; i < 6; i++) { await page.mouse.move(sc.x + 50 + i * 12, sc.y + 40 + i * 6); await page.waitForTimeout(40); } await page.mouse.up(); await page.waitForTimeout(500);
+const seq = out.slice(before).match(/SIM (down|up|movefrac)/g) || []; res.dragOrder = seq[0] === "SIM movefrac" && seq[1] === "SIM down" && seq[seq.length - 1] === "SIM up";
+await page.screenshot({ path: S + "/shots/32-remote-laptop.png" });
+res.update = (await call("sys.update", {})).d;
 // replay protection: resend the exact same envelope must be rejected by the laptop
 res.replay = await page.evaluate(async () => { const env = await S5.remote.seal({ id: "replay1", action: "mouse.move", args: { dx: 1, dy: 1 } }); S5.remote.ws.send(JSON.stringify(env)); S5.remote.ws.send(JSON.stringify(env)); return true; });
 await page.waitForTimeout(600); res.replayRejected = /Rejected message: replayed/.test(out);

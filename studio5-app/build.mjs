@@ -19,6 +19,7 @@ const version = new Date().toISOString().replace(/[-:T]/g, "").slice(0, 12);
 const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>var S5_BUILD = "${version}";</script>
 </head><body>
 ${content}</body></html>`;
 out("./public/index.html", doc);
@@ -36,7 +37,7 @@ self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) =
 self.addEventListener("fetch", (e) => {
   const req = e.request; if (req.method !== "GET") return;
   const url = new URL(req.url);
-  if (url.origin === location.origin && (url.pathname.startsWith("/api/") || url.pathname.startsWith("/companion/"))) return; // relay & companion: always live
+  if (url.origin === location.origin && (url.pathname.startsWith("/api/") || url.pathname.startsWith("/companion/") || url.pathname === "/version.json")) return; // relay, companion, version: always live
   if (req.mode === "navigate" || (url.origin === location.origin && url.pathname.endsWith("/"))) {
     // the app page: network first so updates arrive, cache when offline
     e.respondWith(fetch(req).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put("./index.html", copy)); return r; }).catch(() => caches.match("./index.html")));
@@ -48,5 +49,6 @@ self.addEventListener("fetch", (e) => {
 `);
 mkdirSync(new URL("./public/companion/", import.meta.url), { recursive: true });
 out("./public/companion/studio5-companion.mjs", readFileSync(new URL("./companion/studio5-companion.mjs", import.meta.url), "utf8"));
-out("./public/_headers", `/sw.js\n  Cache-Control: no-cache\n/index.html\n  Cache-Control: no-cache\n/\n  Cache-Control: no-cache\n`);
+out("./public/version.json", JSON.stringify({ v: version }));
+out("./public/_headers", `/version.json\n  Cache-Control: no-store\n/companion/*\n  Cache-Control: no-cache\n/sw.js\n  Cache-Control: no-cache\n/index.html\n  Cache-Control: no-cache\n/\n  Cache-Control: no-cache\n`);
 console.log("built dist/studio5.html and public/ —", (content.length / 1024).toFixed(0) + " KB");

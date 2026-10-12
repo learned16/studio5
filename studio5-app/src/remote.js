@@ -53,6 +53,7 @@ S5.remote = {
       if (env.t !== "msg") return;
       let body; try { body = await this.open(env); } catch (e) { this.lastReject = e.message; if (!this._rejToast) { this._rejToast = 1; S5.ui.toast(e.message === "stale" ? "Laptop reply rejected: the phone and laptop clocks differ by more than 2 minutes — set both to automatic time" : "Laptop reply rejected (" + e.message + ") — re-pair if this continues"); setTimeout(() => (this._rejToast = 0), 10000); } return; }
       if (body.hello && this.pair && !this.pair.confirmed) { await S5.store.setMeta("remote", { ...this.pair, confirmed: true }); S5.ui.toast("Laptop accepted the pairing"); this.hello(); this.emit(); return; }
+      if (body.stream === "screen") { S5.rmFrame(body); return; }
       const w = this.pending.get(body.re); if (!w) return;
       if (body.partial) { w.onPartial && w.onPartial(body.data); return; }
       this.pending.delete(body.re); clearTimeout(w.timer);
@@ -71,7 +72,10 @@ S5.remote = {
       try { this.ws.send(JSON.stringify(await this.seal({ id, action, args }, queue))); } catch (e) { this.pending.delete(id); clearTimeout(timer); rej(e); }
     });
   },
-  fire(action, args) { this.send(action, args, { quiet: true, timeout: 5000 }).catch(() => {}); },
+  /* fire-and-forget: no reply, no waiting (pointer moves, clicks, acks) */
+  fire(action, args = {}) { // queued so presses, moves and releases keep their order
+    this._fq = (this._fq || Promise.resolve()).then(async () => { if (!this.ws || this.ws.readyState !== 1 || !this.key || !this.laptopOnline) return; try { this.ws.send(JSON.stringify(await this.seal({ id: "f" + ++this.seq, action, args, nr: 1 }))); } catch {} });
+  },
   emit: S5.debounce(() => { if (S5.ui.route.v === "remote") S5.remote.refreshStatus(); S5.ui.renderChrome && S5.ui.renderChrome(); }, 60),
   refreshStatus() { const el = document.getElementById("rm-status"); if (el) el.innerHTML = S5.remoteStatusHTML(); },
   /* file transfer */
@@ -97,14 +101,14 @@ S5.remoteStatusHTML = () => {
 
 /* ---------- the Laptop screen ---------- */
 S5.views.remote = (r) => {
-  const R = S5.remote, p = R.pair, tab = r.tab || "control";
+  const R = S5.remote, p = R.pair, tab = r.tab || "laptop";
   if (!S5.standalone) return `<div class="page-head"><div class="titles"><span class="eyebrow">Remote work</span><h1>Laptop</h1></div></div>${H.section("Open the installed Studio5", `<p class="small">Laptop control runs through <b>your own Studio5 site on Cloudflare</b> (the installed app). This claude.ai view cannot reach it. Open your Studio5 site on the phone and pair there.</p>`)}`;
   if (R.available === null) { R.checkAvailable().then(() => S5.ui.render()); return `<p class="small muted">Checking the relay…</p>`; }
   if (!R.available) return `<div class="page-head"><div class="titles"><h1>Laptop</h1></div></div>${H.section("Relay not found", `<p class="small">This site has no Studio5 relay (/api). Deploy the latest version from GitHub to your Cloudflare account, then reload.</p>`)}`;
   if (!p) return S5.remotePairView();
   if (!p.confirmed) return `<div class="page-head"><div class="titles"><span class="eyebrow">Pairing</span><h1>Confirm on the laptop</h1></div></div><section class="sheet now" style="max-width:520px"><p>The check number on your laptop must be identical to this one:</p><p class="clock" style="font-size:3rem;margin:12px 0">${S5.esc(p.check)}</p><p class="small muted">If it matches, type <b>y</b> in the Companion window on the laptop. If it doesn't, cancel — someone else may be trying to pair.</p><div class="row" style="margin-top:12px">${H.btn("Cancel pairing", "rm-unpair", {}, "danger")}</div></section>`;
   R.connect();
-  const tabs = [["control", "Touchpad & keys"], ["screen", "Screen"], ["apps", "Apps & files"], ["jobs", "Jobs"], ["system", "System"], ["log", "Activity"]];
+  const tabs = [["laptop", "Laptop"], ["control", "Big touchpad"], ["apps", "Apps & files"], ["jobs", "Jobs"], ["system", "System"], ["log", "Activity"]];
   let body = "";
   if (tab === "control") {
     S5.ui.mount(() => S5.bindTouchpad(document.getElementById("touchpad")));
@@ -116,10 +120,9 @@ S5.views.remote = (r) => {
       ${H.section("Keyboard", `<div class="row nowrap"><input id="rm-text" dir="auto" placeholder="Type here — Arabic works" style="flex:1;min-width:0;padding:10px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--paper)">${H.btn("Send", "rm-type")}${H.btn("Send + Enter", "rm-type", { enter: 1 }, "primary")}</div><p class="tiny muted" style="margin-top:4px">“Send + Enter” runs commands in AutoCAD's command line.</p><div class="chips" style="margin-top:10px">${keys.map(([n, k]) => `<button class="btn sm" data-act="rm-keys" data-keys="${k.join(",")}">${n}</button>`).join("")}</div>`)}
       ${H.section("Media & presentation", `<div class="chips">${[["⏮", "prev"], ["⏯", "playpause"], ["⏭", "next"], ["🔉", "voldown"], ["🔇", "mute"], ["🔊", "volup"]].map(([n, k]) => `<button class="btn" data-act="rm-keys" data-keys="${k}">${n}</button>`).join("")}<button class="btn" data-act="rm-keys" data-keys="pageup">◀ Slide</button><button class="btn" data-act="rm-keys" data-keys="pagedown">Slide ▶</button></div>`)}
     </div></div>`;
-  } else if (tab === "screen") {
-    S5.ui.mount(() => { S5.rmShot(); return () => { S5.rmLive = false; }; });
-    body = `<div class="row" style="margin-bottom:8px">${H.btn("Refresh", "rm-shot")}<button class="btn ${S5.rmLive ? "primary" : ""}" data-act="rm-live">${S5.rmLive ? "Live ●" : "Live view"}</button><label class="check small"><input type="checkbox" id="rm-tapclick" ${S5.ls.get("rmTapClick", true) ? "checked" : ""}> Tap the picture to click there</label><span class="tiny muted" id="rm-shot-info"></span></div>
-      <div style="overflow:auto;border:1px solid var(--rule-strong);border-radius:var(--r);background:#111;max-height:72vh"><img id="rm-screen" alt="Laptop screen" style="display:block;width:100%;max-width:none;cursor:crosshair"></div>`;
+  } else if (tab === "laptop") {
+    S5.ui.mount(() => S5.bindLaptop());
+    body = S5.laptopHTML();
   } else if (tab === "apps") {
     S5.ui.mount(() => { S5.rmFiles(S5.rmPath || ""); });
     const apps = R.info?.apps || [];
@@ -134,7 +137,7 @@ S5.views.remote = (r) => {
   } else if (tab === "system") {
     body = `<div class="grid cols-2">${H.section("Power & security", `<div class="chips">${H.btn("Lock screen", "rm-sys", { a: "sys.lock" })}${H.btn("Sleep", "rm-sys", { a: "sys.sleep", confirm: 1 })}${H.btn("Shut down (60 s)", "rm-sys", { a: "sys.shutdown", confirm: 1 }, "danger")}${H.btn("Cancel shutdown", "rm-sys", { a: "sys.shutdown", cancel: 1 })}</div>`)}
       ${H.section("Clipboard", `<textarea id="rm-clip" dir="auto" rows="3" style="width:100%;padding:8px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--paper)"></textarea><div class="row" style="margin-top:8px">${H.btn("Get from laptop", "rm-clip-get")}${H.btn("Send to laptop", "rm-clip-set", {}, "primary")}</div>`)}
-      ${H.section("This pairing", `<dl class="kv"><dt>Laptop</dt><dd>${S5.esc(p.name)}</dd><dt>Paired</dt><dd>${S5.fmtDateTime(p.pairedAt)}</dd><dt>Check number</dt><dd class="mono">${S5.esc(p.check)}</dd><dt>System</dt><dd>${S5.esc(R.info?.os || "—")}</dd><dt>Workspace</dt><dd class="mono small">${S5.esc(R.info?.workspace || "—")}</dd><dt>Encryption</dt><dd>End-to-end (ECDH P-256 + AES-256-GCM)</dd></dl>`, H.btn("Unpair", "rm-unpair", {}, "sm danger"))}
+      ${H.section("This pairing", `<dl class="kv"><dt>Laptop</dt><dd>${S5.esc(p.name)}</dd><dt>Paired</dt><dd>${S5.fmtDateTime(p.pairedAt)}</dd><dt>Check number</dt><dd class="mono">${S5.esc(p.check)}</dd><dt>System</dt><dd>${S5.esc(R.info?.os || "—")}</dd><dt>Workspace</dt><dd class="mono small">${S5.esc(R.info?.workspace || "—")}</dd><dt>Companion</dt><dd>${S5.esc(R.info?.version || "—")} · updates itself</dd><dt>Encryption</dt><dd>End-to-end (ECDH P-256 + AES-256-GCM)</dd></dl>`, H.btn("Update laptop now", "rm-update", {}, "sm") + H.btn("Unpair", "rm-unpair", {}, "sm danger"))}
       ${H.section("Install on another laptop", `<p class="small">Download the installer on the laptop (Windows 10/11). It installs Node.js if needed, starts the Companion at login, and shows a pairing code.</p><div class="row" style="margin-top:8px">${H.btn("Download installer", "rm-installer", {}, "sm")}</div>`)}</div>`;
   } else if (tab === "log") {
     const l = S5.store.meta.remoteLog || [];
@@ -151,10 +154,10 @@ S5.remotePairView = () => `<div class="page-head"><div class="titles"><span clas
 
 /* touchpad gestures */
 S5.bindTouchpad = (el) => {
-  if (!el) return; const R = S5.remote; const pts = new Map(); let acc = { x: 0, y: 0 }, sc = 0, t0 = 0, moved = 0, maxP = 0, dragging = false, lastTap = 0, lp = null, flushT = null;
+  if (!el) return; const R = S5.remote; const pts = new Map(); let acc = { x: 0, y: 0 }, sc = 0, t0 = 0, moved = 0, maxP = 0, dragging = false, lp = null, flushT = null;
   const speed = () => +(document.getElementById("rm-speed")?.value || 2.5);
   const flush = () => { flushT = null; if (Math.abs(acc.x) >= 1 || Math.abs(acc.y) >= 1) { R.fire("mouse.move", { dx: acc.x, dy: acc.y }); acc = { x: 0, y: 0 }; } if (Math.abs(sc) >= 1) { R.fire("mouse.scroll", { dy: -Math.round(sc) * 3 }); sc = 0; } };
-  const q = () => { if (!flushT) flushT = setTimeout(flush, 30); };
+  const q = () => { if (!flushT) flushT = setTimeout(flush, 16); };
   el.addEventListener("pointerdown", (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); maxP = Math.max(maxP, pts.size); if (pts.size === 1) { t0 = Date.now(); moved = 0; lp = setTimeout(() => { if (moved < 8) { dragging = true; R.fire("mouse.down"); el.style.outline = "2px solid var(--cobalt)"; } }, 550); } });
   el.addEventListener("pointermove", (e) => {
     const p = pts.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
@@ -165,18 +168,119 @@ S5.bindTouchpad = (el) => {
     pts.delete(e.pointerId); clearTimeout(lp); if (pts.size) return;
     const dt = Date.now() - t0;
     if (dragging) { dragging = false; R.fire("mouse.up"); el.style.outline = ""; }
-    else if (moved < 10 && dt < 250) { if (maxP >= 2) R.fire("mouse.click", { button: "right" }); else { const now = Date.now(); if (now - lastTap < 300) R.fire("mouse.click", { button: "left", double: true }); else setTimeout(() => { if (Date.now() - lastTap >= 290) R.fire("mouse.click", { button: "left" }); }, 300); lastTap = now; } }
+    else if (moved < 10 && dt < 250) { if (maxP >= 2) R.fire("mouse.click", { button: "right" }); else R.fire("mouse.click", { button: "left" }); }
     maxP = 0; flush();
   };
   el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
   document.getElementById("rm-speed")?.addEventListener("input", (e) => S5.ls.set("rmSpeed", +e.target.value));
 };
-S5.rmShot = async () => {
-  const img = document.getElementById("rm-screen"); if (!img) return;
-  try { const d = await S5.remote.send("screen.shot", { width: Math.min(1600, Math.round(window.innerWidth * (window.devicePixelRatio || 1))), quality: S5.rmLive ? 45 : 65 }, { quiet: true, timeout: 20000 }); img.src = "data:image/jpeg;base64," + d.jpeg; img.dataset.sw = d.sw; img.dataset.sh = d.sh; const i = document.getElementById("rm-shot-info"); if (i) i.textContent = `${d.sw}×${d.sh} · ${new Date().toTimeString().slice(0, 8)}`; }
-  catch (e) { S5.ui.toast(e.message, true); S5.rmLive = false; }
-  if (!img.dataset.bound) { img.dataset.bound = 1; img.addEventListener("click", (e) => { if (!document.getElementById("rm-tapclick")?.checked) return; const r = img.getBoundingClientRect(); const x = ((e.clientX - r.left) / r.width) * +img.dataset.sw, y = ((e.clientY - r.top) / r.height) * +img.dataset.sh; S5.remote.send("mouse.to", { x, y }, { quiet: true }).then(() => S5.remote.send("mouse.click", { button: "left" }, { quiet: true })).then(() => setTimeout(S5.rmShot, 400)).catch((er) => S5.ui.toast(er.message, true)); }); }
-  if (S5.rmLive && document.getElementById("rm-screen")) setTimeout(S5.rmShot, 1200);
+/* ---------- the laptop in front of you: live screen + keyboard + touchpad ---------- */
+// [label, key name, Arabic label, width]
+S5.KB_ROWS = [
+  [["Esc", "esc"], ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => ["F" + n, "f" + n]), ["Del", "delete"]],
+  [["`", "`", "ذ"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["0", "0"], ["-", "-"], ["=", "="], ["⌫", "backspace", "", 1.6]],
+  [["Tab", "tab", "", 1.4], ["q", "q", "ض"], ["w", "w", "ص"], ["e", "e", "ث"], ["r", "r", "ق"], ["t", "t", "ف"], ["y", "y", "غ"], ["u", "u", "ع"], ["i", "i", "ه"], ["o", "o", "خ"], ["p", "p", "ح"], ["[", "[", "ج"], ["]", "]", "د"], ["\\", "\\", "", 1.2]],
+  [["Caps", "capslock", "", 1.7], ["a", "a", "ش"], ["s", "s", "س"], ["d", "d", "ي"], ["f", "f", "ب"], ["g", "g", "ل"], ["h", "h", "ا"], ["j", "j", "ت"], ["k", "k", "ن"], ["l", "l", "م"], [";", ";", "ك"], ["'", "'", "ط"], ["Enter", "enter", "", 1.9]],
+  [["Shift", "shift", "", 2.2, 1], ["z", "z", "ئ"], ["x", "x", "ء"], ["c", "c", "ؤ"], ["v", "v", "ر"], ["b", "b", "لا"], ["n", "n", "ى"], ["m", "m", "ة"], [",", ",", "و"], [".", ".", "ز"], ["/", "/", "ظ"], ["↑", "up", "", 1.2], ["Shift", "shift", "", 1.4, 1]],
+  [["Ctrl", "ctrl", "", 1.3, 1], ["Win", "win", "", 1.2, 1], ["Alt", "alt", "", 1.2, 1], ["EN/ع", "lang", "", 1.4], ["", "space", "", 5], ["⌨", "ime", "", 1.2], ["←", "left"], ["↓", "down"], ["→", "right"]],
+];
+S5.laptopHTML = () => {
+  const live = S5.ls.get("rmLive", true), sharp = S5.ls.get("rmSharp", false);
+  const kb = S5.KB_ROWS.map((row, i) => `<div class="kb-row${i === 0 ? " fn" : ""}">${row.map(([l, k, ar, w, mod]) => `<button type="button" class="kb-key${mod ? " mod" : ""}" data-k="${S5.esc(k)}" style="flex:${w || 1}">${S5.esc(l)}${ar ? `<i>${ar}</i>` : ""}</button>`).join("")}</div>`).join("");
+  return `<div class="lap" id="lap">
+    <div class="lap-lid">
+      <div class="lap-bar" dir="ltr"><button class="btn sm ${live ? "primary" : ""}" data-lap="live">${live ? "Live ●" : "Live off"}</button><button class="btn sm" data-lap="sharp">${sharp ? "Sharp" : "Fast"}</button><button class="btn sm" data-lap="fit">Fit</button><button class="btn sm" data-lap="full">⛶</button><span class="tiny muted" id="lap-info">Connecting…</span></div>
+      <div class="lap-screen" id="lap-screen"><img id="rm-screen" alt="Laptop screen" draggable="false"><span class="lap-hint" id="lap-hint">Tap = click · hold = right click · drag = drag<br>two fingers: scroll · pinch: zoom</span></div>
+    </div>
+    <div class="lap-base">
+      <div class="kb" id="kb">${kb}</div>
+      <div class="lap-pad"><div id="touchpad" class="pad"></div><div class="pad-btns"><button type="button" data-b="left"></button><button type="button" data-b="right"></button></div></div>
+      <textarea id="lap-ime" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" dir="auto" aria-label="Phone keyboard"></textarea>
+    </div>
+  </div>`;
+};
+S5.rmView = { z: 1, px: 0, py: 0 };
+S5.bindLaptop = () => {
+  const R = S5.remote, scr = document.getElementById("lap-screen"), img = document.getElementById("rm-screen"); if (!scr) return;
+  const V = S5.rmView; V.z = 1; V.px = 0; V.py = 0;
+  const apply = () => { const r = scr.getBoundingClientRect(); V.px = Math.min(0, Math.max(r.width * (1 - V.z), V.px)); V.py = Math.min(0, Math.max(r.height * (1 - V.z), V.py)); img.style.transform = `translate(${V.px}px,${V.py}px) scale(${V.z})`; };
+  const frac = (cx, cy) => { const r = scr.getBoundingClientRect(); return { fx: (cx - r.left - V.px) / V.z / r.width, fy: (cy - r.top - V.py) / V.z / r.height }; };
+  /* stream */
+  const want = () => { const sharp = S5.ls.get("rmSharp", false); return { on: true, width: Math.min(1920, Math.round(scr.clientWidth * (window.devicePixelRatio || 1) * (sharp ? 1.3 : 0.8) * Math.min(V.z, 2))), quality: sharp ? 68 : 45 }; };
+  const old = () => !!R.info && (!R.info.version || R.info.version < "1.1");
+  let pollT = null, alive = true;
+  const poll = async () => { if (!alive || !S5.ls.get("rmLive", true) || !old()) { pollT = null; return; } try { const d = await R.send("screen.shot", { width: want().width, quality: want().quality }, { quiet: true, timeout: 20000 }); S5.rmFrame(d); } catch {} pollT = setTimeout(poll, 600); };
+  const renew = () => { if (!alive) return; if (!S5.ls.get("rmLive", true) || document.hidden) { R.fire("screen.stream", { on: false }); return; } if (!R.info) return; if (old()) { if (!pollT) poll(); return; } R.fire("screen.stream", want()); };
+  renew(); const iv = setInterval(renew, 3000); const vis = () => renew(); document.addEventListener("visibilitychange", vis);
+  if (!S5.ls.get("rmLive", true)) R.send("screen.shot", { width: want().width, quality: 60 }, { quiet: true }).then(S5.rmFrame).catch(() => {});
+  /* touch on the screen: tap = click there, hold = right click, drag = drag, 2 fingers = scroll / pinch-zoom */
+  const pts = new Map(); let st = null, lastMove = 0, scAcc = 0;
+  scr.addEventListener("pointerdown", (e) => {
+    e.preventDefault(); scr.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    document.getElementById("lap-hint")?.remove();
+    if (pts.size === 1) { st = { x: e.clientX, y: e.clientY, mode: "tap", t: Date.now() }; st.lp = setTimeout(() => { if (st && st.mode === "tap") { st.mode = "done"; R.fire("mouse.clickAt", { ...frac(st.x, st.y), button: "right" }); navigator.vibrate && navigator.vibrate(15); } }, 520); }
+    else if (pts.size === 2 && st) { clearTimeout(st.lp); if (st.mode === "drag") R.fire("mouse.up"); const [a, b] = [...pts.values()]; st = { mode: "two", d0: Math.hypot(a.x - b.x, a.y - b.y), z0: V.z, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, pinch: false }; }
+  });
+  scr.addEventListener("pointermove", (e) => {
+    const p = pts.get(e.pointerId); if (!p || !st) return; p.x = e.clientX; p.y = e.clientY;
+    if (st.mode === "two" && pts.size >= 2) {
+      const [a, b] = [...pts.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+      if (!st.pinch && Math.abs(d / st.d0 - 1) > 0.15) st.pinch = true;
+      if (st.pinch || V.z > 1) { const r = scr.getBoundingClientRect(); const nz = st.pinch ? Math.min(4, Math.max(1, st.z0 * d / st.d0)) : V.z; const ox = cx - r.left, oy = cy - r.top; V.px = ox - ((ox - V.px) * nz) / V.z + (cx - st.cx); V.py = oy - ((oy - V.py) * nz) / V.z + (cy - st.cy); V.z = nz; apply(); }
+      else { scAcc += (cy - st.cy) / 12; if (Math.abs(scAcc) >= 1) { R.fire("mouse.scroll", { dy: -Math.round(scAcc) * 2 }); scAcc = 0; } }
+      st.cx = cx; st.cy = cy; return;
+    }
+    if (st.mode === "tap" && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 10) { clearTimeout(st.lp); st.mode = "drag"; R.fire("mouse.toFrac", frac(st.x, st.y)); R.fire("mouse.down"); }
+    if (st.mode === "drag" && Date.now() - lastMove > 30) { lastMove = Date.now(); R.fire("mouse.toFrac", frac(e.clientX, e.clientY)); }
+  });
+  const end = (e) => {
+    const p = pts.get(e.pointerId); pts.delete(e.pointerId); if (!st) return;
+    if (st.mode === "two") { if (!pts.size) { st = null; if (V.z > 1) renew(); } return; }
+    clearTimeout(st.lp);
+    if (st.mode === "tap") R.fire("mouse.clickAt", { ...frac(st.x, st.y), button: "left" });
+    else if (st.mode === "drag") { R.fire("mouse.toFrac", frac(p ? p.x : st.x, p ? p.y : st.y)); R.fire("mouse.up"); }
+    st = null;
+  };
+  scr.addEventListener("pointerup", end); scr.addEventListener("pointercancel", end);
+  scr.addEventListener("contextmenu", (e) => e.preventDefault());
+  /* toolbar */
+  document.querySelector(".lap-bar").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-lap]"); if (!b) return; const k = b.dataset.lap;
+    if (k === "live") { const on = !S5.ls.get("rmLive", true); S5.ls.set("rmLive", on); b.textContent = on ? "Live ●" : "Live off"; b.classList.toggle("primary", on); renew(); }
+    if (k === "sharp") { const on = !S5.ls.get("rmSharp", false); S5.ls.set("rmSharp", on); b.textContent = on ? "Sharp" : "Fast"; renew(); }
+    if (k === "fit") { V.z = 1; V.px = V.py = 0; apply(); renew(); }
+    if (k === "full") { const el = document.getElementById("lap"); if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen && el.requestFullscreen().then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape").catch(() => {})).catch(() => {}); }
+  });
+  /* keyboard */
+  const mods = new Set(), locked = new Set(); let lastMod = {};
+  const paint = () => document.querySelectorAll(".kb-key.mod").forEach((b) => b.classList.toggle("on", mods.has(b.dataset.k)));
+  document.getElementById("kb").addEventListener("pointerdown", (e) => {
+    const b = e.target.closest(".kb-key"); if (!b) return; e.preventDefault(); const k = b.dataset.k;
+    b.classList.add("down"); setTimeout(() => b.classList.remove("down"), 120); navigator.vibrate && navigator.vibrate(8);
+    if (b.classList.contains("mod")) { const now = Date.now(); if (mods.has(k)) { if (now - (lastMod[k] || 0) < 400) locked.add(k); else { mods.delete(k); locked.delete(k); } } else mods.add(k); lastMod[k] = now; paint(); return; }
+    if (k === "ime") { const t = document.getElementById("lap-ime"); t.value = "_"; t.focus(); return; }
+    if (k === "lang") { R.fire("key.combo", { keys: ["win", "space"] }); return; }
+    R.fire("key.combo", { keys: [...mods, k] });
+    for (const m of [...mods]) if (!locked.has(m)) mods.delete(m); paint();
+  });
+  /* the phone's own keyboard (Arabic, emoji, voice typing): typed text goes straight to the laptop */
+  const ime = document.getElementById("lap-ime"); let buf = "", bt = null;
+  const flushT = () => { bt = null; const parts = buf.split("\n"); buf = ""; parts.forEach((t, i) => { if (t) R.fire("key.type", { text: t }); if (i < parts.length - 1) R.fire("key.combo", { keys: ["enter"] }); }); };
+  ime.addEventListener("input", () => { const v = ime.value; if (!v.startsWith("_")) { if (bt) { clearTimeout(bt); flushT(); } R.fire("key.combo", { keys: ["backspace"] }); } else { buf += v.slice(1); if (!bt) bt = setTimeout(flushT, 220); } ime.value = "_"; });
+  /* touchpad + buttons */
+  S5.bindTouchpad(document.getElementById("touchpad"));
+  document.querySelector(".pad-btns").addEventListener("pointerdown", (e) => { const b = e.target.closest("[data-b]"); if (!b) return; e.preventDefault(); R.fire("mouse.click", { button: b.dataset.b }); navigator.vibrate && navigator.vibrate(10); });
+  return () => { alive = false; clearInterval(iv); clearTimeout(pollT); document.removeEventListener("visibilitychange", vis); R.fire("screen.stream", { on: false }); };
+};
+/* a frame from the laptop: decode off the main path, show, then acknowledge so the next one comes */
+S5.rmFrame = (f) => {
+  const img = document.getElementById("rm-screen"); if (!img || !f || f.same || !f.jpeg) return;
+  const bin = atob(f.jpeg), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([u8], { type: "image/jpeg" })); const prev = img.dataset.url;
+  img.onload = () => { if (prev) URL.revokeObjectURL(prev); if (f.seq) S5.remote.fire("screen.ack", { seq: f.seq }); };
+  img.src = url; img.dataset.url = url; if (f.sw && f.sh) img.parentNode.style.aspectRatio = `${f.sw} / ${f.sh}`;
+  const s = (S5.rmStats = S5.rmStats || { n: 0, t: Date.now(), fps: 0 }); s.n++; if (Date.now() - s.t > 1000) { s.fps = Math.round((s.n * 1000) / (Date.now() - s.t)); s.n = 0; s.t = Date.now(); }
+  const i = document.getElementById("lap-info"); if (i) i.textContent = `${f.sw}×${f.sh} · ${f.w}px · ${s.fps} fps · ${Math.round(f.jpeg.length / 1370)} KB`;
 };
 S5.rmFiles = async (path) => {
   const box = document.getElementById("rm-files"); if (!box) return; S5.rmPath = path;
@@ -239,8 +343,6 @@ Object.assign(S5.act, {
   "rm-click": (el) => S5.remote.fire("mouse.click", { button: el.dataset.b, double: !!el.dataset.dbl }),
   "rm-keys": (el) => S5.remote.send("key.combo", { keys: el.dataset.keys.split(",") }, { quiet: true }).catch((e) => S5.ui.toast(e.message, true)),
   "rm-type": async (el) => { const i = document.getElementById("rm-text"); const t = i.value; if (!t) return; try { await S5.remote.send("key.type", { text: t }); if (el.dataset.enter) await S5.remote.send("key.combo", { keys: ["enter"] }, { quiet: true }); i.value = ""; } catch (e) { S5.ui.toast(e.message, true); } },
-  "rm-shot": () => S5.rmShot(),
-  "rm-live": () => { S5.rmLive = !S5.rmLive; S5.ui.render(); },
   "rm-app": async (el) => { try { const r = await S5.remote.send("app.open", { id: el.dataset.id }); S5.ui.toast("Opening " + r.opened); } catch (e) { S5.ui.toast(e.message, true); } },
   "rm-windows": async () => { try { const ws = await S5.remote.send("win.list", {}, { quiet: true }); document.getElementById("rm-win").innerHTML = H.section("Open windows", `<div class="list">${ws.map((w) => H.item({ t: S5.esc(w.title), s: S5.esc(w.app), act: "rm-focus", data: { pid: w.pid } })).join("")}</div>`); } catch (e) { S5.ui.toast(e.message, true); } },
   "rm-focus": (el) => S5.remote.send("win.focus", { pid: +el.dataset.pid }).catch((e) => S5.ui.toast(e.message, true)),
@@ -251,6 +353,7 @@ Object.assign(S5.act, {
   "rm-sys": (el) => { const run = async () => { try { await S5.remote.send(el.dataset.a, { confirmed: true, cancel: !!el.dataset.cancel }); S5.ui.toast("Done"); } catch (e) { S5.ui.toast(e.message, true); } }; el.dataset.confirm ? S5.ui.confirm(`${el.textContent.trim()} on the laptop?`, el.textContent.trim(), run) : run(); },
   "rm-clip-get": async () => { try { const d = await S5.remote.send("clip.get"); document.getElementById("rm-clip").value = d.text || ""; } catch (e) { S5.ui.toast(e.message, true); } },
   "rm-clip-set": async () => { try { await S5.remote.send("clip.set", { text: document.getElementById("rm-clip").value }); S5.ui.toast("Sent to the laptop clipboard"); } catch (e) { S5.ui.toast(e.message, true); } },
+  "rm-update": async () => { try { const r = await S5.remote.send("sys.update", {}, { timeout: 60000 }); S5.ui.toast(r.updated ? `Laptop updated to ${r.version} — it restarts by itself` : "The laptop already has the latest version"); } catch (e) { S5.ui.toast(/Unknown action/.test(e.message) ? "This laptop has an older Companion: run the installer once more — after that it updates itself" : e.message, true); } },
   "rm-installer": () => S5.ui.saveFile("Studio5-Companion-Setup.cmd", new Blob([S5.rmInstaller()], { type: "text/plain" })),
   "rm-quickjob": async (el) => { const j = await S5.store.create("job", { title: `Collect newest ${el.dataset.ext} export`, kind: "collect", ext: el.dataset.ext, state: "draft", app: "export" }); S5.runJob(j.id); },
   "rm-job": (el, e) => { e.stopPropagation(); S5.runJob(el.dataset.id); },
