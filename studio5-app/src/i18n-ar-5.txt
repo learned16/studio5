@@ -324,3 +324,16 @@ teach me	علّمني
 # mastered	# متقن
 library: # lessons	المكتبة: # درس
 Due for review today (#)	مراجعة اليوم (#)
+✓ Check my drawing	✓ صحّح رسمتي
+▶ Show me again	▶ وريني مرة ثانية
+← Practice	→ التطبيق
+Level 1 — Basics	المستوى 1 — الأساسيات
+Level 2: perspective & “draw this” — after the basics	المستوى 2: المنظور و«ارسم…» — بعد الأساسيات
+Level 2 unlocked ✓	انفتح المستوى 2 ✓
+The Studio · المرسم	المرسم
+Enter the Studio	ادخل المرسم
+A drawing room with a chalkboard, your paper on the desk and a teacher who shows each step and checks your drawing. From holding the pencil to architectural drawing.	غرفة رسم بيها سبّورة، وورقتك على الطاولة، ومعلّم يوريك كل خطوة ويصحح رسمتك. من مسكة القلم لحد الرسم المعماري.
+Level 1 — Basics:	المستوى 1 — الأساسيات:
+Lesson passed ✓	نجحت بالدرس ✓
+Level 1 complete — level 2 (perspective & “draw this”) is next	خلصت المستوى 1 — الجاي المستوى 2 (المنظور و«ارسم…»)
+Voice is not available on this device	الصوت مو متوفر على هذا الجهاز

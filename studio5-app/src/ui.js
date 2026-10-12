@@ -79,7 +79,7 @@ S5.ui = {
     this.render(); document.getElementById("view").scrollTop = 0; window.scrollTo(0, 0);
   },
   back() { const r = this.stack.pop(); if (r) { this.route = r; this.render(); } else this.go("today", true); },
-  root() { const v = this.route.v; return ({ subject: "study", lecture: "study", assessmentPlan: "study", mock: "study", focus: "today", project: "projects", notebook: "library", file: "library", drill: "practice", tool: "practice", lab: "practice", atelier: "practice", tests: "system", remote: "system", search: "", inbox: "", notifications: "", research: "library" })[v] ?? v; },
+  root() { const v = this.route.v; return ({ subject: "study", lecture: "study", assessmentPlan: "study", mock: "study", focus: "today", project: "projects", notebook: "library", file: "library", drill: "practice", studio: "practice", tool: "practice", lab: "practice", atelier: "practice", tests: "system", remote: "system", search: "", inbox: "", notifications: "", research: "library" })[v] ?? v; },
   render() {
     this.cleanup.forEach((f) => { try { f(); } catch {} }); this.cleanup = [];
     this.renderChrome();

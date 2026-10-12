@@ -3,7 +3,7 @@
 //   public/            — the installable app for Cloudflare (full document, manifest, service worker, icons)
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 const order = ["core.js", "curriculum.js", "ink.js", "pdf.js", "ai.js", "ui.js", "tools.js",
-  "view-today.js", "view-study.js", "view-projects.js", "view-practice.js", "lab.js", "atelier.js", "view-library.js",
+  "view-today.js", "view-study.js", "view-projects.js", "view-practice.js", "studio.js", "lab.js", "atelier.js", "view-library.js",
   "view-system.js", "remote.js", "tutor.js", "selftest.js", "i18n.js", "main.js"];
 const read = (f) => readFileSync(new URL("./src/" + f, import.meta.url), "utf8");
 const out = (p, s) => writeFileSync(new URL(p, import.meta.url), s);

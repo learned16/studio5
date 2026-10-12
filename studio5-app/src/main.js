@@ -21,7 +21,7 @@ S5.autoUpdate();
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); S5.installPrompt = e; S5.rerender && S5.rerender(); });
 window.addEventListener("appinstalled", () => { S5.installPrompt = null; S5.ui.toast("Studio5 installed on this computer"); });
 S5.act.install = async () => { const p = S5.installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch {} S5.installPrompt = null; S5.ui.render(); };
-S5.LIVE = new Set(["tutor", "notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote", "lab", "atelier"]);
+S5.LIVE = new Set(["studio", "tutor", "notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote", "lab", "atelier"]);
 S5.ui.isLive = () => { const r = S5.ui.route; return S5.LIVE.has(r.v) || (r.v === "lecture" && (r.tab || "capture") === "capture") || (r.v === "library" && r.tab === "council"); };
 S5.act.go = (el) => S5.ui.go(el.dataset.v);
 S5.LIVE.add("tests");

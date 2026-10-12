@@ -1,0 +1,31 @@
+// The Studio: chalkboard demo, paper, tools; each basics checker passes good drawings and rejects bad ones with feedback.
+import { createRequire } from "node:module"; const require = createRequire("/x/"); const { chromium } = require("/opt/node22/lib/node_modules/playwright");
+const S = process.env.S; const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const page = await (await b.newContext({ viewport: { width: 1280, height: 800 } })).newPage(); const errors = []; page.on("pageerror", (e) => errors.push(e.message));
+await page.goto("http://localhost:8765/"); await page.waitForTimeout(1500);
+const res = {};
+await page.evaluate(() => S5.ui.go({ v: "practice" })); await page.waitForTimeout(400);
+res.entryCard = await page.evaluate(() => !!document.querySelector(".st-entry"));
+const go = async (id) => { await page.evaluate((id) => S5.ui.go({ v: "studio", id }), id); await page.waitForTimeout(700); };
+// draw in DOC coordinates (1000×700 paper) by mapping through the ink transform
+const draw = async (pts) => { const m = await page.evaluate(() => { const i = S5.studio.ink, r = i.stage.getBoundingClientRect(); return { l: r.left, t: r.top, s: i.s, ox: i.ox, oy: i.oy }; }); const P = pts.map(([x, y]) => [m.l + m.ox + x * m.s, m.t + m.oy + y * m.s]); await page.mouse.move(...P[0]); await page.mouse.down(); for (const p of P.slice(1)) await page.mouse.move(p[0], p[1], { steps: 3 }); await page.mouse.up(); };
+const seg = (x1, y1, x2, y2, n = 12) => Array.from({ length: n + 1 }, (_, k) => [x1 + ((x2 - x1) * k) / n, y1 + ((y2 - y1) * k) / n]);
+const circ = (cx, cy, r) => Array.from({ length: 37 }, (_, k) => [cx + r * Math.cos((k / 36) * Math.PI * 2), cy + r * Math.sin((k / 36) * Math.PI * 2)]);
+const rect = (x, y, w, h) => [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]].flatMap((p, i, a) => (i ? seg(a[i - 1][0], a[i - 1][1], p[0], p[1], 6).slice(1) : [p]));
+const check = async () => { await page.click('[data-act="st-check"]'); await page.waitForTimeout(300); return page.evaluate(() => ({ ok: !!document.querySelector(".st-verdict.ok"), text: document.getElementById("st-result").innerText })); };
+const clear = () => page.click('[data-act="st-clear"]');
+await go("L2"); res.boardDrawn = await page.evaluate(() => { const c = document.getElementById("st-board"); return c.width > 0; });
+for (let i = 0; i < 8; i++) await draw(seg(150, 100 + i * 65, 850, 100 + i * 65 + 6)); res.hGood = (await check()).ok;
+await clear(); for (let i = 0; i < 8; i++) await draw(seg(150, 100 + i * 60, 850, 160 + i * 60)); const bad = await check(); res.hTiltedRejected = !bad.ok && /مايلة/.test(bad.text);
+await go("L3"); for (let i = 0; i < 8; i++) await draw(seg(150 + i * 95, 80, 152 + i * 95, 620)); res.vGood = (await check()).ok;
+await go("L4"); for (let i = 0; i < 4; i++) { await draw(seg(100 + i * 60, 600, 400 + i * 60, 300)); await draw(seg(560 + i * 60, 300, 860 + i * 60, 600)); } res.diagGood = (await check()).ok;
+await go("L5"); for (const [a, c, d, e] of [[120, 110, 420, 130], [560, 90, 880, 230], [140, 300, 380, 520], [620, 330, 900, 300], [180, 610, 520, 640], [640, 600, 860, 420]]) await draw(seg(a + 3, c - 2, d - 2, e + 3)); res.connectGood = (await check()).ok;
+await go("L6"); for (let i = 0; i < 10; i++) await draw(seg(200, 120 + i * 45, 800, 120 + i * 45)); res.parallelGood = (await check()).ok;
+await clear(); for (let i = 0; i < 10; i++) await draw(seg(200, 120 + (i * i) * 5, 800, 120 + (i * i) * 5)); const pb = await check(); res.unevenRejected = !pb.ok && /متساوية/.test(pb.text);
+await go("L7"); for (let i = 0; i < 6; i++) await draw(seg(200, 150 + i * 70, 800, 150 + i * 70)); const pr = await check(); res.pressureMouseHandled = pr.ok && /ضغط/.test(pr.text);
+await go("L8"); for (const [x, y] of [[200, 200], [480, 200], [760, 200], [330, 480], [640, 480]]) await draw(circ(x, y, 100)); res.circlesGood = (await check()).ok;
+await go("L9"); for (const [x, y] of [[80, 80], [330, 80], [580, 80]]) await draw(rect(x, y, 180, 180)); await draw(rect(80, 380, 360, 180)); await draw(rect(500, 380, 360, 180)); res.shapesGood = (await check()).ok;
+await go("L10"); const B = [[90, 250, 170, 200], [300, 250, 170, 200], [510, 250, 170, 200], [720, 250, 170, 200]]; for (const [k, [x, y, w, h]] of B.entries()) { const n = 2 + k * 3; for (let i = 0; i < n; i++) await draw(seg(x + 8, y + ((i + 1) * h) / (n + 1), x + w - 8, y + ((i + 1) * h) / (n + 1), 4)); } res.valuesGood = (await check()).ok;
+res.progress = await page.evaluate(() => Object.entries(S5.studioProg.all()).filter(([, p]) => p.passed).map(([k]) => k).join(","));
+await go("L5"); await page.waitForTimeout(2500); await page.screenshot({ path: S + "/shots/60-studio.png" });
+console.log(JSON.stringify(res, null, 1)); console.log("errors:", errors); await b.close();
