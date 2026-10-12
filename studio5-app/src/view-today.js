@@ -1,7 +1,7 @@
 /* Today — the daily execution board. Renders from local data only (never waits for AI). */
 S5.views = S5.views || {};
 const H = S5.h;
-S5.todaySlots = (dayIdx = new Date().getDay()) => S5.store.list("slot", (s) => +s.day === dayIdx && S5.yearActive(S5.store.get(s.subjectId)?.year || 1) && (S5.store.get(s.subjectId)?.semester || 0) % 2 === (S5.settings.get("activeSemester") % 2)).sort((a, b) => a.start.localeCompare(b.start));
+S5.todaySlots = (dayIdx = new Date().getDay()) => S5.store.list("slot", (s) => +s.day === dayIdx && S5.subjectActive(S5.store.get(s.subjectId)) && S5.inSemester(S5.store.get(s.subjectId), S5.settings.get("activeSemester"))).sort((a, b) => a.start.localeCompare(b.start));
 S5.setPlace = (label, route) => { S5.store.setMeta("lastPlace", { label, route, at: S5.now() }); };
 
 S5.views.today = () => {

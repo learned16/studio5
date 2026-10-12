@@ -1,0 +1,10 @@
+{
+  // Studio5 installable app — static assets on Cloudflare Workers (no server code, no data stored by Cloudflare).
+  "$schema": "https://unpkg.com/wrangler@4/config-schema.json",
+  "name": "studio5-app",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  }
+}

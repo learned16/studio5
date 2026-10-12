@@ -114,8 +114,87 @@ S5.TOOLS = {
   npv: { y: 5, name: "Engineering economics (NPV / IRR)", where: "practice" },
   lcc: { y: 5, name: "Life-cycle cost comparison", where: "practice" },
 };
+/* Civil Engineering — University of Kirkuk, College of Engineering (4 years, annual courses, "units").
+   Stage 4 is the department's published curriculum (codes هـ.مد 401–410). Stages 1–3 are not published online:
+   they follow the usual Iraqi civil-engineering sequence and are marked provisional until you confirm them. */
+S5.PROGRAMS = {
+  arch: { name: "Architecture & Building Technologies", ar: "هندسة تقنيات العمارة والبناء", univ: "Northern Technical University", years: 5, unit: "ECTS" },
+  civil: { name: "Civil Engineering", ar: "الهندسة المدنية", univ: "University of Kirkuk — College of Engineering", years: 4, unit: "units" },
+};
+S5.CIVIL = [
+  // year, code, Arabic, English, units, profile, official
+  [1, "", "الرياضيات I", "Mathematics I", null, "math", false],
+  [1, "", "الميكانيك الهندسي (السكون والحركة)", "Engineering Mechanics (Statics & Dynamics)", null, "structures", false],
+  [1, "", "الرسم الهندسي", "Engineering Drawing", null, "drawing", false],
+  [1, "", "الجيولوجيا الهندسية", "Engineering Geology", null, "materials", false],
+  [1, "", "إنشاء المباني", "Building Construction", null, "construction", false],
+  [1, "", "برمجة الحاسبات", "Computer Programming", null, "computing", false],
+  [1, "", "الورش", "Workshops", null, "practical", false],
+  [1, "", "حقوق الإنسان والديمقراطية", "Human Rights & Democracy", null, "general", false],
+  [1, "", "اللغة الإنكليزية I", "English I", null, "general", false],
+  [1, "", "اللغة العربية", "Arabic Language", null, "general", false],
+  [2, "", "الرياضيات II", "Mathematics II", null, "math", false],
+  [2, "", "مقاومة المواد", "Strength of Materials", null, "structures", false],
+  [2, "", "ميكانيك الموائع", "Fluid Mechanics", null, "services", false],
+  [2, "", "المساحة", "Surveying", null, "survey", false],
+  [2, "", "مواد البناء وتكنولوجيا الخرسانة", "Building Materials & Concrete Technology", null, "materials", false],
+  [2, "", "تطبيقات الحاسوب الهندسية", "Engineering Computer Applications", null, "computing", false],
+  [2, "", "جرائم حزب البعث", "Crimes of the Baath Party", null, "general", false],
+  [2, "", "اللغة الإنكليزية II", "English II", null, "general", false],
+  [3, "", "نظرية الإنشاءات", "Theory of Structures", null, "structures", false],
+  [3, "", "تصاميم الخرسانة المسلحة I", "Reinforced Concrete Design I", null, "structures", false],
+  [3, "", "ميكانيك التربة", "Soil Mechanics", null, "materials", false],
+  [3, "", "الهيدروليك", "Hydraulics", null, "services", false],
+  [3, "", "التحليل الهندسي والطرق العددية", "Engineering Analysis & Numerical Methods", null, "math", false],
+  [3, "", "الإحصاء الهندسي", "Engineering Statistics", null, "math", false],
+  [3, "", "هندسة النقل", "Transportation Engineering", null, "survey", false],
+  [3, "", "اللغة الإنكليزية III", "English III", null, "general", false],
+  [4, "هـ.مد 401", "تصاميم الخرسانة المسلحة II", "Reinforced Concrete Design II", 4, "structures", true],
+  [4, "هـ.مد 402", "تصميم المنشآت الحديدية", "Steel Structures Design", 4, "structures", true],
+  [4, "هـ.مد 403", "منشآت هيدروليكية", "Hydraulic Structures", 4, "services", true],
+  [4, "هـ.مد 404", "هندسة الأسس", "Foundation Engineering", 6, "structures", true],
+  [4, "هـ.مد 405", "هندسة الطرق", "Highway Engineering", 5, "survey", true],
+  [4, "هـ.مد 406", "الهندسة الصحية", "Sanitary Engineering", 5, "services", true],
+  [4, "هـ.مد 407", "طرق الإنشاء والتخمين", "Construction Methods & Estimation", 4, "quantity", true],
+  [4, "هـ.مد 408", "هيدرولوجي", "Hydrology", 4, "climate", true],
+  [4, "هـ.مد 409", "المشروع الهندسي", "Engineering Project", 4, "research", true],
+  [4, "هـ.مد 410", "اللغة الإنكليزية IV", "English IV", 2, "general", true],
+];
+S5.YEARS_CIVIL = [
+  { n: 1, name: "Engineering foundations", ar: "الأسس الهندسية", focus: "Mathematics, mechanics, engineering drawing, geology, building construction, programming" },
+  { n: 2, name: "Materials, mechanics & surveying", ar: "المواد والميكانيك والمساحة", focus: "Strength of materials, fluids, surveying, concrete technology" },
+  { n: 3, name: "Structures, soils & water", ar: "الإنشاءات والتربة والمياه", focus: "Theory of structures, RC design I, soil mechanics, hydraulics, numerical methods, transportation" },
+  { n: 4, name: "Design & infrastructure", ar: "التصميم والبنى التحتية", focus: "RC II, steel, foundations, highways, sanitary, hydraulic structures, estimation, project" },
+];
+// where the two programs teach the same thing — what you learn now counts in either path
+S5.OVERLAP = [
+  ["Mathematics", ["Principles of Calculus", "Differential Equations", "Statistics"], ["Mathematics I", "Mathematics II", "Engineering Analysis & Numerical Methods", "Engineering Statistics"]],
+  ["Engineering drawing", ["Engineering Drawing", "Freehand Drawing 2D/3D"], ["Engineering Drawing"]],
+  ["Mechanics & structures", ["Mechanics & Strength of Materials", "Structural Design"], ["Engineering Mechanics (Statics & Dynamics)", "Strength of Materials", "Theory of Structures", "Reinforced Concrete Design I", "Reinforced Concrete Design II", "Steel Structures Design"]],
+  ["Materials & construction", ["Building Materials", "Building Construction", "Building Construction: Stairs & Floors", "Advanced Building Technologies", "Technical Construction"], ["Building Construction", "Building Materials & Concrete Technology", "Construction Methods & Estimation"]],
+  ["Surveying & roads", ["Engineering Surveying", "Road Design"], ["Surveying", "Transportation Engineering", "Highway Engineering"]],
+  ["Water & sanitary", ["Sanitary Services"], ["Fluid Mechanics", "Hydraulics", "Sanitary Engineering", "Hydraulic Structures", "Hydrology"]],
+  ["Quantities & management", ["Quantity Surveying & Specifications", "Project Management & Engineering Economics"], ["Construction Methods & Estimation"]],
+  ["Computing", ["Computer Fundamentals", "Computer Applications"], ["Computer Programming", "Engineering Computer Applications"]],
+  ["Languages & general", ["English Language", "Arabic Language", "Democracy & Human Rights"], ["English I", "Arabic Language", "Human Rights & Democracy"]],
+];
+// the year each tool turns on in the civil path
+S5.TOOLS_CIVIL_YEAR = { scale: 1, beam: 2, section: 2, levelling: 2, stats: 3, water: 3, curve: 3, stairs: 1, boq: 4, gantt: 4, npv: 4, uvalue: 2, lux: 4, reverb: 4, sun: 4, housing: 4, lcc: 4, drawingCoach: 1, materialCards: 1, problemNotebook: 1, projectLite: 1, research: 4 };
+S5.progOn = (p) => (S5.settings.get("programs") || ["arch", "civil"]).includes(p || "arch");
+S5.subjectActive = (s) => !!s && S5.progOn(s.program) && S5.yearActive(s.year);
+S5.inSemester = (s, sem) => (s.program === "civil" ? s.year === Math.ceil(sem / 2) : s.semester === sem);
+S5.unitLabel = (s) => (s.program === "civil" ? "units" : "ECTS");
+S5.seedCivil = async () => {
+  if (S5.store.list("subject", (x) => x.program === "civil").length) return;
+  const t = S5.now(); const recs = [];
+  S5.CIVIL.forEach((c, i) => recs.push({ id: "civ_" + String(i + 1).padStart(2, "0"), type: "subject", program: "civil", year: c[0], semester: c[0] * 2 - 1, annual: true, code: c[1], ar: c[2], name: c[3], ects: c[4], profile: c[5], professor: "", source: c[6] ? "University of Kirkuk, Civil Engineering curriculum (stage 4)" : "Provisional — typical Iraqi civil engineering sequence; confirm with the department", provisional: !c[6], createdAt: t, updatedAt: t, rev: 1 }));
+  recs.push({ id: "disc_civil", type: "discrepancy", title: "Civil engineering stages 1–3", text: "The University of Kirkuk publishes only the stage-4 civil curriculum online. Stages 1–3 here follow the usual Iraqi civil engineering sequence and have no unit values yet. Replace them with the department's official list when you get it (edit each subject).", status: "open", source: "uokirkuk.edu.iq", createdAt: t, updatedAt: t, rev: 1 });
+  for (const sub of S5.store.list("subject", (x) => !x.program)) recs.push({ ...sub, program: "arch", updatedAt: t, rev: (sub.rev || 0) + 1 });
+  await S5.idb.putMany("records", recs.map((r) => [r.id, r]));
+  recs.forEach((r) => { S5.store.recs.set(r.id, r); S5.sync.queue(r); });
+};
 S5.yearActive = (n) => n <= S5.settings.get("activeYear") || !!(S5.settings.get("flags") || {})["year" + n];
-S5.toolOn = (key) => { const t = S5.TOOLS[key]; if (!t) return false; const f = S5.settings.get("flags") || {}; if (f["tool_" + key] === false) return false; return S5.yearActive(t.y) || f["tool_" + key] === true; };
+S5.toolOn = (key) => { const t = S5.TOOLS[key]; if (!t) return false; const f = S5.settings.get("flags") || {}; if (f["tool_" + key] === false) return false; return (S5.progOn("arch") && S5.yearActive(t.y)) || (S5.progOn("civil") && S5.yearActive(S5.TOOLS_CIVIL_YEAR[key] || 9)) || f["tool_" + key] === true; };
 S5.subjectPacks = (s) => (S5.PROFILES[s.profile] || S5.PROFILES.general).packs;
 S5.hasPack = (s, p) => S5.subjectPacks(s).includes(p);
 
@@ -129,7 +208,7 @@ S5.seedCurriculum = async () => {
     recs.push({ id: "sem_" + s, type: "semester", n: s, year: Math.ceil(s / 2), declaredEcts: 30, listedEcts: ects, createdAt: t, updatedAt: t, rev: 1 });
   }
   S5.CURRICULUM.forEach((c, i) => {
-    recs.push({ id: "sub_" + String(i + 1).padStart(2, "0"), type: "subject", year: c[0], semester: c[1], ar: c[2], name: c[3], ects: c[4], profile: c[5], professor: "", room: "", color: "", createdAt: t, updatedAt: t, rev: 1, source: "Program_Catalogue-ar-1.pdf" });
+    recs.push({ id: "sub_" + String(i + 1).padStart(2, "0"), type: "subject", program: "arch", year: c[0], semester: c[1], ar: c[2], name: c[3], ects: c[4], profile: c[5], professor: "", room: "", color: "", createdAt: t, updatedAt: t, rev: 1, source: "Program_Catalogue-ar-1.pdf" });
   });
   recs.push({ id: "disc_sem2", type: "discrepancy", title: "Semester 2 credits", text: "Catalogue declares 30 ECTS for semester 2, but the listed subjects add up to 25 ECTS. No subject was invented to fill the gap; confirm with the department.", status: "open", source: "Program_Catalogue-ar-1.pdf", createdAt: t, updatedAt: t, rev: 1 });
   // skills hierarchy (Skills Map)

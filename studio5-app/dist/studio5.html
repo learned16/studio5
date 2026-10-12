@@ -518,7 +518,7 @@ S5.audit = (kind, text) => {
 
 /* ---------- settings ---------- */
 S5.settings = {
-  defaults: { activeYear: 1, activeSemester: 1, theme: "system", penOnly: true, aiEnabled: true, aiDailyCap: 60, safeMode: false, dailySessionCap: 4, energyMin: 300, studentName: "", university: "Northern Technical University", city: "Kirkuk", lat: 35.47, flags: {}, backupEveryDays: 7, weekStart: 6 },
+  defaults: { programs: ["arch", "civil"], activeYear: 1, activeSemester: 1, theme: "system", penOnly: true, aiEnabled: true, aiDailyCap: 60, safeMode: false, dailySessionCap: 4, energyMin: 300, studentName: "", university: "Northern Technical University", city: "Kirkuk", lat: 35.47, flags: {}, backupEveryDays: 7, weekStart: 6 },
   get(k) { const s = S5.store.meta.settings || {}; return k in s ? s[k] : this.defaults[k]; },
   async set(k, v) { const s = { ...(S5.store.meta.settings || {}) }; s[k] = v; await S5.store.setMeta("settings", s); S5.sync.pushSettings(); S5.bus.emit("settings", { k, v }); },
   all() { return { ...this.defaults, ...(S5.store.meta.settings || {}) }; },
@@ -615,13 +615,13 @@ S5.health = {
     items.push({ k: "Local database", v: S5.idb.mode === "indexeddb" ? `Healthy · ${s.recs.size} records · schema v${s.meta.schemaVersion}` : "Memory only — data is lost when you close this page. Export a backup.", level: S5.idb.mode === "indexeddb" ? "ok" : "bad" });
     if (this.lastWriteError) items.push({ k: "Last write", v: "Failed: " + this.lastWriteError, level: "bad" });
     const sy = S5.sync;
-    const syncText = { local: "Device only (sign in to mirror to the cloud)", connecting: "Connecting…", synced: `Synced${sy.lastSync ? " · " + S5.fmtDateTime(sy.lastSync) : ""}`, pending: `${sy.pending.size} change(s) waiting`, error: "Sync interrupted — changes stay on this device", full: "Cloud storage full — new records stay local" }[sy.state] || sy.state;
+    const syncText = { local: S5.standalone ? "This computer only — move data between devices with Backup → Restore" : "Device only (sign in to mirror to the cloud)", connecting: "Connecting…", synced: `Synced${sy.lastSync ? " · " + S5.fmtDateTime(sy.lastSync) : ""}`, pending: `${sy.pending.size} change(s) waiting`, error: "Sync interrupted — changes stay on this device", full: "Cloud storage full — new records stay local" }[sy.state] || sy.state;
     items.push({ k: "Sync", v: syncText + (sy.localOnly.size ? ` · ${sy.localOnly.size} large record(s) device-only` : ""), level: sy.state === "error" || sy.state === "full" ? "warn" : "ok" });
     const lb = s.meta.lastBackupAt; const every = S5.settings.get("backupEveryDays");
     const age = lb ? S5.daysBetween(lb.slice(0, 10), S5.todayISO()) : null;
     items.push({ k: "Backup", v: lb ? `Last full backup ${S5.relDay(lb.slice(0, 10))}${s.meta.lastRestoreTestAt ? " · restore test " + S5.relDay(s.meta.lastRestoreTestAt.slice(0, 10)) : " · no restore test yet"}` : "No full backup yet", level: lb == null || age > every ? "warn" : "ok" });
     if (this.storage) { const pct = this.storage.quota ? this.storage.usage / this.storage.quota : 0; items.push({ k: "Storage", v: `${S5.fmtBytes(this.storage.usage || 0)} used of ${S5.fmtBytes(this.storage.quota || 0)}`, level: pct > 0.85 ? "bad" : pct > 0.6 ? "warn" : "ok" }); }
-    items.push({ k: "AI", v: !S5.settings.get("aiEnabled") ? "Turned off by you" : S5.ai.state === "ready" ? `Available · ${S5.ai.usedToday()} of ${S5.settings.get("aiDailyCap")} requests today` : S5.ai.state === "none" ? "Not available in this view — everything else works" : "Checking…", level: "ok" });
+    items.push({ k: "AI", v: !S5.settings.get("aiEnabled") ? "Turned off by you" : S5.ai.state === "ready" ? `Available · ${S5.ai.usedToday()} of ${S5.settings.get("aiDailyCap")} requests today` : S5.ai.state === "none" ? (S5.standalone ? "Not available in the installed app — open the claude.ai version for AI" : "Not available in this view — everything else works") : "Checking…", level: "ok" });
     items.push({ k: "Windows companion", v: "Not connected — remote jobs are queued as plans until a companion exists", level: "ok" });
     return items;
   },
@@ -812,8 +812,87 @@ S5.TOOLS = {
   npv: { y: 5, name: "Engineering economics (NPV / IRR)", where: "practice" },
   lcc: { y: 5, name: "Life-cycle cost comparison", where: "practice" },
 };
+/* Civil Engineering — University of Kirkuk, College of Engineering (4 years, annual courses, "units").
+   Stage 4 is the department's published curriculum (codes هـ.مد 401–410). Stages 1–3 are not published online:
+   they follow the usual Iraqi civil-engineering sequence and are marked provisional until you confirm them. */
+S5.PROGRAMS = {
+  arch: { name: "Architecture & Building Technologies", ar: "هندسة تقنيات العمارة والبناء", univ: "Northern Technical University", years: 5, unit: "ECTS" },
+  civil: { name: "Civil Engineering", ar: "الهندسة المدنية", univ: "University of Kirkuk — College of Engineering", years: 4, unit: "units" },
+};
+S5.CIVIL = [
+  // year, code, Arabic, English, units, profile, official
+  [1, "", "الرياضيات I", "Mathematics I", null, "math", false],
+  [1, "", "الميكانيك الهندسي (السكون والحركة)", "Engineering Mechanics (Statics & Dynamics)", null, "structures", false],
+  [1, "", "الرسم الهندسي", "Engineering Drawing", null, "drawing", false],
+  [1, "", "الجيولوجيا الهندسية", "Engineering Geology", null, "materials", false],
+  [1, "", "إنشاء المباني", "Building Construction", null, "construction", false],
+  [1, "", "برمجة الحاسبات", "Computer Programming", null, "computing", false],
+  [1, "", "الورش", "Workshops", null, "practical", false],
+  [1, "", "حقوق الإنسان والديمقراطية", "Human Rights & Democracy", null, "general", false],
+  [1, "", "اللغة الإنكليزية I", "English I", null, "general", false],
+  [1, "", "اللغة العربية", "Arabic Language", null, "general", false],
+  [2, "", "الرياضيات II", "Mathematics II", null, "math", false],
+  [2, "", "مقاومة المواد", "Strength of Materials", null, "structures", false],
+  [2, "", "ميكانيك الموائع", "Fluid Mechanics", null, "services", false],
+  [2, "", "المساحة", "Surveying", null, "survey", false],
+  [2, "", "مواد البناء وتكنولوجيا الخرسانة", "Building Materials & Concrete Technology", null, "materials", false],
+  [2, "", "تطبيقات الحاسوب الهندسية", "Engineering Computer Applications", null, "computing", false],
+  [2, "", "جرائم حزب البعث", "Crimes of the Baath Party", null, "general", false],
+  [2, "", "اللغة الإنكليزية II", "English II", null, "general", false],
+  [3, "", "نظرية الإنشاءات", "Theory of Structures", null, "structures", false],
+  [3, "", "تصاميم الخرسانة المسلحة I", "Reinforced Concrete Design I", null, "structures", false],
+  [3, "", "ميكانيك التربة", "Soil Mechanics", null, "materials", false],
+  [3, "", "الهيدروليك", "Hydraulics", null, "services", false],
+  [3, "", "التحليل الهندسي والطرق العددية", "Engineering Analysis & Numerical Methods", null, "math", false],
+  [3, "", "الإحصاء الهندسي", "Engineering Statistics", null, "math", false],
+  [3, "", "هندسة النقل", "Transportation Engineering", null, "survey", false],
+  [3, "", "اللغة الإنكليزية III", "English III", null, "general", false],
+  [4, "هـ.مد 401", "تصاميم الخرسانة المسلحة II", "Reinforced Concrete Design II", 4, "structures", true],
+  [4, "هـ.مد 402", "تصميم المنشآت الحديدية", "Steel Structures Design", 4, "structures", true],
+  [4, "هـ.مد 403", "منشآت هيدروليكية", "Hydraulic Structures", 4, "services", true],
+  [4, "هـ.مد 404", "هندسة الأسس", "Foundation Engineering", 6, "structures", true],
+  [4, "هـ.مد 405", "هندسة الطرق", "Highway Engineering", 5, "survey", true],
+  [4, "هـ.مد 406", "الهندسة الصحية", "Sanitary Engineering", 5, "services", true],
+  [4, "هـ.مد 407", "طرق الإنشاء والتخمين", "Construction Methods & Estimation", 4, "quantity", true],
+  [4, "هـ.مد 408", "هيدرولوجي", "Hydrology", 4, "climate", true],
+  [4, "هـ.مد 409", "المشروع الهندسي", "Engineering Project", 4, "research", true],
+  [4, "هـ.مد 410", "اللغة الإنكليزية IV", "English IV", 2, "general", true],
+];
+S5.YEARS_CIVIL = [
+  { n: 1, name: "Engineering foundations", ar: "الأسس الهندسية", focus: "Mathematics, mechanics, engineering drawing, geology, building construction, programming" },
+  { n: 2, name: "Materials, mechanics & surveying", ar: "المواد والميكانيك والمساحة", focus: "Strength of materials, fluids, surveying, concrete technology" },
+  { n: 3, name: "Structures, soils & water", ar: "الإنشاءات والتربة والمياه", focus: "Theory of structures, RC design I, soil mechanics, hydraulics, numerical methods, transportation" },
+  { n: 4, name: "Design & infrastructure", ar: "التصميم والبنى التحتية", focus: "RC II, steel, foundations, highways, sanitary, hydraulic structures, estimation, project" },
+];
+// where the two programs teach the same thing — what you learn now counts in either path
+S5.OVERLAP = [
+  ["Mathematics", ["Principles of Calculus", "Differential Equations", "Statistics"], ["Mathematics I", "Mathematics II", "Engineering Analysis & Numerical Methods", "Engineering Statistics"]],
+  ["Engineering drawing", ["Engineering Drawing", "Freehand Drawing 2D/3D"], ["Engineering Drawing"]],
+  ["Mechanics & structures", ["Mechanics & Strength of Materials", "Structural Design"], ["Engineering Mechanics (Statics & Dynamics)", "Strength of Materials", "Theory of Structures", "Reinforced Concrete Design I", "Reinforced Concrete Design II", "Steel Structures Design"]],
+  ["Materials & construction", ["Building Materials", "Building Construction", "Building Construction: Stairs & Floors", "Advanced Building Technologies", "Technical Construction"], ["Building Construction", "Building Materials & Concrete Technology", "Construction Methods & Estimation"]],
+  ["Surveying & roads", ["Engineering Surveying", "Road Design"], ["Surveying", "Transportation Engineering", "Highway Engineering"]],
+  ["Water & sanitary", ["Sanitary Services"], ["Fluid Mechanics", "Hydraulics", "Sanitary Engineering", "Hydraulic Structures", "Hydrology"]],
+  ["Quantities & management", ["Quantity Surveying & Specifications", "Project Management & Engineering Economics"], ["Construction Methods & Estimation"]],
+  ["Computing", ["Computer Fundamentals", "Computer Applications"], ["Computer Programming", "Engineering Computer Applications"]],
+  ["Languages & general", ["English Language", "Arabic Language", "Democracy & Human Rights"], ["English I", "Arabic Language", "Human Rights & Democracy"]],
+];
+// the year each tool turns on in the civil path
+S5.TOOLS_CIVIL_YEAR = { scale: 1, beam: 2, section: 2, levelling: 2, stats: 3, water: 3, curve: 3, stairs: 1, boq: 4, gantt: 4, npv: 4, uvalue: 2, lux: 4, reverb: 4, sun: 4, housing: 4, lcc: 4, drawingCoach: 1, materialCards: 1, problemNotebook: 1, projectLite: 1, research: 4 };
+S5.progOn = (p) => (S5.settings.get("programs") || ["arch", "civil"]).includes(p || "arch");
+S5.subjectActive = (s) => !!s && S5.progOn(s.program) && S5.yearActive(s.year);
+S5.inSemester = (s, sem) => (s.program === "civil" ? s.year === Math.ceil(sem / 2) : s.semester === sem);
+S5.unitLabel = (s) => (s.program === "civil" ? "units" : "ECTS");
+S5.seedCivil = async () => {
+  if (S5.store.list("subject", (x) => x.program === "civil").length) return;
+  const t = S5.now(); const recs = [];
+  S5.CIVIL.forEach((c, i) => recs.push({ id: "civ_" + String(i + 1).padStart(2, "0"), type: "subject", program: "civil", year: c[0], semester: c[0] * 2 - 1, annual: true, code: c[1], ar: c[2], name: c[3], ects: c[4], profile: c[5], professor: "", source: c[6] ? "University of Kirkuk, Civil Engineering curriculum (stage 4)" : "Provisional — typical Iraqi civil engineering sequence; confirm with the department", provisional: !c[6], createdAt: t, updatedAt: t, rev: 1 }));
+  recs.push({ id: "disc_civil", type: "discrepancy", title: "Civil engineering stages 1–3", text: "The University of Kirkuk publishes only the stage-4 civil curriculum online. Stages 1–3 here follow the usual Iraqi civil engineering sequence and have no unit values yet. Replace them with the department's official list when you get it (edit each subject).", status: "open", source: "uokirkuk.edu.iq", createdAt: t, updatedAt: t, rev: 1 });
+  for (const sub of S5.store.list("subject", (x) => !x.program)) recs.push({ ...sub, program: "arch", updatedAt: t, rev: (sub.rev || 0) + 1 });
+  await S5.idb.putMany("records", recs.map((r) => [r.id, r]));
+  recs.forEach((r) => { S5.store.recs.set(r.id, r); S5.sync.queue(r); });
+};
 S5.yearActive = (n) => n <= S5.settings.get("activeYear") || !!(S5.settings.get("flags") || {})["year" + n];
-S5.toolOn = (key) => { const t = S5.TOOLS[key]; if (!t) return false; const f = S5.settings.get("flags") || {}; if (f["tool_" + key] === false) return false; return S5.yearActive(t.y) || f["tool_" + key] === true; };
+S5.toolOn = (key) => { const t = S5.TOOLS[key]; if (!t) return false; const f = S5.settings.get("flags") || {}; if (f["tool_" + key] === false) return false; return (S5.progOn("arch") && S5.yearActive(t.y)) || (S5.progOn("civil") && S5.yearActive(S5.TOOLS_CIVIL_YEAR[key] || 9)) || f["tool_" + key] === true; };
 S5.subjectPacks = (s) => (S5.PROFILES[s.profile] || S5.PROFILES.general).packs;
 S5.hasPack = (s, p) => S5.subjectPacks(s).includes(p);
 
@@ -827,7 +906,7 @@ S5.seedCurriculum = async () => {
     recs.push({ id: "sem_" + s, type: "semester", n: s, year: Math.ceil(s / 2), declaredEcts: 30, listedEcts: ects, createdAt: t, updatedAt: t, rev: 1 });
   }
   S5.CURRICULUM.forEach((c, i) => {
-    recs.push({ id: "sub_" + String(i + 1).padStart(2, "0"), type: "subject", year: c[0], semester: c[1], ar: c[2], name: c[3], ects: c[4], profile: c[5], professor: "", room: "", color: "", createdAt: t, updatedAt: t, rev: 1, source: "Program_Catalogue-ar-1.pdf" });
+    recs.push({ id: "sub_" + String(i + 1).padStart(2, "0"), type: "subject", program: "arch", year: c[0], semester: c[1], ar: c[2], name: c[3], ects: c[4], profile: c[5], professor: "", room: "", color: "", createdAt: t, updatedAt: t, rev: 1, source: "Program_Catalogue-ar-1.pdf" });
   });
   recs.push({ id: "disc_sem2", type: "discrepancy", title: "Semester 2 credits", text: "Catalogue declares 30 ECTS for semester 2, but the listed subjects add up to 25 ECTS. No subject was invented to fill the gap; confirm with the department.", status: "open", source: "Program_Catalogue-ar-1.pdf", createdAt: t, updatedAt: t, rev: 1 });
   // skills hierarchy (Skills Map)
@@ -1510,7 +1589,7 @@ S5.NAV = [["today", "Today"], ["study", "Study"], ["projects", "Projects"], ["pr
 const SUBJ = { k: "subjectId", label: "Subject", t: "ref", ref: "subject" };
 const PROJ = { k: "projectId", label: "Project", t: "ref", ref: "project" };
 S5.SCHEMA = {
-  subject: { label: "Subject", fields: [{ k: "name", label: "Name (English)" }, { k: "ar", label: "Name (Arabic)" }, { k: "ects", label: "ECTS", t: "number" }, { k: "year", label: "Year", t: "number" }, { k: "semester", label: "Semester", t: "number" }, { k: "profile", label: "Profile", t: "select", options: () => Object.entries(S5.PROFILES).map(([k, v]) => [k, v.label]) }, { k: "professor", label: "Professor" }, { k: "room", label: "Room" }, { k: "notes", label: "Notes", t: "textarea", wide: 1 }] },
+  subject: { label: "Subject", fields: [{ k: "name", label: "Name (English)" }, { k: "ar", label: "Name (Arabic)" }, { k: "program", label: "Program", t: "select", options: [["arch", "Architecture & Building Technologies"], ["civil", "Civil Engineering"]] }, { k: "code", label: "Course code" }, { k: "ects", label: "Credits (ECTS or units)", t: "number" }, { k: "provisional", label: "Provisional (not confirmed by the department)", t: "bool" }, { k: "year", label: "Year", t: "number" }, { k: "semester", label: "Semester", t: "number" }, { k: "profile", label: "Profile", t: "select", options: () => Object.entries(S5.PROFILES).map(([k, v]) => [k, v.label]) }, { k: "professor", label: "Professor" }, { k: "room", label: "Room" }, { k: "notes", label: "Notes", t: "textarea", wide: 1 }] },
   slot: { label: "Timetable slot", fields: [SUBJ, { k: "day", label: "Day", t: "select", options: () => S5.DAYS.map((d, i) => [i, d]) }, { k: "start", label: "Start", t: "time" }, { k: "end", label: "End", t: "time" }, { k: "room", label: "Room" }, { k: "kind", label: "Kind", t: "select", options: [["lecture", "Lecture"], ["studio", "Studio"], ["lab", "Lab / workshop"], ["tutorial", "Tutorial"]] }] },
   lecture: { label: "Lecture", fields: [SUBJ, { k: "title", label: "Title / topic" }, { k: "date", label: "Date", t: "date" }, { k: "fileId", label: "Lecture PDF", t: "ref", ref: "file" }, { k: "summary", label: "Closeout summary", t: "textarea", wide: 1 }] },
   task: { label: "Task", fields: [{ k: "title", label: "Task", wide: 1 }, SUBJ, PROJ, { k: "due", label: "Due", t: "date" }, { k: "priority", label: "Priority", t: "select", options: [["critical", "Critical"], ["high", "High"], ["normal", "Normal"], ["low", "Low"]] }, { k: "estimateMin", label: "Estimate (min)", t: "number" }, { k: "actualMin", label: "Actual (min)", t: "number" }, { k: "status", label: "Status", t: "select", options: [["open", "Open"], ["doing", "Doing"], ["done", "Done"], ["dropped", "Dropped"]] }, { k: "notes", label: "Notes", t: "textarea", wide: 1 }] },
@@ -1640,7 +1719,7 @@ S5.ui = {
     if (t === "multi") { const opts = f.options; const set = new Set(Array.isArray(v) ? v : []); return `<fieldset class="field wide" style="border:0;padding:0;margin:0"><span>${esc(f.label)}</span><div class="chips">${opts.map(([k, n]) => `<label class="check pill"><input type="checkbox" name="${f.k}" value="${k}" ${set.has(k) ? "checked" : ""}> ${esc(n)}</label>`).join("")}</div></fieldset>`; }
     if (t === "ref") {
       let opts = S5.store.list(f.ref, f.filter);
-      if (f.ref === "subject") opts = opts.filter((s) => S5.yearActive(s.year) || s.id === v).sort((a, b) => a.semester - b.semester);
+      if (f.ref === "subject") opts = opts.filter((s) => S5.subjectActive(s) || s.id === v).sort((a, b) => a.semester - b.semester);
       if (f.ref === "project") opts = opts.filter((p) => p.phase !== "evaluated" || p.id === v);
       return wrap(`<select id="${id}" name="${f.k}"><option value="">—</option>${opts.map((o) => `<option value="${o.id}" ${o.id === v ? "selected" : ""}>${esc(f.ref === "subject" ? `S${o.semester} · ${o.name}` : S5.title(o))}</option>`).join("")}</select>`);
     }
@@ -1689,6 +1768,7 @@ S5.ui = {
     const blob = data instanceof Blob ? data : new Blob([data], { type: mime || "application/octet-stream" });
     let dl = null; try { dl = window.claude && (await window.claude.use("downloads")); } catch {}
     if (dl) { try { await dl.save({ filename: name, data: blob }); this.toast("Saved " + name); return true; } catch (e) { if (e && e.code === "cancelled") return false; } }
+    if (S5.standalone) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); this.toast("Saved " + name); return true; }
     // fallback for views without the download capability: offer the text to copy (small files only)
     if (blob.size < 3e6 && /json|text|csv|markdown/.test(blob.type)) {
       const text = await blob.text();
@@ -1721,7 +1801,7 @@ S5.h = {
 /* ---------- global capture ---------- */
 S5.currentLecture = () => {
   const now = new Date(); const day = now.getDay(); const hm = now.toTimeString().slice(0, 5);
-  const slot = S5.store.list("slot", (s) => +s.day === day && s.start <= hm && s.end >= hm && S5.yearActive(S5.store.get(s.subjectId)?.year || 1))[0];
+  const slot = S5.store.list("slot", (s) => +s.day === day && s.start <= hm && s.end >= hm && S5.subjectActive(S5.store.get(s.subjectId)))[0];
   return slot || null;
 };
 S5.ensureLecture = async (subjectId, date = S5.todayISO()) => {
@@ -1733,7 +1813,7 @@ S5.openCapture = (ctx = {}) => {
   const r = S5.ui.route; const slot = S5.currentLecture();
   ctx = { subjectId: ctx.subjectId || (r.v === "subject" ? r.id : r.v === "lecture" ? S5.store.get(r.id)?.subjectId : slot?.subjectId) || "", projectId: ctx.projectId || (r.v === "project" ? r.id : ""), lectureId: ctx.lectureId || (r.v === "lecture" ? r.id : ""), page: ctx.page || "", fileId: ctx.fileId || "", kind: ctx.kind || "note" };
   const kinds = S5.CAPTURE_KINDS.map(([k, n, s]) => `<button type="button" class="kind k-${k}" data-kind="${k}" aria-pressed="${k === ctx.kind}"><b>${n}</b><small>${s}</small></button>`).join("");
-  const subjOpts = S5.store.list("subject", (s) => S5.yearActive(s.year)).sort((a, b) => a.semester - b.semester).map((s) => `<option value="${s.id}" ${s.id === ctx.subjectId ? "selected" : ""}>S${s.semester} · ${esc(s.name)}</option>`).join("");
+  const subjOpts = S5.store.list("subject", (s) => S5.subjectActive(s)).sort((a, b) => a.semester - b.semester).map((s) => `<option value="${s.id}" ${s.id === ctx.subjectId ? "selected" : ""}>S${s.semester} · ${esc(s.name)}</option>`).join("");
   const projOpts = S5.store.list("project", (p) => p.phase !== "evaluated").map((p) => `<option value="${p.id}" ${p.id === ctx.projectId ? "selected" : ""}>${esc(p.name)}</option>`).join("");
   const m = S5.ui.modal("Capture", `
     <div class="capture-kinds" id="cap-kinds">${kinds}</div>
@@ -2098,7 +2178,7 @@ S5.bindTool = (root, key) => {
 /* Today — the daily execution board. Renders from local data only (never waits for AI). */
 S5.views = S5.views || {};
 const H = S5.h;
-S5.todaySlots = (dayIdx = new Date().getDay()) => S5.store.list("slot", (s) => +s.day === dayIdx && S5.yearActive(S5.store.get(s.subjectId)?.year || 1) && (S5.store.get(s.subjectId)?.semester || 0) % 2 === (S5.settings.get("activeSemester") % 2)).sort((a, b) => a.start.localeCompare(b.start));
+S5.todaySlots = (dayIdx = new Date().getDay()) => S5.store.list("slot", (s) => +s.day === dayIdx && S5.subjectActive(S5.store.get(s.subjectId)) && S5.inSemester(S5.store.get(s.subjectId), S5.settings.get("activeSemester"))).sort((a, b) => a.start.localeCompare(b.start));
 S5.setPlace = (label, route) => { S5.store.setMeta("lastPlace", { label, route, at: S5.now() }); };
 
 S5.views.today = () => {
@@ -2193,14 +2273,17 @@ S5.act["open-route"] = (el) => { try { S5.ui.go(JSON.parse(el.dataset.route)); }
 S5.views.study = (r) => {
   const tab = r.tab || "subjects"; const y = S5.settings.get("activeYear"); const sem = S5.settings.get("activeSemester");
   const subs = S5.store.list("subject");
-  const tabs = [["subjects", "This semester"], ["timetable", "Timetable"], ["curriculum", "Five-year curriculum"], ["grades", "Grades"], ["review", "Review queue"]];
+  const tabs = [["subjects", "This semester"], ["timetable", "Timetable"], ["curriculum", "Curriculum"], ["decide", "Civil or architecture?"], ["grades", "Grades"], ["review", "Review queue"]];
   let body = "";
+  const progPill = (x) => (S5.progOn("arch") && S5.progOn("civil") ? H.pill(x.program === "civil" ? "Civil" : "Architecture", x.program === "civil" ? "amber" : "cobalt") : "");
   if (tab === "subjects") {
-    const cur = subs.filter((s) => s.semester === sem).sort((a, b) => b.ects - a.ects);
-    const other = subs.filter((s) => s.year === y && s.semester !== sem);
-    const card = (s) => { const open = S5.store.count("task", (t) => t.subjectId === s.id && t.status === "open"); const gaps = S5.store.count("gap", (g) => g.subjectId === s.id && g.stage < 3); const lec = S5.store.count("lecture", (l) => l.subjectId === s.id); const g = S5.gradeState(s.id); return `<button class="sheet" data-act="open" data-v="subject" data-id="${s.id}" style="text-align:left;cursor:pointer;display:grid;gap:6px"><span class="eyebrow">S${s.semester} · ${s.ects} ECTS · ${S5.esc(S5.PROFILES[s.profile]?.label || "")}</span><h3>${S5.esc(s.name)}</h3><span class="ar small" dir="rtl">${S5.esc(s.ar)}</span><div class="chips">${H.pill(lec + " lectures")}${open ? H.pill(open + " open tasks", "cobalt") : ""}${gaps ? H.pill(gaps + " gaps", "red") : ""}${g.graded ? H.pill(`${S5.round(g.earned, 1)}/${g.graded} pts`, "green") : ""}</div></button>`; };
-    body = `<div class="row between" style="margin-bottom:12px"><div class="seg">${[1, 2].map((k) => { const sn = (y - 1) * 2 + k; return `<button data-act="set-sem" data-v="${sn}" aria-pressed="${sn === sem}">Semester ${sn}</button>`; }).join("")}</div>${H.btn("+ Lecture", "new", { type: "lecture" }, "sm")}</div>
-      <div class="grid cols-3">${cur.map(card).join("") || H.empty("No subjects in this semester.", "")}</div>
+    const vis = subs.filter((x) => S5.progOn(x.program));
+    const cur = vis.filter((x) => S5.inSemester(x, sem)).sort((a, b) => (a.program || "").localeCompare(b.program || "") || (b.ects || 0) - (a.ects || 0));
+    const other = vis.filter((x) => x.year === y && !S5.inSemester(x, sem));
+    const card = (s) => { const open = S5.store.count("task", (t) => t.subjectId === s.id && t.status === "open"); const gaps = S5.store.count("gap", (g) => g.subjectId === s.id && g.stage < 3); const lec = S5.store.count("lecture", (l) => l.subjectId === s.id); const g = S5.gradeState(s.id); return `<button class="sheet" data-act="open" data-v="subject" data-id="${s.id}" style="text-align:left;cursor:pointer;display:grid;gap:6px"><span class="eyebrow">${s.program === "civil" ? `Stage ${s.year}${s.code ? " · " + S5.esc(s.code) : ""}` : "S" + s.semester} · ${s.ects ?? "?"} ${S5.unitLabel(s)} · ${S5.esc(S5.PROFILES[s.profile]?.label || "")}</span><h3>${S5.esc(s.name)}</h3><span class="ar small" dir="rtl">${S5.esc(s.ar)}</span><div class="chips">${progPill(s)}${s.provisional ? H.pill("provisional", "demo") : ""}${H.pill(lec + " lectures")}${open ? H.pill(open + " open tasks", "cobalt") : ""}${gaps ? H.pill(gaps + " gaps", "red") : ""}${g.graded ? H.pill(`${S5.round(g.earned, 1)}/${g.graded} pts`, "green") : ""}</div></button>`; };
+    const sec = (prog, xs) => xs.length ? `<h3 style="margin:18px 0 10px">${S5.esc(S5.PROGRAMS[prog].name)} <span class="ar muted small" dir="rtl">${S5.esc(S5.PROGRAMS[prog].ar)}</span></h3><div class="grid cols-3">${xs.map(card).join("")}</div>` : "";
+    body = `<div class="row between" style="margin-bottom:4px"><div class="seg">${[1, 2].map((k) => { const sn = (y - 1) * 2 + k; return `<button data-act="set-sem" data-v="${sn}" aria-pressed="${sn === sem}">Semester ${sn}</button>`; }).join("")}</div><div class="row"><div class="seg">${[["both", "Both programs"], ["arch", "Architecture"], ["civil", "Civil"]].map(([k, n]) => { const on = S5.settings.get("programs") || ["arch", "civil"]; const cur = on.length === 2 ? "both" : on[0]; return `<button data-act="set-programs" data-v="${k}" aria-pressed="${cur === k}">${n}</button>`; }).join("")}</div>${H.btn("+ Lecture", "new", { type: "lecture" }, "sm")}</div></div>
+      ${cur.length ? sec("arch", cur.filter((x) => x.program !== "civil")) + sec("civil", cur.filter((x) => x.program === "civil")) : H.empty("No subjects in this semester.", "")}
       ${other.length ? `<h3 style="margin:22px 0 10px">Other semester this year</h3><div class="grid cols-4">${other.map(card).join("")}</div>` : ""}`;
   } else if (tab === "timetable") {
     const slots = S5.store.list("slot", (s) => (S5.store.get(s.subjectId)?.semester || 0) === sem);
@@ -2211,19 +2294,30 @@ S5.views.study = (r) => {
       ${order.map((d) => `<div class="col">${Array.from({ length: endH - startH }, () => '<div class="hr"></div>').join("")}${slots.filter((s) => +s.day === d).map((s) => { const [h1, m1] = s.start.split(":").map(Number); const top = (h1 - startH + m1 / 60) * px; const hgt = Math.max(22, (S5.minsBetween(s.start, s.end) / 60) * px - 2); return `<div class="slot" data-act="edit" data-type="slot" data-id="${s.id}" style="top:${top}px;height:${hgt}px"><b>${S5.esc(S5.store.get(s.subjectId)?.name || "")}</b><br><span class="mono">${s.start}–${s.end}</span> ${S5.esc(s.room || "")}</div>`; }).join("")}</div>`).join("")}
       </div></div></div>`;
   } else if (tab === "curriculum") {
-    body = `<div class="year-strip" style="margin-bottom:16px">${S5.YEARS.map((yr) => `<button class="year-cell ${yr.n === y ? "active" : ""} ${S5.yearActive(yr.n) ? "" : "off"}" data-act="year-info" data-v="${yr.n}"><span class="eyebrow">Year ${yr.n}${yr.n === y ? " · current" : S5.yearActive(yr.n) ? " · active" : " · implemented, off"}</span><b class="small">${S5.esc(yr.name)}</b><span class="ar tiny" dir="rtl">${S5.esc(yr.ar)}</span></button>`).join("")}</div>
-      ${S5.store.list("discrepancy").map((d) => `<div class="sheet alert flat" style="margin-bottom:14px"><div class="row between"><div><span class="eyebrow">Source discrepancy · ${S5.esc(d.status)}</span><p class="small">${S5.esc(d.text)}</p></div>${H.btn("Update", "edit", { type: "discrepancy", id: d.id }, "sm")}</div></div>`).join("")}
-      ${S5.YEARS.map((yr) => `<section class="sheet" style="margin-bottom:14px"><header><h3>Year ${yr.n} — ${S5.esc(yr.name)}</h3><span class="small muted">${S5.esc(yr.focus)}</span></header><div class="grid cols-2">${[yr.n * 2 - 1, yr.n * 2].map((sn) => { const ss = subs.filter((s) => s.semester === sn); const semRec = S5.store.get("sem_" + sn); return `<div><h4 style="margin-bottom:6px">Semester ${sn} <span class="muted small mono">${ss.reduce((a, s) => a + s.ects, 0)} ECTS listed${semRec && semRec.listedEcts !== semRec.declaredEcts ? ` · ${semRec.declaredEcts} declared` : ""}</span></h4><div class="list">${ss.map((s) => H.item({ lead: S5.yearActive(s.year) ? "cobalt" : "", t: `${S5.esc(s.name)} <span class="ar muted small" dir="rtl">${S5.esc(s.ar)}</span>`, s: `${S5.esc(S5.PROFILES[s.profile]?.label || "")} · packs: ${S5.subjectPacks(s).join(", ")}`, right: `<span class="mono small">${s.ects}</span>`, act: "open", data: { v: "subject", id: s.id } })).join("")}</div></div>`; }).join("")}</div>
+    const prog = r.kind || (S5.progOn("arch") ? "arch" : "civil");
+    const progSeg = `<div class="seg" style="margin-bottom:14px">${Object.entries(S5.PROGRAMS).map(([k, p]) => `<button data-act="open" data-v="study" data-tab="curriculum" data-kind="${k}" aria-pressed="${k === prog}">${S5.esc(p.name)}</button>`).join("")}</div>`;
+    const discs = S5.store.list("discrepancy", (d) => (prog === "civil") === (d.id === "disc_civil")).map((d) => `<div class="sheet alert flat" style="margin-bottom:14px"><div class="row between"><div><span class="eyebrow">Source note · ${S5.esc(d.status)}</span><p class="small">${S5.esc(d.text)}</p></div>${H.btn("Update", "edit", { type: "discrepancy", id: d.id }, "sm")}</div></div>`).join("");
+    if (prog === "civil") {
+      const cs = subs.filter((x) => x.program === "civil");
+      body = progSeg + `<p class="small muted" style="margin-bottom:10px">${S5.esc(S5.PROGRAMS.civil.univ)} · 4 stages · annual courses, credit in units.</p>` + discs + S5.YEARS_CIVIL.map((yr) => { const ss = cs.filter((x) => x.year === yr.n); const tot = ss.reduce((a, x) => a + (x.ects || 0), 0); return `<section class="sheet" style="margin-bottom:14px"><header><h3>Stage ${yr.n} — ${S5.esc(yr.name)} <span class="ar muted small" dir="rtl">${S5.esc(yr.ar)}</span></h3><span class="small muted">${tot ? tot + " units" : "units not confirmed"}</span></header><div class="list">${ss.map((x) => H.item({ lead: S5.subjectActive(x) ? "amber" : "", t: `${x.code ? `<span class="mono small">${S5.esc(x.code)}</span> ` : ""}${S5.esc(x.name)} <span class="ar muted small" dir="rtl">${S5.esc(x.ar)}</span>`, s: `${S5.esc(S5.PROFILES[x.profile]?.label || "")}${x.provisional ? " · provisional" : " · official"}`, right: `<span class="mono small">${x.ects ?? "—"}</span>`, act: "open", data: { v: "subject", id: x.id } })).join("")}</div></section>`; }).join("");
+    } else {
+    const as = subs.filter((x) => x.program !== "civil");
+    body = progSeg + `<div class="year-strip" style="margin-bottom:16px">${S5.YEARS.map((yr) => `<button class="year-cell ${yr.n === y ? "active" : ""} ${S5.yearActive(yr.n) ? "" : "off"}" data-act="year-info" data-v="${yr.n}"><span class="eyebrow">Year ${yr.n}${yr.n === y ? " · current" : S5.yearActive(yr.n) ? " · active" : " · implemented, off"}</span><b class="small">${S5.esc(yr.name)}</b><span class="ar tiny" dir="rtl">${S5.esc(yr.ar)}</span></button>`).join("")}</div>
+      ${discs}
+      ${S5.YEARS.map((yr) => `<section class="sheet" style="margin-bottom:14px"><header><h3>Year ${yr.n} — ${S5.esc(yr.name)}</h3><span class="small muted">${S5.esc(yr.focus)}</span></header><div class="grid cols-2">${[yr.n * 2 - 1, yr.n * 2].map((sn) => { const ss = as.filter((s) => s.semester === sn); const semRec = S5.store.get("sem_" + sn); return `<div><h4 style="margin-bottom:6px">Semester ${sn} <span class="muted small mono">${ss.reduce((a, s) => a + s.ects, 0)} ECTS listed${semRec && semRec.listedEcts !== semRec.declaredEcts ? ` · ${semRec.declaredEcts} declared` : ""}</span></h4><div class="list">${ss.map((s) => H.item({ lead: S5.subjectActive(s) ? "cobalt" : "", t: `${S5.esc(s.name)} <span class="ar muted small" dir="rtl">${S5.esc(s.ar)}</span>`, s: `${S5.esc(S5.PROFILES[s.profile]?.label || "")} · packs: ${S5.subjectPacks(s).join(", ")}`, right: `<span class="mono small">${s.ects}</span>`, act: "open", data: { v: "subject", id: s.id } })).join("")}</div></div>`; }).join("")}</div>
       <p class="tiny muted" style="margin-top:8px">Tools that switch on with this year: ${Object.entries(S5.TOOLS).filter(([, t]) => t.y === yr.n).map(([, t]) => S5.esc(t.name)).join(" · ")}</p></section>`).join("")}`;
+    }
+  } else if (tab === "decide") {
+    body = S5.decideView();
   } else if (tab === "grades") {
-    const ys = subs.filter((s) => S5.yearActive(s.year));
-    body = `<div class="sheet"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Subject</th><th class="num">ECTS</th><th class="num">Graded weight</th><th class="num">Earned</th><th class="num">Current %</th><th class="num">Unconfirmed weight</th></tr></thead><tbody>${ys.map((s) => { const g = S5.gradeState(s.id); return `<tr data-act="open" data-v="subject" data-id="${s.id}" data-tab="exams" style="cursor:pointer"><td>S${s.semester} · ${S5.esc(s.name)}</td><td class="num mono">${s.ects}</td><td class="num mono">${g.graded}%</td><td class="num mono">${S5.round(g.earned, 1)}</td><td class="num mono">${g.graded ? S5.round(g.pct, 1) + "%" : "—"}</td><td class="num mono">${g.unconfirmed ? g.unconfirmed + "%" : ""}</td></tr>`; }).join("")}</tbody></table></div>
-      <p class="tiny muted" style="margin-top:8px">ECTS-weighted average of current percentages: <b class="mono">${(() => { const g = ys.map((s) => [s.ects, S5.gradeState(s.id)]).filter(([, g]) => g.graded); const w = g.reduce((a, [e]) => a + e, 0); return w ? S5.round(g.reduce((a, [e, x]) => a + e * x.pct, 0) / w, 1) + "%" : "—"; })()}</b></p></div>`;
+    const ys = subs.filter((s) => S5.subjectActive(s) && s.ects);
+    body = `<div class="sheet"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Subject</th><th class="num">Credits</th><th class="num">Graded weight</th><th class="num">Earned</th><th class="num">Current %</th><th class="num">Unconfirmed weight</th></tr></thead><tbody>${ys.map((s) => { const g = S5.gradeState(s.id); return `<tr data-act="open" data-v="subject" data-id="${s.id}" data-tab="exams" style="cursor:pointer"><td>${s.program === "civil" ? "Civil · stage " + s.year : "S" + s.semester} · ${S5.esc(s.name)}</td><td class="num mono">${s.ects} ${S5.unitLabel(s)}</td><td class="num mono">${g.graded}%</td><td class="num mono">${S5.round(g.earned, 1)}</td><td class="num mono">${g.graded ? S5.round(g.pct, 1) + "%" : "—"}</td><td class="num mono">${g.unconfirmed ? g.unconfirmed + "%" : ""}</td></tr>`; }).join("")}</tbody></table></div>
+      <p class="tiny muted" style="margin-top:8px">Credit-weighted average of current percentages: <b class="mono">${(() => { const g = ys.map((s) => [s.ects, S5.gradeState(s.id)]).filter(([, g]) => g.graded); const w = g.reduce((a, [e]) => a + e, 0); return w ? S5.round(g.reduce((a, [e, x]) => a + e * x.pct, 0) / w, 1) + "%" : "—"; })()}</b></p></div>`;
   } else if (tab === "review") {
     const T = S5.todayISO();
     const probs = S5.store.list("problem", (p) => p.retryAt && p.retryAt <= T && !["solved", "timed"].includes(p.status));
     const gaps = S5.store.list("gap", (g) => g.stage < 3);
-    const topics = S5.store.list("topic", (t) => t.scope !== "out" && (t.mastery ?? 0) < 4 && S5.yearActive(S5.store.get(t.subjectId)?.year || 1));
+    const topics = S5.store.list("topic", (t) => t.scope !== "out" && (t.mastery ?? 0) < 4 && S5.subjectActive(S5.store.get(t.subjectId)));
     const qs = S5.store.list("question", (q) => ["draft", "asked"].includes(q.status));
     body = `<div class="grid cols-2">${H.section("Problems to retry", probs.length ? `<div class="list">${probs.map((p) => H.item({ lead: "amber", t: S5.esc(p.question), s: `${H.subj(p.subjectId)} · ${S5.esc(p.cause || "")}`, act: "edit", data: { type: "problem", id: p.id } })).join("")}</div>` : H.empty("Nothing to retry today.", ""))}
       ${H.section("Understanding gaps", gaps.length ? `<div class="list">${gaps.map((g) => H.item({ lead: "red", t: S5.esc(g.text), s: `${H.subj(g.subjectId)} · ${S5.LADDER[g.stage || 0]}`, right: H.ladder(g.stage || 0, 5), act: "rescue", data: { id: g.id } })).join("")}</div>` : H.empty("No open gaps.", ""))}
@@ -2232,6 +2326,31 @@ S5.views.study = (r) => {
   }
   return `<div class="page-head"><div class="titles"><span class="eyebrow">Year ${y} · ${S5.esc(S5.YEARS[y - 1].name)}</span><h1>Study</h1></div><div class="row">${H.btn("+ Gap I don't understand", "new-gap", {}, "sm")}${H.btn("+ Assessment", "new", { type: "assessment" }, "sm")}</div></div>${H.tabs(tabs, tab, "open", { v: "study" })}${body}`;
 };
+S5.act["set-programs"] = (el) => S5.settings.set("programs", el.dataset.v === "both" ? ["arch", "civil"] : [el.dataset.v]);
+/* decision helper: architecture vs civil */
+S5.DECIDE_CRIT = [["drawing", "I enjoy drawing & visual design"], ["math", "I enjoy mathematics & calculation"], ["structures", "Structures & how buildings stand interest me"], ["infra", "Roads, water, bridges interest me"], ["people", "Designing spaces for people interests me"], ["jobs", "Job market where I want to work"], ["grades", "My results so far in the shared subjects"], ["family", "Practical factors (city, cost, family)"]];
+S5.decideView = () => {
+  const d = S5.settings.get("decide") || { w: {}, a: {}, c: {}, notes: "", deadline: "" };
+  const tot = (side) => S5.DECIDE_CRIT.reduce((s, [k]) => s + S5.num(d.w[k], 2) * S5.num(d[side][k], 0), 0);
+  const ta = tot("a"), tc = tot("c");
+  const sharedSubj = (names, prog) => names.map((n) => S5.store.list("subject", (x) => x.name === n && (x.program || "arch") === prog)[0]).filter(Boolean);
+  const evidence = (prog) => { const xs = S5.store.list("subject", (x) => (x.program || "arch") === prog && S5.yearActive(x.year)); const g = xs.map((x) => S5.gradeState(x.id)).filter((g) => g.graded); const drills = prog === "arch" ? S5.store.count("drill") : 0; const probs = S5.store.list("problem", (p) => (S5.store.get(p.subjectId)?.program || "arch") === prog && ["solved", "timed"].includes(p.status)).length; return { avg: g.length ? S5.round(g.reduce((a, x) => a + x.pct, 0) / g.length, 1) : null, n: g.length, drills, probs }; };
+  const ea = evidence("arch"), ec = evidence("civil");
+  return `<p class="small muted" style="max-width:72ch;margin-bottom:12px">You haven't decided yet, so Studio5 runs both programs side by side. Most first-year work counts in either path. This page keeps the decision honest: what you enjoy, what your results show, and what's practical. It never decides for you.</p>
+    <div class="grid cols-2">
+      ${H.section("What carries over to both", `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Area</th><th>Architecture</th><th>Civil</th></tr></thead><tbody>${S5.OVERLAP.map(([area, a, c]) => `<tr><td><b>${S5.esc(area)}</b></td><td class="small">${sharedSubj(a, "arch").map((x) => `<button class="btn ghost sm" data-act="open" data-v="subject" data-id="${x.id}" style="padding:0;min-height:0;white-space:normal;text-align:left">${S5.esc(x.name)}</button>`).join("<br>")}</td><td class="small">${sharedSubj(c, "civil").map((x) => `<button class="btn ghost sm" data-act="open" data-v="subject" data-id="${x.id}" style="padding:0;min-height:0;white-space:normal;text-align:left">${S5.esc(x.name)}</button>`).join("<br>")}</td></tr>`).join("")}</tbody></table></div><p class="tiny muted" style="margin-top:6px">Only architecture has: design studio, art, rendering, interior & exterior design, planning theory. Only civil has: geology, soil, hydraulics & hydrology, steel & foundation design.</p>`)}
+      ${H.section("Your evidence so far", `<div class="grid cols-2"><div class="stat"><span class="v">${ea.avg ?? "—"}${ea.avg != null ? "%" : ""}</span><span class="l">Architecture average (${ea.n} graded) · ${ea.drills} drawing drills</span></div><div class="stat"><span class="v">${ec.avg ?? "—"}${ec.avg != null ? "%" : ""}</span><span class="l">Civil average (${ec.n} graded) · ${ec.probs} problems solved alone</span></div></div>`)}
+    </div>
+    ${H.section("Decision matrix", `<div class="tbl-wrap"><table class="tbl matrix"><thead><tr><th style="text-align:left">Criterion</th><th>Weight 1–5</th><th>Architecture 0–5</th><th>Civil 0–5</th></tr></thead><tbody>${S5.DECIDE_CRIT.map(([k, n]) => `<tr><td style="text-align:left">${S5.esc(n)}</td>${["w", "a", "c"].map((side) => `<td><select data-decide="${side}" data-k="${k}">${(side === "w" ? [1, 2, 3, 4, 5] : [0, 1, 2, 3, 4, 5]).map((v) => `<option ${S5.num(d[side][k], side === "w" ? 2 : 0) === v ? "selected" : ""}>${v}</option>`).join("")}</select></td>`).join("")}</tr>`).join("")}<tr><td style="text-align:left"><b>Weighted total</b></td><td></td><td class="mono"><b>${ta}</b>${ta > tc ? " ✓" : ""}</td><td class="mono"><b>${tc}</b>${tc > ta ? " ✓" : ""}</td></tr></tbody></table></div>
+      <div class="form-grid" style="margin-top:10px"><label class="field"><span>Decide by (registration deadline)</span><input type="date" data-decide-f="deadline" value="${S5.esc(d.deadline || "")}"></label><label class="field wide"><span>Notes — what would change my mind?</span><textarea data-decide-f="notes" dir="auto">${S5.esc(d.notes || "")}</textarea></label></div>
+      <p class="tiny muted" style="margin-top:6px">A difference of a few points is a tie — talk to students and professors in both departments before deciding.</p>`)}`;
+};
+document.addEventListener("change", async (e) => {
+  const t = e.target; if (!t.dataset.decide && !t.dataset.decideF) return;
+  const d = JSON.parse(JSON.stringify(S5.settings.get("decide") || { w: {}, a: {}, c: {}, notes: "", deadline: "" }));
+  if (t.dataset.decide) d[t.dataset.decide][t.dataset.k] = +t.value; else d[t.dataset.decideF] = t.value;
+  await S5.settings.set("decide", d);
+});
 S5.act["set-sem"] = (el) => { S5.settings.set("activeSemester", +el.dataset.v); };
 S5.act["year-info"] = (el) => {
   const n = +el.dataset.v; const yr = S5.YEARS[n - 1]; const cur = S5.settings.get("activeYear"); const flags = S5.settings.get("flags") || {};
@@ -2300,8 +2419,8 @@ S5.views.subject = (r) => {
     body = `<div class="grid cols-2">${H.section("Subject profile", `<dl class="kv"><dt>Arabic name</dt><dd class="ar" dir="rtl">${S5.esc(s.ar)}</dd><dt>Year / semester</dt><dd>${s.year} / ${s.semester}</dd><dt>ECTS</dt><dd>${s.ects}</dd><dt>Profile</dt><dd>${S5.esc(S5.PROFILES[s.profile]?.label)}</dd><dt>Capability packs</dt><dd>${packs.map((p) => H.pill(p)).join(" ")}</dd><dt>Professor</dt><dd>${S5.esc(s.professor || "—")}</dd><dt>Source</dt><dd>${S5.esc(s.source || "manual")}</dd></dl>`, H.btn("Edit", "edit", { type: "subject", id: s.id }, "sm"))}
       ${H.section("Linked work", `<div class="list">${S5.store.list("project", (p) => p.subjectId === s.id).map((p) => H.item({ lead: "cobalt", t: S5.esc(p.name), right: H.due(p.deadline), act: "open", data: { v: "project", id: p.id } })).join("") || H.empty("No projects linked.", "")}</div>`)}</div>`;
   }
-  return `<div class="crumbs"><button data-act="open" data-v="study">Study</button> / <span>Semester ${s.semester}</span></div>
-    <div class="page-head"><div class="titles"><span class="eyebrow">${s.ects} ECTS · ${S5.esc(S5.PROFILES[s.profile]?.label || "")}${S5.yearActive(s.year) ? "" : " · year not active"}</span><h1>${S5.esc(s.name)}</h1><span class="ar muted" dir="rtl">${S5.esc(s.ar)}</span></div>
+  return `<div class="crumbs"><button data-act="open" data-v="study">Study</button> / <span>${s.program === "civil" ? "Civil · stage " + s.year : "Semester " + s.semester}</span></div>
+    <div class="page-head"><div class="titles"><span class="eyebrow">${s.program === "civil" ? "Civil Engineering · stage " + s.year + (s.code ? " · " + S5.esc(s.code) : "") : "Architecture · semester " + s.semester} · ${s.ects ?? "?"} ${S5.unitLabel(s)} · ${S5.esc(S5.PROFILES[s.profile]?.label || "")}${s.provisional ? " · provisional" : ""}${S5.yearActive(s.year) ? "" : " · year not active"}</span><h1>${S5.esc(s.name)}</h1><span class="ar muted" dir="rtl">${S5.esc(s.ar)}</span></div>
     <div class="row">${H.btn("Capture", "capture", { subject: s.id })}${H.btn("Plan session", "new-session", { subject: s.id })}</div></div>
     ${H.tabs(tabs, tab, "open", { v: "subject", id: s.id })}${body}`;
 };
@@ -2899,6 +3018,7 @@ S5.views.system = (r) => {
     S5.health.refresh().then(() => { const el = document.getElementById("health-list"); if (el) el.innerHTML = S5.healthHTML(); });
     const counts = {}; for (const x of S5.store.recs.values()) if (!x.deleted) counts[x.type] = (counts[x.type] || 0) + 1;
     body = `<div class="split"><div class="stack">${H.section("System health", `<div class="list" id="health-list">${S5.healthHTML()}</div>`)}
+      ${S5.standalone ? H.section("Install on this computer", window.matchMedia("(display-mode: standalone)").matches ? `<p class="small">✓ Running as an installed app. It opens from your Start menu / dock and works offline.</p>` : S5.installPrompt ? `<p class="small">Install Studio5 as a desktop app: its own window and icon, works offline.</p><div class="row" style="margin-top:8px">${H.btn("Install Studio5", "install", {}, "primary")}</div>` : `<p class="small">In Chrome or Edge, use the install icon in the address bar (or menu → “Install Studio5”) to add it as a desktop app that works offline.</p>`) : ""}
       ${H.section("Academic Safe Mode", `<p class="small">Near exams and submissions: hides experimental tools and non-critical alerts, increases backup reminders, blocks big changes. Critical fixes only.</p><div class="row" style="margin-top:8px">${S5.settings.get("safeMode") ? H.btn("Turn off Safe Mode", "safe-off", {}, "") : H.btn("Turn on Safe Mode", "safe-on", {}, "primary")}</div>`)}</div>
       <div class="stack">${H.section("What's stored", `<div class="tbl-wrap"><table class="tbl"><tbody>${Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<tr><td>${S5.esc(S5.typeLabel(k))}</td><td class="num mono">${n}</td></tr>`).join("")}</tbody></table></div>`)}
       ${H.section("Recent activity log", `<div class="list" style="max-height:300px;overflow:auto">${(S5.store.meta.audit || []).slice(0, 40).map((a) => H.item({ t: S5.esc(a.text), s: `${S5.esc(a.kind)} · ${S5.fmtDateTime(a.at)}` })).join("") || H.empty("Nothing yet.", "")}</div>`)}</div></div>`;
@@ -3008,6 +3128,12 @@ S5.views.notifications = () => {
 
 // ---- main.js ----
 /* Boot, event delegation, live re-rendering. */
+// Standalone = served from its own site (Cloudflare), not inside a claude.ai artifact viewer.
+S5.standalone = !(window.claude && typeof window.claude.use === "function");
+if (S5.standalone && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("./sw.js").catch(() => {});
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); S5.installPrompt = e; S5.rerender && S5.rerender(); });
+window.addEventListener("appinstalled", () => { S5.installPrompt = null; S5.ui.toast("Studio5 installed on this computer"); });
+S5.act.install = async () => { const p = S5.installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch {} S5.installPrompt = null; S5.ui.render(); };
 S5.LIVE = new Set(["notebook", "notebook-page", "drill", "file", "focus", "mock", "tool"]);
 S5.ui.isLive = () => { const r = S5.ui.route; return S5.LIVE.has(r.v) || (r.v === "lecture" && (r.tab || "capture") === "capture") || (r.v === "library" && r.tab === "council"); };
 S5.act.go = (el) => S5.ui.go(el.dataset.v);
@@ -3059,6 +3185,7 @@ new MutationObserver(() => { if (S5.pendingRender && !document.querySelector(".s
     await S5.store.init();
     S5.applyTheme();
     await S5.seedCurriculum();
+    await S5.seedCivil();
     if (!S5.store.meta.demoSeeded && !S5.store.meta.demoCleared && !S5.store.list("slot").length) await S5.seedDemo();
     // daily automatic snapshot (device-local recovery point)
     const snaps = S5.store.meta.snapshots || [];

@@ -1,4 +1,10 @@
 /* Boot, event delegation, live re-rendering. */
+// Standalone = served from its own site (Cloudflare), not inside a claude.ai artifact viewer.
+S5.standalone = !(window.claude && typeof window.claude.use === "function");
+if (S5.standalone && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("./sw.js").catch(() => {});
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); S5.installPrompt = e; S5.rerender && S5.rerender(); });
+window.addEventListener("appinstalled", () => { S5.installPrompt = null; S5.ui.toast("Studio5 installed on this computer"); });
+S5.act.install = async () => { const p = S5.installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch {} S5.installPrompt = null; S5.ui.render(); };
 S5.LIVE = new Set(["notebook", "notebook-page", "drill", "file", "focus", "mock", "tool"]);
 S5.ui.isLive = () => { const r = S5.ui.route; return S5.LIVE.has(r.v) || (r.v === "lecture" && (r.tab || "capture") === "capture") || (r.v === "library" && r.tab === "council"); };
 S5.act.go = (el) => S5.ui.go(el.dataset.v);
@@ -50,6 +56,7 @@ new MutationObserver(() => { if (S5.pendingRender && !document.querySelector(".s
     await S5.store.init();
     S5.applyTheme();
     await S5.seedCurriculum();
+    await S5.seedCivil();
     if (!S5.store.meta.demoSeeded && !S5.store.meta.demoCleared && !S5.store.list("slot").length) await S5.seedDemo();
     // daily automatic snapshot (device-local recovery point)
     const snaps = S5.store.meta.snapshots || [];

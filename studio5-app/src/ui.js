@@ -16,7 +16,7 @@ S5.NAV = [["today", "Today"], ["study", "Study"], ["projects", "Projects"], ["pr
 const SUBJ = { k: "subjectId", label: "Subject", t: "ref", ref: "subject" };
 const PROJ = { k: "projectId", label: "Project", t: "ref", ref: "project" };
 S5.SCHEMA = {
-  subject: { label: "Subject", fields: [{ k: "name", label: "Name (English)" }, { k: "ar", label: "Name (Arabic)" }, { k: "ects", label: "ECTS", t: "number" }, { k: "year", label: "Year", t: "number" }, { k: "semester", label: "Semester", t: "number" }, { k: "profile", label: "Profile", t: "select", options: () => Object.entries(S5.PROFILES).map(([k, v]) => [k, v.label]) }, { k: "professor", label: "Professor" }, { k: "room", label: "Room" }, { k: "notes", label: "Notes", t: "textarea", wide: 1 }] },
+  subject: { label: "Subject", fields: [{ k: "name", label: "Name (English)" }, { k: "ar", label: "Name (Arabic)" }, { k: "program", label: "Program", t: "select", options: [["arch", "Architecture & Building Technologies"], ["civil", "Civil Engineering"]] }, { k: "code", label: "Course code" }, { k: "ects", label: "Credits (ECTS or units)", t: "number" }, { k: "provisional", label: "Provisional (not confirmed by the department)", t: "bool" }, { k: "year", label: "Year", t: "number" }, { k: "semester", label: "Semester", t: "number" }, { k: "profile", label: "Profile", t: "select", options: () => Object.entries(S5.PROFILES).map(([k, v]) => [k, v.label]) }, { k: "professor", label: "Professor" }, { k: "room", label: "Room" }, { k: "notes", label: "Notes", t: "textarea", wide: 1 }] },
   slot: { label: "Timetable slot", fields: [SUBJ, { k: "day", label: "Day", t: "select", options: () => S5.DAYS.map((d, i) => [i, d]) }, { k: "start", label: "Start", t: "time" }, { k: "end", label: "End", t: "time" }, { k: "room", label: "Room" }, { k: "kind", label: "Kind", t: "select", options: [["lecture", "Lecture"], ["studio", "Studio"], ["lab", "Lab / workshop"], ["tutorial", "Tutorial"]] }] },
   lecture: { label: "Lecture", fields: [SUBJ, { k: "title", label: "Title / topic" }, { k: "date", label: "Date", t: "date" }, { k: "fileId", label: "Lecture PDF", t: "ref", ref: "file" }, { k: "summary", label: "Closeout summary", t: "textarea", wide: 1 }] },
   task: { label: "Task", fields: [{ k: "title", label: "Task", wide: 1 }, SUBJ, PROJ, { k: "due", label: "Due", t: "date" }, { k: "priority", label: "Priority", t: "select", options: [["critical", "Critical"], ["high", "High"], ["normal", "Normal"], ["low", "Low"]] }, { k: "estimateMin", label: "Estimate (min)", t: "number" }, { k: "actualMin", label: "Actual (min)", t: "number" }, { k: "status", label: "Status", t: "select", options: [["open", "Open"], ["doing", "Doing"], ["done", "Done"], ["dropped", "Dropped"]] }, { k: "notes", label: "Notes", t: "textarea", wide: 1 }] },
@@ -146,7 +146,7 @@ S5.ui = {
     if (t === "multi") { const opts = f.options; const set = new Set(Array.isArray(v) ? v : []); return `<fieldset class="field wide" style="border:0;padding:0;margin:0"><span>${esc(f.label)}</span><div class="chips">${opts.map(([k, n]) => `<label class="check pill"><input type="checkbox" name="${f.k}" value="${k}" ${set.has(k) ? "checked" : ""}> ${esc(n)}</label>`).join("")}</div></fieldset>`; }
     if (t === "ref") {
       let opts = S5.store.list(f.ref, f.filter);
-      if (f.ref === "subject") opts = opts.filter((s) => S5.yearActive(s.year) || s.id === v).sort((a, b) => a.semester - b.semester);
+      if (f.ref === "subject") opts = opts.filter((s) => S5.subjectActive(s) || s.id === v).sort((a, b) => a.semester - b.semester);
       if (f.ref === "project") opts = opts.filter((p) => p.phase !== "evaluated" || p.id === v);
       return wrap(`<select id="${id}" name="${f.k}"><option value="">—</option>${opts.map((o) => `<option value="${o.id}" ${o.id === v ? "selected" : ""}>${esc(f.ref === "subject" ? `S${o.semester} · ${o.name}` : S5.title(o))}</option>`).join("")}</select>`);
     }
@@ -195,6 +195,7 @@ S5.ui = {
     const blob = data instanceof Blob ? data : new Blob([data], { type: mime || "application/octet-stream" });
     let dl = null; try { dl = window.claude && (await window.claude.use("downloads")); } catch {}
     if (dl) { try { await dl.save({ filename: name, data: blob }); this.toast("Saved " + name); return true; } catch (e) { if (e && e.code === "cancelled") return false; } }
+    if (S5.standalone) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); this.toast("Saved " + name); return true; }
     // fallback for views without the download capability: offer the text to copy (small files only)
     if (blob.size < 3e6 && /json|text|csv|markdown/.test(blob.type)) {
       const text = await blob.text();
@@ -227,7 +228,7 @@ S5.h = {
 /* ---------- global capture ---------- */
 S5.currentLecture = () => {
   const now = new Date(); const day = now.getDay(); const hm = now.toTimeString().slice(0, 5);
-  const slot = S5.store.list("slot", (s) => +s.day === day && s.start <= hm && s.end >= hm && S5.yearActive(S5.store.get(s.subjectId)?.year || 1))[0];
+  const slot = S5.store.list("slot", (s) => +s.day === day && s.start <= hm && s.end >= hm && S5.subjectActive(S5.store.get(s.subjectId)))[0];
   return slot || null;
 };
 S5.ensureLecture = async (subjectId, date = S5.todayISO()) => {
@@ -239,7 +240,7 @@ S5.openCapture = (ctx = {}) => {
   const r = S5.ui.route; const slot = S5.currentLecture();
   ctx = { subjectId: ctx.subjectId || (r.v === "subject" ? r.id : r.v === "lecture" ? S5.store.get(r.id)?.subjectId : slot?.subjectId) || "", projectId: ctx.projectId || (r.v === "project" ? r.id : ""), lectureId: ctx.lectureId || (r.v === "lecture" ? r.id : ""), page: ctx.page || "", fileId: ctx.fileId || "", kind: ctx.kind || "note" };
   const kinds = S5.CAPTURE_KINDS.map(([k, n, s]) => `<button type="button" class="kind k-${k}" data-kind="${k}" aria-pressed="${k === ctx.kind}"><b>${n}</b><small>${s}</small></button>`).join("");
-  const subjOpts = S5.store.list("subject", (s) => S5.yearActive(s.year)).sort((a, b) => a.semester - b.semester).map((s) => `<option value="${s.id}" ${s.id === ctx.subjectId ? "selected" : ""}>S${s.semester} · ${esc(s.name)}</option>`).join("");
+  const subjOpts = S5.store.list("subject", (s) => S5.subjectActive(s)).sort((a, b) => a.semester - b.semester).map((s) => `<option value="${s.id}" ${s.id === ctx.subjectId ? "selected" : ""}>S${s.semester} · ${esc(s.name)}</option>`).join("");
   const projOpts = S5.store.list("project", (p) => p.phase !== "evaluated").map((p) => `<option value="${p.id}" ${p.id === ctx.projectId ? "selected" : ""}>${esc(p.name)}</option>`).join("");
   const m = S5.ui.modal("Capture", `
     <div class="capture-kinds" id="cap-kinds">${kinds}</div>

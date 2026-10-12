@@ -219,7 +219,7 @@ S5.audit = (kind, text) => {
 
 /* ---------- settings ---------- */
 S5.settings = {
-  defaults: { activeYear: 1, activeSemester: 1, theme: "system", penOnly: true, aiEnabled: true, aiDailyCap: 60, safeMode: false, dailySessionCap: 4, energyMin: 300, studentName: "", university: "Northern Technical University", city: "Kirkuk", lat: 35.47, flags: {}, backupEveryDays: 7, weekStart: 6 },
+  defaults: { programs: ["arch", "civil"], activeYear: 1, activeSemester: 1, theme: "system", penOnly: true, aiEnabled: true, aiDailyCap: 60, safeMode: false, dailySessionCap: 4, energyMin: 300, studentName: "", university: "Northern Technical University", city: "Kirkuk", lat: 35.47, flags: {}, backupEveryDays: 7, weekStart: 6 },
   get(k) { const s = S5.store.meta.settings || {}; return k in s ? s[k] : this.defaults[k]; },
   async set(k, v) { const s = { ...(S5.store.meta.settings || {}) }; s[k] = v; await S5.store.setMeta("settings", s); S5.sync.pushSettings(); S5.bus.emit("settings", { k, v }); },
   all() { return { ...this.defaults, ...(S5.store.meta.settings || {}) }; },
@@ -316,13 +316,13 @@ S5.health = {
     items.push({ k: "Local database", v: S5.idb.mode === "indexeddb" ? `Healthy · ${s.recs.size} records · schema v${s.meta.schemaVersion}` : "Memory only — data is lost when you close this page. Export a backup.", level: S5.idb.mode === "indexeddb" ? "ok" : "bad" });
     if (this.lastWriteError) items.push({ k: "Last write", v: "Failed: " + this.lastWriteError, level: "bad" });
     const sy = S5.sync;
-    const syncText = { local: "Device only (sign in to mirror to the cloud)", connecting: "Connecting…", synced: `Synced${sy.lastSync ? " · " + S5.fmtDateTime(sy.lastSync) : ""}`, pending: `${sy.pending.size} change(s) waiting`, error: "Sync interrupted — changes stay on this device", full: "Cloud storage full — new records stay local" }[sy.state] || sy.state;
+    const syncText = { local: S5.standalone ? "This computer only — move data between devices with Backup → Restore" : "Device only (sign in to mirror to the cloud)", connecting: "Connecting…", synced: `Synced${sy.lastSync ? " · " + S5.fmtDateTime(sy.lastSync) : ""}`, pending: `${sy.pending.size} change(s) waiting`, error: "Sync interrupted — changes stay on this device", full: "Cloud storage full — new records stay local" }[sy.state] || sy.state;
     items.push({ k: "Sync", v: syncText + (sy.localOnly.size ? ` · ${sy.localOnly.size} large record(s) device-only` : ""), level: sy.state === "error" || sy.state === "full" ? "warn" : "ok" });
     const lb = s.meta.lastBackupAt; const every = S5.settings.get("backupEveryDays");
     const age = lb ? S5.daysBetween(lb.slice(0, 10), S5.todayISO()) : null;
     items.push({ k: "Backup", v: lb ? `Last full backup ${S5.relDay(lb.slice(0, 10))}${s.meta.lastRestoreTestAt ? " · restore test " + S5.relDay(s.meta.lastRestoreTestAt.slice(0, 10)) : " · no restore test yet"}` : "No full backup yet", level: lb == null || age > every ? "warn" : "ok" });
     if (this.storage) { const pct = this.storage.quota ? this.storage.usage / this.storage.quota : 0; items.push({ k: "Storage", v: `${S5.fmtBytes(this.storage.usage || 0)} used of ${S5.fmtBytes(this.storage.quota || 0)}`, level: pct > 0.85 ? "bad" : pct > 0.6 ? "warn" : "ok" }); }
-    items.push({ k: "AI", v: !S5.settings.get("aiEnabled") ? "Turned off by you" : S5.ai.state === "ready" ? `Available · ${S5.ai.usedToday()} of ${S5.settings.get("aiDailyCap")} requests today` : S5.ai.state === "none" ? "Not available in this view — everything else works" : "Checking…", level: "ok" });
+    items.push({ k: "AI", v: !S5.settings.get("aiEnabled") ? "Turned off by you" : S5.ai.state === "ready" ? `Available · ${S5.ai.usedToday()} of ${S5.settings.get("aiDailyCap")} requests today` : S5.ai.state === "none" ? (S5.standalone ? "Not available in the installed app — open the claude.ai version for AI" : "Not available in this view — everything else works") : "Checking…", level: "ok" });
     items.push({ k: "Windows companion", v: "Not connected — remote jobs are queued as plans until a companion exists", level: "ok" });
     return items;
   },
