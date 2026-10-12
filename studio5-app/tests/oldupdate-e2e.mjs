@@ -1,0 +1,24 @@
+// A laptop still on Companion 1.0 (no self-update): "Update laptop now" sends the updater as a file and opens it.
+import { createRequire } from "node:module"; import { spawn } from "node:child_process"; import { writeFileSync, mkdirSync, rmSync, readFileSync, existsSync } from "node:fs"; import { execSync } from "node:child_process";
+const require = createRequire("/x/"); const { chromium } = require("/opt/node22/lib/node_modules/playwright");
+const S = process.env.S, SERVER = "http://127.0.0.1:8787", HOME = S + "/old-home", WS = S + "/old-ws", OLD = S + "/old-companion-1.0.mjs";
+writeFileSync(OLD, execSync("git show 04c549b:studio5-app/companion/studio5-companion.mjs", { cwd: new URL("..", import.meta.url).pathname }));
+rmSync(HOME, { recursive: true, force: true }); rmSync(WS, { recursive: true, force: true }); mkdirSync(HOME, { recursive: true }); writeFileSync(HOME + "/config.json", JSON.stringify({ workspace: WS }));
+const comp = spawn("node", [OLD, "--server", SERVER, "--home", HOME, "--simulate", "--pair", "--auto-accept", "--name", "Old-Laptop"]);
+let out = ""; comp.stdout.on("data", (d) => (out += d)); comp.stderr.on("data", (d) => (out += d));
+const waitFor = async (re, ms = 20000) => { const t = Date.now(); while (Date.now() - t < ms) { const m = out.match(re); if (m) return m; await new Promise((r) => setTimeout(r, 200)); } throw new Error("timeout " + re + "\n" + out); };
+const code = (await waitFor(/pairing code:\s+(\d{3}) (\d{3})/)).slice(1).join("");
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const page = await (await b.newContext({ viewport: { width: 400, height: 860 } })).newPage(); const errors = []; page.on("pageerror", (e) => errors.push(e.message));
+await page.goto(SERVER + "/remote/"); await page.waitForTimeout(1200); await page.fill("#rm-code", code); await page.click('[data-act="rm-pair"]');
+for (let i = 0; i < 40 && !(await page.evaluate(() => S5.store.meta.remote?.confirmed && S5.remote.laptopOnline && S5.remote.info)); i++) await page.waitForTimeout(300);
+const res = { oldVersion: await page.evaluate(() => S5.remote.info?.version) };
+await page.evaluate(() => S5.ui.go({ v: "remote", tab: "system" })); await page.waitForTimeout(500);
+await page.click('[data-act="rm-update"]'); await page.waitForTimeout(1500);
+res.askedToConfirm = await page.evaluate(() => /old Companion|المرافق/.test(document.getElementById("modal-root").innerText));
+await page.click('#modal-root [data-yes]'); await waitFor(/SIM open .*Studio5-update\.cmd/, 20000).catch(() => null);
+const f = WS + "/From phone/Studio5-update.cmd"; res.fileArrived = existsSync(f);
+const txt = res.fileArrived ? readFileSync(f, "utf8") : ""; res.updaterKillsOld = /taskkill \/FI "WINDOWTITLE eq Studio5 Companion\*"/.test(txt) && txt.includes("title S5 updater") && txt.includes(SERVER + "") && /\r\n/.test(txt);
+res.openedOnLaptop = /SIM open .*Studio5-update\.cmd/.test(out);
+console.log(JSON.stringify(res, null, 1)); console.log("errors:", errors);
+comp.kill(); await b.close(); process.exit(0);

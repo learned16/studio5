@@ -270,3 +270,9 @@ The link code has # letters/digits	رمز الربط # حروف/أرقام
 Linked — this device controls the laptop now	تم الربط — هذا الجهاز يتحكم باللابتوب هسه
 Wrong link code	رمز الربط غلط
 Link code not found or expired. Make a new one on your paired phone.	رمز الربط مو موجود أو انتهى. سوّ واحد جديد من الموبايل المربوط.
+The laptop has an old Companion (#.#). Update it from here? A window opens on the laptop for about a minute, then the new Companion reconnects by itself.	اللابتوب عليه مرافق قديم (#.#). تحدّثه من هنا؟ تنفتح نافذة على اللابتوب حوالي دقيقة، وبعدها المرافق الجديد يرجع يتصل وحده.
+Update the laptop	حدّث اللابتوب
+Sending the update to the laptop…	جارٍ إرسال التحديث للابتوب…
+Updating on the laptop — it reconnects in about a minute	اللابتوب يتحدّث — يرجع يتصل خلال دقيقة تقريباً
+Update could not be sent:	ما انرسل التحديث:
+Laptop updated to	تحدّث اللابتوب إلى

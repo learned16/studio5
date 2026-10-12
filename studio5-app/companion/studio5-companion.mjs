@@ -13,7 +13,7 @@ import os from "node:os";
 import http from "node:http";
 import readline from "node:readline";
 
-const VERSION = "1.2.1";
+const VERSION = "1.2.2";
 const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf("--" + k); return i >= 0 ? (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true) : d; };
 const IS_WIN = process.platform === "win32";
@@ -300,7 +300,12 @@ async function checkUpdate(manual) {
   renameSync(tmp, SELF);
   const nv = (code.match(/const VERSION = "([^"]+)"/) || [])[1] || "?";
   log(`Updated Companion ${VERSION} → ${nv}. Restarting…`);
-  setTimeout(() => { const kid = spawn(process.execPath, [SELF, ...args.filter((x) => x !== "--pair")], { stdio: "inherit" }); kid.on("spawn", () => process.exit(0)); }, 400);
+  setTimeout(() => {
+    const rest = [SELF, ...args.filter((x) => x !== "--pair")];
+    // Windows: start the new copy in its own window, outside this process's job, so it survives this one exiting
+    const kid = IS_WIN ? spawn("cmd.exe", ["/c", "start", "Studio5 Companion", process.execPath, ...rest], { detached: true, stdio: "ignore", windowsHide: true }) : spawn(process.execPath, rest, { stdio: "inherit" });
+    kid.on("spawn", () => setTimeout(() => process.exit(0), IS_WIN ? 1500 : 0)); kid.unref && IS_WIN && kid.unref();
+  }, 400);
   return { updated: true, version: nv };
 }
 if (!SIM || arg("update-test")) { setTimeout(() => checkUpdate().catch((e) => log("Update check failed:", e.message)), 15000); setInterval(() => checkUpdate().catch(() => {}), 30 * 60000); }

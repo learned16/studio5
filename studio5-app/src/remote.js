@@ -369,10 +369,23 @@ S5.rmFiles = async (path) => {
     box.innerHTML = `<div class="list">${up !== null ? H.item({ t: "↑ Up", act: "rm-cd", data: { path: up } }) : ""}${list.map((f) => H.item({ lead: f.dir ? "cobalt" : /\.pdf$/i.test(f.name) ? "red" : "", t: (f.dir ? "📁 " : "") + S5.esc(f.name), s: f.dir ? "" : `${S5.fmtBytes(f.size)} · ${S5.fmtDateTime(new Date(f.mtime).toISOString())}`, right: f.dir ? "" : H.btn("Open on laptop", "rm-open", { path: (path ? path + "\\" : "") + f.name }, "sm") + H.btn("To Library", "rm-get", { path: (path ? path + "\\" : "") + f.name }, "sm"), act: f.dir ? "rm-cd" : "", data: f.dir ? { path: (path ? path + "\\" : "") + f.name } : {} })).join("") || H.empty("Empty folder.", "")}</div>`;
   } catch (e) { box.innerHTML = `<p class="small" style="color:var(--redline)">${S5.esc(e.message)}</p>`; }
 };
-S5.rmInstaller = () => {
+/* An older Companion (1.0) can't update itself: send it the updater as a file and open it there.
+   It downloads the new Companion from your site, closes the old one and starts the new one — pairing is kept. */
+S5.rmRemoteUpdate = () => S5.ui.confirm("The laptop has an old Companion (1.0). Update it from here? A window opens on the laptop for about a minute, then the new Companion reconnects by itself.", "Update the laptop", async () => {
+  const R = S5.remote;
+  try {
+    S5.ui.toast("Sending the update to the laptop…");
+    const f = new File([S5.rmInstaller(true)], "Studio5-update.cmd", { type: "text/plain" });
+    const put = await R.putFile(f); const path = (put && put.saved) || "From phone/Studio5-update.cmd";
+    await R.send("file.open", { path });
+    S5.ui.toast("Updating on the laptop — it reconnects in about a minute");
+    const t0 = Date.now(); const wait = setInterval(async () => { if (Date.now() - t0 > 240000) { clearInterval(wait); return; } if (!R.laptopOnline) return; try { const h = await R.send("hello", {}, { quiet: true, timeout: 5000 }); if (h.version && h.version >= "1.2") { clearInterval(wait); R.info = h; S5.ui.toast("Laptop updated to " + h.version); S5.ui.render(); } } catch {} }, 5000);
+  } catch (e) { S5.ui.toast("Update could not be sent: " + e.message, true); }
+}, false);
+S5.rmInstaller = (update) => {
   const origin = location.origin;
   const lines = [
-    "@echo off", "setlocal", "title Studio5 Companion setup",
+    "@echo off", "setlocal", update ? "title S5 updater" : "title Studio5 Companion setup",
     `set "SERVER=${origin}"`, 'set "DIR=%LOCALAPPDATA%\\Studio5Companion"',
     "echo.", "echo  Studio5 Companion setup", "echo  Server: %SERVER%", "echo.",
     "where node >nul 2>nul",
@@ -388,6 +401,11 @@ S5.rmInstaller = () => {
     'if not exist "%DIR%" mkdir "%DIR%"',
     'curl -fsSL "%SERVER%/companion/studio5-companion.mjs" -o "%DIR%\\studio5-companion.mjs"',
     "if errorlevel 1 (", "  echo Download failed. Check your internet connection.", "  pause", "  exit /b 1", ")",
+    ...(update ? [ // sent from the phone to update an older Companion: give it time to answer, then close it (the new one starts below)
+      "echo Closing the old Companion...", "timeout /t 3 /nobreak >nul",
+      'taskkill /FI "WINDOWTITLE eq Studio5 Companion*" /T /F >nul 2>nul',
+      'powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name=\'node.exe\'\\" | Where-Object { $_.CommandLine -like \'*studio5-companion.mjs*\' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }" >nul 2>nul',
+    ] : []),
     // package.json pinning the open-source input library, then a normal npm install (downloads prebuilt binaries)
     '> "%DIR%\\package.json" echo {"name":"studio5-companion","version":"1.0.0","type":"module","private":true,"dependencies":{"@nut-tree-fork/nut-js":"4.2.6","jimp":"0.22.10"}}',
     "echo Installing the input library (nut-js) and image tools...",
@@ -411,6 +429,7 @@ S5.rmInstaller = () => {
     "echo Installed. The Companion starts at login (a visible window - close it to stop phone control).",
     "echo Starting it now for pairing...",
     'start "Studio5 Companion" cmd /k "cd /d "%DIR%" && node "%DIR%\\studio5-companion.mjs" --server %SERVER% --pair"',
+    ...(update ? ["echo Updated. This window closes by itself.", "timeout /t 4 >nul", "exit"] : []),
   ];
   return lines.join("\r\n") + "\r\n";
 };
@@ -433,7 +452,10 @@ Object.assign(S5.act, {
   "rm-sys": (el) => { const run = async () => { try { await S5.remote.send(el.dataset.a, { confirmed: true, cancel: !!el.dataset.cancel }); S5.ui.toast("Done"); } catch (e) { S5.ui.toast(e.message, true); } }; el.dataset.confirm ? S5.ui.confirm(`${el.textContent.trim()} on the laptop?`, el.textContent.trim(), run) : run(); },
   "rm-clip-get": async () => { try { const d = await S5.remote.send("clip.get"); document.getElementById("rm-clip").value = d.text || ""; } catch (e) { S5.ui.toast(e.message, true); } },
   "rm-clip-set": async () => { try { await S5.remote.send("clip.set", { text: document.getElementById("rm-clip").value }); S5.ui.toast("Sent to the laptop clipboard"); } catch (e) { S5.ui.toast(e.message, true); } },
-  "rm-update": async () => { try { const r = await S5.remote.send("sys.update", {}, { timeout: 60000 }); S5.ui.toast(r.updated ? `Laptop updated to ${r.version} — it restarts by itself` : "The laptop already has the latest version"); } catch (e) { S5.ui.toast(/Unknown action/.test(e.message) ? "This laptop has an older Companion: run the installer once more — after that it updates itself" : e.message, true); } },
+  "rm-update": async () => {
+    try { const r = await S5.remote.send("sys.update", {}, { timeout: 60000 }); S5.ui.toast(r.updated ? `Laptop updated to ${r.version} — it restarts by itself` : "The laptop already has the latest version"); }
+    catch (e) { if (/Unknown action/.test(e.message)) S5.rmRemoteUpdate(); else S5.ui.toast(e.message, true); }
+  },
   "rm-installer": () => S5.ui.saveFile("Studio5-Companion-Setup.cmd", new Blob([S5.rmInstaller()], { type: "text/plain" })),
   "rm-quickjob": async (el) => { const j = await S5.store.create("job", { title: `Collect newest ${el.dataset.ext} export`, kind: "collect", ext: el.dataset.ext, state: "draft", app: "export" }); S5.runJob(j.id); },
   "rm-job": (el, e) => { e.stopPropagation(); S5.runJob(el.dataset.id); },

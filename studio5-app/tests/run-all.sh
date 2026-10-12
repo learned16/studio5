@@ -14,6 +14,7 @@ OUT="$S/shots" PW="${PW:-playwright}" node tests/smoke.mjs
 node tests/pdf.mjs
 node tests/remote-e2e.mjs
 node tests/link-e2e.mjs
+node tests/oldupdate-e2e.mjs
 if command -v Xvfb >/dev/null; then Xvfb :79 -screen 0 1920x1080x24 >/dev/null 2>&1 & XV=$!; sleep 1; DISPLAY=:79 node tests/rtc-e2e.mjs; kill $XV; fi
 node tests/labs.mjs
 node tests/selftest.mjs
