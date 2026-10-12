@@ -13,7 +13,7 @@ import os from "node:os";
 import http from "node:http";
 import readline from "node:readline";
 
-const VERSION = "1.2.0";
+const VERSION = "1.2.1";
 const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf("--" + k); return i >= 0 ? (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true) : d; };
 const IS_WIN = process.platform === "win32";
@@ -259,7 +259,7 @@ function hostServer() {
       }
       let body = ""; for await (const c of req) { body += c; if (body.length > 2e6) return rs.destroy(); }
       let m; try { m = JSON.parse(body || "{}"); } catch { rs.writeHead(400); return rs.end(); }
-      if (u.pathname === "/signal") { await send({ rtc: m }); rs.writeHead(204); return rs.end(); }
+      if (u.pathname === "/signal") { await send({ rtc: m, sid: HOST.sid }); rs.writeHead(204); return rs.end(); }
       if (u.pathname === "/input") { // a batch of input events from the phone, in order
         for (const ev of [].concat(m)) { if (INPUT_OK.test(ev.a) && ACTIONS[ev.a] && !cfg.disabled.includes(ev.a)) { try { await ACTIONS[ev.a](ev.args || {}, () => {}); } catch (e) { log("✗", ev.a, e.message); } } }
         rs.writeHead(204); return rs.end();
@@ -272,7 +272,7 @@ function hostServer() {
 }
 const BROWSERS = IS_WIN ? [join(process.env["ProgramFiles"] || "C:\\Program Files", "Google\\Chrome\\Application\\chrome.exe"), join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Google\\Chrome\\Application\\chrome.exe"), join(process.env.LOCALAPPDATA || "", "Google\\Chrome\\Application\\chrome.exe"), join(process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Microsoft\\Edge\\Application\\msedge.exe"), join(process.env["ProgramFiles"] || "C:\\Program Files", "Microsoft\\Edge\\Application\\msedge.exe")] : ["/usr/bin/chromium", "/usr/bin/google-chrome", "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"];
 async function rtcStart(b) {
-  const port = await hostServer();
+  const port = await hostServer(); HOST.sid = String(b.sid || "").slice(0, 40); // the device that asked gets the video
   const start = { t: "start", quality: b.quality || "high", fps: Math.min(Math.max(b.fps | 0 || 60, 15), 60), maxWidth: Math.min(Math.max(b.maxWidth | 0 || 1920, 640), 3840) };
   if (hostPush(start)) return { started: true, reused: true };
   HOST.pending = start;

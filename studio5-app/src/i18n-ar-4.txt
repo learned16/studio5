@@ -204,7 +204,7 @@ Your drawing surface	سطح الرسم
 Your evidence so far	أدلتك حتى الآن
 active	نشط
 actual of #m planned	فعلي من # د مخطط
-and download the installer. Run it: it installs the Studio# Companion and shows a #-digit code.	ونزّل المثبّت. شغّله: ينصّب مرافق Studio5 ويعرض رمزاً من # أرقام.
+and download the installer. Run it: it installs the Studio# Companion and shows a #-digit code.	ونزّل المثبّت. شغّله: ينصّب مرافق Studio# ويعرض رمزاً من # أرقام.
 annual courses, credit in units.	مواد سنوية، والوحدات بالوحدات.
 attempts	محاولات
 b or flange width (mm)	b أو عرض الشفة (ملم)

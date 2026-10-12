@@ -56,6 +56,20 @@ export class Pairing {
       await st.delete("code:" + code);
       return json({ device: rec.device, laptopPub: rec.pub, name: rec.name, token: dev.token });
     }
+    /* Linking another phone/iPad to an existing pairing: the paired phone leaves an encrypted blob under the
+       hash of a one-time code; the new device takes it once. The relay never sees the code or the contents. */
+    if (url.pathname === "/api/pair/link-put") {
+      const { id, blob } = body;
+      if (!/^[a-f0-9]{64}$/.test(id || "") || typeof blob !== "string" || blob.length > 8000) return json({ error: "bad link" }, 400);
+      await st.put("link:" + id, { blob, exp: now + 10 * 60 * 1000 });
+      return json({ ok: true, expiresIn: 600 });
+    }
+    if (url.pathname === "/api/pair/link-take") {
+      const { id } = body; const rec = /^[a-f0-9]{64}$/.test(id || "") ? await st.get("link:" + id) : null;
+      if (rec) await st.delete("link:" + id);
+      if (!rec || rec.exp < now) return json({ error: "Link code not found or expired. Make a new one on your paired phone." }, 404);
+      return json({ blob: rec.blob });
+    }
     if (url.pathname === "/api/pair/status") {
       const device = url.searchParams.get("device"); const token = url.searchParams.get("token");
       const dev = await st.get("dev:" + device);

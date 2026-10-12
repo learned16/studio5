@@ -37,6 +37,25 @@ S5.remote = {
     this.key = null; this.connect();
     return check;
   },
+  /* link another phone/iPad to this pairing with a one-time code (the pairing secret travels encrypted) */
+  async linkKey(code) { const s = crypto.subtle, c = code.toUpperCase().replace(/[^A-Z0-9]/g, ""); const base = await s.importKey("raw", new TextEncoder().encode(c), "PBKDF2", false, ["deriveKey"]); const key = await s.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: new TextEncoder().encode("studio5-link-v1"), iterations: 200000 }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]); const id = [...new Uint8Array(await s.digest("SHA-256", new TextEncoder().encode("studio5-link-id:" + c)))].map((b) => b.toString(16).padStart(2, "0")).join(""); return { key, id }; },
+  async makeLink() {
+    const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", r = crypto.getRandomValues(new Uint8Array(10)); const code = [...r].map((b) => A[b % A.length]).join("");
+    const { key, id } = await this.linkKey(code); const iv = crypto.getRandomValues(new Uint8Array(12));
+    const { device, token, name, laptopPub, pub, priv, check } = this.pair;
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify({ device, token, name, laptopPub, pub, priv, check })));
+    const r2 = await fetch("/api/pair/link-put", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, blob: this.b64(iv) + "." + this.b64(ct) }) }).then((x) => x.json());
+    if (r2.error) throw new Error(r2.error); return code.slice(0, 5) + "-" + code.slice(5);
+  },
+  async takeLink(code) {
+    const { key, id } = await this.linkKey(code);
+    const r = await fetch("/api/pair/link-take", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) }).then((x) => x.json());
+    if (r.error) throw new Error(r.error);
+    const [iv, ct] = r.blob.split("."); let p;
+    try { p = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: this.unb64(iv) }, key, this.unb64(ct)))); } catch { throw new Error("Wrong link code"); }
+    await S5.store.setMeta("remote", { ...p, pairedAt: S5.now(), confirmed: true, linked: true });
+    this.key = null; try { this.ws && this.ws.close(); } catch {} this.ws = null; this.connect(); S5.audit("remote", "This device was linked to " + p.name);
+  },
   async unpair() { try { this.ws && this.ws.close(); } catch {} this.ws = null; this.key = null; this.state = "off"; await S5.store.setMeta("remote", null); S5.audit("remote", "Laptop unpaired on this phone"); },
   async connect() {
     const p = this.pair; if (!p || !(await this.checkAvailable())) return;
@@ -54,7 +73,7 @@ S5.remote = {
       let body; try { body = await this.open(env); } catch (e) { this.lastReject = e.message; if (!this._rejToast) { this._rejToast = 1; S5.ui.toast(e.message === "stale" ? "Laptop reply rejected: the phone and laptop clocks differ by more than 2 minutes — set both to automatic time" : "Laptop reply rejected (" + e.message + ") — re-pair if this continues"); setTimeout(() => (this._rejToast = 0), 10000); } return; }
       if (body.hello && this.pair && !this.pair.confirmed) { await S5.store.setMeta("remote", { ...this.pair, confirmed: true }); S5.ui.toast("Laptop accepted the pairing"); this.hello(); this.emit(); return; }
       if (body.stream === "screen") { S5.rmFrame(body); return; }
-      if (body.rtc) { S5.rtcSignal(body.rtc).catch((e) => console.warn(e)); return; }
+      if (body.rtc) { if (body.sid && body.sid !== S5.rtc.sid) return; S5.rtcSignal(body.rtc).catch((e) => console.warn(e)); return; }
       const w = this.pending.get(body.re); if (!w) return;
       if (body.partial) { w.onPartial && w.onPartial(body.data); return; }
       this.pending.delete(body.re); clearTimeout(w.timer);
@@ -138,7 +157,7 @@ S5.views.remote = (r) => {
   } else if (tab === "system") {
     body = `<div class="grid cols-2">${H.section("Power & security", `<div class="chips">${H.btn("Lock screen", "rm-sys", { a: "sys.lock" })}${H.btn("Sleep", "rm-sys", { a: "sys.sleep", confirm: 1 })}${H.btn("Shut down (60 s)", "rm-sys", { a: "sys.shutdown", confirm: 1 }, "danger")}${H.btn("Cancel shutdown", "rm-sys", { a: "sys.shutdown", cancel: 1 })}</div>`)}
       ${H.section("Clipboard", `<textarea id="rm-clip" dir="auto" rows="3" style="width:100%;padding:8px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--paper)"></textarea><div class="row" style="margin-top:8px">${H.btn("Get from laptop", "rm-clip-get")}${H.btn("Send to laptop", "rm-clip-set", {}, "primary")}</div>`)}
-      ${H.section("This pairing", `<dl class="kv"><dt>Laptop</dt><dd>${S5.esc(p.name)}</dd><dt>Paired</dt><dd>${S5.fmtDateTime(p.pairedAt)}</dd><dt>Check number</dt><dd class="mono">${S5.esc(p.check)}</dd><dt>System</dt><dd>${S5.esc(R.info?.os || "—")}</dd><dt>Workspace</dt><dd class="mono small">${S5.esc(R.info?.workspace || "—")}</dd><dt>Companion</dt><dd>${S5.esc(R.info?.version || "—")} · updates itself</dd><dt>Encryption</dt><dd>End-to-end (ECDH P-256 + AES-256-GCM)</dd></dl>`, H.btn("Update laptop now", "rm-update", {}, "sm") + H.btn("Unpair", "rm-unpair", {}, "sm danger"))}
+      ${H.section("This pairing", `<dl class="kv"><dt>Laptop</dt><dd>${S5.esc(p.name)}</dd><dt>Paired</dt><dd>${S5.fmtDateTime(p.pairedAt)}</dd><dt>Check number</dt><dd class="mono">${S5.esc(p.check)}</dd><dt>System</dt><dd>${S5.esc(R.info?.os || "—")}</dd><dt>Workspace</dt><dd class="mono small">${S5.esc(R.info?.workspace || "—")}</dd><dt>Companion</dt><dd>${S5.esc(R.info?.version || "—")} · updates itself</dd><dt>Encryption</dt><dd>End-to-end (ECDH P-256 + AES-256-GCM)</dd></dl>`, H.btn("Link another device", "rm-makelink", {}, "sm primary") + H.btn("Update laptop now", "rm-update", {}, "sm") + H.btn("Unpair", "rm-unpair", {}, "sm danger"))}
       ${H.section("Install on another laptop", `<p class="small">Download the installer on the laptop (Windows 10/11). It installs Node.js if needed, starts the Companion at login, and shows a pairing code.</p><div class="row" style="margin-top:8px">${H.btn("Download installer", "rm-installer", {}, "sm")}</div>`)}</div>`;
   } else if (tab === "log") {
     const l = S5.store.meta.remoteLog || [];
@@ -151,6 +170,7 @@ S5.remotePairView = () => `<div class="page-head"><div class="titles"><span clas
   <div class="grid cols-2">
     <section class="sheet"><h3>1 · On the laptop</h3><p class="small" style="margin:6px 0">Open this same site on the laptop (Chrome/Edge), go to <b>Laptop</b> and download the installer. Run it: it installs the Studio5 Companion and shows a 6-digit code.</p>${H.btn("Download installer for Windows", "rm-installer", {}, "primary")}<p class="tiny muted" style="margin-top:8px">The Companion only does what's listed in this app (mouse, keyboard, screen, apps, workspace files, lock/sleep/shutdown). No hidden access, every command is logged on the laptop, and you can stop it any time by closing its window.</p></section>
     <section class="sheet"><h3>2 · On the phone</h3><p class="small" style="margin:6px 0">Enter the code shown on the laptop:</p><div class="row"><input id="rm-code" inputmode="numeric" placeholder="123 456" style="font-size:1.5rem;letter-spacing:.2em;width:180px;padding:8px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--paper)">${H.btn("Pair", "rm-pair", {}, "primary")}</div><p class="tiny muted" style="margin-top:8px">Then compare the check number on both screens and accept on the laptop.</p></section>
+    <section class="sheet" style="grid-column:1/-1"><h3>Already paired on your phone? Link this device</h3><p class="small" style="margin:6px 0">On the paired phone: <b>Laptop → System → Link another device</b>. Type the code here — no need to touch the laptop.</p><div class="row"><input id="rm-link" autocapitalize="characters" autocomplete="off" placeholder="ABCDE-12345" style="font-size:1.3rem;letter-spacing:.12em;width:220px;padding:8px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--paper);text-transform:uppercase">${H.btn("Link", "rm-link", {}, "primary")}</div></section>
   </div>`;
 
 /* touchpad gestures */
@@ -202,7 +222,7 @@ S5.laptopHTML = () => {
   </div>`;
 };
 /* video link (WebRTC): the laptop's browser sends real video; set-up messages go through the encrypted relay */
-S5.rtc = { pc: null, dc: null, live: false, early: [] };
+S5.rtc = { pc: null, dc: null, live: false, early: [], sid: Math.random().toString(36).slice(2) };
 S5.remote.input = (a, args) => { const dc = S5.rtc.dc; if (dc && dc.readyState === "open") dc.send(JSON.stringify({ a, args })); else S5.remote.fire(a, args); };
 S5.rtcSignal = async (m) => {
   const T = S5.rtc, R = S5.remote;
@@ -242,7 +262,7 @@ S5.bindLaptop = () => {
     if (!alive || !L.get("rmLive", true) || document.hidden) return;
     if (ver() < "1.2" || !window.RTCPeerConnection) return pics();
     mode = "video"; vid.hidden = false; img.hidden = true; T.failed = null;
-    R.send("rtc.start", { quality: L.get("rmQuality", "high"), fps: 60, maxWidth: 1920 }, { quiet: true, timeout: 20000 }).catch((e) => { S5.ui.toast("Video link: " + e.message + " — using pictures", true); pics(); });
+    R.send("rtc.start", { sid: T.sid, quality: L.get("rmQuality", "high"), fps: 60, maxWidth: 1920 }, { quiet: true, timeout: 20000 }).catch((e) => { S5.ui.toast("Video link: " + e.message + " — using pictures", true); pics(); });
     clearTimeout(T.watch); T.watch = setTimeout(() => { if (alive && mode === "video" && !T.live) { S5.ui.toast("No video yet — using pictures. Make sure Chrome or Edge is installed on the laptop.", true); S5.rtcClose(true); pics(); } }, 25000);
   };
   const renew = () => { if (!alive) return; if (!L.get("rmLive", true) || document.hidden) { R.fire("screen.stream", { on: false }); return; } if (mode === "pics") R.fire("screen.stream", want()); };
@@ -396,6 +416,8 @@ S5.rmInstaller = () => {
 };
 /* actions */
 Object.assign(S5.act, {
+  "rm-link": async (el) => { const c = document.getElementById("rm-link").value; if (c.replace(/[^A-Za-z0-9]/g, "").length !== 10) return S5.ui.toast("The link code has 10 letters/digits", true); el.disabled = true; try { await S5.remote.takeLink(c); S5.ui.toast("Linked — this device controls the laptop now"); S5.ui.render(); } catch (e) { S5.ui.toast(e.message, true); el.disabled = false; } },
+  "rm-makelink": async () => { try { const code = await S5.remote.makeLink(); S5.ui.modal("Link another device", `<p class="small">On the iPad or other phone open <b class="mono">${S5.esc(location.origin)}/remote/</b> and type this code (valid 10 minutes, works once):</p><p class="clock mono" style="font-size:2.4rem;letter-spacing:.12em;margin:14px 0;direction:ltr;text-align:center">${code}</p><p class="tiny muted">Anyone with this code can control your laptop while it is valid — only type it on your own device.</p>`, { footer: `<button class="btn primary" data-close>Done</button>` }); } catch (e) { S5.ui.toast(e.message, true); } },
   "rm-pair": async () => { const c = document.getElementById("rm-code").value; try { await S5.remote.claim(c); S5.ui.render(); } catch (e) { S5.ui.toast(e.message, true); } },
   "rm-unpair": () => S5.ui.confirm("Unpair this laptop on this phone? To fully revoke, also delete config.json in the Companion folder on the laptop.", "Unpair", async () => { await S5.remote.unpair(); S5.ui.render(); }),
   "rm-click": (el) => S5.remote.fire("mouse.click", { button: el.dataset.b, double: !!el.dataset.dbl }),

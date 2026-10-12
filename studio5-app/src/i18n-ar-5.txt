@@ -256,3 +256,17 @@ Touchpad	لوحة اللمس
 Add this app to the Home Screen for full screen	أضف التطبيق للشاشة الرئيسية حتى يصير ملء الشاشة
 No video yet — using pictures. Make sure Chrome or Edge is installed on the laptop.	ماكو فيديو بعد — رجعنا للصور. تأكد Chrome أو Edge منصّب على اللابتوب.
 Video link failed on this network — using pictures	رابط الفيديو ما اشتغل على هالشبكة — رجعنا للصور
+Already paired on your phone? Link this device	مربوط على موبايلك؟ اربط هذا الجهاز
+On the paired phone:	على الموبايل المربوط:
+Laptop → System → Link another device	اللابتوب ← النظام ← اربط جهاز ثاني
+. Type the code here — no need to touch the laptop.	. اكتب الرمز هنا — ما تحتاج تلمس اللابتوب.
+Link	اربط
+Link another device	اربط جهاز ثاني
+On the iPad or other phone open	على الآيباد أو الموبايل الثاني افتح
+and type this code (valid # minutes, works once):	واكتب هذا الرمز (صالح # دقايق، لمرة وحدة):
+Anyone with this code can control your laptop while it is valid — only type it on your own device.	أي واحد عنده هذا الرمز يگدر يتحكم بلابتوبك طول ما هو صالح — اكتبه بس على جهازك.
+Done	تم
+The link code has # letters/digits	رمز الربط # حروف/أرقام
+Linked — this device controls the laptop now	تم الربط — هذا الجهاز يتحكم باللابتوب هسه
+Wrong link code	رمز الربط غلط
+Link code not found or expired. Make a new one on your paired phone.	رمز الربط مو موجود أو انتهى. سوّ واحد جديد من الموبايل المربوط.
