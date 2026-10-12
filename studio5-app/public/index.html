@@ -3623,7 +3623,7 @@ S5.remote = {
       if (env.t === "presence") { const was = this.laptopOnline; this.laptopOnline = env.laptop; this.emit(); if (env.laptop && !was) this.hello(); return; }
       if (env.t === "queued") { S5.ui.toast("Laptop is offline — queued, it runs when the laptop connects"); return; }
       if (env.t !== "msg") return;
-      let body; try { body = await this.open(env); } catch { return; }
+      let body; try { body = await this.open(env); } catch (e) { this.lastReject = e.message; if (!this._rejToast) { this._rejToast = 1; S5.ui.toast(e.message === "stale" ? "Laptop reply rejected: the phone and laptop clocks differ by more than 2 minutes — set both to automatic time" : "Laptop reply rejected (" + e.message + ") — re-pair if this continues"); setTimeout(() => (this._rejToast = 0), 10000); } return; }
       if (body.hello && this.pair && !this.pair.confirmed) { await S5.store.setMeta("remote", { ...this.pair, confirmed: true }); S5.ui.toast("Laptop accepted the pairing"); this.hello(); this.emit(); return; }
       const w = this.pending.get(body.re); if (!w) return;
       if (body.partial) { w.onPartial && w.onPartial(body.data); return; }
@@ -3638,7 +3638,7 @@ S5.remote = {
       if (!this.ws || this.ws.readyState !== 1 || !this.key) return rej(new Error("Not connected to the relay"));
       if (!this.laptopOnline && !queue) return rej(new Error("The laptop is offline. Start Studio5 Companion on it."));
       const id = "c" + ++this.seq + "_" + Date.now().toString(36);
-      const timer = setTimeout(() => { if (this.pending.has(id)) { this.pending.delete(id); rej(new Error("No answer from the laptop")); } }, timeout);
+      const timer = setTimeout(() => { if (this.pending.has(id)) { this.pending.delete(id); rej(new Error("No answer from the laptop" + (this.lastReject ? " (last reply rejected: " + this.lastReject + ")" : " — if you clicked inside the Companion window, press Esc there"))); } }, timeout);
       this.pending.set(id, { res: (d) => { if (!quiet) this.log(action, true); res(d); }, rej: (e) => { if (!quiet) this.log(action, false, e.message); rej(e); }, onPartial, timer });
       try { this.ws.send(JSON.stringify(await this.seal({ id, action, args }, queue))); } catch (e) { this.pending.delete(id); clearTimeout(timer); rej(e); }
     });
@@ -3791,10 +3791,11 @@ S5.rmInstaller = () => {
     "  echo but files, apps and jobs still work. You can re-run this installer later to add it.",
     "  echo.",
     ")",
+    'rem Turn off QuickEdit for the Companion window: clicking/selecting text in it would pause the program.',
+    'reg add "HKCU\\Console\\Studio5 Companion" /v QuickEdit /t REG_DWORD /d 0 /f >nul 2>nul',
     '> "%DIR%\\Studio5 Companion.cmd" echo @echo off',
-    '>> "%DIR%\\Studio5 Companion.cmd" echo title Studio5 Companion - phone control is ON while this window is open',
     '>> "%DIR%\\Studio5 Companion.cmd" echo cd /d "%DIR%"',
-    '>> "%DIR%\\Studio5 Companion.cmd" echo node "%DIR%\\studio5-companion.mjs" --server %SERVER%',
+    '>> "%DIR%\\Studio5 Companion.cmd" echo start "Studio5 Companion" node "%DIR%\\studio5-companion.mjs" --server %SERVER%',
     'copy /y "%DIR%\\Studio5 Companion.cmd" "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Studio5 Companion.cmd" >nul',
     "echo.",
     "echo Installed. The Companion starts at login (a visible window - close it to stop phone control).",

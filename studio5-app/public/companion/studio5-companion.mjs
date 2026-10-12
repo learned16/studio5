@@ -82,7 +82,7 @@ class NutDriver {
   keyOf(name) { const k = String(name).toLowerCase(); let key = NAME2KEY[k]; if (!key && /^[a-z0-9]$/.test(k)) key = k.toUpperCase(); if (!key && /^f([1-9]|1[0-2])$/.test(k)) key = "F" + k.slice(1); const v = this.n.Key[key]; if (v === undefined) throw new Error("unknown key " + name); return v; }
   btn(b) { return b === "right" ? this.n.Button.RIGHT : b === "middle" ? this.n.Button.MIDDLE : this.n.Button.LEFT; }
   async call(op, a = {}) {
-    await this.ensure();
+    if (!["status", "clipget", "clipset", "lock", "windows", "focus"].includes(op)) await this.ensure();
     const M = this.mouse, K = this.keyboard, S = this.screen, P = (x, y) => new this.n.Point(x, y);
     switch (op) {
       case "move": { const p = await M.getPosition(); await M.setPosition(P(p.x + (a.dx | 0), p.y + (a.dy | 0))); return; }
@@ -140,7 +140,7 @@ const SENSITIVE = new Set(["sys.shutdown", "sys.sleep", "sys.restart"]);
 const uploads = new Map();
 const ACTIONS = {
   "hello": async () => ({ name: cfg.name, os: `${os.type()} ${os.release()}`, version: VERSION, simulate: SIM, workspace: cfg.workspace, apps: cfg.apps.map(({ id, name }) => ({ id, name })), disabled: cfg.disabled }),
-  "sys.status": async () => ({ ...(await drv.call("status")), host: os.hostname(), cpus: os.cpus().length, load: os.loadavg()[0] }),
+  "sys.status": async () => ({ ...(await drv.call("status").catch(() => ({}))), host: os.hostname(), cpus: os.cpus().length, load: os.loadavg()[0] }),
   "mouse.move": async (b) => drv.call("move", { dx: Math.round(b.dx), dy: Math.round(b.dy) }),
   "mouse.to": async (b) => drv.call("moveabs", { x: Math.round(b.x), y: Math.round(b.y) }),
   "mouse.click": async (b) => drv.call("click", { b: b.button || "left", dbl: !!b.double }),
@@ -197,7 +197,7 @@ const ACTIONS = {
 
 /* ---------- connection ---------- */
 let ws = null, backoff = 1000;
-async function send(obj) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(await seal(obj))); }
+async function send(obj) { const out = JSON.stringify(await seal(obj)); if (ws && ws.readyState === 1) ws.send(out); else log("Reply not sent (relay connection is closed):", obj.re || ""); }
 function connect() {
   const u = cfg.server.replace(/^http/, "ws") + `/api/ws?device=${cfg.device}&role=laptop&token=${cfg.token}`;
   ws = new WebSocket(u);
@@ -213,7 +213,9 @@ function connect() {
     if (cfg.disabled.includes(action)) { log("Blocked (disabled in config):", action); return send({ re: id, ok: false, error: "This action is turned off on the laptop" }); }
     if (SENSITIVE.has(action) && !a.confirmed) return send({ re: id, ok: false, error: "Needs confirmation" });
     if (!action.startsWith("mouse.") && action !== "screen.shot" && action !== "file.put") log("▶", action, JSON.stringify(a).slice(0, 120));
-    try { const data = await ACTIONS[action](a, reply); await send({ re: id, ok: true, data }); }
+    const LONG = action.startsWith("file.") || action === "job.run";
+    const limit = new Promise((_, rej) => setTimeout(() => rej(new Error(`${action} took too long on the laptop`)), LONG ? 280000 : 15000));
+    try { const data = await Promise.race([ACTIONS[action](a, reply), limit]); await send({ re: id, ok: true, data }); }
     catch (e) { log("✗", action, e.message); await send({ re: id, ok: false, error: e.message }); }
   };
   ws.onclose = () => { log(`Disconnected. Reconnecting in ${Math.round(backoff / 1000)} s…`); setTimeout(connect, backoff); backoff = Math.min(backoff * 2, 30000); };
