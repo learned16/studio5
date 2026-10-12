@@ -4,7 +4,7 @@ Library = `kb/*.json` (format: `kb/SCHEMA.md`). `node build.mjs` merges every fi
 Weekly plan: **every Thursday at dawn (Baghdad time) one study year is completed** — both programs —
 then the app is rebuilt, tested, committed and pushed to `claude/zen-bell-oqcqtr`.
 
-Total now: **392 lessons** (updated 2026-10-12).
+Total now: **406 lessons** (updated 2026-10-12).
 
 ## Year 1 — DONE ✅ (101 lessons)
 - Architecture: Architectural Drawing & Design / Principles of Architectural Design (12), Freehand Drawing 2D/3D (7),
@@ -30,8 +30,8 @@ Total now: **392 lessons** (updated 2026-10-12).
 ## Year 4 — Thursday run #3
 - Done: arch Architectural Design IV/V (5), Interior Space Design (5), Architecture & Climate (6), Advanced Building
   Technologies / Technical Construction (7), Theories of Architecture (6), Quantity Surveying (5), Housing Planning (4),
-  Exterior Space Design (4); civil RC Design II (9), Foundation (9), Steel (9), Highway (9), Sanitary (9), Construction Methods (8)
-- **Missing:** civil "Hydraulic Structures" (7), "Hydrology" (7), "Engineering Project" (3) → `civil-y4b.json`, prefix `c4b-`
+  Exterior Space Design (4); civil RC Design II (9), Foundation (9), Steel (9), Highway (9), Sanitary (9), Construction Methods (8), Hydraulic Structures (7), Hydrology (7)
+- **Missing:** civil "Engineering Project" (3) → `civil-y4b.json`, prefix `c4b-`
 
 ## Year 5 — Thursday run #4 (architecture only; civil at Kirkuk is 4 years)
 - Done: Project Management & Engineering Economics (5), Sustainable Architecture (5)
