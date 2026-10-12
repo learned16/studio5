@@ -24,3 +24,8 @@ Cloudflare لا يخزن أي بيانات؛ بياناتك تبقى في جها
 
 - نسخة Cloudflare تحفظ على الجهاز نفسه فقط. لنقل البيانات بين الأجهزة: System ← Backup ← Restore.
 - الذكاء الاصطناعي والمزامنة السحابية متوفرة بنسخة claude.ai فقط.
+
+## التحقق بعد النشر
+
+- افتح `https://studio5-app.<اسمك>.workers.dev` ← System ← Health: لازم يظهر «Install on this computer».
+- إذا البناء ما بدأ: Workers & Pages ← studio5-app ← Settings ← Build ← تأكد أن Production branch هو `claude/zen-bell-oqcqtr` و Root directory هو `studio5-app`.
