@@ -343,3 +343,34 @@ Ask	اسأل
 🧠 Explain my mistake	🧠 اشرحلي غلطتي
 The teacher's AI isn't available here — the measurements above still guide you.	ذكاء المعلّم مو متوفر هنا — القياسات فوك تبقى توجهك.
 The teacher is unavailable right now	المعلّم مو متوفر هسه
+Campus	الكلية
+Virtual campus	الكلية الافتراضية
+Walk with the stick or WASD / arrows · drag to look · tap a building to walk there	امشِ بالعصا أو WASD / الأسهم · اسحب حتى تتلفت · اضغط على أي بناية وتمشي لها وحدك
+3D is not available on this device — here are the departments.	الـ3D مو متوفر على هذا الجهاز — هاي الأقسام.
+Department of Architecture	قسم هندسة العمارة
+Department of Civil Engineering	قسم الهندسة المدنية
+Central Library	المكتبة المركزية
+The Studio	المرسم
+Lecture Hall	قاعة المحاضرات
+Student Affairs	شؤون الطلبة
+Northern Technical University	الجامعة التقنية الشمالية
+University of Kirkuk	جامعة كركوك
+The tutor is inside	المعلّم بالداخل
+Chalkboard, paper and a teacher	سبّورة وورقة ومعلّم
+Timetable and review	الجدول والمراجعة
+Today and settings	اليوم والإعدادات
+Architecture subjects, the virtual design studio and your design projects.	مواد العمارة، ومرسم التصميم الافتراضي، ومشاريعك التصميمية.
+Civil subjects, the virtual civil lab, engineering tools and the construction lab.	مواد المدني، والمختبر المدني الافتراضي، والأدوات الهندسية، ومختبر الإنشاءات.
+The tutor with its 409-lesson library, your notebooks, skills and memory.	المعلّم ومكتبته بـ409 درس، ودفاترك ومهاراتك وذاكرتك.
+The drawing room: the teacher demonstrates on the board and checks your drawing.	غرفة الرسم: المعلّم يشرح على السبّورة ويصحح رسمتك.
+Your timetable, the review queue and your grades.	جدولك، وطابور المراجعة، ودرجاتك.
+Today's plan, deadlines, backup and settings.	خطة اليوم، والمواعيد، والنسخ الاحتياطي والإعدادات.
+Architecture subjects	مواد العمارة
+Virtual design studio	مرسم التصميم الافتراضي
+Design projects	المشاريع التصميمية
+Civil subjects	مواد المدني
+Virtual civil lab	المختبر المدني الافتراضي
+The Tutor	المعلّم
+Library & skills	المكتبة والمهارات
+System & backup	النظام والنسخ الاحتياطي
+Campus map	خريطة الكلية

@@ -13,6 +13,7 @@ sleep 12
 OUT="$S/shots" PW="${PW:-playwright}" node tests/smoke.mjs
 node tests/pdf.mjs
 node tests/studio-e2e.mjs
+node tests/campus-e2e.mjs
 node tests/remote-e2e.mjs
 node tests/link-e2e.mjs
 node tests/oldupdate-e2e.mjs

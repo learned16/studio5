@@ -21,7 +21,7 @@ S5.autoUpdate();
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); S5.installPrompt = e; S5.rerender && S5.rerender(); });
 window.addEventListener("appinstalled", () => { S5.installPrompt = null; S5.ui.toast("Studio5 installed on this computer"); });
 S5.act.install = async () => { const p = S5.installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch {} S5.installPrompt = null; S5.ui.render(); };
-S5.LIVE = new Set(["studio", "tutor", "notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote", "lab", "atelier"]);
+S5.LIVE = new Set(["campus", "studio", "tutor", "notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote", "lab", "atelier"]);
 S5.ui.isLive = () => { const r = S5.ui.route; return S5.LIVE.has(r.v) || (r.v === "lecture" && (r.tab || "capture") === "capture") || (r.v === "library" && r.tab === "council"); };
 S5.act.go = (el) => S5.ui.go(el.dataset.v);
 S5.LIVE.add("tests");
@@ -81,7 +81,7 @@ new MutationObserver(() => { if (S5.pendingRender && !document.querySelector(".s
     const snaps = S5.store.meta.snapshots || [];
     if (!snaps.length || S5.daysBetween(snaps[0].at.slice(0, 10), S5.todayISO()) >= 1) S5.store.snapshot("Daily automatic snapshot");
     const h = (location.hash || "").replace("#", "");
-    S5.ui.route = S5.app === "remote" ? { v: "remote" } : { v: S5.views[h] && ["today", "study", "tutor", "projects", "practice", "library", "system", "remote"].includes(h) ? h : "today" };
+    S5.ui.route = S5.app === "remote" ? { v: "remote" } : { v: S5.views[h] && ["campus", "today", "study", "tutor", "projects", "practice", "library", "system", "remote"].includes(h) ? h : "campus" };
     S5.ui.render();
     S5.i18n.start();
     S5.sync.init();
