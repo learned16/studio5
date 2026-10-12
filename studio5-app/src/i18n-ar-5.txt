@@ -1,0 +1,235 @@
+# masses	# كتل
+#D massing & sun	الكتل ثلاثية الأبعاد والشمس
+#D massing with the real sun and shadows	كتل ثلاثية الأبعاد مع الشمس والظلال الحقيقية
+#D view	عرض ثلاثي الأبعاد
++ Mass	+ كتلة
++ Point load	+ حمل مركز
+Add windows (divide by diagonals)	أضف شبابيك (التقسيم بالأقطار)
+Age at test (days)	العمر عند الفحص (أيام)
+Air dried (poor)	تجفيف بالهواء (ضعيف)
+Analogous	متجاورة
+Bar diameter (mm)	قطر الشيش (ملم)
+Beam lab — drag the loads	مختبر العتبات — اسحب الأحمال
+Bed slope S (‰)	ميل القاع S (‰)
+Bed width b (m)	عرض القاع b (م)
+Box height	ارتفاع الصندوق
+Box width : depth	عرض الصندوق : عمقه
+Cantilever (fixed at left)	ناتئ (مثبت من اليسار)
+Cement (kg/m³)	السمنت (كغم/م³)
+Civil engineering	الهندسة المدنية
+Civil lab	المختبر المدني
+Classification (USCS, coarse)	التصنيف (USCS، خشن)
+Colour harmony	تناسق الألوان
+Complementary	متممة
+Composition & colour	التكوين واللون
+Concrete mix & cube crushing	خلطة الخرسانة وكسر المكعبات
+Crush # cubes (# mm)	اكسر # مكعبات (# ملم)
+Curing	المعالجة
+Deflection ×	تكبير الهطول ×
+Diagonals	الأقطار
+Direct stiffness method, pin + roller supports, steel E = # GPa. Compression members are not checked for buckling here — real design must.	طريقة الصلابة المباشرة، مسند مفصلي + مسند متدحرج، حديد E = # GPa. أعضاء الانضغاط لا تُفحص للانبعاج هنا — التصميم الحقيقي لازم يفحصها.
+Discharge Q	التصريف Q
+Discussion & conclusions	المناقشة والاستنتاجات
+Drag on empty ground to orbit, wheel / pinch to zoom, drag a mass to move it. Shadows use the real sun position for the latitude, date and solar time.	اسحب على الأرض الفارغة للدوران، العجلة أو القرص للتكبير، اسحب الكتلة لتحريكها. الظلال تستخدم موقع الشمس الحقيقي حسب خط العرض والتاريخ والتوقيت الشمسي.
+Drag the red arrows along the beam. Double-click an arrow to change its value.	اسحب الأسهم الحمراء على العتبة. انقر مرتين على السهم لتغيير قيمته.
+Drag the red vanishing points, the horizon (blue), or the box's front edge (black). Watch how the same box changes. This is the construction you draw by hand.	اسحب نقاط التلاشي الحمراء، أو خط الأفق (الأزرق)، أو الحافة الأمامية للصندوق (الأسود). لاحظ كيف يتغير نفس الصندوق. هذا هو الإنشاء اللي ترسمه باليد.
+Dual symbol (#–#% fines)	رمز مزدوج (#–#% ناعم)
+Each cube varies a little, like real tests.	كل مكعب يختلف قليلاً، مثل الفحوص الحقيقية.
+Elongation at fracture	الاستطالة عند الكسر
+Equal windows shrink toward the VP — found with diagonals, not guessed.	الشبابيك المتساوية تصغر باتجاه نقطة التلاشي — تُحدد بالأقطار لا بالتخمين.
+Estimated slump	الهطول المقدّر (Slump)
+Fines (passing ##)	الناعم (المار من #200)
+From project program	من برنامج المشروع
+Froude number	رقم فرود
+Gauge length (mm)	طول القياس (ملم)
+Golden ratio φ = #	النسبة الذهبية φ = #
+Golden sections	المقاطع الذهبية
+Golden spiral	الحلزون الذهبي
+Grade # (fy #)	رتبة # (fy #)
+Gs = # assumed for the zero-air-voids line. Fine-grained soils need liquid & plastic limits for a full classification.	Gs = # مفترض لخط انعدام الفراغات الهوائية. الترب الناعمة تحتاج حدي السيولة واللدونة للتصنيف الكامل.
+Height (m)	الارتفاع (م)
+Horizon at eye level: the box's top shows only when it is below the horizon.	الأفق بمستوى العين: سطح الصندوق يظهر فقط إذا كان تحت الأفق.
+Hydraulic radius R	نصف القطر الهيدروليكي R
+Lab reports	تقارير المختبر
+Lat	خط العرض
+Load a photo or drawing	حمّل صورة أو رسمة
+MPa (ACI time curve)	MPa (منحني ACI الزمني)
+MPa (Abrams-type law)	MPa (قانون أبرامز)
+Manning n	معامل ماننك n
+Masses	الكتل
+Max deflection	أقصى هطول
+Max member force	أقصى قوة بعضو
+Maximum dry density	أقصى كثافة جافة
+Member area (cm²)	مساحة العضو (سم²)
+Member capacity (fy # MPa)	قابلية العضو (fy # MPa)
+Modular grid	شبكة معيارية
+Moist cured	معالجة رطبة
+Monochrome	أحادي اللون
+New lab report	تقرير مختبر جديد
+New massing study	دراسة كتل جديدة
+No lab reports yet.	لا تقارير مختبر بعد.
+North °	الشمال °
+Open channel flow (Manning)	الجريان في القنوات المفتوحة (ماننك)
+Optimum moisture content	المحتوى المائي الأمثل
+Palette from the image	ألوان الصورة
+Pan	تحريك
+Panels	الأجزاء
+Perspective machine	آلة المنظور
+Predicted #-day strength	المقاومة المتوقعة بعمر # يوم
+Predicted at # days	المتوقعة بعمر # يوم
+Proctor — water % and wet density (g/cm³)	بروكتر — نسبة الماء والكثافة الرطبة (غم/سم³)
+Proportion checks	فحوص التناسب
+Reaction at A	رد الفعل عند A
+Reaction at B	رد الفعل عند B
+Recorded data	البيانات المسجلة
+Rectangular	مستطيل
+Result summary	ملخص النتيجة
+Retained g	المحجوز غم
+Rule of thirds	قاعدة الأثلاث
+Run an experiment, then “Save lab report”.	شغّل تجربة ثم «احفظ تقرير المختبر».
+Save lab report	احفظ تقرير المختبر
+Show construction lines	أظهر خطوط الإنشاء
+Side slope z (H:#V)	الميل الجانبي z (أفقي:1 عمودي)
+Sieve	المنخل
+Sieve analysis — mass retained (g)	التحليل المنخلي — الكتلة المحجوزة (غم)
+Simply supported	بسيط الإسناد
+Soil: sieve analysis & Proctor	التربة: التحليل المنخلي وبروكتر
+Span (m)	الفضاء (م)
+Split complementary	متممة منقسمة
+Steel bar tension test	فحص الشد لحديد التسليح
+Sun now	الشمس الآن
+Supports	المساند
+Tap a mass to edit it.	اضغط على كتلة لتعديلها.
+Tap a swatch to copy its code.	اضغط على لون لنسخ رمزه.
+Target f'c (MPa)	المقاومة المطلوبة f'c (MPa)
+Top view	منظر علوي
+Trapezoidal	شبه منحرف
+Triadic	ثلاثية
+Truck load (kN)	حمل الشاحنة (كن)
+Truck position	موقع الشاحنة
+Truss bridge under a moving truck	جسر جملوني تحت شاحنة متحركة
+Truss type	نوع الجملون
+Two-point perspective machine	آلة المنظور بنقطتين
+Ultimate force	القوة القصوى
+Uniform load (kN/m)	حمل منتظم (كن/م)
+Utilisation	نسبة الاستغلال
+VPs close together → strong distortion (wide-angle look).	نقاط التلاشي المتقاربة ← تشوه قوي (مظهر عدسة واسعة).
+Velocity V	السرعة V
+Vertical edges stay vertical in two-point perspective.	الحواف العمودية تبقى عمودية بمنظور النقطتين.
+Virtual civil lab	المختبر المدني الافتراضي
+Virtual design studio	المرسم المعماري الافتراضي
+Water / cement ratio	نسبة الماء / السمنت
+Water content	محتوى الماء
+Water depth y (m)	عمق الماء y (م)
+Wetted perimeter P	المحيط المبلل P
+What to notice	ما الذي تلاحظه
+Yield force	قوة الخضوع
+altitude #°	الارتفاع #°
+approx. floor area # m²	مساحة طابقية تقريبية # م²
+azimuth #°	السمت #°
+beams with draggable loads	عتبات بأحمال تُسحب
+composition & colour lab	مختبر التكوين واللون
+concrete cubes	مكعبات الخرسانة
+ductility indicator (≥ # required by most codes)	مؤشر المطيلية (≥ # تطلبه أغلب الكودات)
+footprint # m²	المسقط # م²
+kN compression	كن انضغاط
+kN tension	كن شد
+learning only	للتعلم فقط
+mm (limit # mm)	ملم (الحد # ملم)
+mm (limit L/# = # mm)	ملم (الحد L/# = # ملم)
+open channels	القنوات المفتوحة
+perspective machine	آلة المنظور
+realistic time ≈ #h #m	الوقت الواقعي ≈ #س #د
+shadow of a # m mass: # m	ظل كتلة بارتفاع # م: # م
+soils	الترب
+steel tension	شد الحديد
+subcritical	تحت حرج
+supercritical	فوق حرج
+— Project —	— المشروع —
+− Remove last	− احذف الأخير
+⏸ Pause	⏸ إيقاف
+▶ Play	▶ تشغيل
+▶ Day	▶ اليوم
+⏸ Day	⏸ اليوم
+▶ Pull the bar	▶ اسحب الشيش
+Remaining work ≈ #h #m	العمل المتبقي ≈ #س #د
+Rough need: #h #m–#h #m of practice (≈# min per mastery step per topic; refined as you log sessions). That is about #m per day, keeping the last day light.	الحاجة التقريبية: #س #د–#س #د تمرين (≈# دقيقة لكل خطوة إتقان لكل موضوع؛ تتحسن مع تسجيل الجلسات). أي حوالي # د يومياً، مع إبقاء اليوم الأخير خفيفاً.
+Status: not available in this view. Studio# never needs AI to work.	الحالة: غير متاح في هذه النسخة. Studio5 لا يحتاج الذكاء الاصطناعي ليعمل.
+Professor said #–#%	الأستاذ قال #–#%
+Roof tank (≈ #/# of storage)	خزان السطح (≈ #/# من الخزن)
+Reverberation time RT#	زمن الارتداد RT60
+Not ready: mandatory requirements met; no open or unclear feedback; all deliverables ready….	غير جاهز: المتطلبات الإلزامية؛ الملاحظات المفتوحة؛ جاهزية المخرجات….
+#:#:# triangle for right angles on site.	مثلث 3:4:5 للزوايا القائمة بالموقع.
+√# rectangle (A-paper) = #	مستطيل √2 (ورق A) = #
+Practice	التطبيق
+Civil engineering	الهندسة المدنية
+Architecture	العمارة
+3D massing & sun	الكتل ثلاثية الأبعاد والشمس
+Design studio	المرسم المعماري
+Pratt	برات
+Howe	هاو
+Warren	وارن
+fracture	كسر
+tension	شد
+compression	انضغاط
+Full test	الاختبار الشامل
+Open full test	افتح الاختبار الشامل
+Run the automatic self-test on this device and tick the real-device checklist (pen, PDF, laptop control, install, labs).	شغّل الاختبار التلقائي على هذا الجهاز وأشّر قائمة اختبارات الجهاز الحقيقي (القلم، PDF، التحكم باللابتوب، التنصيب، المختبرات).
+Run automatic self-test	شغّل الاختبار التلقائي
+Automatic self-test	الاختبار التلقائي
+Not run on this device yet.	لم يُشغّل على هذا الجهاز بعد.
+It checks the database, backup & restore, ink engine, PDF and 3D engines, all tools, encryption, the relay, the laptop link, translation and every screen.	يفحص قاعدة البيانات، النسخ والاستعادة، محرك القلم، محركي PDF والـ3D، كل الأدوات، التشفير، الخادم الوسيط، الاتصال باللابتوب، الترجمة وكل الشاشات.
+Earlier runs	تشغيلات سابقة
+Real-device checklist	قائمة اختبارات الجهاز الحقيقي
+# passed	# ناجحة
+#/# passed	#/# ناجحة
+What went wrong?	ما الذي حصل؟
+Quality	الجودة
+Pen & ink (MatePad / tablet)	القلم والكتابة (MatePad / تابلت)
+Pen pressure changes line width	ضغط القلم يغيّر سمك الخط
+Palm resting on the screen does not draw (Pen only on)	الكف على الشاشة لا يرسم (القلم فقط مفعّل)
+Eraser removes only the touched part of a line	الممحاة تمسح فقط الجزء الملموس من الخط
+Lasso selects, moves and deletes strokes	التحديد الحر يحدد ويحرك ويحذف الخطوط
+15-minute drawing session without lag	جلسة رسم 15 دقيقة بدون تأخير
+Force-close while drawing → reopen → last strokes recovered	إغلاق إجباري أثناء الرسم ← إعادة فتح ← آخر الخطوط مسترجعة
+PDF & lecture	PDF والمحاضرة
+Open a 50+ page lecture PDF smoothly	فتح ملف محاضرة 50+ صفحة بسلاسة
+Write on a page; reopen; ink still there; original file unchanged	اكتب على صفحة؛ أعد الفتح؛ الكتابة موجودة؛ الملف الأصلي لم يتغير
+Find a word inside the PDF	ابحث عن كلمة داخل الـPDF
+Capture during a lecture, then close it out	التقط أثناء المحاضرة ثم أغلقها
+Laptop control (Windows)	التحكم باللابتوب (ويندوز)
+Installer runs; Companion starts and shows a code	المثبّت يشتغل؛ المرافق يبدأ ويعرض رمزاً
+Check numbers match on phone and laptop; pairing accepted	أرقام التحقق متطابقة على الموبايل واللابتوب؛ تم قبول الاقتران
+Touchpad moves the pointer smoothly; tap clicks; 2-finger scroll	لوحة اللمس تحرك المؤشر بسلاسة؛ اللمسة نقرة؛ إصبعين للتمرير
+Arabic and English typing; Send + Enter runs an AutoCAD command	كتابة عربي وإنكليزي؛ إرسال + Enter ينفذ أمر AutoCAD
+Live screen updates; tapping the picture clicks there	الشاشة المباشرة تتحدث؛ الضغط على الصورة ينقر هناك
+AutoCAD / SketchUp / Revit open from the phone	AutoCAD / SketchUp / Revit تفتح من الموبايل
+Send a file phone → laptop; bring a laptop file into the Library	أرسل ملفاً من الموبايل للابتوب؛ وجيب ملفاً من اللابتوب للمكتبة
+Collect newest PDF export lands in the project	جلب أحدث PDF مُصدّر يصل للمشروع
+Lock screen works; shutdown asks for confirmation and can be cancelled	قفل الشاشة يعمل؛ الإطفاء يطلب تأكيداً ويمكن إلغاؤه
+After restarting the laptop, the Companion starts by itself	بعد إعادة تشغيل اللابتوب، المرافق يشتغل وحده
+Install & data	التنصيب والبيانات
+Installed as an app on the laptop; opens offline	منصّب كبرنامج على اللابتوب؛ يفتح بدون إنترنت
+Installed on the phone home screen	منصّب على الشاشة الرئيسية للموبايل
+Export full backup; restore it on another device; nothing missing	صدّر نسخة كاملة؛ استعدها على جهاز آخر؛ لا شيء ناقص
+Arabic ⇄ English switch keeps all data	التبديل عربي ⇄ إنكليزي يحفظ كل البيانات
+Labs & studio	المختبرات والمرسم
+Truss bridge animates; overstressed member flashes when area is small	الجسر الجملوني يتحرك؛ العضو المُجهد يومض عند تصغير المساحة
+Dragging a load updates shear, moment and deflection live	سحب الحمل يحدّث القص والعزم والهطول مباشرة
+3D massing: orbit, drag masses, shadows change with time	الكتل 3D: دوران، سحب الكتل، الظلال تتغير مع الوقت
+Load a photo; palette and golden spiral appear	حمّل صورة؛ تظهر الألوان والحلزون الذهبي
+Local database: write → read → delete	قاعدة البيانات المحلية: كتابة ← قراءة ← حذف
+Schema & migrations	المخطط والترحيلات
+Curriculum: 5 architecture years + 4 civil stages	المنهج: 5 سنوات عمارة + 4 مراحل مدني
+Backup: build, verify, reject tampering	النسخ الاحتياطي: إنشاء، تحقق، رفض التلاعب
+Restore test (full replay)	اختبار الاستعادة (إعادة كاملة)
+Ink engine: stroke, partial erase, undo	محرك القلم: خط، مسح جزئي، تراجع
+Drawing analysis	تحليل الرسم
+PDF engine	محرك PDF
+3D engine (WebGL)	محرك 3D (WebGL)
+Engineering tools compute	الأدوات الهندسية تحسب
+Encryption: ECDH pairing + AES-GCM + replay guard	التشفير: اقتران ECDH + AES-GCM + حماية من الإعادة
+Relay reachable (/api/health)	الخادم الوسيط متاح (/api/health)
+Laptop answers (encrypted round-trip)	اللابتوب يجيب (رحلة مشفرة كاملة)
+Translation coverage	تغطية الترجمة
+Every screen renders	كل الشاشات تعمل

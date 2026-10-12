@@ -1,0 +1,10 @@
+import { createRequire } from "node:module"; const require = createRequire("/x/");
+const { chromium } = require("/opt/node22/lib/node_modules/playwright"); const S = process.env.S;
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome", args: ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"] });
+const page = await (await b.newContext({ viewport: { width: 1280, height: 900 } })).newPage(); const errors = [];
+page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+await page.goto(process.env.URL || "http://127.0.0.1:8787/"); await page.waitForTimeout(2000);
+const r = await page.evaluate(async () => { const run = await S5.selfTest(); return run.results.map((x) => `${x.ok ? "PASS" : "FAIL"}  ${x.name} — ${x.note} (${x.ms} ms)`); });
+console.log(r.join("\n"));
+await page.evaluate(() => S5.ui.go({ v: "tests" })); await page.waitForTimeout(500); await page.screenshot({ path: S + "/shots/60-tests.png", fullPage: false });
+console.log("errors:", errors); await b.close();

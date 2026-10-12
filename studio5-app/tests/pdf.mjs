@@ -1,0 +1,31 @@
+import { createRequire } from "node:module"; import { readFileSync } from "node:fs"; const require = createRequire("/x/");
+const { chromium } = require("/opt/node22/lib/node_modules/playwright");
+const S = process.env.S;
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const page = await (await b.newContext({ viewport: { width: 1280, height: 860 } })).newPage(); const errors = [];
+page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+await page.goto("http://localhost:8765/"); await page.waitForTimeout(2000);
+console.log("pdfjs loaded:", await page.evaluate(() => !!window.pdfjsLib));
+const b64 = readFileSync(S + "/t.pdf").toString("base64");
+const fid = await page.evaluate(async (b64) => { const bin = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)); const f = new File([bin], "lecture3.pdf", { type: "application/pdf" }); return (await S5.intakeFile(f, { subjectId: "sub_03" })).id; }, b64);
+await page.evaluate((id) => S5.ui.go({ v: "file", id }), fid); await page.waitForTimeout(3000);
+console.log("pdf canvases:", await page.$$eval(".pdf-page canvas", (c) => c.length));
+await page.click('[data-p="annot"]'); await page.waitForTimeout(200);
+const pg = await page.$eval('.pdf-page[data-page="1"] .overlay', (e) => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y }; });
+await page.mouse.move(pg.x + 100, pg.y + 200); await page.mouse.down(); for (let i = 0; i < 10; i++) await page.mouse.move(pg.x + 100 + i * 15, pg.y + 200); await page.mouse.up(); await page.waitForTimeout(900);
+console.log("annotation strokes:", await page.evaluate((id) => S5.store.list("inkpage", (p) => p.fileId === id).map((p) => p.strokes.length), fid));
+await page.screenshot({ path: S + "/shots/11-pdf.png" });
+await page.waitForTimeout(500);
+console.log("search hits:", await page.evaluate(async () => (await S5.search("derivative definition")).map((x) => x.r.type + ":" + (x.page || ""))));
+// duplicate detection
+console.log("dup same id:", await page.evaluate(async (b64) => { const bin = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)); return (await S5.intakeFile(new File([bin], "copy.pdf", { type: "application/pdf" }))).name; }, b64));
+// eraser splits a stroke: draw on a notebook, erase middle
+const nb = await page.evaluate(async () => (await S5.store.create("notebook", { title: "T", template: "grid", pages: [] })).id);
+await page.evaluate((id) => S5.ui.go({ v: "notebook", id }), nb); await page.waitForTimeout(600);
+const st = await page.$eval("#nb-ink .ink-stage", (e) => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y }; });
+await page.mouse.move(st.x + 200, st.y + 200); await page.mouse.down(); for (let i = 0; i < 30; i++) await page.mouse.move(st.x + 200 + i * 8, st.y + 200); await page.mouse.up();
+await page.keyboard.press("e"); await page.mouse.move(st.x + 320, st.y + 190); await page.mouse.down(); await page.mouse.move(st.x + 320, st.y + 210); await page.mouse.up(); await page.waitForTimeout(900);
+console.log("after erase strokes:", await page.evaluate((id) => S5.store.get(S5.store.get(id).pages[0]).strokes.length, nb));
+await page.keyboard.press("Control+z"); await page.waitForTimeout(900);
+console.log("after undo strokes:", await page.evaluate((id) => S5.store.get(S5.store.get(id).pages[0]).strokes.length, nb));
+console.log("errors:", errors); await b.close();

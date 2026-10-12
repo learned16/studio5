@@ -5,9 +5,10 @@ if (S5.standalone && "serviceWorker" in navigator && (location.protocol === "htt
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); S5.installPrompt = e; S5.rerender && S5.rerender(); });
 window.addEventListener("appinstalled", () => { S5.installPrompt = null; S5.ui.toast("Studio5 installed on this computer"); });
 S5.act.install = async () => { const p = S5.installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch {} S5.installPrompt = null; S5.ui.render(); };
-S5.LIVE = new Set(["notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote"]);
+S5.LIVE = new Set(["notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote", "lab", "atelier"]);
 S5.ui.isLive = () => { const r = S5.ui.route; return S5.LIVE.has(r.v) || (r.v === "lecture" && (r.tab || "capture") === "capture") || (r.v === "library" && r.tab === "council"); };
 S5.act.go = (el) => S5.ui.go(el.dataset.v);
+S5.LIVE.add("tests");
 S5.act.back = () => S5.ui.back();
 S5.act.open = (el) => {
   const d = el.dataset; const route = { v: d.v };
@@ -46,7 +47,7 @@ S5.ui.render = function () { _render(); setTimeout(S5.fillThumbs, 0); };
 /* re-render on data change, except views that hold live editors (they refresh themselves) */
 S5.rerender = S5.debounce(() => { if (document.querySelector(".scrim")) { S5.pendingRender = true; return; } if (S5.ui.isLive()) S5.ui.renderChrome(); else { const y = window.scrollY; S5.ui.render(); window.scrollTo(0, y); } }, 120);
 S5.bus.on("change", () => S5.rerender());
-S5.bus.on("settings", () => { S5.applyTheme(); S5.rerender(); });
+S5.bus.on("settings", () => { S5.applyTheme(); S5.i18n.setDir(); S5.rerender(); });
 S5.bus.on("sync", () => { if (!document.querySelector(".scrim")) S5.ui.renderChrome(); });
 S5.bus.on("ai", () => S5.rerender());
 new MutationObserver(() => { if (S5.pendingRender && !document.querySelector(".scrim")) { S5.pendingRender = false; S5.rerender(); } }).observe(document.getElementById("modal-root"), { childList: true });

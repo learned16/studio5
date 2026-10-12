@@ -199,7 +199,7 @@ S5.renderTool = (key, saved) => {
   const def = S5.TOOL_DEFS[key]; const vals = saved?.inputs || Object.fromEntries(def.inputs.map(([k, , d]) => [k, d]));
   const inputs = def.inputs.map(([k, label, , kind]) => kind === "textarea" ? `<label class="field wide"><span>${label}</span><textarea data-tool-in="${k}" rows="6" dir="auto" style="font-family:var(--f-mono);font-size:.82rem">${S5.esc(vals[k])}</textarea></label>` : `<label class="field"><span>${label}</span><input data-tool-in="${k}" ${kind === "date" ? 'type="date"' : ""} value="${S5.esc(vals[k])}" dir="auto"></label>`).join("");
   let out = ""; try { out = def.run(vals); } catch (e) { out = warn("Check the inputs: " + S5.esc(e.message)); }
-  return `<div class="form-grid" data-tool="${key}">${inputs}</div><div class="tool-out" style="margin-top:14px">${out}</div><p class="tiny muted" style="margin-top:8px">Learning tool. Results support understanding and checking homework; they are not approval for design or construction.</p>`;
+  return `<div class="form-grid" data-tool="${key}" dir="ltr">${inputs}</div><div class="tool-out" style="margin-top:14px">${out}</div><p class="tiny muted" style="margin-top:8px">Learning tool. Results support understanding and checking homework; they are not approval for design or construction.</p>`;
 };
 S5.bindTool = (root, key) => {
   const grid = root.querySelector(`[data-tool="${key}"]`); if (!grid) return;

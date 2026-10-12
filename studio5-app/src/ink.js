@@ -91,7 +91,7 @@ S5.Ink = class Ink {
     const pad = (st.w || 2) + 2; b = [x0 - pad, y0 - pad, x1 + pad, y1 + pad]; this.bboxes.set(st, b); return b;
   }
   /* ---------- rendering ---------- */
-  ctx(c) { const x = c.getContext("2d"); x.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); return x; }
+  ctx(c) { const x = c.getContext("2d"); x.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); x.direction = "ltr"; return x; }
   redraw() { if (!this.cw) return; this.drawBg(); this.drawMain(); this.clearLive(); this.updateStatus(); }
   drawBg() {
     if (!this.cw) return;
