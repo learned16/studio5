@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>var S5_BUILD = "202610122330";</script>
+<script>var S5_BUILD = "202610142225";</script>
 </head><body>
 <title>Studio5</title>
 <meta name="theme-color" content="#1f3a68">
@@ -1815,7 +1815,7 @@ S5.ui = {
     this.render(); document.getElementById("view").scrollTop = 0; window.scrollTo(0, 0);
   },
   back() { const r = this.stack.pop(); if (r) { this.route = r; this.render(); } else this.go("today", true); },
-  root() { const v = this.route.v; return ({ subject: "study", lecture: "study", assessmentPlan: "study", mock: "study", focus: "today", project: "projects", notebook: "library", file: "library", drill: "practice", studio: "practice", tool: "practice", lab: "practice", atelier: "practice", tests: "system", remote: "system", search: "", inbox: "", notifications: "", research: "library" })[v] ?? v; },
+  root() { const v = this.route.v; return ({ subject: "study", lecture: "study", assessmentPlan: "study", mock: "study", focus: "today", project: "projects", notebook: "library", file: "library", drill: "practice", studio: "practice", tool: "practice", lab: "practice", atelier: "practice", tests: "system", remote: "system", search: "", inbox: "", notifications: "", research: "library", ...(S5.ROOT_EXTRA || {}) })[v] ?? v; },
   render() {
     this.cleanup.forEach((f) => { try { f(); } catch {} }); this.cleanup = [];
     this.renderChrome();
@@ -4750,6 +4750,8 @@ S5.CAMPUS = [
     desc: "Today's plan, deadlines, backup and settings.",
     rooms: [["Today", { v: "today" }], ["System & backup", { v: "system" }]] },
 ];
+/* college modules (src/college/*.js, loaded before this file) add rooms with S5.CAMPUS_EXTRA.push([buildingId, [title, route]]) */
+(S5.CAMPUS_EXTRA || []).forEach(([id, room]) => { const b = S5.CAMPUS.find((x) => x.id === id); if (b && !b.rooms.some((r) => r[0] === room[0])) b.rooms.push(room); });
 S5.CAMPUS.forEach((b) => { // the door sits in the middle of the facing wall; the zone in front of it opens the card
   const n = { e: [1, 0], w: [-1, 0], s: [0, 1], n: [0, -1] }[b.face]; b.n = n;
   b.door = [b.x + n[0] * (b.w / 2), b.z + n[1] * (b.d / 2)]; b.spot = [b.door[0] + n[0] * 10, b.door[1] + n[1] * 10];
@@ -5126,7 +5128,7 @@ S5.autoUpdate();
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); S5.installPrompt = e; S5.rerender && S5.rerender(); });
 window.addEventListener("appinstalled", () => { S5.installPrompt = null; S5.ui.toast("Studio5 installed on this computer"); });
 S5.act.install = async () => { const p = S5.installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch {} S5.installPrompt = null; S5.ui.render(); };
-S5.LIVE = new Set(["campus", "studio", "tutor", "notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote", "lab", "atelier"]);
+S5.LIVE = new Set(["campus", "studio", "tutor", "notebook", "notebook-page", "drill", "file", "focus", "mock", "tool", "remote", "lab", "atelier", ...(S5.LIVE_EXTRA || [])]);
 S5.ui.isLive = () => { const r = S5.ui.route; return S5.LIVE.has(r.v) || (r.v === "lecture" && (r.tab || "capture") === "capture") || (r.v === "library" && r.tab === "council"); };
 S5.act.go = (el) => S5.ui.go(el.dataset.v);
 S5.LIVE.add("tests");

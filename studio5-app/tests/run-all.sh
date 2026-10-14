@@ -14,6 +14,7 @@ OUT="$S/shots" PW="${PW:-playwright}" node tests/smoke.mjs
 node tests/pdf.mjs
 node tests/studio-e2e.mjs
 node tests/campus-e2e.mjs
+for t in tests/col-*.mjs; do [ -e "$t" ] && node "$t"; done   # college milestones (each sets a failing exit code)
 node tests/remote-e2e.mjs
 node tests/link-e2e.mjs
 node tests/oldupdate-e2e.mjs

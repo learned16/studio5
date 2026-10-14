@@ -24,6 +24,8 @@ S5.CAMPUS = [
     desc: "Today's plan, deadlines, backup and settings.",
     rooms: [["Today", { v: "today" }], ["System & backup", { v: "system" }]] },
 ];
+/* college modules (src/college/*.js, loaded before this file) add rooms with S5.CAMPUS_EXTRA.push([buildingId, [title, route]]) */
+(S5.CAMPUS_EXTRA || []).forEach(([id, room]) => { const b = S5.CAMPUS.find((x) => x.id === id); if (b && !b.rooms.some((r) => r[0] === room[0])) b.rooms.push(room); });
 S5.CAMPUS.forEach((b) => { // the door sits in the middle of the facing wall; the zone in front of it opens the card
   const n = { e: [1, 0], w: [-1, 0], s: [0, 1], n: [0, -1] }[b.face]; b.n = n;
   b.door = [b.x + n[0] * (b.w / 2), b.z + n[1] * (b.d / 2)]; b.spot = [b.door[0] + n[0] * 10, b.door[1] + n[1] * 10];

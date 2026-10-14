@@ -4,11 +4,11 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 const order = ["core.js", "curriculum.js", "ink.js", "pdf.js", "ai.js", "ui.js", "tools.js",
   "view-today.js", "view-study.js", "view-projects.js", "view-practice.js", "studio.js", "lab.js", "atelier.js", "view-library.js",
-  "view-system.js", "remote.js", "tutor.js", "campus.js", "selftest.js", "i18n.js", "main.js"];
+  "view-system.js", "remote.js", "tutor.js", ...readdirSync(new URL("./src/college/", import.meta.url)).filter((f) => f.endsWith(".js")).sort().map((f) => "college/" + f), "campus.js", "selftest.js", "i18n.js", "main.js"];
 const read = (f) => readFileSync(new URL("./src/" + f, import.meta.url), "utf8");
 const out = (p, s) => writeFileSync(new URL(p, import.meta.url), s);
 const dict = {};
-for (const f of ["i18n-ar-1.txt", "i18n-ar-2.txt", "i18n-ar-3.txt", "i18n-ar-4.txt", "i18n-ar-5.txt"]) for (const line of read(f).split("\n")) { const i = line.indexOf("\t"); if (i > 0) dict[line.slice(0, i)] = line.slice(i + 1).trim(); }
+for (const f of readdirSync(new URL("./src/", import.meta.url)).filter((f) => /^i18n-ar-.+\.txt$/.test(f)).sort()) for (const line of read(f).split("\n")) { const i = line.indexOf("\t"); if (i > 0) dict[line.slice(0, i)] = line.slice(i + 1).trim(); }
 const js = `var S5_I18N_PENDING = ${JSON.stringify(dict)};\n` + order.map((f) => `// ---- ${f} ----\n${read(f)}`).join("\n");
 // the teaching library: kb/*.json merged (installed app loads it on demand; the claude.ai page embeds it)
 const kb = readdirSync(new URL("./kb/", import.meta.url)).filter((f) => f.endsWith(".json")).sort().flatMap((f) => JSON.parse(readFileSync(new URL("./kb/" + f, import.meta.url), "utf8")));

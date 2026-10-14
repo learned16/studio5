@@ -71,6 +71,8 @@ Input and units:
 
 ## 2. البنية (Architecture)
 
+> **Implementation note (overrides file names below):** college modules live in `src/college/NN-name.js` (e.g. `10-problems.js`, `20-gens-y1.js`, `30-view-pset.js`). build.mjs loads them automatically in filename order after tutor.js and before campus.js. Shared files are NOT edited for registration: use the hooks `S5.CAMPUS_EXTRA`, `S5.LIVE_EXTRA`, `S5.ROOT_EXTRA` (see `src/college/README.md`). UI strings go in `src/i18n-ar-m<N>.txt` (one per milestone, auto-loaded). Tests are `tests/col-m<N>-*.mjs` (auto-run by run-all.sh, must set `process.exitCode = 1` on failure).
+
 ### Constraints that shape every file
 - All src/*.js files are joined into one `"use strict"` script with a shared scope. Every new module is an IIFE that attaches only to `S5.*`, because a top-level `const` named R, ok, H, kv, lines, warn and so on is a SyntaxError that stops the whole app.
 - In build.mjs `order`, insert `"problems.js", "gens-y1.js", "view-pset.js"` after `"tutor.js"` and before `"campus.js"`. Later milestones add `"view-exam.js"`, `"professor.js"` and `"jury.js"` in the same slot.
