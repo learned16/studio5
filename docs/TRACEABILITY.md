@@ -112,3 +112,7 @@ coverage finding only.
 - لا تتحول حالة إلى `DONE` قبل Commit وPush ونجاح التحقق.
 - المتطلبات السابقة تبقى مرتبطة بأدلتها ولا تُعاد كتابتها بأثر رجعي.
 - أي تأجيل أو تغيير معنى يسجل في `DECISION_LOG.md`.
+
+## Studio5 app — college milestones
+
+Requirements of `studio5-app/docs/COLLEGE_PLAN.md` are traced in `studio5-app/docs/TRACEABILITY.md` (S5-COL-M1 … M9).

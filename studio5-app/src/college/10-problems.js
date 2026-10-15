@@ -153,7 +153,7 @@
       const t = tolOf(field), k = Math.abs(key), fl = t.floor != null ? t.floor : t.rel ? t.rel / 2 : 0, floor = fl * Math.max(opt.max || 0, k);
       let tolAbs = Math.max((t.rel || 0) * k, t.abs || 0, floor);
       if (t.frac && info.frac) tolAbs = t.frac * Math.max(1, k);
-      const roundAbs = t.rel ? Math.max(Math.max(ROUND, 3 * t.rel) * k, 3 * floor) : 3 * (t.abs || 0);
+      const roundAbs = t.rel ? Math.max(Math.max(ROUND, 3 * t.rel) * k, tolAbs) : 3 * (t.abs || 0); // half credit stops at ~3% of the key (the floor only widens 'ok')
       const dist = (a, b) => (field.wrap ? Math.abs(wrapAng(a - b)) : Math.abs(a - b));
       const near = (a, b, tol) => dist(a, b) <= tol * (1 + 1e-9) + 1e-12 * Math.max(1, Math.abs(b));
       const out = (code, score, why) => ({ ok: code === "ok", score, code, key, got, v: info.v, unit: u, frac: !!info.frac, err: k ? dist(got, key) / k : dist(got, key), tol: tolAbs, ...(why || {}) });
@@ -286,8 +286,9 @@
         const un = xs.filter(unaided), good = un.filter(correct), e4 = xs.filter((a) => a.tier === "E4");
         const seedKey = (a) => (a.pid || "") + "|" + a.seed;
         const seeds = new Set(good.map(seedKey)), days = new Set(good.map((a) => S5.dateISO(at(a))));
-        let streak = 0; for (let i = e4.length - 1; i >= 0 && correct(e4[i]); i--) streak++;
-        Object.assign(res, { correct: good.length, seeds: seeds.size, days: days.size, e4: e4.filter(correct).length, e4n: e4.length, streak, box: Math.min(streak, this.LEITNER.length) });
+        let streak = 0; const passDays = new Set(); for (let i = e4.length - 1; i >= 0 && correct(e4[i]); i--) { streak++; passDays.add(S5.dateISO(at(e4[i]))); }
+        // the Leitner box climbs once per calendar day of passed E4 retrieval, so several exam items in one sitting count once
+        Object.assign(res, { correct: good.length, seeds: seeds.size, days: days.size, e4: e4.filter(correct).length, e4n: e4.length, streak, box: Math.min(passDays.size, this.LEITNER.length) });
         if (streak) res.dueAt = S5.addDays(S5.dateISO(at(e4[e4.length - 1])), this.LEITNER[res.box - 1]);
         if (e4.length && !streak) {
           const miss = xs.lastIndexOf(e4[e4.length - 1]), before = new Set();
@@ -332,7 +333,8 @@
     const scan = (text) => {
       const s = String(text || ""), out = [], re = /[0-9٠-٩۰-۹]+(?:[.,٫٬][0-9٠-٩۰-۹]+)*/g; let m;
       while ((m = re.exec(s))) {
-        const prev = s[m.index - 1] || ""; if (/[A-Za-z_ء-ي]/.test(prev)) continue; // identifiers: F1, E3, c1b, م1
+        const prev = s[m.index - 1] || ""; if (/[A-Za-z_]/.test(prev)) continue; // identifiers: F1, E3, c1b
+        if (/[ء-ي]/.test(prev) && !(/[وبلكف]/.test(prev) && !/[ء-ي]/.test(s[m.index - 2] || ""))) continue; // Arabic identifiers (م1) — but a one-letter proclitic (و٣٠، ب٢٠) still counts as a number
         const tok = latinDigits(m[0]).replace(/٫/g, "."), cands = [];
         const dec = tok.replace(/٬/g, ""), i = Math.max(dec.lastIndexOf("."), dec.lastIndexOf(","));
         const ulp = (str) => { const j = Math.max(str.lastIndexOf("."), 0); return str.includes(".") ? 0.5 * 10 ** -(str.length - j - 1) : 0.5; };

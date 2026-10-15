@@ -1,6 +1,6 @@
-// Studio5 offline cache — version 202610142225
-const CACHE = "studio5-202610142225";
-const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "/remote/", "/remote/manifest.webmanifest"];
+// Studio5 offline cache — version 202610150800
+const CACHE = "studio5-202610150800";
+const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "/remote/", "/remote/manifest.webmanifest", "./kb/library.json"];
 const CDN = ["https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then(async (c) => { await c.addAll(SHELL); for (const u of CDN) { try { await c.add(new Request(u, { mode: "no-cors" })); } catch {} } }).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
