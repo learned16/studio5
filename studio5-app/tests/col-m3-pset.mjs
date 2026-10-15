@@ -135,6 +135,21 @@ check("backupContainsAttempts", bk === nAfter, { bk, nAfter });
 check("chipStillSecureAfterReload", await p.evaluate(() => document.querySelector('.ps-chip[data-obj="statics.reactions"]').dataset.state === "secure"));
 const leftR = await leftovers(); check("arabicNoLeftoversAfterReload", leftR.length === 0, leftR);
 
+/* ---------- entry points: the Practice page card and 'Graded practice' on mapped lessons ---------- */
+const leftIn = (sel) => p.evaluate((sel) => { const out = new Set(), root = document.querySelector(sel); if (!root) return ["(missing " + sel + ")"]; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { if (S5.i18n.skip(n.parentElement)) continue; const t = n.nodeValue.trim(); if (/[A-Za-z]{3}/.test(t) && !/[؀-ۿ]/.test(t)) out.add(t); } return [...out]; }, sel);
+await p.evaluate(() => S5.ui.go({ v: "practice" })); await p.waitForTimeout(500);
+const card = await p.evaluate(() => [...document.querySelectorAll('#ps-card [data-act="open"][data-v="pset"]')].map((x) => x.dataset.kind));
+check("practicePageHasProblemRoomCard", card.includes("civil") && card.includes("arch"), card);
+const leftCard = await leftIn("#ps-card"); check("arabicNoLeftoversPracticeCard", leftCard.length === 0, leftCard);
+await p.evaluate(async () => { if (S5.kb.load) await S5.kb.load(); }); await p.waitForTimeout(300);
+await p.evaluate(() => S5.ui.go({ v: "tutor", tab: "learn", id: "c1b-mech-04" })); await p.waitForTimeout(800);
+const lb = await p.evaluate(() => { const x = document.querySelector('#view [data-act="open"][data-v="pset"]'); return x && { kind: x.dataset.kind, id: x.dataset.id, text: x.textContent }; });
+check("lessonHasGradedPracticeButton", !!lb && lb.kind === "civil" && lb.id === "statics.reactions" && /[؀-ۿ]/.test(lb.text), lb);
+const rt = await p.evaluate(() => [S5.pset.lessonRoute(S5.kb.byId.get("a2-mec-04"), "arch"), S5.pset.lessonRoute(S5.kb.byId.get("c1b-mech-09")), S5.pset.lessonRoute(S5.kb.byId.get("c1b-mech-06") || { id: "none" })]);
+check("archLessonRoutesToArchRoom", !!rt[0] && rt[0].kind === "arch" && rt[0].id === "statics.centroid" && !!rt[1] && rt[1].kind === "civil" && rt[2] === null, rt);
+if (lb) { await p.click('#view [data-act="open"][data-v="pset"]'); await p.waitForTimeout(500); }
+check("lessonButtonOpensPset", await p.evaluate(() => S5.ui.route.v === "pset" && S5.pset.cur && S5.pset.cur.obj === "statics.reactions"));
+
 check("noPageErrors", errors.length === 0, errors);
 check("noCollegeErrors", (await p.evaluate(() => (S5.COLLEGE_ERRORS || []).length)) === 0, await p.evaluate(() => S5.COLLEGE_ERRORS));
 console.log(JSON.stringify({ ok: fails.length === 0, fails, res, errors }, null, 1));

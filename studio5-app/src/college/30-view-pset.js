@@ -188,6 +188,20 @@
     };
     S5.act["pset-obj"] = (el) => { const kind = el.dataset.kind || (P.cur && P.cur.kind) || "civil"; S5.ls.set("pset_obj_" + kind, el.dataset.obj); S5.ui.go({ v: "pset", kind, id: el.dataset.obj }, true); };
 
+    /* ---------- 'Graded practice' on a mapped library lesson (tutor.js lessonHTML calls this when present) ---------- */
+    P.lessonRoute = (t, prog) => {
+      if (!t || !S5.prob) return null; const gens = S5.prob.forLesson(t.id); if (!gens.length) return null;
+      const want = prog === "arch" || prog === "civil" ? prog : t.program === "arch" ? "arch" : "civil";
+      const g = gens.find((d) => P.KINDS[want].includes(d.program || "civil")) || gens[0];
+      const kind = P.KINDS[want].includes(g.program || "civil") ? want : g.program === "arch" ? "arch" : "civil";
+      return { v: "pset", kind, id: g.obj };
+    };
+    P.lessonBtn = (t, prog) => { const r = P.lessonRoute(t, prog); return r ? H.btn("Graded practice", "open", { v: r.v, kind: r.kind, id: r.id }) : ""; };
+
+    // the entry card on the Practice page (view-practice.js calls this when present)
+    P.cardHTML = () => `<section class="sheet" id="ps-card" style="margin-bottom:16px"><span class="eyebrow">Problem sets</span><h3 style="margin:2px 0">Problem room</h3><p class="small muted">Fresh numbers every time, graded exactly by code.</p>
+      <div class="row">${H.btn("Civil problems", "open", { v: "pset", kind: "civil" }, "primary")}${H.btn("Architecture problems", "open", { v: "pset", kind: "arch" })}</div></section>`;
+
     /* ---------- registration (no edits to shared files) ---------- */
     S5.CAMPUS_EXTRA = S5.CAMPUS_EXTRA || [];
     S5.CAMPUS_EXTRA.push(["civil", ["Problem room", { v: "pset", kind: "civil" }]], ["arch", ["Problem room", { v: "pset", kind: "arch" }]]);

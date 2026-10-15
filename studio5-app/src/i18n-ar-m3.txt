@@ -16,3 +16,7 @@ Show a step	اكشف خطوة
 Sense	الاتجاه
 Type an answer first	اكتب إجابة أولًا
 Graded practice	تمرين مصحّح
+Problem sets	مجموعات المسائل
+Fresh numbers every time, graded exactly by code.	أرقام جديدة في كل مرة، تُصحَّح بدقة بالكود.
+Civil problems	مسائل مدنية
+Architecture problems	مسائل معمارية

@@ -221,7 +221,7 @@ S5.lessonHTML = (t) => {
     <section class="sheet lesson"><h2 dir="auto">${S5.esc(t.title_ar)}</h2><p class="small muted">${S5.esc(t.title_en)}</p><p dir="auto" class="lesson-text">${S5.esc(t.summary_ar)}</p><ul dir="auto">${(t.key_points_ar || []).map((k) => `<li>${S5.esc(k)}</li>`).join("")}</ul></section>
     ${f}${ex}${(t.mistakes_ar || []).length ? H.section("Common mistakes", `<ul dir="auto">${t.mistakes_ar.map((m) => `<li>${S5.esc(m)}</li>`).join("")}</ul>`) : ""}
     ${H.section("Check yourself", `<div id="ls-quiz">${quiz}</div><p class="small" id="ls-score"></p>`)}
-    <div class="row">${H.btn("Ask the teacher about this", "ls-ask", { id: t.id }, "primary")}${next ? H.btn("Next lesson →", "open", { v: "tutor", tab: "learn", id: next.id, ...(prog ? { kind: prog } : {}) }) : ""}</div>`;
+    <div class="row">${H.btn("Ask the teacher about this", "ls-ask", { id: t.id }, "primary")}${S5.pset && S5.pset.lessonBtn ? S5.pset.lessonBtn(t, prog) : ""}${next ? H.btn("Next lesson →", "open", { v: "tutor", tab: "learn", id: next.id, ...(prog ? { kind: prog } : {}) }) : ""}</div>`;
 };
 /* Lesson score = the code-graded (multiple-choice) items only. Short answers are self-rated: they are shown as
    'self-check', kept as E0 evidence and never count toward the score, so "I got it" cannot master a lesson. */
