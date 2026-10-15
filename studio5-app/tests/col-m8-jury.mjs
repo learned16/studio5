@@ -120,6 +120,18 @@ if (!worker) await A.evaluate(() => { // claude.ai-flavour page: S5.ai.fn behave
 });
 res.aiMode = aiMode;
 const guardP0 = P === A ? guardA0 : await guardSnap(P);
+// with the AI ready, a pin-up that has 5 of 6 self-scores still cannot reach the juror (button, API and action)
+const readyGate = await P.evaluate(async (SELF) => {
+  const r = await S5.jury.create("comp"); const c = document.createElement("canvas"); c.width = 400; c.height = 300; c.getContext("2d").fillRect(50, 50, 100, 100);
+  await S5.jury.pin(r.id, c); await S5.jury.save(r.id, { intent: "test intent" }); for (const k of Object.keys(SELF).slice(0, 5)) await S5.jury.setSelf(r.id, k, SELF[k]);
+  S5.ui.go({ v: "jury", id: r.id }); await new Promise((ok) => setTimeout(ok, 300));
+  const n0 = S5.ai.log().length, disabled = document.getElementById("jy-ask").disabled, ready = S5.ai.on();
+  let api = null; try { await S5.jury.askAI(r.id); api = "called!"; } catch (e) { api = e.code; }
+  await S5.act["jury-ai"]({ dataset: { id: r.id } });
+  return { ready, disabled, api, calls: S5.ai.log().length - n0, rid: r.id };
+}, SELF);
+check("selfFirstGateWithAiReady", readyGate.ready && readyGate.disabled && readyGate.api === "self-first" && readyGate.calls === 0, readyGate);
+await P.evaluate(async ({ rid, i }) => { await S5.store.remove(rid); S5.ui.go({ v: "jury", id: i }); }, { rid: readyGate.rid, i: id }); await P.waitForTimeout(400);
 await P.evaluate((i) => S5.jury.refresh(i), id);
 check("gateOpenAfterSelf", await P.evaluate((i) => S5.jury.gate(S5.store.get(i)) === null && !document.getElementById("jy-ask").disabled, id));
 const bodies = [], replies = [];

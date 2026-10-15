@@ -439,7 +439,8 @@ Reply with only JSON: {"criteria":[{"id":"${R.criteria[0].id}","level":3,"eviden
   };
   S5.act["jury-ink"] = (el) => {
     const id = el.dataset.id;
-    const pages = S5.store.list("inkpage", (p) => (p.strokes || []).length).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || "")).slice(0, 20);
+    // drawings only: PDF markup pages (fileId) hold notes over a document, not a board
+    const pages = S5.store.list("inkpage", (p) => !p.fileId && (p.strokes || []).length).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || "")).slice(0, 20);
     const m = S5.ui.modal("Use an ink page", pages.length ? `<div class="list">${pages.map((p) => H.item({ lead: "cobalt", t: esc(p.title || "Ink page"), s: esc(S5.fmtDateTime(p.updatedAt || p.createdAt)), act: "jury-ink-pick", data: { id, ink: p.id } })).join("")}</div>` : H.empty("No ink pages with drawing yet", "Draw in a notebook, the Studio or the Drawing Coach first, or pin up a photo."));
     S5.jury.modal = m;
   };
