@@ -1,0 +1,21 @@
+Problem engine	محرّك المسائل
+# generators × # seeds	# مولّدات × # بذرة
+#/# lesson examples agree	#/# من أمثلة الدروس متطابقة
+AI opinion · verify	رأي الذكاء الاصطناعي · تحقّق منه
+Practice with help	تمرين بمساعدة
+Graded by code	مصحّح بالكود
+Retrieval or exam	استرجاع أو امتحان
+Professor or jury score	درجة الأستاذ أو لجنة التحكيم
+Correct	صحيح
+Rounding — half credit	تقريب — نصف الدرجة
+Unit slip	خطأ في الوحدة
+Wrong sign or sense	إشارة أو اتجاه خاطئ
+Off by a factor of #	خطأ بمعامل #
+Degrees/radians mix-up	خلط بين الدرجات والراديان
+Not correct	غير صحيح
+No answer	لا توجد إجابة
+Practicing	قيد التمرين
+Secure	متمكّن
+Mastered	مُتقَن
+Due for retrieval	حان وقت الاسترجاع
+Fragile	هشّ

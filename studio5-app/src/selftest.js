@@ -19,6 +19,7 @@ S5.selfTest = async (onStep) => {
   await step("PDF engine", async () => { assert(S5.pdfReady(), "pdf.js did not load (offline on first run?)"); return "pdf.js " + (window.pdfjsLib.version || ""); });
   await step("3D engine (WebGL)", async () => { assert(window.THREE, "three.js did not load"); const c = document.createElement("canvas"); const gl = c.getContext("webgl") || c.getContext("experimental-webgl"); assert(gl, "WebGL not available on this device"); return "three r" + window.THREE.REVISION; });
   await step("Engineering tools compute", async () => { let n = 0; for (const [k, d] of Object.entries(S5.TOOL_DEFS)) { const v = Object.fromEntries(d.inputs.map(([key, , def]) => [key, def])); const out = d.run(v); assert(typeof out === "string" && out.length > 20, k); n++; } return n + " tools"; });
+  await step("Problem engine", async () => { const errs = S5.COLLEGE_ERRORS || []; assert(S5.prob && Object.keys(S5.PROB || {}).length, "not loaded" + (errs.length ? ": " + errs.join("; ") : "")); const r = S5.prob.selfCheck(20); assert(r.ok && !errs.length, r.bad.slice(0, 3).concat(errs).join("; ")); return r.note; });
   await step("Encryption: ECDH pairing + AES-GCM + replay guard", async () => {
     const s = crypto.subtle; const A = await s.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]), B = await s.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]);
     const pa = S5.remote.b64(await s.exportKey("raw", A.publicKey)), pb = S5.remote.b64(await s.exportKey("raw", B.publicKey));
