@@ -119,8 +119,10 @@ await shot(p, "m3-04-secure");
 
 /* ---------- asking for a step at level 3 makes the item aided (E2) ---------- */
 await newNumbers(); c = await cur();
+await p.fill("#ps-fields input", "77.5");
 await p.click('[data-act="pset-steps"]'); await p.waitForTimeout(300);
 const hinted = await cur();
+check("typedInputSurvivesShowStep", (await p.inputValue("#ps-fields input")) === "77.5");
 check("showStepAtLevel3MakesE2", c.tier === "E3" && hinted.fade === 3 && hinted.shown === 1 && hinted.tier === "E2" && hinted.tierPill === "E2", { c, hinted });
 
 /* ---------- reload resumes the same seed; attempts persist; backup has them ---------- */

@@ -104,7 +104,8 @@
       return `<button class="ps-chip" data-act="pset-obj" data-obj="${esc(o)}" data-kind="${b.kind}" data-state="${s}" aria-pressed="${o === b.obj}"><span data-noi18n dir="auto">${esc(tx(O))}</span><span class="st">${esc(S5.mastery.LABEL[s] || s)}</span></button>`; }).join("")}</div>`;
 
     const fieldHTML = (f, b, given, res) => {
-      const g = given || [], dis = b.done ? "disabled" : "", unit = g[1] != null && g[1] !== "" ? g[1] : f.unit, val = g[0] != null ? String(g[0]) : "";
+      const dr = !b.done && P.draft && P.draft.id === b.cur.pid + ":" + b.cur.seed ? P.draft.given[f.k] : null;
+      const g = given || dr || [], dis = b.done ? "disabled" : "", unit = g[1] != null && g[1] !== "" ? g[1] : f.unit, val = g[0] != null ? String(g[0]) : "";
       const units = (f.units || []).length > 1 || (f.units || [])[0] ? `<select id="ps-u-${f.k}" data-k="${f.k}" data-noi18n aria-label="Unit" ${dis}>${f.units.map((u) => `<option value="${esc(u)}" ${u === unit ? "selected" : ""}>${esc(u)}</option>`).join("")}</select>` : "";
       const sense = f.sense ? `<select id="ps-s-${f.k}" data-k="${f.k}" data-noi18n aria-label="Sense" ${dis}><option value="">${esc(tr("sense?", "الاتجاه؟"))}</option>${f.sense.map((s) => `<option value="${esc(s)}" ${g[2] === s ? "selected" : ""}>${esc(s)} · ${esc(tx(S5.prob.SENSE[s] || { en: s, ar: s }))}</option>`).join("")}</select>` : "";
       const fb = res ? `<span class="pill" data-noi18n>${esc(P.codeLabel(res.code))}</span> <span data-noi18n dir="auto">${esc(P.message(res, f))}</span>` : "";
@@ -145,8 +146,10 @@
       S5.ui.mount(() => {
         const view = document.getElementById("view");
         const onKey = (e) => { if (e.key === "Enter" && e.target && e.target.id && e.target.id.startsWith("ps-in-")) { e.preventDefault(); const btn = view.querySelector('[data-act="pset-submit"]'); if (btn) btn.click(); } };
-        view.addEventListener("keydown", onKey);
-        return () => view.removeEventListener("keydown", onKey);
+        // typed answers survive a re-render of this view (Show a step, language switch): kept in memory per item
+        const onInput = (e) => { const t = e.target; if (t && t.id && /^ps-(in|u|s)-/.test(t.id) && P.cur && !P.cur.done) P.draft = { id: P.cur.pid + ":" + P.cur.seed, given: P.read().given }; };
+        view.addEventListener("keydown", onKey); view.addEventListener("input", onInput); view.addEventListener("change", onInput);
+        return () => { view.removeEventListener("keydown", onKey); view.removeEventListener("input", onInput); view.removeEventListener("change", onInput); };
       });
       const O = S5.OBJ[b.obj] || {};
       return `${crumbs}<div class="page-head"><div class="titles"><span class="eyebrow">${title}</span><h1>Problem room</h1>${intro}</div></div>
