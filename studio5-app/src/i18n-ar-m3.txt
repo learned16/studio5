@@ -1,0 +1,18 @@
+Problem room	غرفة المسائل
+Civil Engineering · Problem room	الهندسة المدنية · غرفة المسائل
+Architecture · Problem room	هندسة العمارة · غرفة المسائل
+Every answer key is computed and graded by code; the AI never marks. Help fades as you get answers right: unaided correct answers on fresh numbers are what count toward mastery.	كل مفتاح حل يُحسب ويُصحَّح بالكود، والذكاء الاصطناعي لا يضع الدرجات أبدًا. تقلّ المساعدة كلما أجبت إجابات صحيحة: الإجابات الصحيحة دون مساعدة على أرقام جديدة هي التي تُحتسب للإتقان.
+No problems yet	لا توجد مسائل بعد
+Graded problems for this department arrive in a later update.	ستصل المسائل المصحّحة لهذا القسم في تحديث لاحق.
+Help level	مستوى المساعدة
+Step revealed — practice only	خطوة مكشوفة — تمرين فقط
+Solution by code	الحل المحسوب بالكود
+Worked example	مثال محلول
+Worked example (partly hidden)	مثال محلول (مخفي جزئيًا)
+Steps hidden:	خطوات مخفية:
+New numbers	أرقام جديدة
+Submit	إرسال
+Show a step	اكشف خطوة
+Sense	الاتجاه
+Type an answer first	اكتب إجابة أولًا
+Graded practice	تمرين مصحّح
