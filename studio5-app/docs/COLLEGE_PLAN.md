@@ -309,8 +309,8 @@ Scores are on a 1–10 scale, for rigor / fit with the code / AI safety / lightn
 
 Order of work for every weekly run (Thursday 00:00–12:00 Baghdad) once the open review findings are fixed:
 1. Remaining milestones in order: M4 → M5 → M6 → M7 → M9.
-2. When M1–M9 are done: more Year-1 generators until every Year-1 subject with computable topics is covered (civil: Mathematics I, Engineering Mechanics, Engineering Drawing scale/geometry, Building Construction quantities; architecture: Principles of Calculus, Engineering Drawing, Building Materials, sun/shade), each with independent test checks and a `kb` cross-check against its lesson.
-3. Then Year 2 subjects (strength of materials, fluid mechanics, surveying, mathematics II; architecture mechanics & strength, structures), in the same way.
+2. When M1–M9 are done: follow §9 (Year 1 only) — more Year-1 generators until every Year-1 subject with computable topics is covered (civil: Mathematics I, Engineering Mechanics, Engineering Drawing scale/geometry, Building Construction quantities; architecture: Principles of Calculus, Engineering Drawing, Building Materials, sun/shade), each with independent test checks and a `kb` cross-check against its lesson.
+3. (Year 2 is out of scope until the owner says otherwise — decision 2026-10-15.)
 4. Open minor review notes from the progress log; library lessons flagged by generator cross-checks.
 5. Every run: independent review before merge, full suite green before push, progress log updated.
 
@@ -327,15 +327,28 @@ The code brain has five parts, built on the M2 engine:
 
 M7 (subject professors) becomes **code-first**: the professor's decisions (what you got wrong, which hint, which next problem) come from parts 2–3; Gemma only phrases them.
 
-## 9. خطة الشهر (One-month roadmap, 2026-10-15 → 2026-11-14)
+## 9. خطة السنة الأولى (Year-1 excellence roadmap, 2026-10-15 → 2026-12-05)
 
-Two kinds of nights (owner's rule): **short nights** (every night except Wednesday→Thursday) are economical — the orchestrator works alone, no sub-agents or workflows, self-review, stops at the first usage limit or 05:00 Baghdad; **the Wednesday→Thursday night** spends without restraint — parallel worktrees, multi-agent workflows, independent adversarial reviews, resuming after limits until 12:00.
+**Owner decision (2026-10-15):** no Year 2 for now. Only Year 1, both programmes, at the highest possible quality — the goal is to be first in engineering in Iraq. The target experience: *the professor only explains the idea; the app does everything else and the student comes back full* — every Year-1 objective has a solver/checker, worked examples with fading, exactly graded practice to mastery, spaced retrieval and Iraqi-exam-style finals. Development window at least until **2026-12-05**.
 
-- **Week 1** — short nights: open review minors; M4 solvers (calculus with steps; drawing scale, sun/overhang, Blondel stairs; cube strength, mix quantities; friction) with misconception catalogues. Long night 22 Oct: M5 daily retrieval ∥ M6 exam hall, with reviews.
-- **Week 2** — short nights: mistake-diagnosis engine across all generators; skill graph with prerequisites (M9 map). Long night 29 Oct: M7 code-first professors (diagnosis → hint ladder → next problem; Gemma only for wording) + reviews.
-- **Week 3** — short nights: beam solver with shear/moment diagrams, general truss solver, section properties, free-body-diagram builder. Long night 5 Nov: drawing and design checkers (orthographic projection, perspective, architecture programme/stairs/sun checks) + reviews.
-- **Week 4** — short nights: Year-2 starts (strength of materials, hydrostatics/Bernoulli, surveying levelling/traverse). Long night 12 Nov: M9 transcript, full integration review, MatePad performance pass.
-- After 14 Nov the nightly routines stop and report; the owner decides whether to continue.
+Year-1 subjects (from src/curriculum.js):
+- Architecture (NTU): Architectural Drawing & Design, Freehand Drawing 2D/3D, Principles of Calculus, Principles of Art & Architecture, Principles of Architectural Design, Engineering Drawing, Workshops, Building Materials, Computer Fundamentals (+ general: Democracy & Human Rights, English, Arabic).
+- Civil (Kirkuk): Mathematics I, Engineering Mechanics (Statics & Dynamics), Engineering Drawing, Engineering Geology, Building Construction, Computer Programming, Workshops (+ general subjects).
+
+Nights (owner's rule): short nights are economical (orchestrator alone, stop at the first usage limit or 05:00 Baghdad); the Wednesday→Thursday night spends without restraint (parallel worktrees, workflows, independent reviews, until 12:00).
+
+| Week | Short nights | Long night (Wed→Thu) |
+|---|---|---|
+| 1 · 16–22 Oct | Mathematics I / Principles of Calculus: solvers with steps (limits, derivative rules, chain rule, tangent lines, rates, optimisation, basic integrals, area) + misconception catalogues | 22 Oct: M5 daily retrieval ∥ M6 exam hall (Iraqi format: mid-term + final out of 100) |
+| 2 · 23–29 Oct | Engineering Mechanics complete: vectors and resultants 2D/3D, equilibrium, moments and couples, FBD, trusses (joints/sections), frames, friction, centroids, moment of inertia, basic dynamics (kinematics, F=ma, work-energy) | 29 Oct: **"After the lecture" loop** — pick today's lecture/topic (or capture it) → recap → worked example → graded practice to mastery → reviews scheduled; M7 code-first professors |
+| 3 · 30 Oct–5 Nov | Engineering Drawing (both programmes): orthographic projection, missing views, isometric, sections, dimensioning, scales — generated from 3-D block models, graded by code; ink checkers | 5 Nov: drawing & design checkers (projection, perspective/vanishing points, freehand level 2 in the Studio), free-body-diagram builder |
+| 4 · 6–12 Nov | Building Materials, Building Construction, Engineering Geology: numeric generators where possible (cube strength, w/c, mix by weight/volume, brick & mortar quantities, unit weights, densities/porosity) + code-graded item banks (classification, matching, ordering, labelled diagrams) with spaced repetition | 12 Nov: skill graph with prerequisites for every Year-1 subject + adaptive tutor (weakest prerequisite first) |
+| 5 · 13–19 Nov | Architecture: Principles of Architectural Design & Art/Architecture (proportion, modular grids, golden ratio, composition rules — computable checks; history item banks), more jury rubrics; Computer Programming: auto-graded exercises in the course language | 19 Nov: mock finals for every Year-1 subject (timed, Iraqi format), weak-topic report |
+| 6 · 20–26 Nov | Content QA: cross-check every Year-1 library lesson against the solvers, fix wrong numbers, add worked examples where thin; past-paper-style question banks (owner's past papers if provided) | 26 Nov: full independent rigor audit of all solvers and item banks; MatePad UX pass |
+| 7 · 27 Nov–3 Dec | Polish: speed, offline, backup of all evidence; end-to-end tests of "lecture → full" for each subject; transcript | 3 Dec: final integration and review |
+| 4–5 Dec | Buffer, fixes from the owner's real use | — |
+
+Inputs that would raise quality (ask the owner, do not block on them): the language taught in Computer Programming (the library assumes Python), photos of past exam papers per subject, each professor's syllabus or lecture list for the semester.
 
 ## Appendix — milestone specs
 
@@ -628,3 +641,4 @@ docs/tasks/COLLEGE-M9.md; TRACEABILITY line.
 - 2026-10-15 08:30 UTC — **M3 DONE** (Problem room in the civil and architecture buildings: fresh-number statics problems graded by code, unit/sign/×2 feedback, code-made steps with fading 0–3, attempts and mastery chips, 'Graded practice' on mapped lessons; builder-verified, independent review still owed). Full suite green. **Next run:** reviews for M3 and M8, then M4 (calculus/architecture/materials generators), M5 daily retrieval, M6 exam hall, M7 subject professors, M9 syllabus map + transcript.
 - 2026-10-15 08:47 UTC — independent reviews of M3 and M8 ran. Fixed now: a double tap on Submit saved two attempts; a truss/moment answer with no sense chosen was graded as the positive sense; the jury self-score lock could be undone by clearing the professor's scores. Also fixed: fade pill now reads "Independence N/3", attempts are kept out of search, 40 px touch targets on the answer inputs and pickers (still to confirm on the MatePad). Still open (minor, next run): unit-slip message names the picked unit as 'asked'; remaining M8 minors in the review output.
 - 2026-10-15 10:30 UTC — owner decisions: the app's intelligence is code (§8); one-month roadmap with economical short nights and an unrestricted Wednesday→Thursday night (§9).
+- 2026-10-15 10:45 UTC — owner decision: Year 1 only, highest quality ('the professor explains the idea, the app does the rest'); development until at least 2026-12-05; §9 rewritten as a 7-week Year-1 roadmap.
