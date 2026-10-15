@@ -152,6 +152,16 @@ check("archLessonRoutesToArchRoom", !!rt[0] && rt[0].kind === "arch" && rt[0].id
 if (lb) { await p.click('#view [data-act="open"][data-v="pset"]'); await p.waitForTimeout(500); }
 check("lessonButtonOpensPset", await p.evaluate(() => S5.ui.route.v === "pset" && S5.pset.cur && S5.pset.cur.obj === "statics.reactions"));
 
+/* ---------- the arch room grades its own (shared) objective; English rendering ---------- */
+await p.evaluate(() => S5.ui.go({ v: "pset", kind: "arch" })); await p.waitForTimeout(500);
+c = await cur(); await fill("ok"); await submit(); a = await lastAttempt();
+check("archRoomCorrectAttempt", c.kind === "arch" && c.pid === "geo.compositeCentroid" && a.pid === "geo.compositeCentroid" && a.obj === "statics.centroid" && a.kind === "arch" && a.score === 1 && a.tier === "E2", { c, a });
+await p.evaluate(() => S5.settings.set("lang", "en")); await p.waitForTimeout(300);
+await p.evaluate(() => S5.ui.go({ v: "pset", kind: "civil", id: "statics.reactions" })); await p.waitForTimeout(500);
+const en = await p.evaluate(() => ({ text: document.getElementById("ps-text").textContent, h1: document.querySelector("#view h1").textContent, btn: (document.querySelector('[data-act="pset-submit"],[data-act="pset-new"]') || {}).textContent }));
+check("englishRendering", /[A-Za-z]{4}/.test(en.text) && !/[؀-ۿ]/.test(en.text) && en.h1 === "Problem room" && /Submit|New numbers/.test(en.btn || ""), en);
+await p.evaluate(() => S5.settings.set("lang", "ar")); await p.waitForTimeout(200);
+
 check("noPageErrors", errors.length === 0, errors);
 check("noCollegeErrors", (await p.evaluate(() => (S5.COLLEGE_ERRORS || []).length)) === 0, await p.evaluate(() => S5.COLLEGE_ERRORS));
 console.log(JSON.stringify({ ok: fails.length === 0, fails, res, errors }, null, 1));

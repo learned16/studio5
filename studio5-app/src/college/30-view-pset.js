@@ -107,7 +107,7 @@
       const dr = !b.done && P.draft && P.draft.id === b.cur.pid + ":" + b.cur.seed ? P.draft.given[f.k] : null;
       const g = given || dr || [], dis = b.done ? "disabled" : "", unit = g[1] != null && g[1] !== "" ? g[1] : f.unit, val = g[0] != null ? String(g[0]) : "";
       const units = (f.units || []).length > 1 || (f.units || [])[0] ? `<select id="ps-u-${f.k}" data-k="${f.k}" data-noi18n aria-label="Unit" ${dis}>${f.units.map((u) => `<option value="${esc(u)}" ${u === unit ? "selected" : ""}>${esc(u)}</option>`).join("")}</select>` : "";
-      const sense = f.sense ? `<select id="ps-s-${f.k}" data-k="${f.k}" data-noi18n aria-label="Sense" ${dis}><option value="">${esc(tr("sense?", "الاتجاه؟"))}</option>${f.sense.map((s) => `<option value="${esc(s)}" ${g[2] === s ? "selected" : ""}>${esc(s)} · ${esc(tx(S5.prob.SENSE[s] || { en: s, ar: s }))}</option>`).join("")}</select>` : "";
+      const sense = f.sense ? `<select id="ps-s-${f.k}" data-k="${f.k}" data-noi18n aria-label="Sense" ${dis}><option value="">${esc(tr("choose…", "اختر…"))}</option>${f.sense.map((s) => `<option value="${esc(s)}" ${g[2] === s ? "selected" : ""}>${esc(s)} · ${esc(tx(S5.prob.SENSE[s] || { en: s, ar: s }))}</option>`).join("")}</select>` : "";
       const fb = res ? `<span class="pill" data-noi18n>${esc(P.codeLabel(res.code))}</span> <span data-noi18n dir="auto">${esc(P.message(res, f))}</span>` : "";
       return `<div class="ps-field" data-k="${f.k}"><label for="ps-in-${f.k}" data-noi18n dir="auto"><b>${esc(f.sym || f.k)}</b> — ${esc(tx(f.label) || f.k)}</label>
         <div class="ps-row"><input id="ps-in-${f.k}" data-k="${f.k}" inputmode="decimal" autocomplete="off" dir="ltr" value="${esc(val)}" ${dis}>${units}${sense}</div>
