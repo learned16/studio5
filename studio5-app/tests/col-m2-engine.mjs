@@ -1,7 +1,7 @@
 // College M2 — exact-grading engine + 6 statics generators (docs/COLLEGE_PLAN.md M2), all through page.evaluate:
 // seed determinism over 300 seeds, own-key self-grading, grading codes, Arabic number parsing, equilibrium residuals
 // computed independently by this test, TOOL_DEFS.beam agreement, kb cross-check against the printed lesson answers,
-// the mastery.state truth table, mastery.of cache + dueList on real attempt records, numGuard, the selftest step,
+// the mastery.state truth table, mastery.of cache + dueList on real attempt records (and in a backup), numGuard, the selftest step,
 // i18n lines, and a clean boot (zero pageerror). Sets process.exitCode = 1 when any check is false.
 // Run: node tests/serve.mjs dist/studio5.html 8765 &  BASE=http://localhost:8765/ node tests/col-m2-engine.mjs
 import { createRequire } from "node:module"; import { statSync } from "node:fs";
@@ -20,13 +20,18 @@ Object.assign(res, await page.evaluate((IDS) => {
   const subj = new Set([...S5.CURRICULUM.map((c) => c[3]), ...S5.CIVIL.map((c) => c[3])]);
   const r = {};
   r.bootsOnCampus = S5.ui.route.v === "campus" && document.getElementById("view").innerHTML.length > 100;
-  r.collegeModulesLoaded = (S5.COLLEGE_ERRORS || []).length === 0 && IDS.every((id) => S5.PROB[id]) && Object.keys(S5.PROB).length === IDS.length;
-  r.noLeakedGlobals = ["PR", "U", "resXY", "cables", "mom", "beam", "truss", "tsec", "scan", "fmt", "normSeed", "latinDigits", "decimal", "tolOf"].every((k) => !(k in window));
+  r.collegeModulesLoaded = (S5.COLLEGE_ERRORS || []).length === 0 && IDS.every((id) => S5.PROB[id]); // later milestones add more generators
+  r.noLeakedGlobals = ["PR", "U", "balanced", "resXY", "cables", "mom", "beam", "truss", "tsec", "scan", "fmt", "normSeed", "latinDigits", "decimal", "tolOf"].every((k) => !(k in window));
   r.contractComplete = IDS.every((id) => { const d = S5.PROB[id]; return d.id === id && Number.isInteger(d.v) && S5.OBJ[d.obj] && typeof d.lesson === "string" && ["civil", "arch", "both"].includes(d.program) && d.lvl >= 1 && d.lvl <= 3 && ["gen", "solve", "fields", "text", "steps"].every((k) => typeof d[k] === "function") && d.kb; });
   r.subjectsExist = IDS.every((id) => subj.has(S5.PROB[id].subject)) && Object.values(S5.OBJ).every((o) => (o.subjects || []).length && o.subjects.every((s) => subj.has(s)));
   r.apiPresent = ["rng", "hashSeed", "newSeed", "parseNum", "parseNumInfo", "grade", "numGuard", "toSI", "fromSI", "unitsOf"].every((k) => typeof S5[k] === "function") && !!S5.units && !!S5.TIERS && !!S5.TOL && typeof S5.mastery.state === "function" && typeof S5.mastery.of === "function" && typeof S5.mastery.dueList === "function";
   r.unitTable = ["N", "kN", "MN", "mm", "cm", "m", "N·m", "kN·m", "Pa", "kPa", "MPa", "GPa", "mm⁴", "cm⁴", "m⁴", "deg", "rad"].every((u) => S5.units[u] && typeof S5.units[u].dim === "string" && S5.units[u].toSI > 0)
-    && S5.toSI(30, "kN") === 30000 && Math.abs(S5.toSI(52000, "cm⁴") - 5.2e-4) < 1e-15 && Math.abs(S5.toSI(180, "deg") - Math.PI) < 1e-12 && S5.toSI(2, "MPa") === 2e6;
+    && S5.toSI(30, "kN") === 30000 && Math.abs(S5.toSI(52000, "cm⁴") - 5.2e-4) < 1e-15 && Math.abs(S5.toSI(180, "deg") - Math.PI) < 1e-12 && S5.toSI(2, "MPa") === 2e6
+    && S5.unitsOf("force").join() === "N,kN,MN" && S5.unitsOf("inertia").join() === "mm⁴,cm⁴,m⁴" && S5.unitNorm("kNm") === "kN·m" && S5.unitNorm("°") === "deg";
+  // later milestones register units without touching the engine; an existing symbol is never redefined
+  const added = S5.addUnits("__testdim", [["u1", 1], ["u2", 10], ["kN", 5]]);
+  r.addUnits = added.join() === "u1,u2" && S5.units.kN.toSI === 1000 && S5.units.kN.dim === "force" && S5.toSI(3, "u2") === 30;
+  delete S5.units.u1; delete S5.units.u2;
   r.tiers = ["E0", "E1", "E2", "E3", "E4", "EP"].every((t) => S5.TIERS[t]) && S5.TIERS.E3.mastery && S5.TIERS.E4.mastery && !S5.TIERS.E2.mastery && !S5.TIERS.E0.mastery && !S5.TIERS.E1.mastery;
   r.lessonsLinked = IDS.every((id) => S5.prob.forLesson(S5.PROB[id].lesson).some((d) => d.id === id));
   return r;
@@ -63,14 +68,17 @@ Object.assign(res, await page.evaluate((IDS) => {
 }, IDS));
 info.seedProblems = res._bad; delete res._bad;
 
-/* 3. grading codes on real keys: key ok, ×1.05 wrong, ×1.02 rounding (0.5), −key sign, N-for-kN unit, ×2 x2, angles, empty */
+/* 3. grading codes on real keys, EVERY answer field of 200 seeds per generator (the floor of 0.5% of the largest key never
+      loosens a small answer past the bands, because generators keep same-dimension answers within ≈3× of each other):
+      key ok, ×1.05 wrong, ×1.02 rounding (0.5), −key sign, N-for-kN unit, ×2 x2, angles, empty */
 Object.assign(res, await page.evaluate((IDS) => {
-  const r = { keyIsOk: true, key105IsWrong: true, key102IsRoundingHalf: true, negKeyIsSign: true, nForKnIsUnit: true, doubleIsX2: true, angleCodes: true, emptyAndUnreadable: true, senseFlipIsSign: true };
+  const r = { keyIsOk: true, key105IsWrong: true, key102IsRoundingHalf: true, negKeyIsSign: true, nForKnIsUnit: true, doubleIsX2: true, angleCodes: true, emptyAndUnreadable: true, senseFlipIsSign: true, sameDimAnswersBalanced: true, codeDetailForFeedback: true };
   const bad = []; let rel = 0, force = 0, ang = 0, misHits = 0;
   const fail = (k, m) => { r[k] = false; if (bad.length < 10) bad.push(k + ": " + m); };
   for (const id of IDS) for (let i = 0; i < 200; i++) {
     const seed = S5.hashSeed("codes:" + id + ":" + i), p = S5.prob.params(id, seed), d = S5.PROB[id], keys = d.solve(p), fields = d.fields(p);
     const max = {}; for (const f of fields) max[f.dim] = Math.max(max[f.dim] || 0, Math.abs(keys[f.k]));
+    if (fields.some((f) => Math.abs(keys[f.k]) < 0.35 * max[f.dim])) fail("sameDimAnswersBalanced", id + " " + JSON.stringify(p));
     const right = () => Object.fromEntries(fields.map((f) => [f.k, [String(S5.fromSI(keys[f.k], f.unit)), f.unit]]));
     const code = (f, val, unit = f.unit, sense) => { const g = right(); g[f.k] = [String(val), unit, sense]; const out = S5.prob.grade(id, p, g); return out.results[f.k]; };
     for (const f of fields) {
@@ -81,9 +89,9 @@ Object.assign(res, await page.evaluate((IDS) => {
         const off = Math.abs((((2 * deg + 5) % 360) + 360) % 360 - 180) > 175 ? -5 : 5; // never the mirror image (that is 'sign')
         if (code(f, deg + 0.4, "deg").code !== "ok" || code(f, deg + 1.2, "deg").code !== "rounding" || code(f, deg + off, "deg").code !== "wrong" || code(f, keys[f.k], "deg").code !== "deg-rad" || code(f, deg, "rad").code !== "deg-rad" || code(f, deg + 360, "deg").code !== "ok" || code(f, deg - 360, "deg").code !== "ok") fail("angleCodes", id + " " + deg);
         if (Math.abs(Math.sin(keys[f.k])) > 0.1 && code(f, -deg, "deg").code !== "sign") fail("angleCodes", id + " sign " + deg);
+        if (id === "mech.resultant" && code(f, deg + 180, "deg").code !== "sign") fail("angleCodes", id + " reversed " + deg); // atan without the quadrant fix
         continue;
       }
-      if (k < 0.5 * max[f.dim]) continue; // small keys sit under the documented absolute floor (0.5% of the largest key)
       rel++;
       const c5 = code(f, v * 1.05), misHit = ((d.mis && d.mis(p)[f.k]) || []).some(([mc, mv]) => mc === c5.code && Math.abs(S5.toSI(v * 1.05, f.unit) - mv) <= 0.01 * Math.abs(mv));
       if (c5.code !== "wrong" && !misHit) fail("key105IsWrong", id + "." + f.k + " → " + c5.code); else if (misHit) misHits++; // a genuine code-computed misconception value
@@ -91,7 +99,12 @@ Object.assign(res, await page.evaluate((IDS) => {
       if (f.sense) { const s = keys[f.k] < 0 ? f.sense[1] : f.sense[0], o = s === f.sense[0] ? f.sense[1] : f.sense[0]; if (code(f, Math.abs(v), f.unit, o).code !== "sign") fail("senseFlipIsSign", id + "." + f.k); if (code(f, Math.abs(v), f.unit, s).code !== "ok") fail("keyIsOk", id + "." + f.k + " sense"); }
       else if (code(f, -v).code !== "sign") fail("negKeyIsSign", id + "." + f.k);
       if (code(f, v * 2).code !== "x2" || code(f, v / 2).code !== "x2") fail("doubleIsX2", id + "." + f.k);
-      if (f.dim === "force") { force++; const asN = S5.fromSI(keys[f.k], "N"), ku = f.unit === "kN" ? "kN" : null; if (ku && code(f, asN, "kN").code !== "unit") fail("nForKnIsUnit", id + "." + f.k); if (f.unit === "N" && code(f, v, "kN").code !== "unit") fail("nForKnIsUnit", id + "." + f.k + " kN-for-N"); }
+      if (f.dim === "force") {
+        force++; const asN = S5.fromSI(keys[f.k], "N"), ku = f.unit === "kN" ? "kN" : null;
+        if (ku) { const c = code(f, asN, "kN"); if (c.code !== "unit") fail("nForKnIsUnit", id + "." + f.k); else if (c.scale !== 3) fail("codeDetailForFeedback", id + "." + f.k + " scale " + c.scale); }
+        if (f.unit === "N" && code(f, v, "kN").code !== "unit") fail("nForKnIsUnit", id + "." + f.k + " kN-for-N");
+        if (code(f, v * 2).factor !== 2 || code(f, v / 2).factor !== 0.5) fail("codeDetailForFeedback", id + "." + f.k + " x2 factor");
+      }
       if (f.dim === "length" && code(f, S5.fromSI(keys[f.k], "m"), "mm").code !== "unit") fail("nForKnIsUnit", id + " m-for-mm");
       if (f.dim === "moment" && f.unit === "kN·m" && code(f, S5.fromSI(keys[f.k], "N·m"), "kN·m").code !== "unit") fail("nForKnIsUnit", id + " N·m-for-kN·m");
       if (code(f, "").code !== "empty" || code(f, "12kN").code !== "empty" || !code(f, "12kN").bad) fail("emptyAndUnreadable", id);
@@ -111,11 +124,15 @@ Object.assign(res, await page.evaluate(() => {
   r.parseArabicDecimal = P("٣٫٥") === 3.5;
   r.parseFraction = Math.abs(P("7/3") - 7 / 3) < 1e-9 && S5.parseNumInfo("7/3").frac === true;
   r.fractionExactTolerance = S5.grade("7/3", "", 7 / 3, ex).code === "ok" && S5.grade("2.333", "", 7 / 3, ex).code === "ok" && S5.grade("2.33", "", 7 / 3, ex).code === "rounding" && S5.grade("233/100", "", 7 / 3, ex).code === "rounding";
-  const cases = [["3,5", 3.5], ["−2", -2], ["۱۲", 12], ["١٢٫٥", 12.5], ["1,234.5", 1234.5], ["1.234,5", 1234.5], ["١٬٢٣٤", 1234], [" 12 ", 12], ["2 1/3", 7 / 3], ["-2 1/3", -7 / 3], ["1e3", 1000], ["28.8×10^6", 28.8e6], ["28.8 × 10⁶", 28.8e6], ["٧/٣", 7 / 3], ["-.5", -0.5], ["+4", 4]];
-  const nan = ["", "abc", "5/0", "1/2/3", "12kN", "1,2,3", "--3"];
+  const cases = [["3,5", 3.5], ["−2", -2], ["۱۲", 12], ["١٢٫٥", 12.5], ["1,234.5", 1234.5], ["1.234,5", 1234.5], ["١٬٢٣٤", 1234], [" 12 ", 12], ["2 1/3", 7 / 3], ["-2 1/3", -7 / 3], ["1e3", 1000], ["28.8×10^6", 28.8e6], ["28.8 × 10⁶", 28.8e6], ["٧/٣", 7 / 3], ["-.5", -0.5], ["+4", 4], ["12 345", 12345], ["1 234,5", 1234.5], ["٣،٥", 3.5], ["‏٣٫٥‏", 3.5], ["1/4", 0.25]];
+  const nan = ["", "abc", "5/0", "1/2/3", "12kN", "1,2,3", "--3", "12 34", "3 4"];
   const badCases = cases.filter(([s, v]) => !(Math.abs(P(s) - v) < 1e-9)).map(([s]) => s).concat(nan.filter((s) => !Number.isNaN(P(s))));
   r.parseManyForms = badCases.length === 0; r._bad = badCases;
-  r.arabicInputGradesOk = S5.grade("٣٠", "kN", 30000, { dim: "force", unit: "kN" }).code === "ok" && S5.grade("٦١٫٠", "deg", (61 * Math.PI) / 180, { dim: "angle", tol: "angMech", wrap: true }).code === "ok";
+  // "1,500" is a decimal comma on the MatePad but a thousands comma elsewhere: graded both ways, the better reading counts
+  const FN = { dim: "force", unit: "N", tol: "def" }, amb = S5.parseNumInfo("1,500");
+  r.ambiguousCommaGradedBothWays = amb.v === 1.5 && amb.ambiguous === true && amb.alt === 1500 && S5.grade("1,500", "N", 1500, FN).code === "ok" && S5.grade("1,500", "N", 1.5, FN).code === "ok"
+    && S5.grade("1,500", "kN", 1500, FN).code === "ok" && S5.grade("-1,500", "N", -1500, FN).code === "ok" && S5.grade("1,500", "N", 1400, FN).code === "wrong" && S5.parseNumInfo("1,5").ambiguous === undefined;
+  r.arabicInputGradesOk =S5.grade("٣٠", "kN", 30000, { dim: "force", unit: "kN" }).code === "ok" && S5.grade("٦١٫٠", "deg", (61 * Math.PI) / 180, { dim: "angle", tol: "angMech", wrap: true }).code === "ok";
   return r;
 }));
 info.parseProblems = res._bad; delete res._bad;
@@ -189,6 +206,7 @@ Object.assign(res, await page.evaluate(async (IDS) => {
     }
   }
   const truss = report.find((x) => x.lesson === "c1b-mech-05");
+  // the solver is never tuned to a lesson: a disagreement must show up as 'flagged' (by the engine and by this test alike)
   return { kbLessonsExist: report.every((x) => x.found), kbEngineMatchesTest: report.every((x) => x.engineAgrees), kbTrussReproducesOrFlagged: !!truss && (truss.agree || truss.flagged), kbTrussReproduces: !!truss && truss.agree, _report: report };
 }, IDS));
 info.kbReport = res._report.map((x) => `${x.lesson} ${x.agree ? "agrees" : "FLAGGED for review"} — printed: ${x.answer}`); info.kbFlagged = res._report.filter((x) => x.flagged).map((x) => x.lesson); delete res._report;
@@ -210,7 +228,13 @@ Object.assign(res, await page.evaluate(() => {
   const m = [...three, a(10, 1, "E4", 1)];
   r.masteryE4TwoDaysMastered = st(m, 1) === "mastered" && st([a(1, 1, "E3", 0), a(2, 1, "E3", 0), a(3, 1, "E3", 0), a(10, 1, "E4", 0)], 0) === "secure";
   r.masteryDueAfterInterval = st(m, 2) === "due";
-  r.masteryFragileAfterFailedE4 = st([...m, a(11, 0, "E4", 2)], 2) === "fragile" && st([...m, a(11, 0, "E4", 2), a(12, 1, "E3", 3)], 3) === "fragile" && st([...m, a(11, 0, "E4", 2), a(12, 1, "E4", 3)], 3) === "mastered";
+  r.masteryFragileAfterFailedE4 = st([...m, a(11, 0, "E4", 2)], 2) === "fragile" && st([...m, a(11, 0, "E4", 2), a(12, 1, "E3", 3)], 3) === "fragile" && st([...m, a(11, 0, "E4", 2), a(12, 1, "E4", 3)], 3) === "mastered"
+    && st([...three, a(11, 0, "E4", 1)], 1) === "fragile"; // secure, then the first retrieval fails
+  // an exam (E4) miss on a skill never secured is not 'fragile' (nothing was learned yet to decay); practice can still secure it,
+  // and a stale E4 pass from before that miss never makes it 'mastered'
+  const early = [a(20, 1, "E4", 0), a(21, 0, "E4", 0)];
+  r.masteryE4MissBeforeSecureIsPracticing = st([a(21, 0, "E4", 0)], 0) === "practicing" && st([a(1, 1, "E3", 0), a(21, 0, "E4", 0)], 0) === "practicing"
+    && st([...early, a(1, 1, "E3", 1), a(2, 1, "E3", 2), a(3, 1, "E3", 2)], 3) === "secure";
   // successive E4 passes: due dates move by 1/3/7/16/35 days
   const xs = [...three]; let n = 1; const gaps = [];
   for (let i = 0; i < 6; i++) { xs.push(a(100 + i, 1, "E4", n)); const inf = S5.mastery.info(xs, day(n)); const g = S5.daysBetween(S5.dateISO(day(n)), inf.dueAt); gaps.push(g); if (S5.mastery.state(xs, day(n + g - 1)) !== "mastered" || S5.mastery.state(xs, day(n + g)) !== "due") gaps.push("x"); n += g; }
@@ -223,6 +247,9 @@ info.leitnerGaps = res._gaps; delete res._gaps;
 Object.assign(res, await page.evaluate(async () => {
   const OBJ = "statics.moment", ago = (n) => new Date(Date.now() - n * 86400000).toISOString(), ids = [], r = {};
   const before = S5.mastery.of(OBJ);
+  // cached: the same info object comes back until an attempt changes (any other record type leaves the cache alone)
+  const i1 = S5.mastery.infoOf(OBJ); S5.bus.emit("change", { type: "note" }); const i2 = S5.mastery.infoOf(OBJ); S5.bus.emit("change", { type: "attempt" }); const i3 = S5.mastery.infoOf(OBJ);
+  r.ofIsCachedAndClearedOnAttemptChange = i1 === i2 && i3 !== i2 && i3.state === i2.state;
   const inst = S5.prob.instance("mech.moment", 4242), g = S5.prob.grade("mech.moment", inst.p, Object.fromEntries(inst.fields.map((f) => [f.k, [String(Math.abs(S5.fromSI(inst.keys[f.k], f.unit))), f.unit, f.sense ? (inst.keys[f.k] < 0 ? f.sense[1] : f.sense[0]) : undefined]])));
   const rec = S5.prob.record(inst, g, { tier: "E3", mode: "practice", fade: 3, ms: 1234 });
   r.attemptRecordShape = rec.pid === "mech.moment" && rec.v === 1 && rec.seed === 4242 && rec.obj === OBJ && rec.lesson === "c1b-mech-03" && rec.score === 1 && rec.tier === "E3" && rec.mode === "practice" && rec.codes.M === "ok" && Array.isArray(rec.given.M) && rec.given.M.length === 3 && !("p" in rec) && S5.prob.reproduce(rec).p.F === inst.p.F;
@@ -234,9 +261,18 @@ Object.assign(res, await page.evaluate(async () => {
   r.dueListNotSecureWithoutOpt = !S5.mastery.dueList(new Date().toISOString()).some((x) => x.state === "secure");
   ids.push((await S5.store.create("attempt", { ...rec, seed: 9200, tier: "E4", mode: "retrieval", score: 0, codes: { d: "wrong", M: "sign" }, createdAt: ago(1) })).id);
   r.ofFragileAndFirst = S5.mastery.of(OBJ) === "fragile" && S5.mastery.dueList()[0].state === "fragile";
+  // attempts are ordinary records: a backup carries them, and mastery recomputed from the backup alone is the same
+  const pkg = await S5.backup.build({ includeFiles: false }), fromBackup = JSON.parse(pkg.body).records.filter((x) => x.type === "attempt" && x.obj === OBJ);
+  r.backupCarriesAttemptsAndMastery = ids.every((id) => fromBackup.some((x) => x.id === id)) && S5.mastery.state(fromBackup) === S5.mastery.of(OBJ) && (await S5.backup.verify(pkg)).ok;
   for (const id of ids) await S5.store.purge(id);
   r.purgeInvalidatesCache = S5.mastery.of(OBJ) === "new";
-  r.backupWouldCarryAttempts = true; // attempts are ordinary records (S5.store), so backup/restore carries them without changes
+  // dueList with opts.secure offers a secure objective's first retrieval; a later due date is not listed early
+  const ids2 = []; for (const s of [1, 2, 3]) ids2.push((await S5.store.create("attempt", { ...rec, seed: 9300 + s, createdAt: ago(0) })).id);
+  const firstRetrieval = S5.mastery.dueList(undefined, { secure: true }).some((x) => x.obj === OBJ && x.state === "secure") && !S5.mastery.dueList().some((x) => x.obj === OBJ);
+  ids2.push((await S5.store.create("attempt", { ...rec, seed: 9400, tier: "E4", mode: "retrieval", createdAt: ago(0) })).id);
+  r.dueListFirstRetrievalThenWaits = firstRetrieval && S5.mastery.of(OBJ) === "secure" && !S5.mastery.dueList(undefined, { secure: true }).some((x) => x.obj === OBJ)
+    && S5.mastery.dueList(new Date(Date.now() + 86400000).toISOString()).some((x) => x.obj === OBJ && x.state === "secure"); // tomorrow: the second day toward 'mastered'
+  for (const id of ids2) await S5.store.purge(id);
   return r;
 }));
 
@@ -254,7 +290,9 @@ Object.assign(res, await page.evaluate(async () => {
   const run = await S5.selfTest(); const s = run.results.find((x) => x.name === "Problem engine");
   await S5.store.purge(run.id);
   const ar = S5.i18n.tr("Problem engine"), note = s && S5.i18n.tr(s.note);
-  return { selftestProblemEngineStep: !!s && s.ok && /6 generators × 20 seeds/.test(s.note) && /7\/7 lesson examples agree/.test(s.note), i18nM2Lines: !!ar && /محرّك/.test(ar) && !!note && /مولّدات/.test(note) && /متطابقة/.test(note) && !!S5.i18n.tr("Rounding — half credit") && !!S5.i18n.tr("Due for retrieval"), _note: s && s.note };
+  // counts are computed here, so generators added by later milestones keep this check valid (M2's own 7 examples are checked in part 7)
+  const n = Object.keys(S5.PROB).length, kb = Object.keys(S5.PROB).flatMap((id) => S5.prob.kbCheck(id)), agree = kb.filter((x) => x.ok).length;
+  return { selftestProblemEngineStep: !!s && s.ok && n >= 6 && kb.length >= 7 && s.note.includes(`${n} generators × 20 seeds`) && s.note.includes(`${agree}/${kb.length} lesson examples agree`), i18nM2Lines: !!ar && /محرّك/.test(ar) && !!note && /مولّدات/.test(note) && /متطابقة/.test(note) && !!S5.i18n.tr("Rounding — half credit") && !!S5.i18n.tr("Due for retrieval"), _note: s && s.note };
 }));
 info.selftestNote = res._note; delete res._note;
 

@@ -12,6 +12,10 @@
     const sin = (d) => Math.sin(d * DEG), cos = (d) => Math.cos(d * DEG);
     const lab = (en, ar) => ({ en, ar });
     const TC = (lang, F) => (F < 0 ? tr(lang, "compression (C)", "ضغط (C)") : tr(lang, "tension (T)", "شد (T)"));
+    /* Answers of one dimension are kept within a factor of about 3 of each other: the grading floor is 0.5% of the
+       LARGEST key of that dimension, so a much smaller answer next to a big one would be graded far more loosely than 1%.
+       At ≥ 0.35 × the largest, ×1.02 is still 'rounding' and ×1.05 still 'wrong' for every field. */
+    const balanced = (xs, r = 0.35) => { const a = xs.map(Math.abs); return Math.min(...a) >= r * Math.max(...a); };
     /* tiny SVG helpers (language-neutral labels; numbers only where the text already gives them) */
     const n1 = (v) => (+v).toFixed(1);
     const line = (x1, y1, x2, y2, col = "currentColor", w = 2, extra = "") => `<line x1="${n1(x1)}" y1="${n1(y1)}" x2="${n1(x2)}" y2="${n1(y2)}" stroke="${col}" stroke-width="${w}"${extra}/>`;
@@ -68,7 +72,8 @@
             `θ = atan2(Ry, Rx) = ${f(q.th / DEG, 1)}° (الربع ${["", "الأول", "الثاني", "الثالث", "الرابع"][quad]} حسب إشارتي Rx و Ry)`),
         ];
       },
-      mis(p) { const [x, y] = resXY(p, 1); return { R: [["deg-rad", Math.hypot(x, y) * S5.toSI(1, p.u)]] }; }, // calculator left in radians
+      // calculator left in radians; θ from atan(Ry/Rx) without fixing the quadrant points R the opposite way (a sense error)
+      mis(p) { const [x, y] = resXY(p, 1), q = resultant(p); return { R: [["deg-rad", Math.hypot(x, y) * S5.toSI(1, p.u)]], th: [["sign", (q.th + Math.PI) % (2 * Math.PI)]] }; },
       svg(p) {
         const c = 110, m = Math.max(...p.F);
         return svg(220, 220, line(10, c, 210, c, "var(--rule-strong, #999)", 1) + line(c, 10, c, 210, "var(--rule-strong, #999)", 1) + txt(212, c - 4, "x", "end") + txt(c + 8, 18, "y")
@@ -123,7 +128,7 @@
           const x = r.grid(-3, 3, 0.5), y = r.grid(-3, 3, 0.5), F = u === "N" ? r.grid(50, 500, 10) : r.grid(2, 40, 1), th = r.grid(0, 345, 15), rr = Math.hypot(x, y);
           if (rr >= 0.5 && Math.abs(mom({ x, y, F, th }).M) >= 0.15 * F * rr) return { u, F, th, x, y };
         }
-        return { u: "N", F: 200, th: 60, x: 0.4, y: 0 };
+        return { u: "N", F: 200, th: 60, x: 0.5, y: 0 };
       },
       solve(p) { const m = mom(p), s = S5.toSI(1, p.u); return { d: m.d, M: m.M * s, Fx: m.Fx * s, Fy: m.Fy * s }; },
       fields: (p) => [
@@ -164,7 +169,13 @@
     };
     PR.register({
       id: "mech.beamReactions", v: 1, obj: "statics.reactions", lesson: "c1b-mech-04", subject: CIV, program: "civil", lvl: 2,
-      gen(r) { const L = r.grid(3, 10, 0.5); return { L, w: r.grid(2, 20, 1), P: r.grid(5, 50, 5), a: r.grid(0.5, L - 0.5, 0.5) }; },
+      gen(r) {
+        for (let t = 0; t < 50; t++) {
+          const L = r.grid(3, 10, 0.5), p = { L, w: r.grid(2, 20, 1), P: r.grid(5, 50, 5), a: r.grid(0.5, L - 0.5, 0.5) }, b = beam(p);
+          if (balanced([b.RA, b.RB])) return p;
+        }
+        return { L: 6, w: 4, P: 12, a: 2 };
+      },
       solve(p) { const b = beam(p); return { RA: b.RA * 1e3, RB: b.RB * 1e3, Mmax: b.Mm * 1e3, xm: b.xm }; },
       fields: () => [
         { k: "RA", sym: "R_A", dim: "force", units: FORCE, unit: "kN", tol: "def", label: lab("Vertical reaction at A", "رد الفعل الشاقولي عند A") },
@@ -207,10 +218,10 @@
     PR.register({
       id: "mech.trussJoint3", v: 1, obj: "statics.joints", lesson: "c1b-mech-05", subject: CIV, program: "civil", lvl: 2,
       gen(r) {
-        for (let t = 0; t < 80; t++) {
+        for (let t = 0; t < 160; t++) {
           const L = r.grid(3, 8, 0.5), c = r.grid(1, L - 1, 0.5), h = r.grid(1, 4, 0.5), P = r.grid(4, 40, 2), H = r.chance(0.35) ? r.grid(2, 12, 1) : 0, s = truss({ L, c, h, P, H });
           if (s.angA < 25 || s.angA > 65 || s.angB < 25 || s.angB > 65) continue; // member angles kept between 25° and 65°
-          if (Math.min(Math.abs(s.AC), Math.abs(s.BC), Math.abs(s.AB)) < 0.1 * P) continue;
+          if (Math.min(Math.abs(s.AC), Math.abs(s.BC), Math.abs(s.AB)) < 0.1 * P || !balanced([s.AC, s.BC, s.AB])) continue;
           return { L, c, h, P, H };
         }
         return { L: 4, c: 2, h: 3, P: 10, H: 0 };

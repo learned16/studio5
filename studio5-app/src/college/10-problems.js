@@ -66,6 +66,8 @@
     dim("volume", [["L", 1e-3], ["m³", 1]]);
     dim("none", [["", 1]]);
     S5.units = U;
+    // later generators add their own units here, e.g. S5.addUnits("density", [["kg/m³", 1]]); an existing symbol is never redefined
+    S5.addUnits = (d, list) => { for (const [sym, k] of list) if (!U[sym] && k > 0) U[sym] = { dim: d, toSI: k }; return S5.unitsOf(d); };
     const ALIAS = { kNm: "kN·m", "kN.m": "kN·m", "kN-m": "kN·m", "kN m": "kN·m", Nm: "N·m", "N.m": "N·m", "N-m": "N·m", "N m": "N·m", "°": "deg", degree: "deg", degrees: "deg",
       mm4: "mm⁴", cm4: "cm⁴", m4: "m⁴", mm2: "mm²", cm2: "cm²", m2: "m²", m3: "m³", "N/mm²": "MPa", "N/mm2": "MPa", "1": "" };
     S5.unitNorm = (sym) => { if (sym == null) return null; const s = String(sym).trim(); return U[s] ? s : ALIAS[s] != null ? ALIAS[s] : null; };
@@ -76,17 +78,16 @@
     /* ---------- numbers as typed on a MatePad (Arabic-Indic digits, ٫ and comma decimals, fractions) ---------- */
     const SUP = { "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9", "⁻": "-", "⁺": "+" };
     const latinDigits = (s) => s.replace(/[٠-٩]/g, (c) => String(c.charCodeAt(0) - 0x660)).replace(/[۰-۹]/g, (c) => String(c.charCodeAt(0) - 0x6f0));
-    const decimal = (t) => { // one decimal number, separators resolved; returns {v, ambiguous} or null
+    const decimal = (t) => { // one decimal number, separators resolved; returns {v, amb, alt} or null
       t = t.replace(/^\+/, ""); let neg = false; if (t.startsWith("-")) { neg = true; t = t.slice(1); }
-      let amb = false, exp = "";
+      let amb = false, alt = null, exp = "";
       const e = t.match(/^(.*?)e([+-]?\d+)$/i); if (e) { t = e[1]; exp = "e" + e[2]; }
-      if (/^\d{1,3}( \d{3})+(\.\d+)?$/.test(t)) t = t.replace(/ /g, "");
       const hasC = t.includes(","), hasD = t.includes(".");
       if (hasC && hasD) { if (t.lastIndexOf(",") > t.lastIndexOf(".")) t = t.replace(/\./g, "").replace(",", "."); else t = t.replace(/,/g, ""); }
-      else if (hasC) { const parts = t.split(","); if (parts.length > 2) { if (!parts.slice(1).every((g) => /^\d{3}$/.test(g))) return null; t = parts.join(""); } else { amb = /^\d{1,3},\d{3}$/.test(t); t = t.replace(",", "."); } }
+      else if (hasC) { const parts = t.split(","); if (parts.length > 2) { if (!parts.slice(1).every((g) => /^\d{3}$/.test(g))) return null; t = parts.join(""); } else { amb = /^\d{1,3},\d{3}$/.test(t); if (amb) alt = Number(t.replace(",", "") + exp); t = t.replace(",", "."); } } // 1,500: decimal comma first (MatePad), 1500 kept as alt
       else if ((t.match(/\./g) || []).length > 1) { const parts = t.split("."); if (!parts.slice(1).every((g) => /^\d{3}$/.test(g))) return null; t = parts.join(""); }
       if (!/^(\d+\.?\d*|\.\d+)$/.test(t)) return null;
-      const v = Number(t + exp); return Number.isFinite(v) ? { v: neg ? -v : v, amb } : null;
+      const v = Number(t + exp); return Number.isFinite(v) ? { v: neg ? -v : v, amb, alt: alt == null ? null : neg ? -alt : alt } : null;
     };
     S5.parseNumInfo = (raw) => {
       if (typeof raw === "number") return Number.isFinite(raw) ? { ok: true, v: raw, frac: false, empty: false } : { ok: false, v: NaN, empty: false };
@@ -99,6 +100,7 @@
       const bad = { ok: false, v: NaN, empty: false };
       const mixed = s.match(/^([+-]?)(\d+) (\d+)\/(\d+)$/); // 2 1/3
       if (mixed) { const d = +mixed[4]; if (!d) return bad; const v = (+mixed[2] + +mixed[3] / d) * (mixed[1] === "-" ? -1 : 1); return { ok: true, v, frac: true, empty: false }; }
+      if (/^[+-]?\d{1,3}( \d{3})+([.,]\d+)?$/.test(s)) s = s.replace(/ /g, ""); // 12 345 (space as thousands separator)
       if (s.includes(" ")) return bad;
       const sl = s.split("/");
       if (sl.length === 2) {
@@ -106,7 +108,7 @@
         return { ok: true, v: a.v / b.v, frac: Number.isInteger(a.v) && Number.isInteger(b.v), empty: false };
       }
       if (sl.length > 2) return bad;
-      const d = decimal(s); return d ? { ok: true, v: d.v, frac: false, empty: false, ambiguous: d.amb || undefined } : bad;
+      const d = decimal(s); return d ? { ok: true, v: d.v, frac: false, empty: false, ...(d.amb ? { ambiguous: true, alt: d.alt } : {}) } : bad;
     };
     S5.parseNum = (s) => S5.parseNumInfo(s).v;
 
@@ -131,11 +133,18 @@
     /* S5.grade(input, unit, keySI, field, opt) → {ok, score, code, got, key, v, unit, frac, err, tol}
        input: string or number as typed; unit: the picked unit symbol; opt: {sense, max: largest |key| of the same dimension
        in the problem (for the absolute floor), mis:[[code, SI]]}.
-       Codes: ok | rounding (half credit) | unit (10ⁿ slip) | sign | x2 | deg-rad | wrong | empty (bad:true when unreadable). */
+       Codes: ok | rounding (half credit) | unit (10ⁿ slip) | sign | x2 | deg-rad | wrong | empty (bad:true when unreadable).
+       Detail for feedback: unit → scale n (the answer is about key × 10ⁿ), x2 → factor 2 | 0.5, sign → factor −1,
+       deg-rad → as ('rad' typed under deg, or the reverse), a generator misconception → mis:true; unit with why:'dim' when
+       the picked unit measures another quantity; ambiguous:true when "1,500"-style input was graded both ways. */
     S5.grade = (input, unit, key, field = {}, opt = {}) => {
       const info = S5.parseNumInfo(input), base = { ok: false, score: 0, key };
       if (info.empty) return { ...base, code: "empty" };
       if (!info.ok) return { ...base, code: "empty", bad: true };
+      if (info.ambiguous && Number.isFinite(info.alt)) { // "1,500": graded both ways (decimal comma and thousands); the better reading counts, ties go to the decimal comma
+        const a = S5.grade(info.v, unit, key, field, opt), b = S5.grade(info.alt, unit, key, field, opt);
+        return { ...(b.score > a.score ? b : a), ambiguous: true };
+      }
       const d = field.dim || (U[S5.unitNorm(unit)] || {}).dim || "none", u = S5.unitNorm(unit != null && unit !== "" ? unit : field.unit != null ? field.unit : S5.unitsOf(d)[0]);
       if (u == null || U[u].dim !== d) return { ...base, code: "unit", v: info.v, why: "dim" };
       let got = info.v * U[u].toSI;
@@ -147,24 +156,25 @@
       const roundAbs = t.rel ? Math.max(Math.max(ROUND, 3 * t.rel) * k, 3 * floor) : 3 * (t.abs || 0);
       const dist = (a, b) => (field.wrap ? Math.abs(wrapAng(a - b)) : Math.abs(a - b));
       const near = (a, b, tol) => dist(a, b) <= tol * (1 + 1e-9) + 1e-12 * Math.max(1, Math.abs(b));
-      const out = (code, score) => ({ ok: code === "ok", score, code, key, got, v: info.v, unit: u, frac: !!info.frac, err: k ? dist(got, key) / k : dist(got, key), tol: tolAbs });
+      const out = (code, score, why) => ({ ok: code === "ok", score, code, key, got, v: info.v, unit: u, frac: !!info.frac, err: k ? dist(got, key) / k : dist(got, key), tol: tolAbs, ...(why || {}) });
       if (near(got, key, tolAbs)) return out("ok", 1);
       if (near(got, key, roundAbs)) return out("rounding", 0.5);
-      // misconceptions: every explanation that reproduces the key within its band competes; the closest one wins
+      // misconceptions: every explanation that reproduces the key within its band competes; the closest one wins.
+      // `why` tells the feedback what was detected: scale (got ≈ key × 10^scale), factor (got ≈ key × factor), as, mis.
       let best = null;
-      const consider = (code, alt, target, tol) => { if (!Number.isFinite(alt) || !(tol > 0)) return; const e = dist(alt, target); if (e <= tol * (1 + 1e-9) + 1e-12 * Math.max(1, Math.abs(target)) && (!best || e / tol < best[0])) best = [e / tol, code]; };
+      const consider = (code, alt, target, tol, why) => { if (!Number.isFinite(alt) || !(tol > 0)) return; const e = dist(alt, target); if (e <= tol * (1 + 1e-9) + 1e-12 * Math.max(1, Math.abs(target)) && (!best || e / tol < best[0])) best = [e / tol, code, why]; };
       if (k > tolAbs) { // a key that is effectively zero has no sign or scale to slip
-        consider("sign", -got, key, roundAbs);
+        consider("sign", -got, key, roundAbs, { factor: -1 });
         // degrees/radians mix-up, judged from the unit actually picked: 'deg' picked but a radian value typed, or the reverse
-        if (d === "angle") { const alt = u === "deg" ? info.v : u === "rad" ? info.v * DEG : NaN; if (Math.abs(alt) <= 4 * Math.PI) consider("deg-rad", alt, key, roundAbs); }
+        if (d === "angle") { const alt = u === "deg" ? info.v : u === "rad" ? info.v * DEG : NaN; if (Math.abs(alt) <= 4 * Math.PI) consider("deg-rad", alt, key, roundAbs, { as: u === "deg" ? "rad" : "deg" }); }
         else {
-          for (const n of SCALES) { consider("unit", got / 10 ** n, key, roundAbs); consider("unit", -got / 10 ** n, key, roundAbs); }
-          consider("x2", got / 2, key, roundAbs); consider("x2", got * 2, key, roundAbs);
+          for (const n of SCALES) { consider("unit", got / 10 ** n, key, roundAbs, { scale: n }); consider("unit", -got / 10 ** n, key, roundAbs, { scale: n, flipped: true }); }
+          consider("x2", got / 2, key, roundAbs, { factor: 2 }); consider("x2", got * 2, key, roundAbs, { factor: 0.5 });
         }
       }
       // generator misconceptions (code-computed wrong answers): matched as tightly as a correct answer would be
-      for (const [code, val] of opt.mis || []) if (Number.isFinite(val) && !near(val, key, roundAbs)) consider(code, got, val, Math.max((t.rel || 0) * Math.abs(val), t.abs || 0));
-      return best ? out(best[1], 0) : out("wrong", 0);
+      for (const [code, val] of opt.mis || []) if (Number.isFinite(val) && !near(val, key, roundAbs)) consider(code, got, val, Math.max((t.rel || 0) * Math.abs(val), t.abs || 0), { mis: true });
+      return best ? out(best[1], 0, best[2]) : out("wrong", 0);
     };
 
     /* ---------- registries ---------- */
@@ -264,22 +274,29 @@
       isCorrect: correct,
       /* info(attempts of ONE objective, nowISO) → {state, n, correct, seeds, days, e4, e4n, streak, box, dueAt, last}
          secure:   ≥3 correct E3/E4 on distinct seeds and the latest unaided attempt correct
-         mastered: secure + correct evidence on ≥2 calendar days + ≥1 correct E4
+         mastered: secure + correct evidence on ≥2 calendar days + ≥1 correct E4 (the latest E4 passed)
          due:      mastered and the Leitner interval (1/3/7/16/35 days by consecutive E4 passes) has passed
-         fragile:  the latest E4 retrieval failed */
+         fragile:  the latest E4 (retrieval or exam) failed on a skill that had been secured (≥3 distinct-seed unaided
+                   correct answers before it); an E4 miss on a skill never secured leaves it 'practicing'. Only a passed
+                   E4 clears 'fragile'. */
       info(attempts, nowISO) {
         const xs = (attempts || []).filter((a) => a && !a.deleted).slice().sort((a, b) => at(a).localeCompare(at(b)));
         const res = { state: "new", n: xs.length, correct: 0, seeds: 0, days: 0, e4: 0, e4n: 0, streak: 0, box: 0, dueAt: null, last: xs.length ? at(xs[xs.length - 1]) : null };
         if (!xs.length) return res;
         const un = xs.filter(unaided), good = un.filter(correct), e4 = xs.filter((a) => a.tier === "E4");
-        const seeds = new Set(good.map((a) => (a.pid || "") + "|" + a.seed)), days = new Set(good.map((a) => S5.dateISO(at(a))));
+        const seedKey = (a) => (a.pid || "") + "|" + a.seed;
+        const seeds = new Set(good.map(seedKey)), days = new Set(good.map((a) => S5.dateISO(at(a))));
         let streak = 0; for (let i = e4.length - 1; i >= 0 && correct(e4[i]); i--) streak++;
         Object.assign(res, { correct: good.length, seeds: seeds.size, days: days.size, e4: e4.filter(correct).length, e4n: e4.length, streak, box: Math.min(streak, this.LEITNER.length) });
         if (streak) res.dueAt = S5.addDays(S5.dateISO(at(e4[e4.length - 1])), this.LEITNER[res.box - 1]);
-        if (e4.length && !streak) { res.state = "fragile"; return res; }
+        if (e4.length && !streak) {
+          const miss = xs.lastIndexOf(e4[e4.length - 1]), before = new Set();
+          for (let i = 0; i < miss; i++) if (unaided(xs[i]) && correct(xs[i])) before.add(seedKey(xs[i]));
+          if (before.size >= 3) { res.state = "fragile"; return res; }
+        }
         const lastUn = un[un.length - 1];
         if (!(seeds.size >= 3 && lastUn && correct(lastUn))) { res.state = "practicing"; return res; }
-        if (days.size >= 2 && res.e4 >= 1) { res.state = S5.dateISO(nowISO || S5.now()) >= res.dueAt ? "due" : "mastered"; return res; }
+        if (days.size >= 2 && streak >= 1) { res.state = S5.dateISO(nowISO || S5.now()) >= res.dueAt ? "due" : "mastered"; return res; }
         res.state = "secure"; return res;
       },
       state(attempts, nowISO) { return this.info(attempts, nowISO).state; },
@@ -294,14 +311,16 @@
         return r;
       },
       of(objId, nowISO) { return this.infoOf(objId, nowISO).state; },
-      // objectives that need retrieval now: fragile first, then by due date; opts.secure adds secure objectives never retrieved
+      /* objectives that need retrieval now → [{obj, state, dueAt, info}]: fragile first, then by due date.
+         Listed: due, fragile, secure with a passed E4 whose interval has run out (a second day toward mastered);
+         opts.secure also lists secure objectives with no passed E4 yet (first retrieval). */
       dueList(nowISO, opts = {}) {
         const now = nowISO || S5.now(), today = S5.dateISO(now), by = new Map();
         for (const a of S5.store.list("attempt")) if (a.obj) (by.get(a.obj) || by.set(a.obj, []).get(a.obj)).push(a);
         const out = [];
         for (const [obj, xs] of by) {
           const i = this.info(xs, now);
-          if (i.state === "due" || i.state === "fragile" || (i.state === "secure" && i.dueAt && today >= i.dueAt) || (opts.secure && i.state === "secure" && !i.e4n)) out.push({ obj, state: i.state, dueAt: i.dueAt, info: i });
+          if (i.state === "due" || i.state === "fragile" || (i.state === "secure" && (i.dueAt ? today >= i.dueAt : !!opts.secure))) out.push({ obj, state: i.state, dueAt: i.dueAt, info: i });
         }
         return out.sort((a, b) => (a.state === "fragile" ? 0 : 1) - (b.state === "fragile" ? 0 : 1) || String(a.dueAt || "9999").localeCompare(String(b.dueAt || "9999")));
       },
