@@ -95,7 +95,7 @@
       st.textContent = `.ps-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}.ps-chip{border:1px solid var(--rule);border-radius:999px;background:var(--paper);color:var(--ink);padding:5px 10px;font-size:.8rem;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
 .ps-chip[aria-pressed="true"]{border-color:var(--cobalt);box-shadow:inset 0 0 0 1px var(--cobalt)}.ps-chip .st{font-size:.7rem;padding:1px 6px;border-radius:999px;background:var(--rule)}.ps-chip[data-state="secure"] .st,.ps-chip[data-state="mastered"] .st{background:var(--green-wash,#dfeedd)}.ps-chip[data-state="practicing"] .st{background:var(--amber-wash,#f6ecd2)}
 .ps-text{font-size:1rem;line-height:1.7;margin:8px 0}.ps-fig{margin:8px 0;color:var(--ink)}.ps-field{border-top:1px solid var(--rule);padding:10px 0;display:grid;gap:6px}.ps-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.ps-row input{flex:1 1 140px;min-width:0;max-width:240px;font-size:1.05rem}.ps-row select{max-width:140px}.ps-fb{font-size:.88rem;line-height:1.5}.ps-fb[data-code="ok"]{color:var(--green,#2e7d32)}.ps-fb:not([data-code="ok"]):not(:empty){color:var(--redline,#b3261e)}
+.ps-row input{flex:1 1 140px;min-width:0;max-width:240px;font-size:1.05rem;min-height:40px}.ps-row select{max-width:140px;min-height:40px}.ps-fb{font-size:.88rem;line-height:1.5}.ps-fb[data-code="ok"]{color:var(--green,#2e7d32)}.ps-fb:not([data-code="ok"]):not(:empty){color:var(--redline,#b3261e)}
 .ps-steps{margin:6px 0 0;padding-inline-start:22px;line-height:1.7}.ps-steps li{margin:2px 0}.ps-result{font-weight:700;margin:8px 0}.ps-result[data-ok="true"]{color:var(--green,#2e7d32)}`;
       document.head.appendChild(st);
     };
@@ -120,7 +120,7 @@
       const g = done ? S5.prob.grade(def, p, done.given || {}) : null;
       const shown = done ? n : Math.min(n, n - P.hidden(fade, n) + hints), tier = done ? done.tier : P.tierFor(fade, hints);
       const other = L === "ar" ? "en" : "ar", fig = def.svg ? `<div class="ps-fig" data-noi18n>${def.svg(p)}</div>` : "";
-      const head = `<div class="row" style="gap:6px;flex-wrap:wrap"><span class="pill cobalt" id="ps-fade" data-fade="${fade}"><span>Help level</span> ${fade} / ${MAXFADE}</span><span class="pill ${tier === "E3" ? "green" : "amber"}" id="ps-tier" data-tier="${tier}">${esc((S5.TIERS[tier] || {}).label || tier)}</span>${hints && !done ? `<span class="pill amber">Step revealed — practice only</span>` : ""}</div>`;
+      const head = `<div class="row" style="gap:6px;flex-wrap:wrap"><span class="pill cobalt" id="ps-fade" data-fade="${fade}"><span>Independence</span> ${fade} / ${MAXFADE}</span><span class="pill ${tier === "E3" ? "green" : "amber"}" id="ps-tier" data-tier="${tier}">${esc((S5.TIERS[tier] || {}).label || tier)}</span>${hints && !done ? `<span class="pill amber">Step revealed — practice only</span>` : ""}</div>`;
       const result = g ? `<div class="ps-result" id="ps-result" data-ok="${g.ok}" data-score="${g.score}" data-noi18n>${esc(g.ok ? tr("Correct", "صحيح") : tr(`Score ${Math.round(g.score * 100)}% — not yet`, `الدرجة ${Math.round(g.score * 100)}% — ليس بعد`))}</div>` : "";
       const stepList = shown ? `<ol class="ps-steps" id="ps-steps" data-shown="${shown}" data-noi18n dir="auto">${steps.slice(0, shown).map((s) => `<li>${esc(s)}</li>`).join("")}</ol>` : `<ol class="ps-steps" id="ps-steps" data-shown="0"></ol>`;
       const left = n - shown;

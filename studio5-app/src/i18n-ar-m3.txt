@@ -21,3 +21,4 @@ Fresh numbers every time, graded exactly by code.	أرقام جديدة في ك�
 Civil problems	مسائل مدنية
 Architecture problems	مسائل معمارية
 Choose the sense (tension/compression or turning direction) first	اختر النوع أولاً (شد أو ضغط، أو اتجاه الدوران)
+Independence	مستوى الاستقلال

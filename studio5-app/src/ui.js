@@ -366,7 +366,7 @@ S5.search = async (q) => {
   q = (q || "").trim().toLowerCase(); if (q.length < 2) return [];
   const terms = q.split(/\s+/); const out = [];
   for (const r of S5.store.recs.values()) {
-    if (r.deleted || ["link", "inkpage", "drillDef", "year", "semester"].includes(r.type)) continue;
+    if (r.deleted || ["link", "inkpage", "drillDef", "year", "semester", "attempt"].includes(r.type)) continue;
     const hay = S5.SEARCH_FIELDS.map((f) => (typeof r[f] === "string" ? r[f] : "")).join("   ").toLowerCase();
     if (terms.every((t) => hay.includes(t))) { const i = hay.indexOf(terms[0]); out.push({ r, snip: hay.slice(Math.max(0, i - 50), i + 90) }); }
   }
