@@ -356,7 +356,7 @@ Inputs that would raise quality (ask the owner, do not block on them): whether P
 
 ## 10. القائد والمنفّذ (Lead and executor, owner decision 2026-10-15)
 
-Claude is the lead; a second coding agent (ChatGPT Codex or Gemini) is the executor. Rules: `studio5-app/CLAUDE.md` (lead) and `studio5-app/AGENTS.md` (executor; `GEMINI.md` points to it). The lead keeps everything that decides a mark (solvers, answer keys, grading, mastery, exam scoring), the data model, the worker/AI/security and all reviews and merges; the executor gets UI from precise specs, item-bank entry (answers verified by the lead), Arabic strings, styling, tests from specs and docs. Hand-off is through task files (`docs/tasks/EX-NNN-*.md` from `EX-TEMPLATE.md`, listed in `EXECUTOR_QUEUE.md`) and `exec/*` branches; only the lead merges into `claude/zen-bell-oqcqtr`.
+Claude is the lead; a second coding agent is the executor — **the owner chose Gemini** (one-year student offer): Jules from the browser/MatePad, or Antigravity / Gemini CLI on the laptop, with Gemini 4 Argon where the plan offers it. Rules: `studio5-app/CLAUDE.md` (lead) and `studio5-app/AGENTS.md` (executor; `GEMINI.md` points to it). The lead keeps everything that decides a mark (solvers, answer keys, grading, mastery, exam scoring), the data model, the worker/AI/security and all reviews and merges; the executor gets UI from precise specs, item-bank entry (answers verified by the lead), Arabic strings, styling, tests from specs and docs. Hand-off is through task files (`docs/tasks/EX-NNN-*.md` from `EX-TEMPLATE.md`, listed in `EXECUTOR_QUEUE.md`) and `exec/*` branches; only the lead merges into `claude/zen-bell-oqcqtr`.
 
 Each night the lead first reviews `exec/*` branches waiting for review, then writes the next executor tasks for the non-critical parts of this week's §9 items (two or three ready tasks at all times), then does the critical work itself.
 
@@ -655,3 +655,4 @@ docs/tasks/COLLEGE-M9.md; TRACEABILITY line.
 - 2026-10-15 10:50 UTC — owner accepted into NTU Architecture and Building Techniques (B.Sc.); civil frozen but kept (nothing deleted); §9 is now Architecture Year 1 only.
 - 2026-10-15 11:10 UTC — official syllabus transcribed (docs/SYLLABUS_ARCH_Y1.md); §9 re-ordered: semester-1 modules first, calculus = matrices + limits + derivatives (no integration), drawing ≈47% of the year.
 - 2026-10-15 11:30 UTC — lead/executor arrangement added (§10; studio5-app/CLAUDE.md, AGENTS.md, GEMINI.md, docs/tasks/EXECUTOR_QUEUE.md).
+- 2026-10-15 16:00 UTC — owner chose Gemini as the executor (Jules / Antigravity / Gemini CLI).
