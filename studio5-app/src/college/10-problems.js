@@ -126,7 +126,7 @@
       E4: { id: "E4", rank: 4, label: "Retrieval or exam", mastery: true },
       EP: { id: "EP", rank: 5, label: "Professor or jury score", mastery: false, authoritative: true },
     };
-    S5.GRADE_CODES = { ok: "Correct", rounding: "Rounding — half credit", unit: "Unit slip", sign: "Wrong sign or sense", x2: "Off by a factor of 2", "deg-rad": "Degrees/radians mix-up", wrong: "Not correct", empty: "No answer" };
+    S5.GRADE_CODES = { ok: "Correct", rounding: "Rounding — half credit", unit: "Unit slip", sign: "Wrong sign or sense", x2: "Off by a factor of 2", "deg-rad": "Degrees/radians mix-up", wrong: "Not correct", empty: "No answer", mis: "Known mistake" };
     const SCALES = [3, -3, 6, -6, 9, -9, 1, -1, 2, -2, 4, -4, 5, -5, 7, -7, 8, -8, 10, -10, 11, -11, 12, -12];
     const wrapAng = (d) => { const t = 2 * Math.PI; return ((((d + Math.PI) % t) + t) % t) - Math.PI; };
 
@@ -162,18 +162,19 @@
       // misconceptions: every explanation that reproduces the key within its band competes; the closest one wins.
       // `why` tells the feedback what was detected: scale (got ≈ key × 10^scale), factor (got ≈ key × factor), as, mis.
       let best = null;
-      const consider = (code, alt, target, tol, why) => { if (!Number.isFinite(alt) || !(tol > 0)) return; const e = dist(alt, target); if (e <= tol * (1 + 1e-9) + 1e-12 * Math.max(1, Math.abs(target)) && (!best || e / tol < best[0])) best = [e / tol, code, why]; };
+      const consider = (code, alt, target, tol, why, prefer) => { if (!Number.isFinite(alt) || !(tol > 0)) return; const e = dist(alt, target); if (e <= tol * (1 + 1e-9) + 1e-12 * Math.max(1, Math.abs(target)) && (!best || e / tol < best[0] || (prefer && e / tol <= best[0]))) best = [e / tol, code, why]; }; // prefer: a named mistake wins a tie with a generic code
       if (k > tolAbs) { // a key that is effectively zero has no sign or scale to slip
         consider("sign", -got, key, roundAbs, { factor: -1 });
         // degrees/radians mix-up, judged from the unit actually picked: 'deg' picked but a radian value typed, or the reverse
         if (d === "angle") { const alt = u === "deg" ? info.v : u === "rad" ? info.v * DEG : NaN; if (Math.abs(alt) <= 4 * Math.PI) consider("deg-rad", alt, key, roundAbs, { as: u === "deg" ? "rad" : "deg" }); }
         else {
-          for (const n of SCALES) { consider("unit", got / 10 ** n, key, roundAbs, { scale: n }); consider("unit", -got / 10 ** n, key, roundAbs, { scale: n, flipped: true }); }
+          if (d !== "none") for (const n of SCALES) { consider("unit", got / 10 ** n, key, roundAbs, { scale: n }); consider("unit", -got / 10 ** n, key, roundAbs, { scale: n, flipped: true }); } // a pure number has no unit to slip
           consider("x2", got / 2, key, roundAbs, { factor: 2 }); consider("x2", got * 2, key, roundAbs, { factor: 0.5 });
         }
       }
       // generator misconceptions (code-computed wrong answers): matched as tightly as a correct answer would be
-      for (const [code, val] of opt.mis || []) if (Number.isFinite(val) && !near(val, key, roundAbs)) consider(code, got, val, Math.max((t.rel || 0) * Math.abs(val), t.abs || 0), { mis: true });
+      // [code, SI value] uses a standard code; [code, SI value, {en, ar}] is a named mistake: code 'mis' with that explanation (mistake diagnosis, COLLEGE_PLAN §8.2)
+      for (const [code, val, note] of opt.mis || []) if (Number.isFinite(val) && !near(val, key, roundAbs)) consider(note ? "mis" : code, got, val, Math.max((t.rel || 0) * Math.abs(val), t.abs || 0, 1e-9 * Math.max(1, Math.abs(val))), note ? { mis: true, note, mid: code } : { mis: true }, !!note);
       return best ? out(best[1], 0, best[2]) : out("wrong", 0);
     };
 

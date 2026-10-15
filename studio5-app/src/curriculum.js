@@ -180,7 +180,7 @@ S5.OVERLAP = [
 ];
 // the year each tool turns on in the civil path
 S5.TOOLS_CIVIL_YEAR = { scale: 1, beam: 2, section: 2, levelling: 2, stats: 3, water: 3, curve: 3, stairs: 1, boq: 4, gantt: 4, npv: 4, uvalue: 2, lux: 4, reverb: 4, sun: 4, housing: 4, lcc: 4, drawingCoach: 1, materialCards: 1, problemNotebook: 1, projectLite: 1, research: 4 };
-S5.progOn = (p) => (S5.settings.get("programs") || ["arch", "civil"]).includes(p || "arch");
+S5.progOn = (p) => (S5.settings.get("programs") || ["arch"]).includes(p || "arch");
 S5.subjectActive = (s) => !!s && S5.progOn(s.program) && S5.yearActive(s.year);
 S5.inSemester = (s, sem) => (s.program === "civil" ? s.year === Math.ceil(sem / 2) : s.semester === sem);
 S5.unitLabel = (s) => (s.program === "civil" ? "units" : "ECTS");

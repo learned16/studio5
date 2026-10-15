@@ -1,0 +1,7 @@
+Official weekly syllabus	المنهج الأسبوعي الرسمي
+Semester started on	بداية الفصل الدراسي
+Add as exam topics	أضفها كمواضيع امتحان
+The semester has not started yet.	الفصل الدراسي لم يبدأ بعد.
+Set the first day of teaching to see this week's topic.	حدد أول يوم دوام حتى تشوف موضوع هذا الأسبوع.
+From the department's course description. Your professor may reorder topics — follow what is taught.	من وصف المقرر الرسمي للقسم. قد يغيّر الأستاذ ترتيب المواضيع — اتبع ما يُدرَّس فعلاً.
+All syllabus topics are already listed	كل مواضيع المنهج مضافة مسبقًا

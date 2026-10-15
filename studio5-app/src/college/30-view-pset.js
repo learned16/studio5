@@ -15,6 +15,10 @@
     const tr = (en, ar) => (lang() === "ar" ? ar : en);
     const tx = (o) => (o ? o[lang()] || o.en || "" : "");
     const MAXFADE = 3;
+    /* Arabic text with formulas: every run of Latin/digits/math symbols is isolated left-to-right (Unicode LRI…PDI),
+       so "x→−5", "[1 −5 ; 6 −4]" or "|A| = a·d − b·c" are not reordered inside a right-to-left sentence */
+    const MATH_RUN = /[A-Za-z0-9(\[|√∑Δθ−-][^\u0600-\u06FF\n]*[A-Za-z0-9)\]|²³⁴∞°′⁻¹θ]|[A-Za-z0-9]/g;
+    P.bidi = (s, L) => (L === "ar" ? String(s).replace(MATH_RUN, (m) => "\u2066" + m + "\u2069") : String(s));
     P.KINDS = { civil: ["civil", "both"], arch: ["arch", "both"] };
     const at = (a) => a.at || a.createdAt || "";
     const correct = (a) => !!a && (a.score || 0) >= 0.999;
@@ -42,7 +46,7 @@
 
     /* ---------- feedback by code (bilingual, rendered inside [data-noi18n]) ---------- */
     const CODE = { ok: ["Correct", "صحيح"], rounding: ["Rounding — half credit", "تقريب — نصف الدرجة"], unit: ["Unit slip", "خطأ في الوحدة"], sign: ["Wrong sign or sense", "إشارة أو اتجاه خاطئ"],
-      x2: ["Off by a factor of 2", "خطأ بمعامل 2"], "deg-rad": ["Degrees/radians mix-up", "خلط بين الدرجات والراديان"], wrong: ["Not correct", "غير صحيح"], empty: ["No answer", "لا توجد إجابة"] };
+      x2: ["Off by a factor of 2", "خطأ بمعامل 2"], "deg-rad": ["Degrees/radians mix-up", "خلط بين الدرجات والراديان"], wrong: ["Not correct", "غير صحيح"], empty: ["No answer", "لا توجد إجابة"], mis: ["Known mistake", "خطأ معروف"] };
     P.codeLabel = (c) => { const x = CODE[c] || CODE.wrong; return tr(x[0], x[1]); };
     P.message = (r, f, lang1) => {
       const tr = (en, ar) => ((lang1 || lang()) === "ar" ? ar : en);
@@ -63,6 +67,7 @@
         return f.sense ? tr("Wrong sense: the size is right but the sense is reversed (tension/compression or direction of rotation).", "اتجاه خاطئ: المقدار صحيح لكن النوع معكوس (شد/ضغط أو اتجاه الدوران).")
           : tr("Wrong sign: the size is right but the direction is reversed.", "إشارة خاطئة: المقدار صحيح لكن الاتجاه معكوس.");
       }
+      if (c === "mis" && r.note) return tr(r.note.en, r.note.ar);
       if (c === "x2") return r.factor === 0.5 ? tr("Your answer is half the key — a factor of 2 went missing.", "جوابك نصف القيمة الصحيحة — سقط معامل 2.") : tr("Your answer is twice the key — an extra factor of 2 slipped in.", "جوابك ضعف القيمة الصحيحة — دخل معامل 2 زائد.");
       if (c === "deg-rad") {
         if (r.mis) return tr("Degrees/radians mix-up: your calculator seems to be in radians — switch it to degrees.", "خلط بين الدرجات والراديان: يبدو أن الحاسبة على وضع الراديان — حوّلها إلى الدرجات.");
@@ -110,7 +115,7 @@
       const sense = f.sense ? `<select id="ps-s-${f.k}" data-k="${f.k}" data-noi18n aria-label="Sense" ${dis}><option value="">${esc(tr("choose…", "اختر…"))}</option>${f.sense.map((s) => `<option value="${esc(s)}" ${g[2] === s ? "selected" : ""}>${esc(s)} · ${esc(tx(S5.prob.SENSE[s] || { en: s, ar: s }))}</option>`).join("")}</select>` : "";
       const fb = res ? `<span class="pill" data-noi18n>${esc(P.codeLabel(res.code))}</span> <span data-noi18n dir="auto">${esc(P.message(res, f))}</span>` : "";
       return `<div class="ps-field" data-k="${f.k}"><label for="ps-in-${f.k}" data-noi18n dir="auto"><b>${esc(f.sym || f.k)}</b> — ${esc(tx(f.label) || f.k)}</label>
-        <div class="ps-row"><input id="ps-in-${f.k}" data-k="${f.k}" inputmode="decimal" autocomplete="off" dir="ltr" value="${esc(val)}" ${dis}>${units}${sense}</div>
+        <div class="ps-row"><input id="ps-in-${f.k}" data-k="${f.k}" inputmode="${f.dim === "none" ? "text" : "decimal"}" autocomplete="off" placeholder="${f.dim === "none" ? "−7/3" : ""}" dir="ltr" value="${esc(val)}" ${dis}>${units}${sense}</div>
         <div class="ps-fb" id="ps-fb-${f.k}" data-code="${res ? res.code : ""}">${fb}</div></div>`;
     };
 
@@ -122,13 +127,13 @@
       const other = L === "ar" ? "en" : "ar", fig = def.svg ? `<div class="ps-fig" data-noi18n>${def.svg(p)}</div>` : "";
       const head = `<div class="row" style="gap:6px;flex-wrap:wrap"><span class="pill cobalt" id="ps-fade" data-fade="${fade}"><span>Independence</span> ${fade} / ${MAXFADE}</span><span class="pill ${tier === "E3" ? "green" : "amber"}" id="ps-tier" data-tier="${tier}">${esc((S5.TIERS[tier] || {}).label || tier)}</span>${hints && !done ? `<span class="pill amber">Step revealed — practice only</span>` : ""}</div>`;
       const result = g ? `<div class="ps-result" id="ps-result" data-ok="${g.ok}" data-score="${g.score}" data-noi18n>${esc(g.ok ? tr("Correct", "صحيح") : tr(`Score ${Math.round(g.score * 100)}% — not yet`, `الدرجة ${Math.round(g.score * 100)}% — ليس بعد`))}</div>` : "";
-      const stepList = shown ? `<ol class="ps-steps" id="ps-steps" data-shown="${shown}" data-noi18n dir="auto">${steps.slice(0, shown).map((s) => `<li>${esc(s)}</li>`).join("")}</ol>` : `<ol class="ps-steps" id="ps-steps" data-shown="0"></ol>`;
+      const stepList = shown ? `<ol class="ps-steps" id="ps-steps" data-shown="${shown}" data-noi18n dir="auto">${steps.slice(0, shown).map((s) => `<li dir="auto">${esc(P.bidi(s, L))}</li>`).join("")}</ol>` : `<ol class="ps-steps" id="ps-steps" data-shown="0"></ol>`;
       const left = n - shown;
       const stepsSec = `<div style="margin-top:12px"><h3 style="margin:0 0 4px">${done ? "Solution by code" : fade === 0 ? "Worked example" : "Worked example (partly hidden)"}</h3>${stepList}${left > 0 ? `<p class="tiny muted"><span>Steps hidden:</span> ${left}</p>` : ""}</div>`;
       const btns = done ? `${H.btn("New numbers", "pset-new", { obj: b.obj, kind: b.kind }, "primary")}`
         : `${H.btn("Submit", "pset-submit", { obj: b.obj, kind: b.kind }, "primary")}${left > 0 ? H.btn("Show a step", "pset-steps", { obj: b.obj, kind: b.kind }) : ""}${H.btn("New numbers", "pset-new", { obj: b.obj, kind: b.kind })}`;
       return `<section class="sheet" id="ps-item" data-pid="${esc(cur.pid)}" data-seed="${cur.seed}" data-done="${!!done}">${head}
-        <div class="ps-text" data-noi18n dir="auto" id="ps-text">${esc(def.text(p, L))}</div>
+        <div class="ps-text" data-noi18n dir="auto" id="ps-text">${esc(P.bidi(def.text(p, L), L))}</div>
         <details class="tiny muted" data-noi18n><summary>${L === "ar" ? "English" : "العربية"}</summary><div dir="auto">${esc(def.text(p, other))}</div></details>${fig}
         <div id="ps-fields">${inst.fields.map((f) => fieldHTML(f, b, done && done.given ? done.given[f.k] : null, g ? g.results[f.k] : null)).join("")}</div>
         ${result}<div class="row" style="margin-top:8px">${btns}</div>${stepsSec}</section>`;

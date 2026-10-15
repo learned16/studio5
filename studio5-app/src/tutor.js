@@ -196,7 +196,7 @@ Object.assign(S5.act, {
 
 /* lessons: by subject in curriculum order, with progress */
 S5.lessonsHTML = (r) => {
-  const progs = S5.settings.get("programs") || ["arch", "civil"], y = S5.settings.get("activeYear");
+  const progs = S5.settings.get("programs") || ["arch"], y = S5.settings.get("activeYear");
   // one card per subject × program × year (forSubject keeps them apart); a 'both' lesson joins each enabled program's card
   const subs = [...new Set(S5.kb.topics.filter((t) => progs.includes(t.program) || t.program === "both").flatMap((t) => (t.program === "both" ? progs : [t.program]).flatMap((p) => t.subjects.map((s) => s + "|" + p + "|" + t.year))))].map((k) => { const [name, program, year] = k.split("|"); return { name, program, year: +year }; }).sort((a, b) => (a.year === y ? -1 : 0) - (b.year === y ? -1 : 0) || a.year - b.year || a.program.localeCompare(b.program));
   const seen = new Set(); const P = S5.tutorProg.all();

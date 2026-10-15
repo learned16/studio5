@@ -219,7 +219,7 @@ S5.audit = (kind, text) => {
 
 /* ---------- settings ---------- */
 S5.settings = {
-  defaults: { programs: ["arch", "civil"], activeYear: 1, activeSemester: 1, theme: "system", penOnly: true, aiEnabled: true, aiDailyCap: 60, safeMode: false, dailySessionCap: 4, energyMin: 300, studentName: "", university: "Northern Technical University", city: "Kirkuk", lat: 35.47, flags: {}, backupEveryDays: 7, weekStart: 6 },
+  defaults: { programs: ["arch"], activeYear: 1, activeSemester: 1, theme: "system", penOnly: true, aiEnabled: true, aiDailyCap: 60, safeMode: false, dailySessionCap: 4, energyMin: 300, studentName: "", university: "Northern Technical University", city: "Kirkuk", lat: 35.47, flags: {}, backupEveryDays: 7, weekStart: 6 },
   get(k) { const s = S5.store.meta.settings || {}; return k in s ? s[k] : this.defaults[k]; },
   async set(k, v) { const s = { ...(S5.store.meta.settings || {}) }; s[k] = v; await S5.store.setMeta("settings", s); S5.sync.pushSettings(); S5.bus.emit("settings", { k, v }); },
   all() { return { ...this.defaults, ...(S5.store.meta.settings || {}) }; },
