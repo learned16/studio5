@@ -305,6 +305,15 @@ Scores are on a 1–10 scale, for rigor / fit with the code / AI safety / lightn
 - From P1: evidence tiers, the mastery states and decay, independent solver checks, worked-example fading, interleaved E4 retrieval, the transcript.
 - From P2: the tolerance and unit rules, the generator contract with a `kb` instance, the Year-1 topic-to-grading map.
 
+## 7. بعد المراحل (Extension backlog, for the weekly Thursday build window)
+
+Order of work for every weekly run (Thursday 00:00–12:00 Baghdad) once the open review findings are fixed:
+1. Remaining milestones in order: M4 → M5 → M6 → M7 → M9.
+2. When M1–M9 are done: more Year-1 generators until every Year-1 subject with computable topics is covered (civil: Mathematics I, Engineering Mechanics, Engineering Drawing scale/geometry, Building Construction quantities; architecture: Principles of Calculus, Engineering Drawing, Building Materials, sun/shade), each with independent test checks and a `kb` cross-check against its lesson.
+3. Then Year 2 subjects (strength of materials, fluid mechanics, surveying, mathematics II; architecture mechanics & strength, structures), in the same way.
+4. Open minor review notes from the progress log; library lessons flagged by generator cross-checks.
+5. Every run: independent review before merge, full suite green before push, progress log updated.
+
 ## Appendix — milestone specs
 
 ### M1 — Honest mastery and durable progress (Push A)
