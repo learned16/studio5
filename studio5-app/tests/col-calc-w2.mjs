@@ -8,7 +8,7 @@ const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-119
 const page = await (await b.newContext({ viewport: { width: 1280, height: 860 } })).newPage(); const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 await page.goto(BASE); await page.waitForTimeout(1500);
-const IDS = ["calc.derivPoly", "calc.tangent", "calc.quotient", "calc.trigDeriv", "calc.chain", "calc.implicit", "calc.fracPow", "calc.rates", "calc.extrema", "calc.asymptotes", "calc.optimize"];
+const IDS = ["calc.parabola", "calc.inflection", "calc.derivPoly", "calc.tangent", "calc.quotient", "calc.trigDeriv", "calc.chain", "calc.implicit", "calc.fracPow", "calc.rates", "calc.extrema", "calc.asymptotes", "calc.optimize"];
 const res = await page.evaluate((IDS) => {
   const r = { loaded: IDS.every((id) => S5.PROB[id]) && !(S5.COLLEGE_ERRORS || []).length, deterministic: true, finite: true, ownKeyOk: true, independent: true, bilingual: true, namedMistakes: true, variety: true };
   const bad = []; const fail = (k, m) => { r[k] = false; if (bad.length < 15) bad.push(k + ": " + m); };
@@ -25,6 +25,10 @@ const res = await page.evaluate((IDS) => {
       const given = Object.fromEntries(F.map((f) => [f.k, [keyStr(k[f.k]), ""]])), g4 = Object.fromEntries(F.map((f) => [f.k, [String(+k[f.k].toPrecision(5)), ""]]));
       if (!S5.prob.grade(d, p, given).ok || !S5.prob.grade(d, p, g4).ok) fail("ownKeyOk", id + " " + js);
       try {
+        if (id === "calc.parabola") { const t = d.text(p, "en").match(/y = (.*)\.$/)[1].replace(/−/g, "-").replace(/\s/g, "").replace(/-/g, "+-").split("+").filter(Boolean).map((u) => { const m = u.match(/^(-?)(\d*)(x?)(²)?$/); return [(m[1] ? -1 : 1) * (m[2] ? +m[2] : 1), m[3] ? (m[4] ? 2 : 1) : 0]; });
+          const f = (x) => t.reduce((s, [c, e]) => s + c * x ** e, 0); if (Math.abs(dnum(f, k.h)) > 1e-6 || !close(f(k.h), k.k, 1e-9)) throw new Error("vertex"); }
+        if (id === "calc.inflection") { const cs = d.coef(p), f = (x) => cs[0] * x ** 3 + cs[1] * x ** 2 + cs[2] * x + cs[3], f2 = (x) => dnum((z) => dnum(f, z, 1e-4), x, 1e-4);
+          if (!close(f(k.x), k.y, 1e-9) || !(Math.sign(f2(k.x - 0.5)) === -Math.sign(f2(k.x + 0.5)))) throw new Error("inflection"); }
         if (id === "calc.derivPoly") { const f = (x) => p.a * x ** 3 + p.b * x ** 2 + p.c * x + p.d; if (!close(dnum(f, p.x0), k.D, 1e-6)) throw new Error("f′"); }
         if (id === "calc.tangent") { const f = (x) => p.a * x * x + p.b * x + p.c, m = dnum(f, p.x0); if (!close(m, k.m, 1e-6) || !close(k.m * p.x0 + k.B, f(p.x0), 1e-9)) throw new Error("tangent"); }
         if (id === "calc.quotient") { const f = (x) => (p.a * x + p.b) / (p.c * x + p.d); if (!close(dnum(f, p.x0, 1e-6), k.D, 1e-5)) throw new Error("quot " + dnum(f, p.x0) + " vs " + k.D); }

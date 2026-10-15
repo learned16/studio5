@@ -6061,6 +6061,45 @@ S5.reviewHTML = () => {
         return { x: [["quarter", p.a / 4, note("Set V′(x) = 0 and solve; x = a/4 is a guess, not the stationary point.", "اجعل V′(x) = 0 وحل؛ x = a/4 تخمين وليست نقطة حرجة.")]], A: [["quarterV", p.a ** 3 / 16, note("This volume uses x = a/4; the maximum is at x = a/6.", "هذا الحجم عند x = a/4؛ أما الأعظم فعند x = a/6.")]] };
       },
     });
+
+    /* ---------- 12. parabola: vertex form and shifts (week 6) ---------- */
+    PR.obj({ id: "calc.parabola", en: "Parabolas and shifts: vertex of y = ax² + bx + c (week 6)", ar: "القطع المكافئ والإزاحة: رأس y = ax² + bx + c (الأسبوع 6)", subjects: [SUBJ], program: "arch", lessons: ["a1b-calc-01"] });
+    PR.register({
+      id: "calc.parabola", v: 1, obj: "calc.parabola", lesson: "a1b-calc-01", subject: SUBJ, program: "arch", lvl: 1,
+      gen(r) { for (let t = 0; t < 40; t++) { const a = r.pick([-3, -2, -1, 1, 2, 3]), h = r.int(-5, 5), k = r.int(-9, 9); if (h) return { a, h, k }; } return { a: 1, h: 2, k: -3 }; },
+      solve: (p) => ({ h: p.h, k: p.k }),
+      fields: () => [fld("h", "h", "x of the vertex", "الإحداثي x للرأس"), fld("k", "k", "y of the vertex", "الإحداثي y للرأس")],
+      coef: (p) => [p.a, -2 * p.a * p.h, p.a * p.h * p.h + p.k],
+      text(p, lang) { return tr(lang, `Find the vertex (h, k) of the parabola y = ${poly(this.coef(p))}.`, `أوجد رأس القطع المكافئ (h, k) للمنحني y = ${poly(this.coef(p))}.`); },
+      steps(p, lang) {
+        const [a, b, c] = this.coef(p);
+        return [tr(lang, "Vertex: x = −b/(2a); then substitute to get y (the parabola y = a(x − h)² + k is y = ax² shifted h right and k up).", "الرأس: x = −b/(2a)؛ ثم نعوّض لنجد y (القطع y = a(x − h)² + k هو y = ax² مزاحًا h لليمين و k للأعلى)."),
+          `h = −(${num(b)})/(2·${par(a)}) = ${num(p.h)}`,
+          `k = ${a}·${par(p.h)}² ${b < 0 ? "−" : "+"} ${Math.abs(b)}·${par(p.h)} ${c < 0 ? "−" : "+"} ${Math.abs(c)} = ${num(p.k)}`,
+          `y = ${a === 1 ? "" : a === -1 ? "−" : a}(x ${p.h < 0 ? "+" : "−"} ${Math.abs(p.h)})² ${p.k < 0 ? "−" : "+"} ${Math.abs(p.k)}`];
+      },
+      mis(p) { const [a, b, c] = this.coef(p); return { h: [["hSign", -p.h, note("x = −b/(2a): mind the minus sign.", "x = −b/(2a): انتبه للإشارة السالبة.")]], k: [["cOnly", c, note("c is where the parabola crosses the y-axis, not the height of the vertex: substitute x = h.", "c هو تقاطع القطع مع محور y وليس ارتفاع الرأس: عوّض x = h.")]] }; },
+    });
+
+    /* ---------- 13. curve sketching with y″: inflection point (week 15) ---------- */
+    PR.register({
+      id: "calc.inflection", v: 1, obj: "calc.deriv.extrema", lesson: L_APP, subject: SUBJ, program: "arch", lvl: 2,
+      gen(r) { for (let t = 0; t < 40; t++) { const a = r.pick([-2, -1, 1, 2]), m = r.int(-4, 4), c = r.int(-9, 9), d = r.int(-9, 9); if (m && c !== 3 * a * m * m) return { a, m, c, d }; } return { a: 1, m: 1, c: 2, d: 0 }; },
+      coef: (p) => [p.a, -3 * p.a * p.m, p.c, p.d],
+      solve(p) { const [a, b, c, d] = this.coef(p), x = p.m; return { x, y: a * x ** 3 + b * x ** 2 + c * x + d }; },
+      fields: () => [fld("x", "x", "x of the inflection point", "الإحداثي x لنقطة الانقلاب"), fld("y", "y", "y of the inflection point", "الإحداثي y لنقطة الانقلاب")],
+      text(p, lang) { return tr(lang, `Find the point of inflection of f(x) = ${poly(this.coef(p))}.`, `أوجد نقطة الانقلاب للدالة f(x) = ${poly(this.coef(p))}.`); },
+      steps(p, lang) {
+        const [a, b] = this.coef(p), { x, y } = this.solve(p);
+        return [tr(lang, "Inflection: f″ changes sign (the curve switches between bending up and bending down).", "الانقلاب: تتغير إشارة f″ (يتحول المنحني بين التقعر للأعلى والتقعر للأسفل)."),
+          `f″(x) = ${poly([6 * a, 2 * b])} = 0 → x = ${num(x)}`,
+          tr(lang, `f(${num(x)}) = ${num(y)} → inflection point (${num(x)}, ${num(y)})`, `f(${num(x)}) = ${num(y)} ← نقطة الانقلاب (${num(x)}, ${num(y)})`)];
+      },
+      mis(p) { const [a, b, c] = this.coef(p), D = 4 * b * b - 12 * a * c; const out = { x: [], y: [] };
+        out.y.push(["fpp", 0, note("At the inflection point f″ = 0, but the point's height is f(x), not f″(x).", "عند نقطة الانقلاب f″ = 0، لكن ارتفاع النقطة هو f(x) وليس f″(x).")]);
+        if (D > 0) for (const sg of [1, -1]) out.x.push(["fp", (-2 * b + sg * Math.sqrt(D)) / (6 * a), note("That is where f′ = 0 (a turning point); inflection needs f″ = 0.", "هذه حيث f′ = 0 (نقطة حرجة)؛ الانقلاب يحتاج f″ = 0.")]);
+        return out; },
+    });
   } catch (e) { (S5.COLLEGE_ERRORS = S5.COLLEGE_ERRORS || []).push("22-gens-deriv: " + (e && e.message)); console.error(e); }
 })();
 
