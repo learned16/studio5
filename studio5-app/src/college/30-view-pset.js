@@ -168,8 +168,10 @@
       return { given, any };
     };
     P.submit = async () => {
-      const c = P.cur; if (!c || c.done) return null;
+      const c = P.cur; if (!c || c.done || c.busy) return null; // busy: a double tap must not save two attempts
       const { given, any } = P.read(); if (!any) { S5.ui.toast("Type an answer first"); return null; }
+      if (c.fields.some((f) => f.sense && String(given[f.k][0]).trim() && !given[f.k][2])) { S5.ui.toast("Choose the sense (tension/compression or turning direction) first"); return null; }
+      c.busy = true;
       const def = S5.PROB[c.pid], inst = S5.prob.instance(c.pid, c.seed), g = S5.prob.grade(def, inst.p, given);
       const cur = S5.ls.get(curKey(c.obj), null) || {}, hints = cur.hints || 0, t0 = cur.t0 || Date.now();
       const rec = await S5.store.create("attempt", S5.prob.record(inst, g, { tier: P.tierFor(c.fade, hints), mode: "practice", fade: c.fade, ms: Math.max(0, Date.now() - t0), hints, kind: c.kind }));

@@ -191,7 +191,7 @@
     for (const rec of recs) { const R = J.rubric(rec.rubric); if (!R) continue; const dl = J.deltas(R, rec).crit; for (const id in dl) { if (dl[id].profSelf != null) sp.push(-dl[id].profSelf); if (dl[id].profAi != null) ap.push(-dl[id].profAi); } }
     return { selfVsProf: mean(sp), aiVsProf: mean(ap), nSelf: sp.length, nAi: ap.length, absSelf: mean(sp.map(Math.abs)), absAi: mean(ap.map(Math.abs)) };
   };
-  J.selfLocked = (rec) => !!(rec.ai && rec.ai.ok) || Object.values(rec.prof || {}).some(isLv);
+  J.selfLocked = (rec) => !!(rec.ai && rec.ai.ok) || !!rec.profAt || Object.values(rec.prof || {}).some(isLv); // once a professor score was entered the lock stays, even if it is cleared later
   J.boardLocked = J.selfLocked;
   J.usedToday = () => { const t = S5.todayISO(); return S5.ai.log().filter((l) => l.purpose === J.PURPOSE && (l.at || "").slice(0, 10) === t).length; };
   const err = (code, message) => ({ code, message });
