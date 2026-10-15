@@ -304,7 +304,7 @@ Reply with only JSON: {"criteria":[{"id":"${R.criteria[0].id}","level":3,"eviden
     st.textContent = `.jy-crit{border-top:1px solid var(--rule);padding:10px 0}.jy-crit:first-of-type{border-top:0}.jy-crit-h{display:flex;gap:8px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
 .jy-levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.jy-lv{text-align:start;border:1px solid var(--rule);border-radius:var(--r);background:var(--paper);color:var(--ink);padding:8px;font-size:.8rem;line-height:1.35;cursor:pointer;display:grid;gap:4px;align-content:start}
 .jy-lv b{font-size:.74rem}.jy-lv[aria-pressed="true"]{border-color:var(--cobalt);background:var(--cobalt-wash);box-shadow:inset 0 0 0 1px var(--cobalt)}.jy-lv:disabled{cursor:default;opacity:.62}.jy-lv[aria-pressed="true"]:disabled{opacity:1}
-.jy-board{display:block;max-width:100%;max-height:420px;margin:0 auto;border:1px solid var(--rule);border-radius:4px;background:#fff}.jy-gap{font-weight:700}.jy-gap.big{color:var(--redline)}
+[id^="jy-"] .tbl th,#jy-ai .ai-label{letter-spacing:0}.jy-board{display:block;max-width:100%;max-height:420px;margin:0 auto;border:1px solid var(--rule);border-radius:4px;background:#fff}.jy-gap{font-weight:700}.jy-gap.big{color:var(--redline)}
 @media (max-width:760px){.jy-levels{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:420px){.jy-levels{grid-template-columns:1fr}}`;
     document.head.appendChild(st);
   };
@@ -352,7 +352,7 @@ Reply with only JSON: {"criteria":[{"id":"${R.criteria[0].id}","level":3,"eviden
   };
   const secAI = (rec, R) => {
     const g = J.gate(rec), st = rec.aiStatus, ai = rec.ai, t = ai ? J.total(R, ai.scores) : null, n = J.usedToday();
-    const status = st && !st.ok ? `<div class="sheet alert" data-status="unavailable" style="margin:8px 0"><strong>Juror unavailable</strong><p class="small" data-uc dir="auto">${esc(st.reason || "")}</p></div>` : "";
+    const status = st && !st.ok ? `<div class="sheet alert" data-status="unavailable" style="margin:8px 0"><strong>Juror unavailable</strong><p class="small" dir="auto">${esc(st.reason || "")}</p></div>` : "";
     const reading = ai ? `<div data-status="ok"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Criterion</th><th class="num">Level</th><th>Evidence</th></tr></thead><tbody>${R.criteria.map((c) => `<tr><td data-noi18n dir="auto">${esc(tx(c))}</td><td class="num">${ai.scores[c.id] || "—"}</td><td data-uc dir="auto">${esc((ai.evidence || {})[c.id] || "")}</td></tr>`).join("")}</tbody></table></div>
       <p class="small"><span>AI weighted total</span>: <strong id="jy-ai-total">${t ? pct(t.pct) : "—"}</strong> ${t && t.partial ? `<span class="pill amber">partial</span>` : ""} <span class="ai-label">AI reading, not a grade</span></p>
       ${(ai.dropped || []).length || (ai.clamped || []).length ? `<p class="tiny muted"><span>Checked by the app</span>: <span data-noi18n>${esc([...(ai.dropped || []).map((d) => "✗ " + d), ...(ai.clamped || []).map((c) => `${c.id} ${c.from}→${c.to}`)].join(" · "))}</span></p>` : ""}
