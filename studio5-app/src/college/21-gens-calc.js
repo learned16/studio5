@@ -63,7 +63,7 @@
       },
       solve(p) { const C = mul(p.A, p.B); return { c11: C[0][0], c12: C[0][1], c21: C[1][0], c22: C[1][1] }; },
       fields: () => [["c11", "1", "1"], ["c12", "1", "2"], ["c21", "2", "1"], ["c22", "2", "2"]].map(([k, i, j]) => fld(k, `c${i}${j}`, `Entry (${i},${j}) of C = AB`, `العنصر (${i},${j}) من C = AB`)),
-      text: (p, lang) => tr(lang, `A = ${mtxt(p.A)} and B = ${mtxt(p.B)} (rows separated by “;”). Find C = AB.`, `A = ${mtxt(p.A)} و B = ${mtxt(p.B)} (الصفوف مفصولة بـ «;»). أوجد C = AB.`),
+      text: (p, lang) => tr(lang, `A = ${mtxt(p.A)} and B = ${mtxt(p.B)} (rows separated by “;”). Find C = AB.`, `لتكن A = ${mtxt(p.A)} و B = ${mtxt(p.B)} (الصفوف مفصولة بـ «;»). أوجد C = AB.`),
       steps(p, lang) {
         const C = mul(p.A, p.B), n = p.B.length, out = [tr(lang, `A is 2×${n} and B is ${n}×2, so AB is 2×2: entry (i,j) = row i of A · column j of B.`, `A بحجم 2×${n} و B بحجم ${n}×2، فالناتج AB بحجم 2×2: العنصر (i,j) = الصف i من A · العمود j من B.`)];
         for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) out.push(`c${i + 1}${j + 1} = ${p.A[i].map((a, k) => `${par(a)}·${par(p.B[k][j])}`).join(" + ")} = ${num(C[i][j])}`);
@@ -318,8 +318,8 @@
       solve: (p) => ({ k: p.kind === "hole" ? 2 * p.c : (p.a * p.c + p.b) / (p.c * p.c) }),
       fields: () => [fld("k", "k", "The value of k", "قيمة k")],
       text(p, lang) {
-        if (p.kind === "hole") return tr(lang, `f(x) = (x² − ${p.c * p.c}) / (x ${p.c < 0 ? "+" : "−"} ${Math.abs(p.c)}) for x ≠ ${num(p.c)}, and f(${num(p.c)}) = k. Find k so that f is continuous at x = ${num(p.c)}.`, `f(x) = (x² − ${p.c * p.c}) / (x ${p.c < 0 ? "+" : "−"} ${Math.abs(p.c)}) عندما x ≠ ${num(p.c)}، و f(${num(p.c)}) = k. أوجد k لتكون f متصلة عند x = ${num(p.c)}.`);
-        return tr(lang, `f(x) = ${poly([p.a, p.b])} for x < ${num(p.c)}, and f(x) = k·x² for x ≥ ${num(p.c)}. Find k so that f is continuous at x = ${num(p.c)}.`, `f(x) = ${poly([p.a, p.b])} عندما x < ${num(p.c)}، و f(x) = k·x² عندما x ≥ ${num(p.c)}. أوجد k لتكون f متصلة عند x = ${num(p.c)}.`);
+        if (p.kind === "hole") return tr(lang, `f(x) = (x² − ${p.c * p.c}) / (x ${p.c < 0 ? "+" : "−"} ${Math.abs(p.c)}) for x ≠ ${num(p.c)}, and f(${num(p.c)}) = k. Find k so that f is continuous at x = ${num(p.c)}.`, `لتكن f(x) = (x² − ${p.c * p.c}) / (x ${p.c < 0 ? "+" : "−"} ${Math.abs(p.c)}) عندما x ≠ ${num(p.c)}، و f(${num(p.c)}) = k. أوجد k لتكون f متصلة عند x = ${num(p.c)}.`);
+        return tr(lang, `f(x) = ${poly([p.a, p.b])} for x < ${num(p.c)}, and f(x) = k·x² for x ≥ ${num(p.c)}. Find k so that f is continuous at x = ${num(p.c)}.`, `لتكن f(x) = ${poly([p.a, p.b])} عندما x < ${num(p.c)}، و f(x) = k·x² عندما x ≥ ${num(p.c)}. أوجد k لتكون f متصلة عند x = ${num(p.c)}.`);
       },
       steps(p, lang) {
         if (p.kind === "hole") return [tr(lang, "Continuous at c means lim x→c f(x) = f(c).", "الاتصال عند c يعني lim f(x) عندما x→c تساوي f(c)."), tr(lang, `x² − ${p.c * p.c} = (x − ${par(p.c)})(x + ${par(p.c)}); cancel (x − ${par(p.c)}) → x + ${par(p.c)}`, `x² − ${p.c * p.c} = (x − ${par(p.c)})(x + ${par(p.c)})؛ نختصر (x − ${par(p.c)}) ← x + ${par(p.c)}`), `k = ${num(p.c)} + ${par(p.c)} = ${num(2 * p.c)}`];
