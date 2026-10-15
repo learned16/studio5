@@ -197,11 +197,12 @@ Object.assign(S5.act, {
 /* lessons: by subject in curriculum order, with progress */
 S5.lessonsHTML = (r) => {
   const progs = S5.settings.get("programs") || ["arch", "civil"], y = S5.settings.get("activeYear");
-  const subs = [...new Set(S5.kb.topics.filter((t) => progs.includes(t.program) || t.program === "both").flatMap((t) => t.subjects.map((s) => s + "|" + t.program + "|" + t.year)))].map((k) => { const [name, program, year] = k.split("|"); return { name, program, year: +year }; }).sort((a, b) => (a.year === y ? -1 : 0) - (b.year === y ? -1 : 0) || a.year - b.year || a.program.localeCompare(b.program));
+  // one card per subject × program × year (forSubject keeps them apart); a 'both' lesson joins each enabled program's card
+  const subs = [...new Set(S5.kb.topics.filter((t) => progs.includes(t.program) || t.program === "both").flatMap((t) => (t.program === "both" ? progs : [t.program]).flatMap((p) => t.subjects.map((s) => s + "|" + p + "|" + t.year))))].map((k) => { const [name, program, year] = k.split("|"); return { name, program, year: +year }; }).sort((a, b) => (a.year === y ? -1 : 0) - (b.year === y ? -1 : 0) || a.year - b.year || a.program.localeCompare(b.program));
   const seen = new Set(); const P = S5.tutorProg.all();
   const card = (s) => { const ts = S5.kb.forSubject(s.name, { program: s.program, year: s.year }); const done = ts.filter((t) => P[t.id] && P[t.id].last >= 0.8).length; const next = ts.find((t) => !(P[t.id] && P[t.id].last >= 0.8)) || ts[0];
-    return `<div class="item"><div class="body"><div class="t">${S5.esc(s.name)}</div><div class="s">${s.program === "civil" ? "Civil" : "Architecture"} · Year ${s.year} · ${done}/${ts.length} lessons</div><div class="meter"><i style="width:${Math.round((done / Math.max(1, ts.length)) * 100)}%"></i></div></div>${next ? H.btn(done ? "Continue" : "Start", "open", { v: "tutor", tab: "learn", id: next.id }, "sm primary") : ""}</div>`; };
-  const list = subs.filter((s) => { const k = s.name + s.program; if (seen.has(k)) return false; seen.add(k); return true; });
+    return `<div class="item"><div class="body"><div class="t">${S5.esc(s.name)}</div><div class="s">${s.program === "civil" ? "Civil" : "Architecture"} · Year ${s.year} · ${done}/${ts.length} lessons</div><div class="meter"><i style="width:${Math.round((done / Math.max(1, ts.length)) * 100)}%"></i></div></div>${next ? H.btn(done ? "Continue" : "Start", "open", { v: "tutor", tab: "learn", id: next.id, kind: s.program }, "sm primary") : ""}</div>`; };
+  const list = subs.filter((s) => { const k = s.name + "|" + s.program + "|" + s.year; if (seen.has(k)) return false; seen.add(k); return true; });
   const yr = list.filter((s) => s.year === y), other = list.filter((s) => s.year !== y);
   return `${H.section(`Year ${y} — teach me`, yr.length ? `<div class="list">${yr.map(card).join("")}</div>` : H.empty("No lessons for this year yet.", ""))}${H.section("All years", `<div class="list">${other.map(card).join("")}</div>`)}`;
 };
@@ -210,7 +211,9 @@ S5.lessonHTML = (t) => {
   S5.ui.mount(() => S5.bindLesson(t));
   // one nonce per lesson view: re-renders of the same view keep the choice order, opening the lesson again reshuffles
   let V = S5.lessonView; if (!V || V.route !== S5.ui.route || V.id !== t.id) V = S5.lessonView = { route: S5.ui.route, id: t.id, nonce: Date.now().toString(36) + Math.random().toString(36).slice(2, 8) };
-  const sib = S5.kb.forSubject(t.subjects[0], { program: t.program, year: t.year }); const i = sib.findIndex((x) => x.id === t.id); const next = sib[i + 1];
+  // the lesson's own program and year; a 'both' lesson follows the program it was opened from (route.kind)
+  const prog = t.program === "both" ? (["arch", "civil"].includes(S5.ui.route.kind) ? S5.ui.route.kind : undefined) : t.program;
+  const sib = S5.kb.forSubject(t.subjects[0], { program: prog, year: t.year }); const i = sib.findIndex((x) => x.id === t.id); const next = sib[i + 1];
   const f = (t.formulas || []).length ? H.section("Formulas", `<div class="list">${t.formulas.map((x) => `<div class="item"><div class="body"><div class="t mono" dir="ltr">${S5.esc(x.expr)}</div><div class="s">${S5.esc(x.name)} — <span dir="ltr">${S5.esc(x.vars)}</span></div></div></div>`).join("")}</div>`) : "";
   const ex = t.example ? H.section("Worked example", `<p dir="auto">${S5.esc(t.example.problem_ar)}</p><ol class="lesson-steps" id="ls-steps">${(t.example.steps_ar || []).map((s, k) => `<li dir="auto" ${k ? "hidden" : ""}>${S5.esc(s)}</li>`).join("")}</ol><p hidden id="ls-ans"><b>Answer:</b> <span dir="auto">${S5.esc(t.example.answer)}</span></p>`, H.btn("Next step", "ls-step", {}, "sm")) : "";
   const quiz = (t.quiz || []).map((q, k) => q.choices ? `<div class="quiz" data-k="${k}"><p dir="auto"><b>${k + 1}.</b> ${S5.esc(q.q_ar)}</p><div class="chips">${S5.kb.order(q.choices.length, `${t.id}|${V.nonce}|${k}`).map((j) => `<button class="btn sm" data-act="ls-choice" data-k="${k}" data-j="${j}" dir="auto">${S5.esc(q.choices[j])}</button>`).join("")}</div><p class="small muted" hidden id="why-${k}" dir="auto"></p></div>` : `<div class="quiz" data-k="${k}" data-self="1"><p dir="auto"><b>${k + 1}.</b> ${S5.esc(q.q_ar)}</p><p class="tiny muted"><span class="pill">self-check</span> <span>Not counted in the lesson score</span></p><details><summary class="small">Show model answer</summary><p class="small" dir="auto">${S5.esc(q.answer_ar || "")}</p></details><div class="chips"><button class="btn sm" data-act="ls-self" data-k="${k}" data-ok="1">✓ I got it</button><button class="btn sm" data-act="ls-self" data-k="${k}" data-ok="0">✗ Not yet</button></div></div>`).join("");
@@ -218,7 +221,7 @@ S5.lessonHTML = (t) => {
     <section class="sheet lesson"><h2 dir="auto">${S5.esc(t.title_ar)}</h2><p class="small muted">${S5.esc(t.title_en)}</p><p dir="auto" class="lesson-text">${S5.esc(t.summary_ar)}</p><ul dir="auto">${(t.key_points_ar || []).map((k) => `<li>${S5.esc(k)}</li>`).join("")}</ul></section>
     ${f}${ex}${(t.mistakes_ar || []).length ? H.section("Common mistakes", `<ul dir="auto">${t.mistakes_ar.map((m) => `<li>${S5.esc(m)}</li>`).join("")}</ul>`) : ""}
     ${H.section("Check yourself", `<div id="ls-quiz">${quiz}</div><p class="small" id="ls-score"></p>`)}
-    <div class="row">${H.btn("Ask the teacher about this", "ls-ask", { id: t.id }, "primary")}${next ? H.btn("Next lesson →", "open", { v: "tutor", tab: "learn", id: next.id }) : ""}</div>`;
+    <div class="row">${H.btn("Ask the teacher about this", "ls-ask", { id: t.id }, "primary")}${next ? H.btn("Next lesson →", "open", { v: "tutor", tab: "learn", id: next.id, ...(prog ? { kind: prog } : {}) }) : ""}</div>`;
 };
 /* Lesson score = the code-graded (multiple-choice) items only. Short answers are self-rated: they are shown as
    'self-check', kept as E0 evidence and never count toward the score, so "I got it" cannot master a lesson. */

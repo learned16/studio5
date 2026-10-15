@@ -137,6 +137,42 @@ await section("subject", async () => {
   ok.nextLessonStaysInCivil = chain.join() === r.civ.join() && chain.every((id) => /^c1b-/.test(id));
 });
 
+// ---------- 3b. subject cards: one per subject × program × year; a 'both' lesson joins each program's chain ----------
+// (the library has no 'both' lessons and no same-program multi-year subject yet, so two synthetic lessons are added
+// to the in-memory list for this section only and removed afterwards)
+await section("cards", async () => {
+  const setup = await A.evaluate(() => {
+    const K = S5.kb, civ = K.forSubject("Engineering Drawing", { program: "civil", year: 1 });
+    const mk = (id, program, year, order) => ({ id, program, year, order, subjects: ["Engineering Drawing"], title_ar: "درس تجريبي " + id, title_en: "Test lesson " + id, summary_ar: "نص", key_points_ar: ["نقطة"], mistakes_ar: [], formulas: [], quiz: [{ q_ar: "س", choices: ["أ", "ب", "ج", "د"], answer: 0, why_ar: "" }] });
+    const both = mk("zz-m1-both", "both", 1, (civ[2].order + civ[3].order) / 2), y2 = mk("zz-m1-civ-y2", "civil", 2, 1);
+    K._saved = K.topics; K.topics = [...K.topics, both, y2]; K.byId.set(both.id, both); K.byId.set(y2.id, y2);
+    const ind = (prog, year) => K.topics.filter((t) => t.subjects.includes("Engineering Drawing") && (t.program === prog || t.program === "both") && t.year === year).sort((a, b) => a.order - b.order).map((t) => t.id);
+    S5.ui.go({ v: "tutor", tab: "learn" });
+    const cards = [...document.querySelectorAll("#view .item")].map((el) => ({ t: el.querySelector(".t")?.textContent, s: el.querySelector(".s")?.textContent || "", btn: el.querySelector('[data-act="open"][data-id]') }));
+    const ed = cards.filter((c) => c.t === "Engineering Drawing").map((c) => ({ s: c.s, id: c.btn && c.btn.dataset.id, kind: c.btn && c.btn.dataset.kind }));
+    return { civ: K.forSubject("Engineering Drawing", { program: "civil", year: 1 }).map((t) => t.id), civInd: ind("civil", 1), arch: K.forSubject("Engineering Drawing", { program: "arch", year: 1 }).map((t) => t.id), archInd: ind("arch", 1), y2: K.forSubject("Engineering Drawing", { program: "civil", year: 2 }).map((t) => t.id), ed };
+  });
+  // follow "Next lesson" from the first lesson of each Year-1 card (real clicks, starting from the card's Start button)
+  const follow = async (prog) => {
+    await A.evaluate(() => S5.ui.go({ v: "tutor", tab: "learn" })); await A.waitForTimeout(120);
+    const cards = await A.$$("#view .item"); let start = null;
+    for (const c of cards) { const t = await c.$eval(".t", (e) => e.textContent).catch(() => ""), s = await c.$eval(".s", (e) => e.textContent).catch(() => ""); if (t === "Engineering Drawing" && s.startsWith(prog + " · Year 1")) start = await c.$('[data-act="open"][data-id]'); }
+    if (!start) return [];
+    // the card points at the first lesson not yet mastered: walk back to the first lesson of the chain
+    await start.click(); await A.waitForTimeout(120);
+    const chain = [await A.evaluate(() => S5.ui.route.id)];
+    for (let i = 0; i < 20; i++) { const nx = await A.$('#view .row [data-act="open"][data-v="tutor"][data-id]'); if (!nx) break; await nx.click(); await A.waitForTimeout(100); chain.push(await A.evaluate(() => S5.ui.route.id)); }
+    return chain;
+  };
+  const civChain = await follow("Civil"), archChain = await follow("Architecture");
+  await A.evaluate(() => { const K = S5.kb; K.topics = K._saved; delete K._saved; K.byId.delete("zz-m1-both"); K.byId.delete("zz-m1-civ-y2"); });
+  info.cards = { ...setup, civChain, archChain };
+  const tail = (chain, list) => { const i = list.indexOf(chain[0]); return i >= 0 && chain.join() === list.slice(i).join(); };
+  ok.forSubjectHonoursBoth = setup.civ.includes("zz-m1-both") && setup.arch.includes("zz-m1-both") && setup.civ.join() === setup.civInd.join() && setup.arch.join() === setup.archInd.join() && !setup.civ.includes("zz-m1-civ-y2");
+  ok.cardPerProgramAndYear = setup.ed.filter((c) => c.s.startsWith("Civil · Year 1")).length === 1 && setup.ed.filter((c) => c.s.startsWith("Architecture · Year 1")).length === 1 && setup.ed.some((c) => c.s.startsWith("Civil · Year 2") && c.id === "zz-m1-civ-y2") && setup.y2.join() === "zz-m1-civ-y2";
+  ok.bothLessonNextStaysInProgram = civChain.includes("zz-m1-both") && archChain.includes("zz-m1-both") && tail(civChain, setup.civ) && tail(archChain, setup.arch) && civChain.every((id) => /^c1b-draw-|^zz-m1-both$/.test(id)) && archChain.every((id) => /^a1b-ed-|^zz-m1-both$/.test(id));
+});
+
 // ---------- 4. the library: a failed first fetch is retried in the same session (no embedded S5_KB) ----------
 await section("retry", async () => {
   const R = await newPage(); let kbJson = null, hits = 0;

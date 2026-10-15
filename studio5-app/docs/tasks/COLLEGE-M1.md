@@ -1,6 +1,7 @@
 # COLLEGE-M1 — Honest mastery and durable progress (Push A)
 
-Plan: `docs/COLLEGE_PLAN.md` §4 M1 and "Appendix — milestone specs / M1". Branch: `impl-m1-w1` (worktree, not pushed).
+Plan: `docs/COLLEGE_PLAN.md` §4 M1 and "Appendix — milestone specs / M1". Branches: `impl-m1-w1` (first pass, interrupted by a usage limit, WIP commit `c61f515`), finished on `impl-m1-w2`
+(worktree, not pushed).
 
 ## الهدف (Goal)
 
@@ -16,7 +17,8 @@ backup → restore.
 ## الملفات (Files changed)
 
 - `src/tutor.js` — `S5.kb.load` retry, `S5.kb.forSubject(name, {program, year})`, `S5.kb.order(n, key)` seeded
-  shuffle, lesson quiz rendering/scoring, `S5.tutorProg.set(id, score, self)` + `markSelf`, library failure screen.
+  shuffle, lesson quiz rendering/scoring, `S5.tutorProg.set(id, score, self)` + `markSelf`, library failure screen,
+  subject cards per program × year, Next lesson / `i/N` within the lesson's program and year.
 - `src/core.js` — `S5.backup.build` adds `body.progress`; `restore` merges it (`mergeProgress`, `restoreProgress`).
 - `build.mjs` — `./kb/library.json` added to the sw.js `SHELL` precache list.
 - `src/i18n-ar-m1.txt` — new UI strings (auto-loaded by build.mjs).
@@ -36,7 +38,12 @@ backup → restore.
    Leitner box, `due` or `at`. Their rating is kept on the tutorProg entry as `self: {ok, n, tier: "E0"}` (additive).
 3. **Program/year filter.** `forSubject(name, {program, year})` (program `'both'` lessons belong to either). The subject
    cards (Start/Continue), the `i/N` counter and "Next lesson" use the lesson's own program and year.
-   `forSubject(name)` without options behaves as before.
+   `forSubject(name)` without options behaves as before. There is one subject card per subject × program × year (the
+   old card key was subject + program, which would hide a second year of the same subject now that the list is
+   filtered by year). A `'both'` lesson appears in each enabled program's card; the card's Start button carries the
+   program as `route.kind`, so the `i/N` counter and "Next lesson" of a `'both'` lesson stay in the program it was
+   opened from. (The library has no `'both'` lessons and no same-program multi-year subject today; the test proves
+   both cases with two synthetic in-memory lessons.)
 4. **Library offline + retry.** sw.js precaches `./kb/library.json` (cache name is per build, so a new build refreshes
    it). A failed fetch is not kept for the session: topics stay `[]` with `S5.kb.failed`, the Lessons/Review tabs show
    "The library could not be loaded — check the connection" with **Try again**, and the next `load()` call fetches
@@ -57,16 +64,16 @@ backup → restore.
   Records keep using the existing pre-restore snapshot. If this build misbehaves, reverting it is safe: tutorProg and
   studioProg keep their old meta keys and shape.
 
-## Acceptance (evidence: `tests/col-m1-integrity.mjs`, all 41 checks true)
+## Acceptance (evidence: `tests/col-m1-integrity.mjs`, all 44 checks true)
 
 | Criterion | Check(s) | Result |
 |---|---|---|
 | Display position 2 on every MCQ of the 127 all-B lessons masters < 10% (was 100%) | `allBMasteredUnder10pct` (1–4 of 127 per run; expected ≈2.7), `choicesKeepStoredIndex`, `choicesShuffled`, `orderSeededByLessonAndNonce`, `orderStableWithinView`, `orderChangesBetweenViews`, `orderUniformAndIndependent` | met |
 | "I got it" alone never gives ≥ 0.8; self-check buttons do not change the score | `gotItAloneNeverScores` (all 409 lessons), `gotItBeforeMcqGivesNoScore`, `gotItDoesNotLiftScore`, `selfCheckDoesNotChangeScore`, `selfCheckLabelOnEveryShortAnswer` | met |
-| `forSubject('Engineering Drawing', {program:'civil', year:1})` only c1b-draw-* in order; Next lesson stays in c1b-* | `forSubjectCivilDrawingOnly`, `forSubjectArchDrawingOnly`, `forSubjectCivilConstructionOnly`, `startButtonsStayInProgram`, `nextLessonStaysInCivil` | met |
+| `forSubject('Engineering Drawing', {program:'civil', year:1})` only c1b-draw-* in order; Next lesson stays in c1b-* | `forSubjectCivilDrawingOnly`, `forSubjectArchDrawingOnly`, `forSubjectCivilConstructionOnly`, `startButtonsStayInProgram`, `nextLessonStaysInCivil`, `forSubjectHonoursBoth`, `cardPerProgramAndYear`, `bothLessonNextStaysInProgram` | met |
 | Built sw.js precaches /kb/library.json; failed first fetch then success loads in the same session | `builtSwShellHasLibrary`, `servedSwShellHasLibrary`, `swInstallPrecachesLibrary` (real SW install on wrangler), `failedFetchNotCached`, `retryLoadsLibrarySameSession`, `standaloneRetryAfterFailedFetch` | met |
 | tutorProg/studioProg identical after backup → restore('replace') in a fresh context; old backup restores and verifies | `progressIdenticalAfterReplace`, `progressPersistsAfterReload`, `oldBackupChecksumVerifies`, `oldBackupRestoresWithoutError`, `mergeNewerAtWins`, `mergeKeepsStudioPass`, `mergeKeepsRecoveryCopy` | met |
-| tutor-e2e quiz and studio-e2e still pass; zero pageerror | legacy tests re-run on ports 8800/8900; `quizAllRightScoresOne`, `zeroPageErrors` | met |
+| tutor-e2e quiz and studio-e2e still pass; zero pageerror | legacy tests re-run on ports 8800/8900 (tutor-e2e, studio-e2e, campus-e2e, smoke, selftest, ar: all green, `errors: []`); `quizAllRightScoresOne`, `zeroPageErrors` | met |
 
 ## Not in scope / follow-ups
 
@@ -74,3 +81,11 @@ backup → restore.
   answer-position report.
 - Progress is still device meta, now carried by backups. Moving it to records (`SCHEMA_VERSION` 4) is plan §6 decision 4.
 - Lesson state (answers given) is still lost if the lesson re-renders (language toggle); unchanged behaviour.
+- tutorProg scores saved **before** this build were made under the old rule (stored order, self-check counted) and
+  cannot be recomputed (no per-item history was kept). They stay as they are and are replaced the next time the
+  lesson's quiz is taken. Entries saved by this build carry `self.tier = "E0"` when a short answer was self-rated.
+- The sw.js precache adds the library (~2 MB, compressed in transit) to every service-worker install, i.e. once per
+  deployed build. Before, the same file was downloaded at the first Tutor visit after each build, so the total
+  traffic is about the same; the difference is that it now happens at install, while online.
+- The service-worker install check needs wrangler (`WBASE`, default `http://127.0.0.1:8787/` as in run-all.sh). If it
+  is not reachable the test records `info.swLive = "skipped…"` and only the built-file check runs.
