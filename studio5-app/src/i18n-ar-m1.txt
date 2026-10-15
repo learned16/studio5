@@ -1,0 +1,6 @@
+self-check	تقييم ذاتي
+Not counted in the lesson score	ما ينحسب بدرجة الدرس
+#/# correct	#/# صح
+self-check #/#	تقييم ذاتي #/#
+The library could not be loaded — check the connection.	تعذّر تحميل المكتبة — تأكد من الاتصال.
+Try again	حاول مرة ثانية

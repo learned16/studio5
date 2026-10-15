@@ -337,7 +337,8 @@ S5.backup = {
     if (includeFiles) {
       for (const [k, v] of await S5.idb.all("blobs")) blobs[k] = { mime: v.mime, size: v.size, b64: S5.b64FromBuf(v.data) };
     }
-    const body = { records, settings: S5.store.meta.settings || {}, blobs };
+    // progress: learning history kept in device meta (tutor lessons, studio drawing lessons), so it moves with the backup
+    const body = { records, settings: S5.store.meta.settings || {}, blobs, progress: { tutorProg: S5.store.meta.tutorProg || {}, studioProg: S5.store.meta.studioProg || {} } };
     const json = JSON.stringify(body);
     const checksum = await S5.sha256(json);
     return { format: "studio5-backup", appVersion: S5.APP_VERSION, schemaVersion: S5.SCHEMA_VERSION, exportedAt: S5.now(), device: S5.store.meta.deviceId, counts: { records: records.length, files: Object.keys(blobs).length }, checksum, body: json };
@@ -374,9 +375,40 @@ S5.backup = {
     toWrite.forEach((r) => { S5.store.recs.set(r.id, r); S5.sync.queue(r); });
     for (const [k, b] of Object.entries(body.blobs || {})) { if (!(await S5.idb.get("blobs", k))) await S5.idb.put("blobs", k, { mime: b.mime, size: b.size, data: S5.bufFromB64(b.b64), at: S5.now() }); }
     if (mode === "replace" && body.settings) await S5.store.setMeta("settings", body.settings);
-    S5.audit("restore", `${mode} restore: +${added} new, ${updated} updated, ${kept} kept`);
+    // learning progress (backups made before it was included have no `progress` and skip this)
+    const progress = body.progress && typeof body.progress === "object" ? await this.restoreProgress(body.progress) : 0;
+    S5.audit("restore", `${mode} restore: +${added} new, ${updated} updated, ${kept} kept${progress ? `, ${progress} progress entries` : ""}`);
     S5.bus.emit("change", null);
-    return { added, updated, kept };
+    return { added, updated, kept, progress };
+  },
+  /* Progress is merged in both restore modes: per lesson id the entry with the newer `at` wins, so no device loses
+     newer learning. Studio passes are sticky (passed stays true, best is the higher score), as studio.js keeps them,
+     and recurring-mistake counters (_errs) keep the larger count per habit. The values before the merge are kept in
+     meta.progressBeforeRestore for recovery. Pure: returns {merged, changed}. */
+  mergeProgress(cur, inc, kind) {
+    const out = { ...(cur || {}) }; let changed = 0;
+    for (const [id, p] of Object.entries(inc || {})) {
+      if (!p || typeof p !== "object" || Array.isArray(p)) continue;
+      if (id === "_errs") { const e = { ...(out._errs || {}) }; for (const [h, n] of Object.entries(p)) if (Number.isFinite(+n) && +n > (+e[h] || 0)) { e[h] = +n; changed++; } out._errs = e; continue; }
+      const c = out[id] && typeof out[id] === "object" ? out[id] : null;
+      const newer = !c || String(p.at || "") > String(c.at || "");
+      let w = newer ? { ...p } : c;
+      if (kind === "studioProg" && c) { const o = newer ? c : p; if (o.passed && !w.passed) w = { ...w, passed: true }; if (typeof o.best === "number" && !(w.best >= o.best)) w = { ...w, best: o.best }; }
+      if (w !== c) { out[id] = w; changed++; }
+    }
+    return { merged: out, changed };
+  },
+  async restoreProgress(progress) {
+    let n = 0; const before = { at: S5.now() }, writes = [];
+    for (const k of ["tutorProg", "studioProg"]) {
+      const inc = progress[k]; if (!inc || typeof inc !== "object" || Array.isArray(inc)) continue;
+      const { merged, changed } = this.mergeProgress(S5.store.meta[k], inc, k);
+      if (changed) { before[k] = S5.store.meta[k] || {}; writes.push([k, merged]); n += changed; }
+    }
+    if (!n) return 0;
+    await S5.store.setMeta("progressBeforeRestore", before); // recovery copy first, then the merged progress
+    for (const [k, v] of writes) await S5.store.setMeta(k, v);
+    return n;
   },
   // restore test: rebuilds the package, re-verifies it, and replays it into a throwaway map
   async restoreTest() {

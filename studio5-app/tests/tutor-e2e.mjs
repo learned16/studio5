@@ -29,7 +29,8 @@ res.wrongKeyRefused = await B.evaluate(() => fetch("/api/tutor/chat", { method: 
 const n = await A.evaluate(() => S5.kb.load().then((l) => l.length)); res.libraryLessons = n;
 if (n) {
   const t = await A.evaluate(() => { const t = S5.kb.topics.find((x) => (x.quiz || []).some((q) => q.choices)); S5.ui.go({ v: "tutor", tab: "learn", id: t.id }); return t.id; }); await A.waitForTimeout(600);
-  await A.evaluate(() => { const L = S5.lessonState; L.t.quiz.forEach((q, k) => { if (q.choices) document.querySelector(`[data-act="ls-choice"][data-k="${k}"][data-j="${q.answer}"]`).click(); else document.querySelector(`[data-act="ls-self"][data-k="${k}"][data-ok="1"]`).click(); }); });
+  // choices are shuffled at render (data-j keeps the stored index): click the shown position that holds the answer
+  res.quizClickedPositions = await A.evaluate(() => { const L = S5.lessonState, pos = []; L.t.quiz.forEach((q, k) => { if (q.choices) { const btns = [...document.querySelectorAll(`.quiz[data-k="${k}"] [data-act="ls-choice"]`)]; const p = btns.findIndex((x) => +x.dataset.j === q.answer); pos.push(p + 1); btns[p].click(); } else document.querySelector(`[data-act="ls-self"][data-k="${k}"][data-ok="1"]`).click(); }); return pos; });
   await A.waitForTimeout(500); res.progressSaved = await A.evaluate((id) => S5.tutorProg.get(id)?.last, t);
   res.searchArabic = await A.evaluate(() => S5.kb.search("الخرسانة المسلحة عتبة", { k: 3 }).map((x) => x.id));
   res.searchEnglish = await A.evaluate(() => S5.kb.search("bending moment diagram", { k: 3 }).map((x) => x.id));
