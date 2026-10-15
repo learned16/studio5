@@ -305,7 +305,7 @@ Scores are on a 1–10 scale, for rigor / fit with the code / AI safety / lightn
 - From P1: evidence tiers, the mastery states and decay, independent solver checks, worked-example fading, interleaved E4 retrieval, the transcript.
 - From P2: the tolerance and unit rules, the generator contract with a `kb` instance, the Year-1 topic-to-grading map.
 
-## 7. بعد المراحل (Extension backlog, for the weekly Thursday build window)
+## 7b. بعد المراحل (Extension backlog — see also §8–§9)
 
 Order of work for every weekly run (Thursday 00:00–12:00 Baghdad) once the open review findings are fixed:
 1. Remaining milestones in order: M4 → M5 → M6 → M7 → M9.
@@ -313,6 +313,29 @@ Order of work for every weekly run (Thursday 00:00–12:00 Baghdad) once the ope
 3. Then Year 2 subjects (strength of materials, fluid mechanics, surveying, mathematics II; architecture mechanics & strength, structures), in the same way.
 4. Open minor review notes from the progress log; library lessons flagged by generator cross-checks.
 5. Every run: independent review before merge, full suite green before push, progress log updated.
+
+## 8. ذكاء بالكود (Owner decision 2026-10-15: code is the brain)
+
+The owner decided that the app's intelligence must be **code**, not the AI model. Everything that has a right answer is solved, checked, diagnosed and explained by deterministic code; Gemma is kept only for language (rephrasing an explanation, Socratic dialogue, critique of creative design work), and code checks every number it says (numGuard). No model training.
+
+The code brain has five parts, built on the M2 engine:
+1. **Solvers with steps** — every topic gets a solver that returns the answer *and* each step (values, formula, units) for the bilingual explanation templates. Examples: beam analysis with shear/moment diagrams (SVG), general truss by joints/sections, section properties, calculus with steps (a small symbolic differentiator/integrator for polynomial, trig, exp, ln — checked numerically), surveying (levelling, traverse), hydrostatics/Bernoulli, concrete mix and RC beam checks, sun angles, stairs.
+2. **Mistake diagnosis** — per generator a catalogue of named misconceptions, each coded as the wrong solution it produces (e.g. "used the full span instead of half", "forgot the self-weight", "sin/cos swapped", "kN↔N"); a typed answer matching one gets that exact feedback. Grows from real attempts (codes stored in `attempt`).
+3. **Adaptive tutor** — a skill graph with prerequisites (M9 syllabus map); after a miss, code finds the weakest prerequisite and sends the student there (knowledge-space style, like ALEKS), and builds the hint ladder from the solver's own steps.
+4. **Explanations from templates** — bilingual, generated from solver steps; never from the model.
+5. **Checkers for drawing and design** — geometry checks on ink (orthographic projection, perspective vanishing points, free-body diagrams drawn on SVG), and computable checks for architecture projects (programme areas, circulation distances, stair rules, daylight/sun, structural spans).
+
+M7 (subject professors) becomes **code-first**: the professor's decisions (what you got wrong, which hint, which next problem) come from parts 2–3; Gemma only phrases them.
+
+## 9. خطة الشهر (One-month roadmap, 2026-10-15 → 2026-11-14)
+
+Two kinds of nights (owner's rule): **short nights** (every night except Wednesday→Thursday) are economical — the orchestrator works alone, no sub-agents or workflows, self-review, stops at the first usage limit or 05:00 Baghdad; **the Wednesday→Thursday night** spends without restraint — parallel worktrees, multi-agent workflows, independent adversarial reviews, resuming after limits until 12:00.
+
+- **Week 1** — short nights: open review minors; M4 solvers (calculus with steps; drawing scale, sun/overhang, Blondel stairs; cube strength, mix quantities; friction) with misconception catalogues. Long night 22 Oct: M5 daily retrieval ∥ M6 exam hall, with reviews.
+- **Week 2** — short nights: mistake-diagnosis engine across all generators; skill graph with prerequisites (M9 map). Long night 29 Oct: M7 code-first professors (diagnosis → hint ladder → next problem; Gemma only for wording) + reviews.
+- **Week 3** — short nights: beam solver with shear/moment diagrams, general truss solver, section properties, free-body-diagram builder. Long night 5 Nov: drawing and design checkers (orthographic projection, perspective, architecture programme/stairs/sun checks) + reviews.
+- **Week 4** — short nights: Year-2 starts (strength of materials, hydrostatics/Bernoulli, surveying levelling/traverse). Long night 12 Nov: M9 transcript, full integration review, MatePad performance pass.
+- After 14 Nov the nightly routines stop and report; the owner decides whether to continue.
 
 ## Appendix — milestone specs
 
@@ -604,3 +627,4 @@ docs/tasks/COLLEGE-M9.md; TRACEABILITY line.
 - Open minor notes: restore message should mention merged progress; tutorProg keeps an old self-check note on retake; 'exact' fraction tolerance; deg-rad feedback too eager; owner decision on 'fragile' definition (see M2 review).
 - 2026-10-15 08:30 UTC — **M3 DONE** (Problem room in the civil and architecture buildings: fresh-number statics problems graded by code, unit/sign/×2 feedback, code-made steps with fading 0–3, attempts and mastery chips, 'Graded practice' on mapped lessons; builder-verified, independent review still owed). Full suite green. **Next run:** reviews for M3 and M8, then M4 (calculus/architecture/materials generators), M5 daily retrieval, M6 exam hall, M7 subject professors, M9 syllabus map + transcript.
 - 2026-10-15 08:47 UTC — independent reviews of M3 and M8 ran. Fixed now: a double tap on Submit saved two attempts; a truss/moment answer with no sense chosen was graded as the positive sense; the jury self-score lock could be undone by clearing the professor's scores. Also fixed: fade pill now reads "Independence N/3", attempts are kept out of search, 40 px touch targets on the answer inputs and pickers (still to confirm on the MatePad). Still open (minor, next run): unit-slip message names the picked unit as 'asked'; remaining M8 minors in the review output.
+- 2026-10-15 10:30 UTC — owner decisions: the app's intelligence is code (§8); one-month roadmap with economical short nights and an unrestricted Wednesday→Thursday night (§9).
