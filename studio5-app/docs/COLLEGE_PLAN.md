@@ -354,6 +354,12 @@ Nights (owner's rule): short nights are economical (orchestrator alone, stop at 
 
 Inputs that would raise quality (ask the owner, do not block on them): whether Physics is taught this year, photos of past exam papers per subject, the actual timetable, each professor's lecture slides.
 
+## 10. القائد والمنفّذ (Lead and executor, owner decision 2026-10-15)
+
+Claude is the lead; a second coding agent (ChatGPT Codex or Gemini) is the executor. Rules: `studio5-app/CLAUDE.md` (lead) and `studio5-app/AGENTS.md` (executor; `GEMINI.md` points to it). The lead keeps everything that decides a mark (solvers, answer keys, grading, mastery, exam scoring), the data model, the worker/AI/security and all reviews and merges; the executor gets UI from precise specs, item-bank entry (answers verified by the lead), Arabic strings, styling, tests from specs and docs. Hand-off is through task files (`docs/tasks/EX-NNN-*.md` from `EX-TEMPLATE.md`, listed in `EXECUTOR_QUEUE.md`) and `exec/*` branches; only the lead merges into `claude/zen-bell-oqcqtr`.
+
+Each night the lead first reviews `exec/*` branches waiting for review, then writes the next executor tasks for the non-critical parts of this week's §9 items (two or three ready tasks at all times), then does the critical work itself.
+
 ## Appendix — milestone specs
 
 ### M1 — Honest mastery and durable progress (Push A)
@@ -648,3 +654,4 @@ docs/tasks/COLLEGE-M9.md; TRACEABILITY line.
 - 2026-10-15 10:45 UTC — owner decision: Year 1 only, highest quality ('the professor explains the idea, the app does the rest'); development until at least 2026-12-05; §9 rewritten as a 7-week Year-1 roadmap.
 - 2026-10-15 10:50 UTC — owner accepted into NTU Architecture and Building Techniques (B.Sc.); civil frozen but kept (nothing deleted); §9 is now Architecture Year 1 only.
 - 2026-10-15 11:10 UTC — official syllabus transcribed (docs/SYLLABUS_ARCH_Y1.md); §9 re-ordered: semester-1 modules first, calculus = matrices + limits + derivatives (no integration), drawing ≈47% of the year.
+- 2026-10-15 11:30 UTC — lead/executor arrangement added (§10; studio5-app/CLAUDE.md, AGENTS.md, GEMINI.md, docs/tasks/EXECUTOR_QUEUE.md).
