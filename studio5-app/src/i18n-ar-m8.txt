@@ -1,0 +1,102 @@
+Jury room	غرفة لجنة التحكيم
+Jury	لجنة التحكيم
+Jury pin-up	عرض أمام لجنة التحكيم
+Composition of primary forms	التكوين بالأشكال الأولية
+Bubble diagram and zoning	المخطط الفقاعي والتنطيق
+Freehand perspective sheet	لوحة منظور يدوي حر
+Rubric	معيار التقييم
+Criteria	المعايير
+# levels	# مستويات
+Start a pin-up	ابدأ عرضاً جديداً
+Self	ذاتي
+No pin-ups yet	لا توجد عروض بعد
+Pick a rubric above and pin up your first board.	اختر معيار تقييم من الأعلى وعلّق لوحتك الأولى.
+Self − professor, mean levels (over-rating is +)	الذاتي − الأستاذ، متوسط المستويات (المبالغة في التقييم موجبة)
+AI − professor, mean levels	الذكاء الاصطناعي − الأستاذ، متوسط المستويات
+Compared criteria	المعايير المقارنة
+Calibration appears after you type your professor's scores for a pin-up.	تظهر المعايرة بعد أن تُدخل درجات أستاذك لأحد العروض.
+year # architecture	عمارة السنة #
+Pin up your work like a real studio review: state your intent, score yourself first, hear an AI juror's reading (advice only), then type in the professor's scores and compare.	علّق عملك كما في مراجعة مرسم حقيقية: اكتب فكرتك، قيّم نفسك أولاً، اسمع قراءة محكّم الذكاء الاصطناعي (نصيحة فقط)، ثم أدخل درجات الأستاذ وقارن.
+This room is practice. It cannot grant a grade — the professor's mark and the real jury decide.	هذه الغرفة للتدريب. لا تمنح درجة — درجة الأستاذ ولجنة التحكيم الحقيقية هما الحكم.
+Vocabulary aligned with a first-year design studio (Harvard GSD 1101 topics) — topics only, nothing copied.	المفردات متوافقة مع مرسم تصميم للسنة الأولى (موضوعات Harvard GSD 1101) — الموضوعات فقط، دون نسخ أي محتوى.
+unverified	غير متحقَّق منه
+Your pin-ups	عروضك
+Calibration across pin-ups	المعايرة عبر العروض
+Pin up the board	علّق اللوحة
+ink page	صفحة حبر
+photo	صورة
+No board pinned yet.	لم تُعلَّق أي لوحة بعد.
+The board and intent are locked after the jury reading — start a new pin-up for a new version.	تُقفل اللوحة والفكرة بعد قراءة لجنة التحكيم — ابدأ عرضاً جديداً لنسخة جديدة.
+Photo of the board	صورة اللوحة
+Use an ink page	استخدم صفحة حبر
+Intent statement — what should the jury see?	بيان الفكرة — ماذا يجب أن ترى اللجنة؟
+Design project (optional)	مشروع التصميم (اختياري)
+The brief	المتطلبات
+Weighted total = Σ weight × level ÷ 4 (all level 4 = 100%). Computed by the app, never by the AI.	المجموع الموزون = Σ الوزن × المستوى ÷ 4 (كل المستويات 4 = 100%). يحسبه التطبيق، ولا يحسبه الذكاء الاصطناعي أبداً.
+Score yourself first	قيّم نفسك أولاً
+self-assessment	تقييم ذاتي
+Self-scores are locked once a jury reading exists, so the calibration stays honest.	تُقفل الدرجات الذاتية بمجرد وجود قراءة للجنة، لتبقى المعايرة صادقة.
+Commit to your own reading before anyone else's. The AI juror stays closed until every criterion has your score.	التزم بقراءتك أنت قبل قراءة أي أحد. يبقى محكّم الذكاء الاصطناعي مغلقاً حتى تضع درجتك لكل معيار.
+Your weighted total	مجموعك الموزون
+Juror unavailable	المحكّم غير متاح
+The juror's reply did not contain rubric scores.	رد المحكّم لم يتضمن درجات معيار التقييم.
+AI weighted total	المجموع الموزون للذكاء الاصطناعي
+partial	جزئي
+AI reading, not a grade	قراءة ذكاء اصطناعي، وليست درجة
+Checked by the app	تحقّق منه التطبيق
+The juror asks	المحكّم يسأل
+Pin up a board first.	علّق لوحة أولاً.
+Write your intent statement first.	اكتب بيان فكرتك أولاً.
+Score yourself on every criterion first.	قيّم نفسك في كل معيار أولاً.
+Today's AI juror budget is used up. Your professor's scores and the calibration still work.	انتهت حصة محكّم الذكاء الاصطناعي لليوم. درجات أستاذك والمعايرة ما زالت تعمل.
+AI is turned off in Settings.	الذكاء الاصطناعي مُطفأ في الإعدادات.
+This pin-up uses a rubric this version does not know.	هذا العرض يستخدم معيار تقييم لا تعرفه هذه النسخة.
+AI juror	محكّم الذكاء الاصطناعي
+AI opinion	رأي الذكاء الاصطناعي
+verify	تحقّق
+The AI reads the board against the rubric and asks questions. Its levels are advice only: they never change a grade or your mastery.	يقرأ الذكاء الاصطناعي اللوحة وفق معيار التقييم ويطرح أسئلة. مستوياته نصيحة فقط: لا تغيّر أي درجة ولا إتقانك.
+Ask the AI juror	اسأل محكّم الذكاء الاصطناعي
+Ask the AI juror again	اسأل محكّم الذكاء الاصطناعي مرة أخرى
+Jury requests today	طلبات التحكيم اليوم
+The juror is reading the board…	المحكّم يقرأ اللوحة…
+Professor / jury scores	درجات الأستاذ / اللجنة
+authoritative	المرجع المعتمد
+Type exactly what the professor or the jury gave. For studio work these scores are the authority.	اكتب بالضبط ما أعطاه الأستاذ أو اللجنة. في أعمال المرسم هذه الدرجات هي المرجع.
+Score yourself first — then type the professor's scores here.	قيّم نفسك أولاً — ثم اكتب درجات الأستاذ هنا.
+Professor level	مستوى الأستاذ
+Professor's weighted total	المجموع الموزون للأستاذ
+The professor's words, verbatim	كلام الأستاذ حرفياً
+Calibration	المعايرة
+AI − self	الذكاء الاصطناعي − الذاتي
+Prof − self	الأستاذ − الذاتي
+Prof − AI	الأستاذ − الذكاء الاصطناعي
+You rated yourself # levels above the professor on average.	قيّمت نفسك أعلى من الأستاذ بـ # مستوى في المتوسط.
+You rated yourself # levels below the professor on average.	قيّمت نفسك أدنى من الأستاذ بـ # مستوى في المتوسط.
+Your self-scores match the professor's on average.	درجاتك الذاتية تطابق درجات الأستاذ في المتوسط.
+Largest gap	أكبر فجوة
+Type the professor's scores to see how well your self-assessment is calibrated.	أدخل درجات الأستاذ لترى مدى دقة تقييمك الذاتي.
+Levels #–#; a gap of # or more levels is marked. Only the professor's column counts as evidence for studio work (EP).	المستويات #–#؛ تُعلَّم الفجوة البالغة # مستويات أو أكثر. عمود الأستاذ وحده يُحتسب دليلاً لأعمال المرسم (EP).
+Studio jury	لجنة تحكيم المرسم
+practice pin-up	عرض تدريبي
+Delete pin-up	احذف العرض
+This pin-up is not on this device	هذا العرض غير موجود على هذا الجهاز
+It may have been deleted. Start a new one from the Jury room.	ربما حُذف. ابدأ عرضاً جديداً من غرفة لجنة التحكيم.
+Unknown rubric	معيار تقييم غير معروف
+Unknown rubric.	معيار تقييم غير معروف.
+This pin-up was made with a rubric this version does not have. Its data is kept unchanged.	صُنع هذا العرض بمعيار تقييم غير موجود في هذه النسخة. بياناته محفوظة دون تغيير.
+Pinning up the board…	جارٍ تعليق اللوحة…
+The board is locked once a jury reading exists. Start a new pin-up for a new version.	تُقفل اللوحة بمجرد وجود قراءة للجنة. ابدأ عرضاً جديداً لنسخة جديدة.
+That ink page is gone.	صفحة الحبر هذه لم تعد موجودة.
+This image could not be read.	تعذّرت قراءة هذه الصورة.
+The board could not be converted.	تعذّر تحويل اللوحة.
+The board image is missing on this device. Pin it up again.	صورة اللوحة مفقودة على هذا الجهاز. علّقها مرة أخرى.
+The juror is already reading a board.	المحكّم يقرأ لوحة الآن.
+This pin-up no longer exists.	هذا العرض لم يعد موجوداً.
+No ink pages with drawing yet	لا توجد صفحات حبر فيها رسم بعد
+Draw in a notebook, the Studio or the Drawing Coach first, or pin up a photo.	ارسم في دفتر أو في المرسم أو في مدرّب الرسم أولاً، أو علّق صورة.
+Delete this pin-up? It goes to the Trash and can be restored.	حذف هذا العرض؟ سيذهب إلى سلة المهملات ويمكن استرجاعه.
+Delete	حذف
+Something went wrong	حدث خطأ ما
+The tutor's answer could not be read	تعذّرت قراءة رد المعلّم
+AI request failed.	فشل طلب الذكاء الاصطناعي.
+Ink page	صفحة حبر

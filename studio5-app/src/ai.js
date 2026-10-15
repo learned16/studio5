@@ -6,11 +6,11 @@ S5.ai = {
   async init() {
     if (S5.standalone) { // installed app: the same AI features run on your Cloudflare account (Workers AI), no Claude tokens
       const toUrl = (b) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+      const parts = async (input, images) => (images && images.length ? [{ type: "text", text: input }, ...(await Promise.all(images.map(toUrl))).map((url) => ({ type: "image_url", image_url: { url } }))] : input);
       const run = async (input, opts = {}) => { // images (drawings, screenshots) go to the vision model as data URLs
-        const content = opts.images && opts.images.length ? [{ type: "text", text: input }, ...(await Promise.all(opts.images.map(toUrl))).map((url) => ({ type: "image_url", image_url: { url } }))] : input;
-        return { text: await S5.tutor.ask([{ role: "user", content }], { onText: opts.onText }) };
+        return { text: await S5.tutor.ask([{ role: "user", content: await parts(input, opts.images) }], { onText: opts.onText, temperature: opts.temperature, max_tokens: opts.max_tokens }) };
       };
-      run.json = (input) => S5.tutor.ask([{ role: "user", content: input + "\n\nReturn only valid JSON." }], { json: true });
+      run.json = async (input, opts = {}) => S5.tutor.ask([{ role: "user", content: await parts(input + "\n\nReturn only valid JSON.", opts.images) }], { json: true, temperature: opts.temperature, max_tokens: opts.max_tokens });
       this.fn = run; this.state = "ready"; S5.bus.emit("ai", this.state); return;
     }
     if (!window.claude || typeof window.claude.use !== "function") { this.state = "none"; return; }
@@ -26,7 +26,7 @@ S5.ai = {
 - Engineering, structural, site and safety topics are for learning only, not for design approval or execution.
 - Answer in the language of the student's text (Arabic or English). If the student wrote Arabic, answer in clear Modern Standard Arabic with Iraqi-friendly wording and keep technical English terms in parentheses.
 - Be concise and concrete. No filler.`,
-  async ask(purpose, prompt, { json = false, tier = "default", onText, records = [], images, signal } = {}) {
+  async ask(purpose, prompt, { json = false, tier = "default", onText, records = [], images, signal, temperature, max_tokens } = {}) {
     if (!this.on()) throw { code: "off", message: S5.ai.state === "none" ? "AI is not available in this view." : "AI is turned off in Settings." };
     const blocked = records.filter((r) => r && r.noAI);
     if (blocked.length) throw { code: "blocked", message: `“${S5.title(blocked[0])}” is marked “no AI”. Remove that flag to use AI on it.` };
@@ -35,6 +35,7 @@ S5.ai = {
     const entry = { at: S5.now(), purpose, chars: input.length, records: records.filter(Boolean).map((r) => r.id), images: images ? images.length : 0, ok: false };
     const log = [entry, ...this.log()].slice(0, 300); S5.store.meta.aiLog = log; S5.idb.put("meta", "aiLog", log);
     const opts = { modelTier: tier }; if (onText) opts.onText = onText; if (images) opts.images = images; if (signal) opts.signal = signal;
+    if (typeof temperature === "number") opts.temperature = temperature; if (max_tokens) opts.max_tokens = max_tokens; // the Worker clamps both
     try {
       const res = json ? await this.fn.json(input, opts) : await this.fn(input, opts);
       entry.ok = true; S5.idb.put("meta", "aiLog", log);

@@ -95,13 +95,13 @@ S5.tutor = {
   },
   available() { return S5.standalone ? true : S5.ai.state === "ready"; },
   /* one request; streams text into onText when given */
-  async ask(messages, { onText, json, max_tokens, signal } = {}) {
+  async ask(messages, { onText, json, max_tokens, temperature, signal } = {}) {
     if (!S5.standalone) { // claude.ai artifact: use the built-in model
       const flat = messages.map((m) => `${m.role.toUpperCase()}: ${typeof m.content === "string" ? m.content : m.content.filter((c) => c.type === "text").map((c) => c.text).join("\n")}`).join("\n\n");
       return S5.ai.ask("tutor", flat, { onText: onText ? (t) => onText(t) : undefined, json });
     }
     await this.ensureAccess();
-    const r = await fetch("/api/tutor/chat", { method: "POST", headers: this.auth(), body: JSON.stringify({ messages, json: !!json, stream: !!onText && !json, max_tokens }), signal });
+    const r = await fetch("/api/tutor/chat", { method: "POST", headers: this.auth(), body: JSON.stringify({ messages, json: !!json, stream: !!onText && !json, max_tokens, temperature }), signal });
     if (!r.ok) { let e = {}; try { e = await r.json(); } catch {} throw new Error(e.error || "Tutor unavailable (" + r.status + ")"); }
     if (!onText || json) { const d = await r.json(); if (!json) return d.text; try { return JSON.parse(d.text); } catch { const m = /\{[\s\S]*\}/.exec(d.text || ""); if (m) return JSON.parse(m[0]); throw new Error("The tutor's answer could not be read"); } }
     const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "", full = "";
