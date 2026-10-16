@@ -15,14 +15,15 @@ UI screens built from a precise spec, item banks entered in a given format (Clau
 Arabic strings, CSS/MatePad polish, tests written from a spec, docs, small listed bug fixes, approved refactors.
 Its rules are in `AGENTS.md` (this folder).
 
-## Loop
-1. Write `docs/tasks/EX-NNN-short.md` from `docs/tasks/EX-TEMPLATE.md` and add a row to `docs/tasks/EXECUTOR_QUEUE.md`
-   (status `open`). Specs name the allowed files, the APIs to call, the acceptance criteria and the test.
+## Loop (owner decision 2026-10-16: fully automatic, no long reviews — the owner is asleep)
+The executor is ChatGPT Codex, started from GitHub: an issue whose body begins with `@codex` and names the task.
+1. Write `docs/tasks/EX-NNN-short.md` from `docs/tasks/EX-TEMPLATE.md`, add a row to `docs/tasks/EXECUTOR_QUEUE.md`,
+   push, then open the issue "EX-NNN — title" (body: `@codex` + do the task from `claude/zen-bell-oqcqtr`, follow
+   AGENTS.md and the task file, open a PR into `claude/zen-bell-oqcqtr` with EX-NNN in the title).
    Never give the executor a task that touches what Claude owns.
-2. Review `exec/*` and `codex/*` branches (and their PRs into `claude/zen-bell-oqcqtr`): fetch, read the whole diff against the base, check scope (only allowed files),
-   re-derive any number shown to the student, `node build.mjs`, `bash tests/run-all.sh`. Verdict PASS / FAIL /
-   NEEDS DECISION written into the task file's "Lead review" section with file, evidence, impact, fix.
-3. PASS → merge into `claude/zen-bell-oqcqtr` (merge commit; rebuild dist/public; full suite green), push, set the
-   queue row to `done`, delete nothing of the executor's history. FAIL → set `changes requested` and list the fixes.
-4. Content the executor wrote stays marked `needs-check` until Claude has verified it.
-Claude does not edit files claimed by an `in-progress (executor)` task.
+2. Each night, for every open PR into `claude/zen-bell-oqcqtr` from `codex/*` or `exec/*`: check it touches only the
+   task's allowed files, merge it locally, `node build.mjs`, `bash tests/run-all.sh`. No written review.
+3. Green and in scope → merge into `claude/zen-bell-oqcqtr` (merge commit, rebuild dist/public, push; the PR shows as
+   merged), close the issue, queue row `done`. Red or out of scope → comment on the PR beginning with `@codex` with
+   exactly what to fix (failing output). If Codex never answers an issue, tell the owner in one line.
+4. Content the executor wrote stays marked `needs-check` until Claude has verified it when it is next used.
