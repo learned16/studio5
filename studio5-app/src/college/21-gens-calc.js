@@ -44,13 +44,13 @@
     const LESSON_MAT = "a1b-calc-08", LESSON_FN = "a1b-calc-01", LESSON_LIM = "a1b-calc-02";
 
     /* ---------- objectives (weeks of the official syllabus) ---------- */
-    PR.obj({ id: "calc.matrix.ops", en: "Matrix operations: sum, scalar multiple and product (week 1)", ar: "عمليات المصفوفات: الجمع والضرب بعدد وضرب مصفوفتين (الأسبوع 1)", subjects: [SUBJ], program: "arch", lessons: [LESSON_MAT] });
+    PR.obj({ id: "calc.matrix.ops", en: "Matrix operations: sum, scalar multiple and product (week 1)", ar: "عمليات المصفوفات: الجمع، والضرب في عدد ثابت، وضرب مصفوفتين (الأسبوع 1)", subjects: [SUBJ], program: "arch", lessons: [LESSON_MAT] });
     PR.obj({ id: "calc.matrix.det", en: "Determinants of 2×2 and 3×3 matrices (week 2)", ar: "محددات المصفوفات 2×2 و3×3 (الأسبوع 2)", subjects: [SUBJ], program: "arch", lessons: [LESSON_MAT] });
-    PR.obj({ id: "calc.matrix.inverse", en: "The adjoint and the inverse of a matrix (week 2)", ar: "المرافق ومعكوس المصفوفة (الأسبوع 2)", subjects: [SUBJ], program: "arch", lessons: [LESSON_MAT] });
+    PR.obj({ id: "calc.matrix.inverse", en: "The adjoint and the inverse of a matrix (week 2)", ar: "المصفوفة المرافقة ومعكوس المصفوفة (الأسبوع 2)", subjects: [SUBJ], program: "arch", lessons: [LESSON_MAT] });
     PR.obj({ id: "calc.matrix.systems", en: "Solving linear systems with matrices — Cramer's rule (week 3)", ar: "حل أنظمة المعادلات الخطية بالمصفوفات — قاعدة كرامر (الأسبوع 3)", subjects: [SUBJ], program: "arch", lessons: [LESSON_MAT] });
     PR.obj({ id: "calc.lines", en: "Slope and equation of a line (week 5)", ar: "الميل ومعادلة المستقيم (الأسبوع 5)", subjects: [SUBJ], program: "arch", lessons: [LESSON_FN] });
     PR.obj({ id: "calc.circles", en: "Circles: centre and radius from the general equation (week 6)", ar: "الدائرة: المركز ونصف القطر من المعادلة العامة (الأسبوع 6)", subjects: [SUBJ], program: "arch", lessons: [LESSON_FN] });
-    PR.obj({ id: "calc.limits", en: "Limits: factor and cancel, trigonometric limits, limits at infinity (weeks 7–10)", ar: "الغايات: التحليل والاختصار، الغايات المثلثية، الغايات عند اللانهاية (الأسابيع 7–10)", subjects: [SUBJ], program: "arch", lessons: [LESSON_LIM] });
+    PR.obj({ id: "calc.limits", en: "Limits: factor and cancel, trigonometric limits, limits at infinity (weeks 7–10)", ar: "النهايات: التحليل والاختصار، النهايات المثلثية، والنهايات عند اللانهاية (الأسابيع 7–10)", subjects: [SUBJ], program: "arch", lessons: [LESSON_LIM] });
     PR.obj({ id: "calc.continuity", en: "Continuity of piecewise functions (week 10)", ar: "اتصال الدوال المجزأة (الأسبوع 10)", subjects: [SUBJ], program: "arch", lessons: [LESSON_LIM] });
 
     /* ---------- 1. product of two matrices ---------- */
@@ -73,7 +73,7 @@
         const out = { c11: [], c12: [], c21: [], c22: [] };
         if (p.B.length === 2) { const BA = mul(p.B, p.A), E = p.A.map((row, i) => row.map((a, j) => a * p.B[i][j]));
           for (const [k, i, j] of [["c11", 0, 0], ["c12", 0, 1], ["c21", 1, 0], ["c22", 1, 1]]) {
-            out[k].push(["order", BA[i][j], note("You computed B·A instead of A·B — matrix multiplication is not commutative.", "حسبت B·A بدل A·B — ضرب المصفوفات ليس إبداليًا.")]);
+            out[k].push(["order", BA[i][j], note("You computed B·A instead of A·B — matrix multiplication is not commutative.", "حسبت B·A بدلًا من A·B — فضرب المصفوفات ليس إبداليًا.")]);
             out[k].push(["elementwise", E[i][j], note("You multiplied entry by entry; multiply row i of A by column j of B and add.", "ضربت عنصرًا بعنصر؛ اضرب الصف i من A في العمود j من B واجمع.")]);
           } }
         return out;
@@ -88,7 +88,7 @@
       solve: (p) => ({ D: det2(p.A) }),
       fields: () => [fld("D", "det A", "The determinant |A|", "المحدد |A|")],
       text: (p, lang) => tr(lang, `Find the determinant of A = ${mtxt(p.A)}.`, `أوجد محدد المصفوفة A = ${mtxt(p.A)}.`),
-      steps: (p, lang) => { const A = p.A; return [tr(lang, "|A| = a·d − b·c (main diagonal minus the other diagonal)", "|A| = a·d − b·c (القطر الرئيسي ناقص القطر الآخر)"), `|A| = ${par(A[0][0])}·${par(A[1][1])} − ${par(A[0][1])}·${par(A[1][0])} = ${num(A[0][0] * A[1][1])} − ${par(A[0][1] * A[1][0])} = ${num(det2(A))}`]; },
+      steps: (p, lang) => { const A = p.A; return [tr(lang, "|A| = a·d − b·c (main diagonal minus the other diagonal)", "|A| = a·d − b·c (حاصل ضرب عنصري القطر الرئيسي ناقص حاصل ضرب عنصري القطر الآخر)"), `|A| = ${par(A[0][0])}·${par(A[1][1])} − ${par(A[0][1])}·${par(A[1][0])} = ${num(A[0][0] * A[1][1])} − ${par(A[0][1] * A[1][0])} = ${num(det2(A))}`]; },
       mis: (p) => ({ D: [["plus", p.A[0][0] * p.A[1][1] + p.A[0][1] * p.A[1][0], note("You added the two diagonal products; the determinant is a·d MINUS b·c.", "جمعت حاصلي ضرب القطرين؛ المحدد هو a·d ناقص b·c.")]] }),
       svg: (p) => svgMats([[p.A, "A"]]),
     });
@@ -232,7 +232,7 @@
         return { a: 2, p: 1, q: 2, s: 0, t: 1 };
       },
       solve: (p) => ({ L: (p.p * p.a + p.q) / (p.s * p.a + p.t) }),
-      fields: () => [fld("L", "L", "The value of the limit", "قيمة الغاية")],
+      fields: () => [fld("L", "L", "The value of the limit", "قيمة النهاية")],
       text(p, lang) {
         const num2 = poly([p.p, p.q - p.p * p.a, -p.q * p.a]), den = p.s === 0 ? poly([1, -p.a]) : poly([p.s, p.t - p.s * p.a, -p.t * p.a]);
         return tr(lang, `Find lim x→${num(p.a)} of (${num2}) / (${den}).`, `أوجد lim عندما x→${num(p.a)} للدالة (${num2}) / (${den}).`);
@@ -243,7 +243,7 @@
           tr(lang, `Numerator = (${poly([1, -p.a])})(${f1}); denominator = (${poly([1, -p.a])})(${f2})`, `البسط = (${poly([1, -p.a])})(${f1})؛ المقام = (${poly([1, -p.a])})(${f2})`),
           tr(lang, `Cancel (${poly([1, -p.a])}) and substitute: (${p.p}·${par(p.a)} ${p.q < 0 ? "−" : "+"} ${Math.abs(p.q)}) / (${p.s === 0 ? "1" : `${p.s}·${par(p.a)} ${p.t < 0 ? "−" : "+"} ${Math.abs(p.t)}`}) = ${qs(L)}`, `نختصر (${poly([1, -p.a])}) ونعوّض: (${p.p}·${par(p.a)} ${p.q < 0 ? "−" : "+"} ${Math.abs(p.q)}) / (${p.s === 0 ? "1" : `${p.s}·${par(p.a)} ${p.t < 0 ? "−" : "+"} ${Math.abs(p.t)}`}) = ${qs(L)}`)];
       },
-      mis: () => ({ L: [["zero", 0, note("0/0 is not 0 — it is indeterminate. Factor, cancel the common factor (x − a), then substitute.", "0/0 ليست صفرًا — إنها صيغة غير محددة. حلّل واختصر العامل المشترك (x − a) ثم عوّض.")]] }),
+      mis: () => ({ L: [["zero", 0, note("0/0 is not 0 — it is indeterminate. Factor, cancel the common factor (x − a), then substitute.", "0/0 لا تساوي صفرًا — بل هي صيغة غير محددة. حلّل، ثم اختصر العامل المشترك (x − a)، وبعدها عوّض.")]] }),
     });
 
     /* ---------- 8. trigonometric limits (sin θ/θ → 1) ---------- */
@@ -252,14 +252,14 @@
       id: "calc.limitTrig", v: 1, obj: "calc.limits", lesson: LESSON_LIM, subject: SUBJ, program: "arch", lvl: 2,
       gen(r) { for (let t = 0; t < 40; t++) { const f = r.pick(TRIG), k = r.int(2, 9), m = r.int(1, 9); if (k !== m) return { f, k, m }; } return { f: "sinOverX", k: 3, m: 2 }; },
       solve(p) { const { f, k, m } = p; return { L: f === "oneMinusCos" ? (k * k) / (2 * m) : f === "xOverSin" ? m / k : k / m }; },
-      fields: () => [fld("L", "L", "The value of the limit (as a fraction or decimal)", "قيمة الغاية (كسر أو عدد عشري)")],
+      fields: () => [fld("L", "L", "The value of the limit (as a fraction or decimal)", "قيمة النهاية (كسر أو عدد عشري)")],
       text(p, lang) {
         const { f, k, m } = p, mm = m === 1 ? "" : m, e = { sinOverX: `sin(${k}x) / (${mm}x)`, sinOverSin: `sin(${k}x) / sin(${m}x)`, tanOverX: `tan(${k}x) / (${mm}x)`, oneMinusCos: `(1 − cos(${k}x)) / (${mm}x²)`, xOverSin: `(${mm}x) / sin(${k}x)` }[f];
-        return tr(lang, `Find lim x→0 of ${e} (x in radians).`, `أوجد lim عندما x→0 للدالة ${e} (x بالراديان).`);
+        return tr(lang, `Find lim x→0 of ${e} (x in radians).`, `أوجد lim عندما x→0 للدالة ${e} (x مقاس بالراديان).`);
       },
       steps(p, lang) {
         const { f, k, m } = p, L = qs(Q(...{ oneMinusCos: [k * k, 2 * m], xOverSin: [m, k] }[f] || [k, m]));
-        const base = tr(lang, "Use lim θ→0 sin θ/θ = 1 (and tan θ/θ = 1, (1 − cos θ)/θ² = 1/2): make the inside of each function appear underneath it.", "استعمل lim عندما θ→0 لـ sin θ/θ = 1 (وكذلك tan θ/θ = 1 و (1 − cos θ)/θ² = 1/2): اجعل ما داخل الدالة يظهر في المقام.");
+        const base = tr(lang, "Use lim θ→0 sin θ/θ = 1 (and tan θ/θ = 1, (1 − cos θ)/θ² = 1/2): make the inside of each function appear underneath it.", "استعمل lim عندما θ→0 لـ sin θ/θ = 1 (وكذلك tan θ/θ = 1 و (1 − cos θ)/θ² = 1/2): أعد ترتيب كل حد ليظهر المقدار نفسه داخل الدالة في البسط والمقام.");
         const s = {
           sinOverX: [`sin(${k}x)/(${m}x) = (${k}/${m})·[sin(${k}x)/(${k}x)] → (${k}/${m})·1`],
           sinOverSin: [`sin(${k}x)/sin(${m}x) = (${k}x/${m}x)·[sin(${k}x)/(${k}x)]·[(${m}x)/sin(${m}x)] → (${k}/${m})·1·1`],
@@ -271,7 +271,7 @@
       },
       mis(p) {
         const { f, k, m } = p, L = this.solve(p).L;
-        if (f === "oneMinusCos") return { L: [["noHalf", (k * k) / m, note("(1 − cos θ)/θ² → 1/2, not 1: you lost the factor 1/2.", "(1 − cos θ)/θ² تقترب من 1/2 وليس 1: سقط منك المعامل 1/2.")]] };
+        if (f === "oneMinusCos") return { L: [["noHalf", (k * k) / m, note("(1 − cos θ)/θ² → 1/2, not 1: you lost the factor 1/2.", "(1 − cos θ)/θ² تقترب من 1/2 وليس 1: لقد أسقطت العامل 1/2.")]] };
         return { L: [["inverted", 1 / L, note("Upside down: write the angle under the sine (sin kx / kx → 1) and keep the coefficients where they are.", "مقلوبة: ضع الزاوية تحت الجيب (sin kx / kx → 1) وأبقِ المعاملات في أماكنها.")], ["one", 1, note("sin(kx)/x → k, not 1: the special limit needs the SAME angle on top and bottom.", "sin(kx)/x تقترب من k وليس 1: الغاية الخاصة تحتاج الزاوية نفسها في البسط والمقام.")]] };
       },
     });
@@ -288,7 +288,7 @@
         return { n: 2, lower: false, a: 3, b: 1, c: 2, d: 5, e: 0, g: -4 };
       },
       solve: (p) => ({ L: p.lower ? 0 : p.a / p.d }),
-      fields: () => [fld("L", "L", "The value of the limit", "قيمة الغاية")],
+      fields: () => [fld("L", "L", "The value of the limit", "قيمة النهاية")],
       text(p, lang) {
         const N = p.lower ? poly([p.a, p.c]) : p.n === 3 ? poly([p.a, p.b, 0, p.c]) : poly([p.a, p.b, p.c]);
         const D = p.n === 3 ? poly([p.d, 0, p.e, p.g]) : poly([p.d, p.e, p.g]);
@@ -296,10 +296,10 @@
       },
       steps(p, lang) {
         const hp = p.n === 3 ? "x³" : "x²";
-        if (p.lower) return [tr(lang, `The highest power is in the denominator (${hp}); divide top and bottom by ${hp}.`, `أعلى قوة في المقام (${hp})؛ نقسم البسط والمقام على ${hp}.`), tr(lang, "Every term of the numerator then tends to 0 while the denominator tends to its leading coefficient.", "فتقترب كل حدود البسط من الصفر بينما يقترب المقام من معامله الأعلى."), `L = 0/${p.d} = 0`];
-        return [tr(lang, `Same highest power (${hp}) top and bottom: divide every term by ${hp}.`, `القوة العليا نفسها (${hp}) في البسط والمقام: نقسم كل حد على ${hp}.`), tr(lang, "All terms with 1/x, 1/x², … tend to 0, leaving the leading coefficients.", "كل الحدود التي فيها 1/x أو 1/x² … تقترب من الصفر، فتبقى المعاملات العليا."), `L = ${num(p.a)}/${p.d} = ${qs(Q(p.a, p.d))}`];
+        if (p.lower) return [tr(lang, `The highest power is in the denominator (${hp}); divide top and bottom by ${hp}.`, `أعلى أسّ في المقام (${hp})؛ نقسم البسط والمقام على ${hp}.`), tr(lang, "Every term of the numerator then tends to 0 while the denominator tends to its leading coefficient.", "فتؤول كل حدود البسط إلى الصفر، بينما يؤول المقام إلى معامله الرئيس."), `L = 0/${p.d} = 0`];
+        return [tr(lang, `Same highest power (${hp}) top and bottom: divide every term by ${hp}.`, `أعلى أسّ في البسط والمقام هو نفسه (${hp}) : نقسم كل حد على ${hp}.`), tr(lang, "All terms with 1/x, 1/x², … tend to 0, leaving the leading coefficients.", "تؤول الحدود التي تتضمن 1/x أو 1/x² … إلى الصفر، وتبقى المعاملات الرئيسة."), `L = ${num(p.a)}/${p.d} = ${qs(Q(p.a, p.d))}`];
       },
-      mis: (p) => ({ L: p.lower ? [["leadRatio", p.a / p.d, note("The numerator has the LOWER power: the denominator grows faster, so the limit is 0.", "قوة البسط أقل: المقام يكبر أسرع، فالغاية صفر.")]] : [["constRatio", p.c / p.g, note("At infinity the highest powers decide, not the constant terms.", "عند اللانهاية تحسم القوى العليا وليس الحدود الثابتة.")]] }),
+      mis: (p) => ({ L: p.lower ? [["leadRatio", p.a / p.d, note("The numerator has the LOWER power: the denominator grows faster, so the limit is 0.", "أسّ البسط أقل: ينمو المقام أسرع، لذا النهاية تساوي صفرًا.")]] : [["constRatio", p.c / p.g, note("At infinity the highest powers decide, not the constant terms.", "عند اللانهاية، الحسم للأسس العليا لا للحدود الثابتة.")]] }),
     });
 
     /* ---------- 10. continuity: find k ---------- */
@@ -322,9 +322,9 @@
         return tr(lang, `f(x) = ${poly([p.a, p.b])} for x < ${num(p.c)}, and f(x) = k·x² for x ≥ ${num(p.c)}. Find k so that f is continuous at x = ${num(p.c)}.`, `لتكن f(x) = ${poly([p.a, p.b])} عندما x < ${num(p.c)}، و f(x) = k·x² عندما x ≥ ${num(p.c)}. أوجد k لتكون f متصلة عند x = ${num(p.c)}.`);
       },
       steps(p, lang) {
-        if (p.kind === "hole") return [tr(lang, "Continuous at c means lim x→c f(x) = f(c).", "الاتصال عند c يعني lim f(x) عندما x→c تساوي f(c)."), tr(lang, `x² − ${p.c * p.c} = (x − ${par(p.c)})(x + ${par(p.c)}); cancel (x − ${par(p.c)}) → x + ${par(p.c)}`, `x² − ${p.c * p.c} = (x − ${par(p.c)})(x + ${par(p.c)})؛ نختصر (x − ${par(p.c)}) ← x + ${par(p.c)}`), `k = ${num(p.c)} + ${par(p.c)} = ${num(2 * p.c)}`];
+        if (p.kind === "hole") return [tr(lang, "Continuous at c means lim x→c f(x) = f(c).", "يكون الاتصال عند c إذا كان lim f(x) عندما x→c مساويًا لـ f(c)."), tr(lang, `x² − ${p.c * p.c} = (x − ${par(p.c)})(x + ${par(p.c)}); cancel (x − ${par(p.c)}) → x + ${par(p.c)}`, `x² − ${p.c * p.c} = (x − ${par(p.c)})(x + ${par(p.c)})؛ نختصر (x − ${par(p.c)}) ← x + ${par(p.c)}`), `k = ${num(p.c)} + ${par(p.c)} = ${num(2 * p.c)}`];
         const left = p.a * p.c + p.b;
-        return [tr(lang, "Continuity at c: the left limit, the right limit and f(c) must be equal.", "الاتصال عند c: الغاية من اليسار والغاية من اليمين و f(c) يجب أن تتساوى."), tr(lang, `Left: ${p.a}·${par(p.c)} ${p.b < 0 ? "−" : "+"} ${Math.abs(p.b)} = ${num(left)}; right: k·${par(p.c)}² = ${p.c * p.c}k`, `من اليسار: ${p.a}·${par(p.c)} ${p.b < 0 ? "−" : "+"} ${Math.abs(p.b)} = ${num(left)}؛ من اليمين: k·${par(p.c)}² = ${p.c * p.c}k`), `${p.c * p.c}k = ${num(left)} → k = ${qs(Q(left, p.c * p.c))}`];
+        return [tr(lang, "Continuity at c: the left limit, the right limit and f(c) must be equal.", "يتطلب الاتصال عند c: تساوي النهاية اليسرى والنهاية اليمنى وقيمة f(c)، ويجب أن تتساوى."), tr(lang, `Left: ${p.a}·${par(p.c)} ${p.b < 0 ? "−" : "+"} ${Math.abs(p.b)} = ${num(left)}; right: k·${par(p.c)}² = ${p.c * p.c}k`, `من اليسار: ${p.a}·${par(p.c)} ${p.b < 0 ? "−" : "+"} ${Math.abs(p.b)} = ${num(left)}؛ من اليمين: k·${par(p.c)}² = ${p.c * p.c}k`), `${p.c * p.c}k = ${num(left)} → k = ${qs(Q(left, p.c * p.c))}`];
       },
       mis: (p) => (p.kind === "hole" ? { k: [["zero", 0, note("Substituting x = c gives 0/0, not 0 — cancel the common factor first.", "التعويض بـ x = c يعطي 0/0 وليس صفرًا — اختصر العامل المشترك أولًا.")]] } : { k: [["linear", (p.a * p.c + p.b) / p.c, note("The right piece is k·x²: divide by c², not by c.", "القطعة اليمنى k·x²: اقسم على c² وليس على c.")]] }),
     });
