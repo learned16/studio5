@@ -49,47 +49,47 @@
 
     const LESSONS = [
       { id: "L11", level: 2, week: "3–4", title: "Box in one-point perspective", ar: "صندوق بمنظور نقطة واحدة",
-        say: "على ورقتك خط الأفق ونقطة التلاشي بالنص. ارسم صندوق تحت الأفق: الوجه الأمامي مستطيل (خطوط أفقية وعمودية)، وكل الحافات اللي ترجع لورا لازم تروح لنقطة التلاشي.",
-        tip: "قبل ما ترسم الحافة الراجعة، حط المسطرة بعينك من الزاوية لنقطة التلاشي.",
+        say: "ضع خط الأفق ونقطة التلاشي في منتصف الورقة. ارسم صندوقًا تحت خط الأفق: اجعل وجهه الأمامي مستطيلاً (بحواف أفقية وعمودية)، ومدّ كل حافة متجهة إلى العمق حتى تمر بنقطة التلاشي.",
+        tip: "قبل رسم الحافة المتجهة إلى العمق، وجّه المسطرة من الزاوية نحو نقطة التلاشي.",
         demo: box1, guides: [guideLine(0, HY, W, HY), S5.guideDot(VP1[0], VP1[1], 7)],
         check: { type: "vp1", vp: VP1, tol: 4, minH: 2, minV: 2, minR: 3 } },
       { id: "L12", level: 2, week: "4–5", title: "Cube in two-point perspective", ar: "مكعب بمنظور نقطتين",
-        say: "هسه نقطتين تلاشي على طرفي الأفق. ارسم مكعب: الحافات العمودية عمودية تماماً، وكل حافة ثانية تروح لنقطة التلاشي اليسرى أو اليمنى. ماكو خطوط أفقية بمنظور النقطتين.",
-        tip: "ابدأ بالحافة العمودية الأقرب لك، وبعدين وصّل طرفيها للنقطتين.",
+        say: "ضع نقطتي تلاشي على طرفي خط الأفق. ارسم مكعبًا: اجعل حوافه الرأسية عمودية تمامًا، ومدّ كل حافة أخرى نحو نقطة التلاشي اليسرى أو اليمنى. لا ترسم حواف أفقية بمنظور النقطتين.",
+        tip: "ابدأ بالحافة الرأسية الأقرب إليك، ثم صِل نهايتيها بنقطتي التلاشي.",
         demo: [sline(corner[0], corner[1], cTop[0], cTop[1]), sline(corner[0], corner[1], L2[0], L2[1]), sline(corner[0], corner[1], R2[0], R2[1]), sline(cTop[0], cTop[1], L2b[0], L2b[1]), sline(cTop[0], cTop[1], R2b[0], R2b[1]), sline(L2[0], L2[1], L2b[0], L2b[1]), sline(R2[0], R2[1], R2b[0], R2b[1]), sline(L2[0], L2[1], BACK[0], BACK[1]), sline(R2[0], R2[1], BACK[0], BACK[1])],
         guides: [guideLine(0, 210, W, 210), S5.guideDot(VPL[0], VPL[1], 7), S5.guideDot(VPR[0], VPR[1], 7)],
         check: { type: "vp2", vps: [VPL, VPR], tol: 4, minV: 3, minEach: 2 } },
       { id: "L13", level: 2, week: "6–8", title: "Ellipses (circles in perspective)", ar: "القطوع الناقصة (الدائرة بالمنظور)",
-        say: "الدائرة بالمنظور تصير قطع ناقص. ارسم بكل مستطيل قطع ناقص يلمس أضلاعه الأربعة: الأول مسطّح (قريب من مستوى العين) والأخير أدور. الأطراف مدوّرة مو مدببة.",
-        tip: "دوّر بالهوا فوك المستطيل مرتين، وبعدين ارسم بحركة وحدة سريعة.",
+        say: "تبدو الدائرة في المنظور قطعًا ناقصًا. ارسم في كل مستطيل قطعًا ناقصًا يلمس أضلاعه الأربعة: الأول مسطّح (لقربه من مستوى العين) والأخير أدور. اجعل الأطراف مستديرة، لا مدببة.",
+        tip: "تدرّب على رسم القطع الناقص في الهواء فوق المستطيل مرتين، ثم ارسمه بحركة واحدة سريعة.",
         demo: ELL_BOXES.map(([x, y, w, h]) => ell(x + w / 2, y + h / 2, w / 2, h / 2)), guides: ELL_BOXES.map(([x, y, w, h]) => S5.guideRect(x, y, w, h)),
         check: { type: "ellipses", boxes: ELL_BOXES, fit: 0.12, res: 0.07, ends: 0.27, tilt: 5, gap: 0.08 } },
       { id: "L14", level: 2, week: "11–13", title: "Pottery: proportion and symmetry", ar: "الفخاريات: النسبة والتناظر",
-        say: "على ورقتك محور عمودي وخطين للأعلى والأسفل. ارسم مزهرية متناظرة حول المحور: الجهة اليسرى صورة مرآة لليمنى، وعرضها الأكبر ثلثين ارتفاعها.",
-        tip: "علّم أعرض نقطة على الجهتين بنفس البعد عن المحور قبل ما ترسم المنحني.",
+        say: "ارسم محورًا رأسيًا وحدّد خطي أعلى المزهرية وأسفلها. ارسم مزهرية متناظرة حول المحور: اجعل الجانب الأيسر صورة معكوسة للأيمن، وعرضها الأكبر ثلثي ارتفاعها.",
+        tip: "حدّد أعرض نقطة على الجانبين، وتأكد من تساوي بعدها عن المحور قبل رسم المنحنى.",
         demo: vaseDemo, guides: [guideLine(VASE.axis, VASE.top - 30, VASE.axis, VASE.bottom + 30), guideLine(VASE.axis - 260, VASE.top, VASE.axis + 260, VASE.top), guideLine(VASE.axis - 260, VASE.bottom, VASE.axis + 260, VASE.bottom)],
         check: { type: "vase", ...VASE, ratioTol: 0.1, sym: 0.035, lean: 0.04, fill: 0.06 } },
       { id: "L15", level: 2, week: "6–8", title: "Cylinder", ar: "الأسطوانة",
-        say: "ارسم أسطوانة واقفة تحت خط الأفق: قطع ناقص فوق وقطع ناقص تحت بنفس العرض ونفس المحور، وخطين عموديين يلمسون أطرافهم. القاعدة أبعد عن الأفق فتطلع أدور من الوجه العلوي.",
-        tip: "القاعدة منحنية دائماً — لا ترسمها خط مستقيم.",
+        say: "ارسم أسطوانة قائمة تحت خط الأفق: قطعًا ناقصًا في الأعلى وآخر في الأسفل بالعرض والمحور نفسيهما، وصِل نهايتيهما بخطين عموديين يلمسان أطراف القطعين. القاعدة أبعد عن خط الأفق، لذا تبدو أدور من الوجه العلوي.",
+        tip: "ارسم القاعدة منحنية دائمًا — لا تجعلها خطًا مستقيمًا.",
         demo: [ell(500, 300, 150, 40), ell(500, 590, 150, 62), sline(350, 300, 350, 590), sline(650, 300, 650, 590)],
         guides: [guideLine(0, 150, W, 150)],
         check: { type: "cylinder", horizon: 150, tol: 4, axis: 0.05, width: 0.1, side: 0.07 } },
       { id: "L16", level: 2, week: "9–10, 15–16", title: "Oblique cube", ar: "المكعب المائل",
-        say: "المكعب مدوّر بزاوية: نقطة تلاشي قريبة يسار وأخرى بعيدة يمين. الوجه اللي يروح للنقطة القريبة يقصر بسرعة. نفس القواعد: العمودي عمودي، والباقي لنقطة التلاشي.",
-        tip: "النقطة القريبة تخلي الوجه حاد التقاصر — لا تخلي الوجهين متساويين.",
+        say: "المكعب مائل بزاوية: ضع نقطة تلاشي قريبة إلى اليسار وأخرى بعيدة إلى اليمين. يتقاصر الوجه المتجه إلى النقطة القريبة بسرعة. القواعد نفسها: أبقِ الحواف الرأسية عمودية، ومدّ بقية الحواف نحو نقاط التلاشي.",
+        tip: "تقارب الوجه من نقطة التلاشي القريبة يجعله يتقاصر بوضوح — لا تجعل الوجهين متساويين.",
         demo: (() => { const vl = [220, 200], vr = [1400, 200], a = [470, 330], b2 = [470, 600], f = 0.4, l0 = along(a, vl, f), l1 = along(b2, vl, f), r0 = along(a, vr, 0.25), r1 = along(b2, vr, 0.25), bk = meet(l0, vr, r0, vl); return [sline(a[0], a[1], b2[0], b2[1]), sline(a[0], a[1], l0[0], l0[1]), sline(b2[0], b2[1], l1[0], l1[1]), sline(l0[0], l0[1], l1[0], l1[1]), sline(a[0], a[1], r0[0], r0[1]), sline(b2[0], b2[1], r1[0], r1[1]), sline(r0[0], r0[1], r1[0], r1[1]), sline(l0[0], l0[1], bk[0], bk[1]), sline(r0[0], r0[1], bk[0], bk[1])]; })(),
         guides: [guideLine(0, 200, W, 200), S5.guideDot(220, 200, 7)],
         check: { type: "vp2", vps: [[220, 200], [1400, 200]], tol: 4, minV: 3, minEach: 2 } },
       { id: "L17", level: 2, week: "Arc 101 · 4", title: "Types of lines", ar: "أنواع الخطوط",
-        say: "بالشريط الأول ارسم خط مستمر واحد على طول الشريط (خط مرئي). بالثاني خط متقطع (خط مخفي): شرطات متساوية وفراغات متساوية أقصر منها. بالثالث خط المحور: شرطة طويلة ثم شرطة قصيرة جداً ثم طويلة… كلها على استقامة وحدة.",
-        tip: "بالخط المتقطع خلي الشرطة تقريباً ثلاث أضعاف الفراغ.",
+        say: "في الشريط الأول، ارسم خطًا مستمرًا واحدًا بطول الشريط (خط مرئي). في الثاني، ارسم خطًا متقطعًا (خط مخفي): اجعل الشرطات متساوية والفراغات متساوية وأقصر منها. في الثالث، ارسم خط المحور: شرطة طويلة تليها قصيرة جدًا ثم طويلة… واجعلها كلها على استقامة واحدة.",
+        tip: "اجعل الشرطة في الخط المتقطع أطول من الفراغ بنحو ثلاثة أضعاف.",
         demo: [sline(120, 170, 880, 170), ...Array.from({ length: 13 }, (_, i) => sline(120 + i * 60, 350, 160 + i * 60, 350)), ...Array.from({ length: 7 }, (_, i) => [sline(120 + i * 110, 530, 200 + i * 110, 530), sline(212 + i * 110, 530, 218 + i * 110, 530)]).flat()],
         guides: [S5.guideRect(100, 120, 800, 100), S5.guideRect(100, 300, 800, 100), S5.guideRect(100, 480, 800, 100)],
         check: { type: "linetypes", bands: [[100, 120, 800, 100], [100, 300, 800, 100], [100, 480, 800, 100]], tol: 4, cv: 0.35, chainRatio: 2.5 } },
       { id: "L18", level: 2, week: "Arc 101 · 6", title: "Engineering shapes", ar: "الأشكال الهندسية",
-        say: "بكل مربع ارسم شكل منتظم يملأه تقريباً: مثلث متساوي الأضلاع بالأول، مربع بالثاني، سداسي منتظم بالثالث. كل الأضلاع متساوية وكل الزوايا متساوية.",
-        tip: "علّم الرؤوس بنقاط خفيفة أولاً، وبعدين وصّلها بخطوط سريعة.",
+        say: "في كل مربع، ارسم شكلًا منتظمًا يملأه تقريبًا: مثلثًا متساوي الأضلاع في الأول، ومربعًا في الثاني، وسداسيًا منتظمًا في الثالث. اجعل الأضلاع متساوية وكذلك الزوايا.",
+        tip: "حدّد الرؤوس بنقاط خفيفة أولًا، ثم صِل بينها بخطوط واثقة.",
         demo: [poly(3, 190, 380, 120, -90), poly(4, 500, 380, 120, 45), poly(6, 810, 380, 120, 0)],
         guides: [S5.guideRect(60, 240, 260, 280), S5.guideRect(370, 240, 260, 280), S5.guideRect(680, 240, 260, 280)],
         check: { type: "polygons", boxes: [[60, 240, 260, 280, 3], [370, 240, 260, 280, 4], [680, 240, 260, 280, 6]], sideCv: 0.1, angTol: 9, close: 0.9 } },
@@ -102,28 +102,28 @@
       const c = lesson.check, T = c.type;
       if (!["vp1", "vp2", "ellipses", "vase", "cylinder", "linetypes", "polygons"].includes(T)) return baseCheck(lesson, strokes);
       const pens = G.pens(strokes), notes = [];
-      if (!pens.length) return { ok: false, score: 0, notes: ["ارسم على الورقة أول."] };
+      if (!pens.length) return { ok: false, score: 0, notes: ["ابدأ بالرسم على الورقة."] };
       if (T === "vp1" || T === "vp2") {
         const L = pens.map((s) => G.line(s)).filter((l) => l.chord >= 40);
-        const wobbly = L.filter((l) => l.straight < 0.9).length; if (wobbly) notes.push(`${wobbly} من خطوطك مو مستقيمة كفاية — ارسم الحافة بحركة وحدة.`);
+        const wobbly = L.filter((l) => l.straight < 0.9).length; if (wobbly) notes.push(`${wobbly} من خطوطك غير مستقيمة بما يكفي — أعد رسم الحافة بحركة واحدة.`);
         const S = L.filter((l) => l.straight >= 0.9);
         const vert = S.filter((l) => G.angDiff(l.ang, 90) <= c.tol), horiz = S.filter((l) => G.angDiff(l.ang, 0) <= c.tol);
         if (T === "vp1") {
           const rec = S.filter((l) => !vert.includes(l) && !horiz.includes(l)).map((l) => ({ l, e: toVP(l, c.vp) }));
           const good = rec.filter((r) => r.e <= c.tol), bad = rec.filter((r) => r.e > c.tol);
-          if (horiz.length < c.minH || vert.length < c.minV) notes.push(`الوجه الأمامي: ${horiz.length} خط أفقي و${vert.length} عمودي (المطلوب ${c.minH} و${c.minV} على الأقل). الوجه المواجه لك بمنظور النقطة الواحدة مستطيل حقيقي.`);
-          if (good.length < c.minR) notes.push(`الحافات الراجعة الصحيحة: ${good.length} من ${c.minR}.`);
-          if (bad.length) notes.push(`${bad.length} حافة راجعة ما تروح لنقطة التلاشي (أكبر انحراف ${deg(Math.max(...bad.map((r) => r.e)))}°، المسموح ${c.tol}°). مدّها بعينك — لازم تمر بالنقطة.`);
+          if (horiz.length < c.minH || vert.length < c.minV) notes.push(`الوجه الأمامي: ${horiz.length} خط أفقي و${vert.length} عمودي (المطلوب ${c.minH} و${c.minV} على الأقل). يجب أن يكون الوجه المواجه لك مستطيلاً حقيقيًا في منظور النقطة الواحدة.`);
+          if (good.length < c.minR) notes.push(`الحافات المتجهة إلى العمق والمطابقة: ${good.length} من ${c.minR}.`);
+          if (bad.length) notes.push(`${bad.length} حافة لا تتجه إلى نقطة التلاشي (أكبر انحراف ${deg(Math.max(...bad.map((r) => r.e)))}°، والمسموح ${c.tol}°). مدّها بصريًا — واجعلها تمر بنقطة التلاشي.`);
           const parts = [Math.min(1, horiz.length / c.minH), Math.min(1, vert.length / c.minV), Math.min(1, good.length / c.minR)], score = (parts.reduce((a, b) => a + b, 0) / 3) * (bad.length ? 0.7 : 1) * (wobbly ? 0.85 : 1);
           return { ok: !bad.length && !wobbly && parts.every((p) => p === 1), score, notes, detail: { horiz: horiz.length, vert: vert.length, rec: rec.map((r) => deg(r.e)) } };
         }
         const rest = S.filter((l) => !vert.includes(l)).map((l) => { const e = c.vps.map((v) => toVP(l, v)); const k = e[0] <= e[1] ? 0 : 1; return { l, k, e: e[k] }; });
         const good = rest.filter((r) => r.e <= c.tol), bad = rest.filter((r) => r.e > c.tol), each = [0, 1].map((k) => good.filter((r) => r.k === k).length);
         const flat = bad.filter((r) => G.angDiff(r.l.ang, 0) <= c.tol).length;
-        if (vert.length < c.minV) notes.push(`الحافات العمودية: ${vert.length} من ${c.minV}. بالمكعب ثلاث حافات عمودية تظهر.`);
-        if (each[0] < c.minEach || each[1] < c.minEach) notes.push(`للنقطة اليسرى ${each[0]} حافة وللنقطة اليمنى ${each[1]} (المطلوب ${c.minEach} لكل وحدة).`);
-        if (flat) notes.push(`رسمت ${flat} خط أفقي — بمنظور النقطتين ما أكو خطوط أفقية، كل حافة غير عمودية تروح لنقطة تلاشي.`);
-        if (bad.length - flat > 0) notes.push(`${bad.length - flat} حافة ما تروح لأي نقطة تلاشي (أكبر انحراف ${deg(Math.max(...bad.map((r) => r.e)))}°، المسموح ${c.tol}°).`);
+        if (vert.length < c.minV) notes.push(`الحافات العمودية: ${vert.length} من ${c.minV}. يظهر للمكعب ثلاث حافات عمودية.`);
+        if (each[0] < c.minEach || each[1] < c.minEach) notes.push(`تتجه ${each[0]} حافة إلى نقطة التلاشي اليسرى و${each[1]} إلى اليمنى (المطلوب ${c.minEach} لكل نقطة).`);
+        if (flat) notes.push(`رسمت ${flat} خطًا أفقيًا — لا توجد خطوط أفقية في منظور النقطتين؛ وجّه كل حافة غير عمودية إلى إحدى نقطتي التلاشي.`);
+        if (bad.length - flat > 0) notes.push(`${bad.length - flat} حافة لا تتجه إلى أي نقطة تلاشي (أكبر انحراف ${deg(Math.max(...bad.map((r) => r.e)))}°، والمسموح ${c.tol}°).`);
         const parts = [Math.min(1, vert.length / c.minV), Math.min(1, each[0] / c.minEach), Math.min(1, each[1] / c.minEach)], score = (parts.reduce((a, b) => a + b, 0) / 3) * (bad.length ? 0.7 : 1) * (wobbly ? 0.85 : 1);
         return { ok: !bad.length && !wobbly && parts.every((p) => p === 1), score, notes, detail: { vert: vert.length, each, bad: bad.map((r) => deg(r.e)) } };
       }
@@ -131,13 +131,13 @@
         const fits = pens.map((s) => ellipseFit(s)).filter(Boolean); let pass = 0; const per = [];
         c.boxes.forEach(([x, y, w, h], i) => {
           const f = fits.filter((e) => e.cx > x && e.cx < x + w && e.cy > y && e.cy < y + h).sort((p, q) => Math.hypot(p.cx - x - w / 2, p.cy - y - h / 2) - Math.hypot(q.cx - x - w / 2, q.cy - y - h / 2))[0];
-          const n = i + 1; if (!f) { notes.push(`المستطيل ${n}: ما لگيت قطع ناقص بداخله.`); per.push(0); return; }
+          const n = i + 1; if (!f) { notes.push(`المستطيل ${n}: لم يُرسم فيه قطع ناقص.`); per.push(0); return; }
           const errW = Math.abs(2 * f.a - w) / w, errH = Math.abs(2 * f.b - h) / h, issues = [];
-          if (errW > c.fit || errH > c.fit) issues.push(`ما يلمس أضلاع المستطيل (العرض ${Math.round(2 * f.a)} من ${w}، الارتفاع ${Math.round(2 * f.b)} من ${h})`);
-          if (f.ends < c.ends) issues.push("أطرافه مدببة مثل الليمونة — طرف القطع الناقص مدوّر دائماً");
-          if (f.tilt > c.tilt) issues.push(`مايل ${deg(f.tilt)}° — محوره الكبير لازم يكون أفقي`);
-          if (f.res > c.res) issues.push("المنحني مو منتظم — ارسمه بحركة وحدة أسرع");
-          if (f.gap > c.gap) issues.push("مو مسكّر");
+          if (errW > c.fit || errH > c.fit) issues.push(`لا يلمس أضلاع المستطيل كما ينبغي (العرض ${Math.round(2 * f.a)} من ${w}، والارتفاع ${Math.round(2 * f.b)} من ${h})`);
+          if (f.ends < c.ends) issues.push("أطرافه مدببة كحبة الليمون — يجب أن يكون طرف القطع الناقص مستديرًا دائمًا");
+          if (f.tilt > c.tilt) issues.push(`ميله ${deg(f.tilt)}° — اجعل محوره الكبير أفقيًا`);
+          if (f.res > c.res) issues.push("المنحنى غير منتظم — ارسمه بحركة واحدة أسرع");
+          if (f.gap > c.gap) issues.push("القطع الناقص غير مسكّر");
           if (issues.length) notes.push(`المستطيل ${n}: ${issues.join("؛ ")}.`); else pass++;
           per.push(issues.length ? Math.max(0, 1 - 0.3 * issues.length) : 1);
         });
@@ -166,10 +166,10 @@
           // a hexagon drawn with only 5 sides still has 6 hull corners; a curved side leaves points far inside the chords
           let bulge = 0; for (const p of pts) { let dmin = 1e9; for (let i = 0; i < n; i++) dmin = Math.min(dmin, S5.segDist(p[0], p[1], V[i][0], V[i][1], V[(i + 1) % n][0], V[(i + 1) % n][1])); bulge = Math.max(bulge, dmin); }
           const issues = [];
-          if (cv > c.sideCv) issues.push(`الأضلاع مو متساوية (أقصر ${Math.round(Math.min(...sides))} وأطول ${Math.round(Math.max(...sides))})`);
-          if (worst > c.angTol) issues.push(`الزوايا مو متساوية — كل زاوية لازم ${Math.round(want)}° وأكبر فرق ${deg(worst)}°`);
-          if (closed < c.close) issues.push("الشكل مو مسكّر — ناقص ضلع أو جزء منه");
-          if (bulge > 0.08 * ms) issues.push("بعض الأضلاع مقوّسة — الضلع خط مستقيم");
+          if (cv > c.sideCv) issues.push(`الأضلاع غير متساوية (الأقصر ${Math.round(Math.min(...sides))} والأطول ${Math.round(Math.max(...sides))})`);
+          if (worst > c.angTol) issues.push(`الزوايا غير متساوية — قياس كل زاوية ${Math.round(want)}°، وأكبر فرق ${deg(worst)}°`);
+          if (closed < c.close) issues.push("الشكل غير مسكّر — ينقصه ضلع أو جزء منه");
+          if (bulge > 0.08 * ms) issues.push("بعض الأضلاع منحنية — ارسم كل ضلع بخط مستقيم");
           if (issues.length) notes.push(`المربع ${k} (${name}): ${issues.join("؛ ")}.`); else pass++;
           per.push(Math.max(0, 1 - 0.3 * issues.length));
         });
@@ -188,23 +188,23 @@
         const [b1, b2, b3] = c.bands.map(inBand); let pass = 0;
         // 1 — continuous visible line
         const cont = b1.filter((l) => l.chord >= 0.8 * c.bands[0][2]);
-        if (!cont.length) notes.push(b1.length > 1 ? "الشريط 1: الخط المرئي لازم يكون مستمر بحركة وحدة — رسمته قطع." : "الشريط 1: ارسم خط مستمر على طول الشريط.");
-        else if (cont[0].straight < 0.95 || G.angDiff(cont[0].ang, 0) > c.tol) notes.push("الشريط 1: الخط المستمر مو مستقيم أو مو أفقي.");
+        if (!cont.length) notes.push(b1.length > 1 ? "الشريط 1: يجب رسم الخط المرئي بحركة واحدة متصلة — ظهر في رسمك مقطعًا." : "الشريط 1: ارسم خطًا مستمرًا بطول الشريط.");
+        else if (cont[0].straight < 0.95 || G.angDiff(cont[0].ang, 0) > c.tol) notes.push("الشريط 1: الخط المستمر غير مستقيم أو غير أفقي.");
         else pass++;
         // 2 — hidden line: equal dashes, equal gaps, gaps shorter than dashes
-        if (b2.length < 6) notes.push(`الشريط 2: ${b2.length} شرطة — الخط المخفي يحتاج 6 شرطات على الأقل.`);
+        if (b2.length < 6) notes.push(`الشريط 2: ${b2.length} شرطة — ارسم 6 شرطات على الأقل للخط المخفي.`);
         else { const R = run(b2), mg = R.gaps.reduce((u, v) => u + v, 0) / R.gaps.length, ml = R.len.reduce((u, v) => u + v, 0) / R.len.length, issues = [];
-          if (cvOf(R.len) > c.cv) issues.push("الشرطات مو متساوية الطول"); if (cvOf(R.gaps) > c.cv) issues.push("الفراغات مو متساوية");
-          if (mg >= ml) issues.push("الفراغ أطول من الشرطة — بالخط المخفي الشرطة أطول بوضوح"); if (R.spread > c.tol || R.off > 8) issues.push("الشرطات مو على استقامة وحدة");
+          if (cvOf(R.len) > c.cv) issues.push("الشرطات غير متساوية الطول"); if (cvOf(R.gaps) > c.cv) issues.push("الفراغات غير متساوية");
+          if (mg >= ml) issues.push("الفراغ أطول من الشرطة — يجب أن تكون الشرطة أطول بوضوح في الخط المخفي"); if (R.spread > c.tol || R.off > 8) issues.push("الشرطات غير واقعة على استقامة واحدة");
           if (issues.length) notes.push(`الشريط 2: ${issues.join("؛ ")}.`); else pass++; }
         // 3 — centre line: long, short, long… alternating
-        if (b3.length < 5) notes.push(`الشريط 3: ${b3.length} قطعة — خط المحور يحتاج 3 شرطات طويلة و2 قصيرة على الأقل.`);
+        if (b3.length < 5) notes.push(`الشريط 3: ${b3.length} قطعة — ارسم 3 شرطات طويلة و2 قصيرة على الأقل لخط المحور.`);
         else { const R = run(b3), sorted = R.len.slice().sort((p, q) => p - q), cut = Math.sqrt(sorted[0] * sorted[sorted.length - 1]), kinds = R.len.map((v) => (v >= cut ? "L" : "S"));
           const longs = R.len.filter((v) => v >= cut), shorts = R.len.filter((v) => v < cut), ratio = shorts.length ? (longs.reduce((u, v) => u + v, 0) / longs.length) / (shorts.reduce((u, v) => u + v, 0) / shorts.length) : 0;
           const alt = kinds.every((k, i) => i === 0 || k !== kinds[i - 1]), issues = [];
-          if (!shorts.length || ratio < c.chainRatio) issues.push("ما أكو فرق واضح بين الشرطة الطويلة والقصيرة — هذا صار خط متقطع مو خط محور");
-          else if (!alt) issues.push("الترتيب لازم يتناوب: طويلة، قصيرة، طويلة…");
-          if (longs.length < 3) issues.push("يحتاج 3 شرطات طويلة على الأقل"); if (R.spread > c.tol || R.off > 8) issues.push("القطع مو على استقامة وحدة");
+          if (!shorts.length || ratio < c.chainRatio) issues.push("لا يوجد فرق واضح بين الشرطة الطويلة والقصيرة — أصبح الخط متقطعًا بدلًا من خط محور");
+          else if (!alt) issues.push("يجب أن يتناوب الترتيب: طويلة، قصيرة، طويلة…");
+          if (longs.length < 3) issues.push("ارسم 3 شرطات طويلة على الأقل"); if (R.spread > c.tol || R.off > 8) issues.push("الشرطات غير واقعة على استقامة واحدة");
           if (issues.length) notes.push(`الشريط 3: ${issues.join("؛ ")}.`); else pass++; }
         return { ok: pass === 3, score: pass / 3, notes };
       }
@@ -214,29 +214,29 @@
         const vert = items.filter((it) => it.l.chord >= 60 && it.l.straight >= 0.9 && G.angDiff(it.l.ang, 90) <= c.tol).map((it) => it.l);
         const flatBase = items.some((it) => it.l.chord >= 60 && it.l.straight >= 0.95 && G.angDiff(it.l.ang, 0) <= c.tol);
         const issues = [];
-        if (ells.length < 2) { notes.push(flatBase ? "القاعدة مرسومة خط مستقيم — قاعدة الأسطوانة قطع ناقص (منحنية) مثل الوجه العلوي." : `رسمت ${ells.length} قطع ناقص من 2 (فوق وتحت).`); return { ok: false, score: 0.2 * ells.length, notes }; }
+        if (ells.length < 2) { notes.push(flatBase ? "رسمت القاعدة بخط مستقيم — قاعدة الأسطوانة قطع ناقص (منحنية) مثل الوجه العلوي." : `رسمت ${ells.length} قطع ناقص من 2 (فوق وتحت).`); return { ok: false, score: 0.2 * ells.length, notes }; }
         const top = ells[0], bot = ells[ells.length - 1], H = bot.cy - top.cy || 1;
-        if (Math.abs(top.cx - bot.cx) / H > c.axis) issues.push("القطعين مو على نفس المحور — الأسطوانة طالعة مايلة.");
-        if (Math.abs(top.a - bot.a) / Math.max(top.a, bot.a) > c.width) issues.push(`عرض القطعين مو متساوي (${Math.round(2 * top.a)} و${Math.round(2 * bot.a)}).`);
-        if (bot.b / bot.a <= top.b / top.a * 1.05) issues.push("القاعدة لازم تكون أدور من الوجه العلوي لأنها أبعد عن خط الأفق — رسمتهم بنفس الانفتاح أو بالعكس.");
+        if (Math.abs(top.cx - bot.cx) / H > c.axis) issues.push("القطعتان غير واقعتين على المحور نفسه — تبدو الأسطوانة مائلة.");
+        if (Math.abs(top.a - bot.a) / Math.max(top.a, bot.a) > c.width) issues.push(`عرض القطعتين غير متساوٍ (${Math.round(2 * top.a)} و${Math.round(2 * bot.a)}).`);
+        if (bot.b / bot.a <= top.b / top.a * 1.05) issues.push("يجب أن تكون القاعدة أدور من الوجه العلوي لأنها أبعد عن خط الأفق — رسمتهما بالانفتاح نفسه أو بالعكس.");
         if (vert.length < 2) issues.push(`الجوانب العمودية: ${vert.length} من 2.`);
         else { const xs = vert.map((l) => l.mid[0]).sort((p, q) => p - q), L0 = xs[0], R0 = xs[xs.length - 1], a = (top.a + bot.a) / 2, cx = (top.cx + bot.cx) / 2;
-          if (Math.abs(L0 - (cx - a)) / a > c.side || Math.abs(R0 - (cx + a)) / a > c.side) issues.push("الجوانب ما تلمس أطراف القطعين — الخط العمودي يبدأ من أعرض نقطة بالقطع الناقص."); }
+          if (Math.abs(L0 - (cx - a)) / a > c.side || Math.abs(R0 - (cx + a)) / a > c.side) issues.push("الجوانب لا تلمس طرفي القطعين — ابدأ الخط العمودي من أعرض نقطة في القطع الناقص."); }
         notes.push(...issues);
         return { ok: !issues.length, score: Math.max(0, 1 - 0.25 * issues.length), notes, detail: { top, bot, vert: vert.length } };
       }
       // vase: proportion, lean and mirror symmetry about the axis
       const P = pens.flatMap((s) => G.pts(s)).map((p) => [p[0], p[1]]); const xs = P.map((p) => p[0]), ys = P.map((p) => p[1]);
       const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), H = y1 - y0, Wd = x1 - x0, target = c.bottom - c.top;
-      if (H < 0.5 * target) return { ok: false, score: 0.1, notes: ["المزهرية صغيرة — خليها تملأ المسافة بين الخطين."] };
+      if (H < 0.5 * target) return { ok: false, score: 0.1, notes: ["المزهرية صغيرة — اجعلها تملأ المسافة بين الخطين."] };
       const ratio = Wd / H, lean = Math.abs((x0 + x1) / 2 - c.axis) / H;
       let sum = 0; const step = Math.max(1, Math.floor(P.length / 300)); let n = 0;
       for (let i = 0; i < P.length; i += step) { const m = [2 * c.axis - P[i][0], P[i][1]]; let best = 1e9; for (let j = 0; j < P.length; j += step) best = Math.min(best, Math.hypot(P[j][0] - m[0], P[j][1] - m[1])); sum += best; n++; }
       const sym = sum / n / H, fill = Math.max(Math.abs(y0 - c.top), Math.abs(y1 - c.bottom)) / target, issues = [];
-      if (Math.abs(ratio - c.ratio) > c.ratioTol * c.ratio) issues.push(`نسبة العرض للارتفاع ${ratio.toFixed(2)} والمطلوب ${c.ratio.toFixed(2)} (ثلثين) — ${ratio > c.ratio ? "عريضة زيادة" : "نحيفة زيادة"}.`);
-      if (lean > c.lean) issues.push(`مزاحة عن المحور ${Math.round(lean * 100)}% من ارتفاعها — خلي المحور بالنص بالضبط.`);
-      if (sym > c.sym) issues.push(`الجهتين مو متناظرتين (فرق ${Math.round(sym * 1000) / 10}% من الارتفاع، المسموح ${c.sym * 100}%). قيس كل نقطة يمين المحور ويساره.`);
-      if (fill > c.fill) issues.push("ما تبدي من الخط العلوي وتنتهي بالخط السفلي.");
+      if (Math.abs(ratio - c.ratio) > c.ratioTol * c.ratio) issues.push(`نسبة العرض إلى الارتفاع ${ratio.toFixed(2)}، والمطلوب ${c.ratio.toFixed(2)} (ثلثان) — ${ratio > c.ratio ? "عريضة أكثر من اللازم" : "نحيفة أكثر من اللازم"}.`);
+      if (lean > c.lean) issues.push(`المزهرية منحرفة عن المحور بمقدار ${Math.round(lean * 100)}% من ارتفاعها — اجعل المحور في المنتصف تمامًا.`);
+      if (sym > c.sym) issues.push(`الجهتان غير متناظرتين (الفرق ${Math.round(sym * 1000) / 10}% من الارتفاع، والمسموح ${c.sym * 100}%). قِس بُعد كل نقطة عن المحور من الجهتين.`);
+      if (fill > c.fill) issues.push("ابدأ من الخط العلوي وأنهِ الرسم عند الخط السفلي.");
       notes.push(...issues);
       return { ok: !issues.length, score: Math.max(0, 1 - 0.25 * issues.length), notes, detail: { ratio, lean, sym, fill } };
     };
