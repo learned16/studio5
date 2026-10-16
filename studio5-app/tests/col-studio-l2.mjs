@@ -50,8 +50,21 @@ const res = await page.evaluate(() => {
   const w4 = chk("L14", vase(1.3)); r.vaseTooWide = (w4.ok === false && w4.notes.some((n) => /عريضة/.test(n))) || w4;
   const s4 = chk("L14", vase(1, 40)); r.vaseLeaning = (s4.ok === false && s4.notes.some((n) => /المحور/.test(n))) || s4;
   const l4 = chk("L14", vase(1, 0, 0.35)); r.vaseLopsided = (l4.ok === false && l4.notes.some((n) => /متناظرتين|عريضة|المحور/.test(n))) || l4;
+  // ---- cylinder ----
+  const cyl = (o = {}) => { const a = 150, top = ellP(500, 300, a, 40), bot = o.flat ? [[350, 590], [650, 590]] : ellP(o.shift || 500, 590, o.bw || a, o.bb || 62);
+    return [stroke(top, 0.8, 3), o.flat ? seg(bot[0], bot[1]) : stroke(bot, 0.8, 3), seg([350 + (o.gap || 0), 300], [350 + (o.gap || 0), 590]), seg([650 - (o.gap || 0), 300], [650 - (o.gap || 0), 590])]; };
+  const g5 = chk("L15", cyl()); r.cylinderGood = g5.ok === true || g5;
+  const f5 = chk("L15", cyl({ flat: true })); r.cylinderFlatBase = (f5.ok === false && f5.notes.some((n) => /خط مستقيم/.test(n))) || f5;
+  const d5 = chk("L15", cyl({ bb: 40 })); r.cylinderSameDegree = (d5.ok === false && d5.notes.some((n) => /أدور/.test(n))) || d5;
+  const s5 = chk("L15", cyl({ gap: 30 })); r.cylinderSidesMissEnds = (s5.ok === false && s5.notes.some((n) => /تلمس/.test(n))) || s5;
+  // ---- oblique cube (near VP left, far VP right) ----
+  const vl = [220, 200], vr = [1400, 200], q0 = [470, 330], q1 = [470, 600], m0 = along(q0, vl, 0.4), m1 = along(q1, vl, 0.4), n0 = along(q0, vr, 0.25), n1 = along(q1, vr, 0.25);
+  const ob = () => [seg(q0, q1), seg(m0, m1), seg(n0, n1), seg(q0, m0), seg(q1, m1), seg(q0, n0), seg(q1, n1)];
+  const g6 = chk("L16", ob()); r.obliqueGood = g6.ok === true || g6;
+  const sym = ob(); sym[5] = seg(q0, along(q0, [960, 210], 0.25)); sym[6] = seg(q1, along(q1, [960, 210], 0.25)); const b6 = chk("L16", sym);
+  r.obliqueWrongVPCaught = b6.ok === false || b6;
   // ---- integration ----
-  const ids = S5.STUDIO_LESSONS.map((l) => l.id); r.ladderOrder = ids.indexOf("L11") === 10 && ids.slice(10, 14).join() === "L11,L12,L13,L14" || ids;
+  const ids = S5.STUDIO_LESSONS.map((l) => l.id); r.ladderOrder = ids.indexOf("L11") === 10 && ids.slice(10, 16).join() === "L11,L12,L13,L14,L15,L16" || ids;
   r.level1Unchanged = chk("L2", Array.from({ length: 8 }, (_, i) => seg([150, 120 + i * 60], [850, 120 + i * 60], 0.6))).ok === true;
   r.empty = chk("L12", []).ok === false;
   return r;

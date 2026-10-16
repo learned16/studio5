@@ -68,6 +68,18 @@
         tip: "علّم أعرض نقطة على الجهتين بنفس البعد عن المحور قبل ما ترسم المنحني.",
         demo: vaseDemo, guides: [guideLine(VASE.axis, VASE.top - 30, VASE.axis, VASE.bottom + 30), guideLine(VASE.axis - 260, VASE.top, VASE.axis + 260, VASE.top), guideLine(VASE.axis - 260, VASE.bottom, VASE.axis + 260, VASE.bottom)],
         check: { type: "vase", ...VASE, ratioTol: 0.1, sym: 0.035, lean: 0.04, fill: 0.06 } },
+      { id: "L15", level: 2, week: "6–8", title: "Cylinder", ar: "الأسطوانة",
+        say: "ارسم أسطوانة واقفة تحت خط الأفق: قطع ناقص فوق وقطع ناقص تحت بنفس العرض ونفس المحور، وخطين عموديين يلمسون أطرافهم. القاعدة أبعد عن الأفق فتطلع أدور من الوجه العلوي.",
+        tip: "القاعدة منحنية دائماً — لا ترسمها خط مستقيم.",
+        demo: [ell(500, 300, 150, 40), ell(500, 590, 150, 62), sline(350, 300, 350, 590), sline(650, 300, 650, 590)],
+        guides: [guideLine(0, 150, W, 150)],
+        check: { type: "cylinder", horizon: 150, tol: 4, axis: 0.05, width: 0.1, side: 0.07 } },
+      { id: "L16", level: 2, week: "9–10, 15–16", title: "Oblique cube", ar: "المكعب المائل",
+        say: "المكعب مدوّر بزاوية: نقطة تلاشي قريبة يسار وأخرى بعيدة يمين. الوجه اللي يروح للنقطة القريبة يقصر بسرعة. نفس القواعد: العمودي عمودي، والباقي لنقطة التلاشي.",
+        tip: "النقطة القريبة تخلي الوجه حاد التقاصر — لا تخلي الوجهين متساويين.",
+        demo: (() => { const vl = [220, 200], vr = [1400, 200], a = [470, 330], b2 = [470, 600], f = 0.4, l0 = along(a, vl, f), l1 = along(b2, vl, f), r0 = along(a, vr, 0.25), r1 = along(b2, vr, 0.25), bk = meet(l0, vr, r0, vl); return [sline(a[0], a[1], b2[0], b2[1]), sline(a[0], a[1], l0[0], l0[1]), sline(b2[0], b2[1], l1[0], l1[1]), sline(l0[0], l0[1], l1[0], l1[1]), sline(a[0], a[1], r0[0], r0[1]), sline(b2[0], b2[1], r1[0], r1[1]), sline(r0[0], r0[1], r1[0], r1[1]), sline(l0[0], l0[1], bk[0], bk[1]), sline(r0[0], r0[1], bk[0], bk[1])]; })(),
+        guides: [guideLine(0, 200, W, 200), S5.guideDot(220, 200, 7)],
+        check: { type: "vp2", vps: [[220, 200], [1400, 200]], tol: 4, minV: 3, minEach: 2 } },
     ];
     for (const l of LESSONS) if (!S5.STUDIO_LESSONS.some((x) => x.id === l.id)) S5.STUDIO_LESSONS.push(l);
 
@@ -75,7 +87,7 @@
     const baseCheck = S5.studioCheck;
     S5.studioCheck = (lesson, strokes) => {
       const c = lesson.check, T = c.type;
-      if (!["vp1", "vp2", "ellipses", "vase"].includes(T)) return baseCheck(lesson, strokes);
+      if (!["vp1", "vp2", "ellipses", "vase", "cylinder"].includes(T)) return baseCheck(lesson, strokes);
       const pens = G.pens(strokes), notes = [];
       if (!pens.length) return { ok: false, score: 0, notes: ["ارسم على الورقة أول."] };
       if (T === "vp1" || T === "vp2") {
@@ -118,6 +130,23 @@
         });
         return { ok: pass === c.boxes.length, score: per.reduce((a, b) => a + b, 0) / c.boxes.length, notes, detail: { fits } };
       }
+      if (T === "cylinder") {
+        const items = pens.map((s) => ({ s, l: G.line(s), e: ellipseFit(s) }));
+        const ells = items.filter((it) => it.e && it.e.gap <= 0.12 && it.e.b > 8).map((it) => it.e).sort((p, q) => p.cy - q.cy);
+        const vert = items.filter((it) => it.l.chord >= 60 && it.l.straight >= 0.9 && G.angDiff(it.l.ang, 90) <= c.tol).map((it) => it.l);
+        const flatBase = items.some((it) => it.l.chord >= 60 && it.l.straight >= 0.95 && G.angDiff(it.l.ang, 0) <= c.tol);
+        const issues = [];
+        if (ells.length < 2) { notes.push(flatBase ? "القاعدة مرسومة خط مستقيم — قاعدة الأسطوانة قطع ناقص (منحنية) مثل الوجه العلوي." : `رسمت ${ells.length} قطع ناقص من 2 (فوق وتحت).`); return { ok: false, score: 0.2 * ells.length, notes }; }
+        const top = ells[0], bot = ells[ells.length - 1], H = bot.cy - top.cy || 1;
+        if (Math.abs(top.cx - bot.cx) / H > c.axis) issues.push("القطعين مو على نفس المحور — الأسطوانة طالعة مايلة.");
+        if (Math.abs(top.a - bot.a) / Math.max(top.a, bot.a) > c.width) issues.push(`عرض القطعين مو متساوي (${Math.round(2 * top.a)} و${Math.round(2 * bot.a)}).`);
+        if (bot.b / bot.a <= top.b / top.a * 1.05) issues.push("القاعدة لازم تكون أدور من الوجه العلوي لأنها أبعد عن خط الأفق — رسمتهم بنفس الانفتاح أو بالعكس.");
+        if (vert.length < 2) issues.push(`الجوانب العمودية: ${vert.length} من 2.`);
+        else { const xs = vert.map((l) => l.mid[0]).sort((p, q) => p - q), L0 = xs[0], R0 = xs[xs.length - 1], a = (top.a + bot.a) / 2, cx = (top.cx + bot.cx) / 2;
+          if (Math.abs(L0 - (cx - a)) / a > c.side || Math.abs(R0 - (cx + a)) / a > c.side) issues.push("الجوانب ما تلمس أطراف القطعين — الخط العمودي يبدأ من أعرض نقطة بالقطع الناقص."); }
+        notes.push(...issues);
+        return { ok: !issues.length, score: Math.max(0, 1 - 0.25 * issues.length), notes, detail: { top, bot, vert: vert.length } };
+      }
       // vase: proportion, lean and mirror symmetry about the axis
       const P = pens.flatMap((s) => G.pts(s)).map((p) => [p[0], p[1]]); const xs = P.map((p) => p[0]), ys = P.map((p) => p[1]);
       const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), H = y1 - y0, Wd = x1 - x0, target = c.bottom - c.top;
@@ -137,7 +166,7 @@
     /* the board shows the correction: each edge redrawn through its vanishing point, the ideal ellipse, the mirrored half */
     const baseCorr = S5.studioCorrection;
     S5.studioCorrection = (L, strokes) => {
-      const T = L.check.type; if (!["vp1", "vp2", "ellipses", "vase"].includes(T)) return baseCorr(L, strokes);
+      const T = L.check.type; if (!["vp1", "vp2", "ellipses", "vase", "cylinder"].includes(T)) return baseCorr(L, strokes);
       const cv = document.getElementById("st-board"); if (!cv) return; const pens = G.pens(strokes); if (!pens.length) return;
       cancelAnimationFrame(S5.studio.raf);
       const w = cv.clientWidth, h = cv.clientHeight, dpr = devicePixelRatio || 1, x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, w, h);
@@ -150,6 +179,7 @@
         for (const st of pens) { const l = G.line(st); if (l.chord < 40 || G.angDiff(l.ang, 90) <= c.tol || (T === "vp1" && G.angDiff(l.ang, 0) <= c.tol)) continue; const v = vps.reduce((b, q) => (toVP(l, q) < toVP(l, b) ? q : b)); const near = Math.hypot(l.a[0] - v[0], l.a[1] - v[1]) < Math.hypot(l.b[0] - v[0], l.b[1] - v[1]) ? l.b : l.a; path([near, v], YEL, 2, [10, 7]); }
       }
       if (T === "ellipses") for (const [bx, by, bw, bh] of c.boxes) path(ell(bx + bw / 2, by + bh / 2, bw / 2, bh / 2), YEL, 2.5, [10, 7]);
+      if (T === "cylinder") { const E = pens.map((st) => ellipseFit(st)).filter((e) => e && e.gap <= 0.12 && e.b > 8).sort((p, q) => p.cy - q.cy); if (E.length >= 2) { const t = E[0], bt = E[E.length - 1], cx = (t.cx + bt.cx) / 2, a = (t.a + bt.a) / 2, bb = Math.max(bt.b, (t.b / t.a) * a * 1.4); path(ell(cx, t.cy, a, t.b), YEL, 2, [10, 7]); path(ell(cx, bt.cy, a, bb), YEL, 2, [10, 7]); path([[cx - a, t.cy], [cx - a, bt.cy]], YEL, 2, [10, 7]); path([[cx + a, t.cy], [cx + a, bt.cy]], YEL, 2, [10, 7]); } }
       if (T === "vase") { path([[c.axis, c.top - 30], [c.axis, c.bottom + 30]], YEL, 1.5, [6, 6]); for (const st of pens) path(G.pts(st).map((p) => [2 * c.axis - p[0], p[1]]), YEL, 2, [8, 6]); }
       x.restore(); x.setLineDash([]); x.fillStyle = "rgba(245,245,235,.85)"; x.font = "600 13px sans-serif"; x.direction = "rtl"; x.fillText(T === "vase" ? "أبيض = رسمتك · أصفر = صورتها بالمرآة" : "أبيض = رسمتك · أصفر = الصحيح", w - 12, h - 10);
     };
