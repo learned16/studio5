@@ -1,4 +1,4 @@
-# Studio5 app — rules for the EXECUTOR (ChatGPT Codex, Gemini, or any other coding agent)
+# Studio5 app — rules for the EXECUTOR (ChatGPT Codex — the current executor — or Gemini / any other coding agent)
 
 These rules apply to everything under `studio5-app/` and override the repository-root AGENTS.md here.
 The owner decided (2026-10-15): **Claude is the lead ("boss")**; you are the **executor**. Claude plans,
@@ -23,16 +23,25 @@ the tasks Claude gives you, exactly as specified. Speak Iraqi Arabic with the ow
 - Invent facts or numbers. Content you write (questions, explanations) is marked `needs-check` for Claude.
 
 ## How to deliver
-1. Branch from the latest `claude/zen-bell-oqcqtr`: `exec/EX-NNN-short-name`.
+1. Branch from the latest `claude/zen-bell-oqcqtr` (never from `main`): `exec/EX-NNN-short-name`. If your tool names
+   the branch itself (ChatGPT Codex makes `codex/…`), that is fine — put the task id `EX-NNN` in the commit message and
+   in the pull-request title.
 2. New code: `src/college/NN-name.js` as an IIFE attaching only to `S5.*` (the whole app is one shared script);
    register rooms/views with `S5.CAMPUS_EXTRA`, `S5.LIVE_EXTRA`, `S5.ROOT_EXTRA`. UI strings in English in code,
    Arabic in `src/i18n-ar-<task id lowercased>.txt` (English<TAB>Arabic). Keep it light for a MatePad.
 3. `node build.mjs` must succeed. Write or extend the test named in the task (`tests/col-*.mjs`, reads the base
    URL from `process.env.BASE`, sets `process.exitCode = 1` on any failed check). Run it if your environment has
    Playwright/Chromium; if not, say so — Claude runs the full suite (`bash tests/run-all.sh`) on review.
+   Tests that need a browser use a fixed Chromium path that only exists on Claude's machine; in your sandbox run
+   `node build.mjs` and the plain-node tests named in your task (no browser).
 4. Do not commit `dist/` or `public/` (Claude rebuilds on merge).
 5. Fill the "Executor report" section of the task file: what you did, files changed, how you tested, anything
    unsure. Commit, push your `exec/…` branch. A draft pull request into `claude/zen-bell-oqcqtr` is fine; never into `main`.
 6. If the task is unclear or needs a forbidden change, write the question in the task file, push, and stop.
 
 Claude reviews with PASS / FAIL / NEEDS DECISION. On FAIL, fix exactly the listed findings on the same branch.
+
+## ChatGPT Codex (cloud) — how a job starts
+- In Codex pick the repository `learned16/studio5` and the branch **`claude/zen-bell-oqcqtr`** (not `main`).
+- Work inside `studio5-app/`. Node 22 is enough; no `npm install` is needed for `node build.mjs` or the plain-node tests.
+- One task per job. When done, use "Create PR" with base `claude/zen-bell-oqcqtr`. Never merge. Claude reviews.

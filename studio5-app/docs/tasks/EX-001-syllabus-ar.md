@@ -28,12 +28,15 @@ src/college/05-syllabus.js and every other file. Do not change the English topic
 - [ ] Standard Iraqi technical Arabic; keep math symbols (sin θ / θ, y′, y″) as they are; English technical term in
       brackets only where the Arabic is uncommon, e.g. "قاعدة كرامر (Cramer)".
 - [ ] Obvious typos in the source ("iirregular") are translated by meaning, not copied.
-- [ ] In Arabic, the Calculus subject page shows an Arabic line under each of the 16 topics; no page errors.
+- [ ] `node build.mjs` succeeds. (On review Claude checks that the Calculus subject page in Arabic shows an Arabic line under each of the 16 topics.)
 
 ## Test
-`tests/col-ex-001-syllabus-ar.mjs` — loads BASE, asserts shape equality for every subject (keys, lengths, weeks),
-every Arabic string contains Arabic letters, and with lang "ar" the Calculus subject page renders 16 `.syl-list li .ar`.
-Copy the harness from tests/col-syllabus.mjs.
+`tests/col-ex-001-syllabus-ar.mjs` — a plain node test, no browser: read `src/college/05-syllabus.js` and
+`src/college/06-syllabus-ar.js` with `node:fs`, run both with `node:vm` in a context
+`{ S5: { act: {} }, document: { addEventListener() {} } }` (05 first), then assert for every key of `S5.SYLLABUS`:
+`S5.SYLLABUS_AR` has the same key, the same length and the same week numbers in the same order, and every Arabic
+string contains Arabic letters (/[\u0600-\u06FF]/) and is not empty. `process.exitCode = 1` on any failure. Run it with
+`node tests/col-ex-001-syllabus-ar.mjs` from `studio5-app/`. (Claude checks the screen in Arabic on review.)
 
 ## Executor report
 

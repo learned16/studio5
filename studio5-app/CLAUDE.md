@@ -19,7 +19,7 @@ Its rules are in `AGENTS.md` (this folder).
 1. Write `docs/tasks/EX-NNN-short.md` from `docs/tasks/EX-TEMPLATE.md` and add a row to `docs/tasks/EXECUTOR_QUEUE.md`
    (status `open`). Specs name the allowed files, the APIs to call, the acceptance criteria and the test.
    Never give the executor a task that touches what Claude owns.
-2. Review `exec/*` branches: fetch, read the whole diff against the base, check scope (only allowed files),
+2. Review `exec/*` and `codex/*` branches (and their PRs into `claude/zen-bell-oqcqtr`): fetch, read the whole diff against the base, check scope (only allowed files),
    re-derive any number shown to the student, `node build.mjs`, `bash tests/run-all.sh`. Verdict PASS / FAIL /
    NEEDS DECISION written into the task file's "Lead review" section with file, evidence, impact, fix.
 3. PASS → merge into `claude/zen-bell-oqcqtr` (merge commit; rebuild dist/public; full suite green), push, set the
