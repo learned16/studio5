@@ -21,7 +21,8 @@ The executor is ChatGPT Codex, started from GitHub: an issue whose body begins w
    push, then open the issue "EX-NNN — title" (body: `@codex` + do the task from `claude/zen-bell-oqcqtr`, follow
    AGENTS.md and the task file, open a PR into `claude/zen-bell-oqcqtr` with EX-NNN in the title).
    Never give the executor a task that touches what Claude owns.
-2. Each night, for every open PR into `claude/zen-bell-oqcqtr` from `codex/*` or `exec/*`: check it touches only the
+2. Each night, for every open PR into `claude/zen-bell-oqcqtr` from `codex/*` or `exec/*`, and every pushed
+   `exec/*` / `codex/*` branch that is not yet merged (Codex cannot always open a PR): check it touches only the
    task's allowed files, merge it locally, `node build.mjs`, `bash tests/run-all.sh`. No written review.
 3. Green and in scope → merge into `claude/zen-bell-oqcqtr` (merge commit, rebuild dist/public, push; the PR shows as
    merged), close the issue, queue row `done`. Red or out of scope → comment on the PR beginning with `@codex` with

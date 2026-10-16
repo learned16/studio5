@@ -44,4 +44,6 @@ Claude reviews with PASS / FAIL / NEEDS DECISION. On FAIL, fix exactly the liste
 ## ChatGPT Codex (cloud) — how a job starts
 - In Codex pick the repository `learned16/studio5` and the branch **`claude/zen-bell-oqcqtr`** (not `main`).
 - Work inside `studio5-app/`. Node 22 is enough; no `npm install` is needed for `node build.mjs` or the plain-node tests.
-- One task per job. When done, use "Create PR" with base `claude/zen-bell-oqcqtr`. Never merge. Claude reviews.
+- One task per job. When done, push your branch and, if you can, open a PR with base `claude/zen-bell-oqcqtr`.
+  If opening the PR fails (e.g. 403), just push the branch — Claude picks up pushed `exec/*` and `codex/*` branches
+  every night by itself. Do not ask the owner to open it. Never merge.
