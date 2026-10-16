@@ -7,7 +7,7 @@ branch: exec/EX-004-studio-l2-arabic
 roadmap: COLLEGE_PLAN §9 week 3 · syllabus: Arc 103 weeks 3–13
 
 ## Goal
-Claude built Level 2 of the Studio (one/two-point perspective, ellipses, pottery, cylinder, oblique cube, types of lines — L11–L17) with code checkers. The teacher's
+Claude built Level 2 of the Studio (one/two-point perspective, ellipses, pottery, cylinder, oblique cube, types of lines, engineering shapes — L11–L18) with code checkers. The teacher's
 instructions (`say`, `tip`), lesson titles (`ar`), the checker notes and the board captions are a first Arabic
 draft. Make them read like an Iraqi drawing lecturer talking to a first-year student: clear, warm, short.
 
@@ -23,7 +23,7 @@ draft. Make them read like an Iraqi drawing lecturer talking to a first-year stu
 ## Do not touch
 Any `${…}` expression, number, English string, regex or code. The tests `tests/col-studio-l2.mjs` look for these
 words inside the notes — keep each of them in the same note: «نقطة التلاشي», «أفقي», «المستطيل N», «مدببة», «يلمس»,
-«عريضة», «المحور», «متناظرتين», «ارسم», «خط مستقيم», «أدور», «تلمس», «الشريط N», «متقطع», «الفراغ أطول», «متساوية».
+«عريضة», «المحور», «متناظرتين», «ارسم», «خط مستقيم», «أدور», «تلمس», «الشريط N», «متقطع», «الفراغ أطول», «متساوية», «المربع N», «مسكّر».
 
 ## Acceptance criteria
 - [ ] Only Arabic text changed; the words above are still present in their notes.

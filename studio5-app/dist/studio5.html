@@ -6555,6 +6555,7 @@ S5.reviewHTML = () => {
     const corner = [500, 330], cTop = [500, 620];
     const along = (p, vp, f) => [p[0] + (vp[0] - p[0]) * f, p[1] + (vp[1] - p[1]) * f];
     const L2 = along(corner, VPL, 0.35), R2 = along(corner, VPR, 0.35), L2b = along(cTop, VPL, 0.35), R2b = along(cTop, VPR, 0.35);
+    const poly = (n, cx, cy, r, rot) => Array.from({ length: n + 1 }, (_, k) => { const t = ((rot + (k * 360) / n) * Math.PI) / 180; return [cx + r * Math.cos(t), cy + r * Math.sin(t)]; });
     const meet = (p1, v1, p2, v2) => { const d = (p1[0] - v1[0]) * (p2[1] - v2[1]) - (p1[1] - v1[1]) * (p2[0] - v2[0]); const t = ((p1[0] - p2[0]) * (p2[1] - v2[1]) - (p1[1] - p2[1]) * (p2[0] - v2[0])) / d; return [p1[0] + t * (v1[0] - p1[0]), p1[1] + t * (v1[1] - p1[1])]; };
     const BACK = meet(L2, VPR, R2, VPL); // hidden back corner of the top face
     const vaseDemo = (() => { const prof = [[0, 0.32], [0.08, 0.36], [0.2, 0.3], [0.35, 0.42], [0.55, 0.5], [0.75, 0.46], [0.92, 0.34], [1, 0.3]]; const H = VASE.bottom - VASE.top, half = (H * VASE.ratio) / 2;
@@ -6600,6 +6601,12 @@ S5.reviewHTML = () => {
         demo: [sline(120, 170, 880, 170), ...Array.from({ length: 13 }, (_, i) => sline(120 + i * 60, 350, 160 + i * 60, 350)), ...Array.from({ length: 7 }, (_, i) => [sline(120 + i * 110, 530, 200 + i * 110, 530), sline(212 + i * 110, 530, 218 + i * 110, 530)]).flat()],
         guides: [S5.guideRect(100, 120, 800, 100), S5.guideRect(100, 300, 800, 100), S5.guideRect(100, 480, 800, 100)],
         check: { type: "linetypes", bands: [[100, 120, 800, 100], [100, 300, 800, 100], [100, 480, 800, 100]], tol: 4, cv: 0.35, chainRatio: 2.5 } },
+      { id: "L18", level: 2, week: "Arc 101 · 6", title: "Engineering shapes", ar: "الأشكال الهندسية",
+        say: "بكل مربع ارسم شكل منتظم يملأه تقريباً: مثلث متساوي الأضلاع بالأول، مربع بالثاني، سداسي منتظم بالثالث. كل الأضلاع متساوية وكل الزوايا متساوية.",
+        tip: "علّم الرؤوس بنقاط خفيفة أولاً، وبعدين وصّلها بخطوط سريعة.",
+        demo: [poly(3, 190, 380, 120, -90), poly(4, 500, 380, 120, 45), poly(6, 810, 380, 120, 0)],
+        guides: [S5.guideRect(60, 240, 260, 280), S5.guideRect(370, 240, 260, 280), S5.guideRect(680, 240, 260, 280)],
+        check: { type: "polygons", boxes: [[60, 240, 260, 280, 3], [370, 240, 260, 280, 4], [680, 240, 260, 280, 6]], sideCv: 0.1, angTol: 9, close: 0.9 } },
     ];
     for (const l of LESSONS) if (!S5.STUDIO_LESSONS.some((x) => x.id === l.id)) S5.STUDIO_LESSONS.push(l);
 
@@ -6607,7 +6614,7 @@ S5.reviewHTML = () => {
     const baseCheck = S5.studioCheck;
     S5.studioCheck = (lesson, strokes) => {
       const c = lesson.check, T = c.type;
-      if (!["vp1", "vp2", "ellipses", "vase", "cylinder", "linetypes"].includes(T)) return baseCheck(lesson, strokes);
+      if (!["vp1", "vp2", "ellipses", "vase", "cylinder", "linetypes", "polygons"].includes(T)) return baseCheck(lesson, strokes);
       const pens = G.pens(strokes), notes = [];
       if (!pens.length) return { ok: false, score: 0, notes: ["ارسم على الورقة أول."] };
       if (T === "vp1" || T === "vp2") {
@@ -6649,6 +6656,38 @@ S5.reviewHTML = () => {
           per.push(issues.length ? Math.max(0, 1 - 0.3 * issues.length) : 1);
         });
         return { ok: pass === c.boxes.length, score: per.reduce((a, b) => a + b, 0) / c.boxes.length, notes, detail: { fits } };
+      }
+      if (T === "polygons") {
+        const hull = (pts) => { const P = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], up = [];
+          for (const p of P) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+          for (const p of P.reverse()) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+          return lo.slice(0, -1).concat(up.slice(0, -1)); };
+        const perim = (V) => V.reduce((m, p, i) => m + Math.hypot(p[0] - V[(i + 1) % V.length][0], p[1] - V[(i + 1) % V.length][1]), 0);
+        // corners: merge hull vertices whose turning angle is small, keep the sharpest n
+        const corners = (H, n) => { let V = H.slice(); const turn = (i) => { const a = V[(i - 1 + V.length) % V.length], b = V[i], c2 = V[(i + 1) % V.length]; const t1 = Math.atan2(b[1] - a[1], b[0] - a[0]), t2 = Math.atan2(c2[1] - b[1], c2[0] - b[0]); let d = Math.abs(t2 - t1); if (d > Math.PI) d = 2 * Math.PI - d; return d; };
+          while (V.length > n) { let mi = 0, mv = 9; for (let i = 0; i < V.length; i++) { const t = turn(i); if (t < mv) { mv = t; mi = i; } } V.splice(mi, 1); } return V; };
+        let pass = 0; const per = [];
+        c.boxes.forEach(([x, y, w, h, n], bi) => {
+          const S = pens.filter((s) => { const P = G.pts(s), m = P[Math.floor(P.length / 2)]; return m[0] > x && m[0] < x + w && m[1] > y && m[1] < y + h; });
+          const name = ["", "", "", "المثلث", "المربع", "", "السداسي"][n], k = bi + 1;
+          if (!S.length) { notes.push(`المربع ${k}: ارسم ${name}.`); per.push(0); return; }
+          const pts = S.flatMap((s) => G.pts(s).map((p) => [p[0], p[1]])), H = hull(pts);
+          if (H.length < n) { notes.push(`المربع ${k}: الشكل ما بيه ${n} رؤوس.`); per.push(0.2); return; }
+          const V = corners(H, n), sides = V.map((p, i) => Math.hypot(p[0] - V[(i + 1) % n][0], p[1] - V[(i + 1) % n][1])), ms = sides.reduce((a, b) => a + b, 0) / n;
+          const cv = Math.sqrt(sides.reduce((a, b) => a + (b - ms) ** 2, 0) / n) / ms, want = ((n - 2) * 180) / n;
+          const angs = V.map((b, i) => { const a = V[(i - 1 + n) % n], c2 = V[(i + 1) % n]; const v1 = [a[0] - b[0], a[1] - b[1]], v2 = [c2[0] - b[0], c2[1] - b[1]]; return (Math.acos(Math.max(-1, Math.min(1, (v1[0] * v2[0] + v1[1] * v2[1]) / (Math.hypot(...v1) * Math.hypot(...v2))))) * 180) / Math.PI; });
+          const worst = Math.max(...angs.map((a) => Math.abs(a - want))), drawn = S.reduce((m, s) => m + G.len(G.pts(s)), 0), closed = drawn / perim(V);
+          // a hexagon drawn with only 5 sides still has 6 hull corners; a curved side leaves points far inside the chords
+          let bulge = 0; for (const p of pts) { let dmin = 1e9; for (let i = 0; i < n; i++) dmin = Math.min(dmin, S5.segDist(p[0], p[1], V[i][0], V[i][1], V[(i + 1) % n][0], V[(i + 1) % n][1])); bulge = Math.max(bulge, dmin); }
+          const issues = [];
+          if (cv > c.sideCv) issues.push(`الأضلاع مو متساوية (أقصر ${Math.round(Math.min(...sides))} وأطول ${Math.round(Math.max(...sides))})`);
+          if (worst > c.angTol) issues.push(`الزوايا مو متساوية — كل زاوية لازم ${Math.round(want)}° وأكبر فرق ${deg(worst)}°`);
+          if (closed < c.close) issues.push("الشكل مو مسكّر — ناقص ضلع أو جزء منه");
+          if (bulge > 0.08 * ms) issues.push("بعض الأضلاع مقوّسة — الضلع خط مستقيم");
+          if (issues.length) notes.push(`المربع ${k} (${name}): ${issues.join("؛ ")}.`); else pass++;
+          per.push(Math.max(0, 1 - 0.3 * issues.length));
+        });
+        return { ok: pass === c.boxes.length, score: per.reduce((a, b) => a + b, 0) / c.boxes.length, notes };
       }
       if (T === "linetypes") {
         const segs = pens.map((s) => G.line(s)).filter((l) => l.chord >= 3);

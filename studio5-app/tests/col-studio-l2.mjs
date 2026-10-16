@@ -72,8 +72,17 @@ const res = await page.evaluate(() => {
   const bg = chk("L17", [seg([120, 170], [880, 170], 0.5), ...hidden(10, 20, 35), ...chain()]); r.gapsLongerCaught = (bg.ok === false && bg.notes.some((n) => /الشريط 2/.test(n) && /الفراغ أطول/.test(n))) || bg;
   const un = chk("L17", [seg([120, 170], [880, 170], 0.5), ...dashes(350, [[40, 14], [15, 14], [60, 14], [25, 14], [45, 14], [12, 14], [55, 14]]), ...chain()]); r.unevenDashesCaught = (un.ok === false && un.notes.some((n) => /الشريط 2/.test(n) && /متساوية/.test(n))) || un;
   const nd = chk("L17", [seg([120, 170], [880, 170], 0.5), ...hidden(), ...dashes(530, Array.from({ length: 7 }, () => [70, 14]))]); r.chainWithoutShortCaught = (nd.ok === false && nd.notes.some((n) => /الشريط 3/.test(n) && /متقطع/.test(n))) || nd;
+  // ---- engineering shapes ----
+  const pg = (n, cx, cy, rr, rot, f = (P) => P) => f(Array.from({ length: n + 1 }, (_, k) => { const t = ((rot + (k * 360) / n) * Math.PI) / 180; return [cx + rr * Math.cos(t), cy + rr * Math.sin(t)]; }));
+  const sides = (P, skip = -1) => P.slice(0, -1).map((p, i) => (i === skip ? null : seg(p, P[i + 1], 0.8))).filter(Boolean);
+  const shapes = (o = {}) => [...sides(pg(3, 190, 390, 115, -90, o.tri || ((P) => P))), ...sides(pg(4, 500, 380, 120, 45), o.skipSq ?? -1), ...sides(pg(6, 810, 380, 115, 0))];
+  const g8 = chk("L18", shapes()); r.polygonsGood = g8.ok === true || g8;
+  const t8 = chk("L18", shapes({ tri: (P) => P.map((p) => [190 + (p[0] - 190) * 0.6, p[1]]) })); r.triangleUnequalCaught = (t8.ok === false && t8.notes.some((n) => /المربع 1/.test(n))) || t8;
+  const o8 = chk("L18", shapes({ skipSq: 2 })); r.openSquareCaught = (o8.ok === false && o8.notes.some((n) => /المربع 2/.test(n) && /مسكّر/.test(n))) || o8;
+  const hexB = sides(pg(6, 810, 380, 115, 0)); const H0 = pg(6, 810, 380, 115, 0); hexB[0] = stroke([H0[0], [H0[0][0] + (H0[1][0] - H0[0][0]) / 2 + 22, H0[0][1] + (H0[1][1] - H0[0][1]) / 2 + 13], H0[1]], 0.5, 20);
+  const b8 = chk("L18", [...sides(pg(3, 190, 390, 115, -90)), ...sides(pg(4, 500, 380, 120, 45)), ...hexB]); r.bulgingSideCaught = (b8.ok === false && b8.notes.some((n) => /المربع 3/.test(n))) || b8;
   // ---- integration ----
-  const ids = S5.STUDIO_LESSONS.map((l) => l.id); r.ladderOrder = ids.indexOf("L11") === 10 && ids.slice(10, 17).join() === "L11,L12,L13,L14,L15,L16,L17" || ids;
+  const ids = S5.STUDIO_LESSONS.map((l) => l.id); r.ladderOrder = ids.indexOf("L11") === 10 && ids.slice(10, 18).join() === "L11,L12,L13,L14,L15,L16,L17,L18" || ids;
   r.level1Unchanged = chk("L2", Array.from({ length: 8 }, (_, i) => seg([150, 120 + i * 60], [850, 120 + i * 60], 0.6))).ok === true;
   r.empty = chk("L12", []).ok === false;
   return r;
