@@ -1,6 +1,6 @@
 # EX-001 — Arabic names for the official weekly syllabus topics
 
-status: open
+status: in-progress (executor)
 owner: executor
 base: claude/zen-bell-oqcqtr
 branch: exec/EX-001-syllabus-ar
@@ -24,11 +24,11 @@ shown under the English line when the app is in Arabic.
 src/college/05-syllabus.js and every other file. Do not change the English topics.
 
 ## Acceptance criteria
-- [ ] Every subject key in `S5.SYLLABUS` has an entry in `S5.SYLLABUS_AR` with the same length and the same week numbers.
-- [ ] Standard Iraqi technical Arabic; keep math symbols (sin θ / θ, y′, y″) as they are; English technical term in
+- [x] Every subject key in `S5.SYLLABUS` has an entry in `S5.SYLLABUS_AR` with the same length and the same week numbers.
+- [x] Standard Iraqi technical Arabic; keep math symbols (sin θ / θ, y′, y″) as they are; English technical term in
       brackets only where the Arabic is uncommon, e.g. "قاعدة كرامر (Cramer)".
-- [ ] Obvious typos in the source ("iirregular") are translated by meaning, not copied.
-- [ ] `node build.mjs` succeeds. (On review Claude checks that the Calculus subject page in Arabic shows an Arabic line under each of the 16 topics.)
+- [x] Obvious typos in the source ("iirregular") are translated by meaning, not copied.
+- [x] `node build.mjs` succeeds. (On review Claude checks that the Calculus subject page in Arabic shows an Arabic line under each of the 16 topics.)
 
 ## Test
 `tests/col-ex-001-syllabus-ar.mjs` — a plain node test, no browser: read `src/college/05-syllabus.js` and
@@ -39,5 +39,11 @@ string contains Arabic letters (/[\u0600-\u06FF]/) and is not empty. `process.ex
 `node tests/col-ex-001-syllabus-ar.mjs` from `studio5-app/`. (Claude checks the screen in Arabic on review.)
 
 ## Executor report
+
+- Added Arabic names in `src/college/06-syllabus-ar.js` for all 157 topics across the 10 subject keys, preserving each week number and order. The file is marked `needs-check` until lead review.
+- Added `tests/col-ex-001-syllabus-ar.mjs` to execute both syllabus modules in a VM and check subject keys, topic counts, week alignment, and Arabic text.
+- Validation on Node v22.22.0: `node tests/col-ex-001-syllabus-ar.mjs` PASS (10 subjects, 157 topics); `node build.mjs` PASS (977 KB app, 410 lessons). Confirmed the generated HTML includes the new translations; generated `dist/` and `public/` files are not part of this branch diff.
+- Terminology that may need lead confirmation: “missing third view” for the source's “deleted third position,” and “Thermstone” retained as the material's product name.
+- Delivery: commit `13d2e7c` is pushed to `origin/exec/EX-001-syllabus-ar`. Draft PR creation is blocked: both `gh pr create` and the GitHub REST API return HTTP 403 (`Forbidden`). GitHub's suggested PR page is `https://github.com/learned16/studio5/pull/new/exec/EX-001-syllabus-ar`; set the base to `claude/zen-bell-oqcqtr`.
 
 ## Lead review
