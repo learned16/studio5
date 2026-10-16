@@ -6594,6 +6594,12 @@ S5.reviewHTML = () => {
         demo: (() => { const vl = [220, 200], vr = [1400, 200], a = [470, 330], b2 = [470, 600], f = 0.4, l0 = along(a, vl, f), l1 = along(b2, vl, f), r0 = along(a, vr, 0.25), r1 = along(b2, vr, 0.25), bk = meet(l0, vr, r0, vl); return [sline(a[0], a[1], b2[0], b2[1]), sline(a[0], a[1], l0[0], l0[1]), sline(b2[0], b2[1], l1[0], l1[1]), sline(l0[0], l0[1], l1[0], l1[1]), sline(a[0], a[1], r0[0], r0[1]), sline(b2[0], b2[1], r1[0], r1[1]), sline(r0[0], r0[1], r1[0], r1[1]), sline(l0[0], l0[1], bk[0], bk[1]), sline(r0[0], r0[1], bk[0], bk[1])]; })(),
         guides: [guideLine(0, 200, W, 200), S5.guideDot(220, 200, 7)],
         check: { type: "vp2", vps: [[220, 200], [1400, 200]], tol: 4, minV: 3, minEach: 2 } },
+      { id: "L17", level: 2, week: "Arc 101 · 4", title: "Types of lines", ar: "أنواع الخطوط",
+        say: "بالشريط الأول ارسم خط مستمر واحد على طول الشريط (خط مرئي). بالثاني خط متقطع (خط مخفي): شرطات متساوية وفراغات متساوية أقصر منها. بالثالث خط المحور: شرطة طويلة ثم شرطة قصيرة جداً ثم طويلة… كلها على استقامة وحدة.",
+        tip: "بالخط المتقطع خلي الشرطة تقريباً ثلاث أضعاف الفراغ.",
+        demo: [sline(120, 170, 880, 170), ...Array.from({ length: 13 }, (_, i) => sline(120 + i * 60, 350, 160 + i * 60, 350)), ...Array.from({ length: 7 }, (_, i) => [sline(120 + i * 110, 530, 200 + i * 110, 530), sline(212 + i * 110, 530, 218 + i * 110, 530)]).flat()],
+        guides: [S5.guideRect(100, 120, 800, 100), S5.guideRect(100, 300, 800, 100), S5.guideRect(100, 480, 800, 100)],
+        check: { type: "linetypes", bands: [[100, 120, 800, 100], [100, 300, 800, 100], [100, 480, 800, 100]], tol: 4, cv: 0.35, chainRatio: 2.5 } },
     ];
     for (const l of LESSONS) if (!S5.STUDIO_LESSONS.some((x) => x.id === l.id)) S5.STUDIO_LESSONS.push(l);
 
@@ -6601,7 +6607,7 @@ S5.reviewHTML = () => {
     const baseCheck = S5.studioCheck;
     S5.studioCheck = (lesson, strokes) => {
       const c = lesson.check, T = c.type;
-      if (!["vp1", "vp2", "ellipses", "vase", "cylinder"].includes(T)) return baseCheck(lesson, strokes);
+      if (!["vp1", "vp2", "ellipses", "vase", "cylinder", "linetypes"].includes(T)) return baseCheck(lesson, strokes);
       const pens = G.pens(strokes), notes = [];
       if (!pens.length) return { ok: false, score: 0, notes: ["ارسم على الورقة أول."] };
       if (T === "vp1" || T === "vp2") {
@@ -6643,6 +6649,39 @@ S5.reviewHTML = () => {
           per.push(issues.length ? Math.max(0, 1 - 0.3 * issues.length) : 1);
         });
         return { ok: pass === c.boxes.length, score: per.reduce((a, b) => a + b, 0) / c.boxes.length, notes, detail: { fits } };
+      }
+      if (T === "linetypes") {
+        const segs = pens.map((s) => G.line(s)).filter((l) => l.chord >= 3);
+        const inBand = ([x, y, w, h]) => segs.filter((l) => l.mid[0] > x && l.mid[0] < x + w && l.mid[1] > y && l.mid[1] < y + h).sort((p, q) => p.mid[0] - q.mid[0]);
+        const cvOf = (a) => { if (a.length < 2) return 0; const m = a.reduce((u, v) => u + v, 0) / a.length; return m ? Math.sqrt(a.reduce((u, v) => u + (v - m) ** 2, 0) / a.length) / m : 1; };
+        const run = (S) => { // dashes along one line: lengths, gaps, angle spread and offset from their common line
+          const len = S.map((l) => l.chord), gaps = S.slice(1).map((l, i) => Math.max(0, Math.min(l.a[0], l.b[0]) - Math.max(S[i].a[0], S[i].b[0])));
+          const ys = S.map((l) => l.mid[1]), my = ys.reduce((u, v) => u + v, 0) / ys.length, off = Math.max(...ys.map((y) => Math.abs(y - my)));
+          const long = S.filter((l) => l.chord >= 25), spread = long.length ? Math.max(...long.map((l) => G.angDiff(l.ang, 0))) : 0;
+          return { len, gaps, off, spread };
+        };
+        const [b1, b2, b3] = c.bands.map(inBand); let pass = 0;
+        // 1 — continuous visible line
+        const cont = b1.filter((l) => l.chord >= 0.8 * c.bands[0][2]);
+        if (!cont.length) notes.push(b1.length > 1 ? "الشريط 1: الخط المرئي لازم يكون مستمر بحركة وحدة — رسمته قطع." : "الشريط 1: ارسم خط مستمر على طول الشريط.");
+        else if (cont[0].straight < 0.95 || G.angDiff(cont[0].ang, 0) > c.tol) notes.push("الشريط 1: الخط المستمر مو مستقيم أو مو أفقي.");
+        else pass++;
+        // 2 — hidden line: equal dashes, equal gaps, gaps shorter than dashes
+        if (b2.length < 6) notes.push(`الشريط 2: ${b2.length} شرطة — الخط المخفي يحتاج 6 شرطات على الأقل.`);
+        else { const R = run(b2), mg = R.gaps.reduce((u, v) => u + v, 0) / R.gaps.length, ml = R.len.reduce((u, v) => u + v, 0) / R.len.length, issues = [];
+          if (cvOf(R.len) > c.cv) issues.push("الشرطات مو متساوية الطول"); if (cvOf(R.gaps) > c.cv) issues.push("الفراغات مو متساوية");
+          if (mg >= ml) issues.push("الفراغ أطول من الشرطة — بالخط المخفي الشرطة أطول بوضوح"); if (R.spread > c.tol || R.off > 8) issues.push("الشرطات مو على استقامة وحدة");
+          if (issues.length) notes.push(`الشريط 2: ${issues.join("؛ ")}.`); else pass++; }
+        // 3 — centre line: long, short, long… alternating
+        if (b3.length < 5) notes.push(`الشريط 3: ${b3.length} قطعة — خط المحور يحتاج 3 شرطات طويلة و2 قصيرة على الأقل.`);
+        else { const R = run(b3), sorted = R.len.slice().sort((p, q) => p - q), cut = Math.sqrt(sorted[0] * sorted[sorted.length - 1]), kinds = R.len.map((v) => (v >= cut ? "L" : "S"));
+          const longs = R.len.filter((v) => v >= cut), shorts = R.len.filter((v) => v < cut), ratio = shorts.length ? (longs.reduce((u, v) => u + v, 0) / longs.length) / (shorts.reduce((u, v) => u + v, 0) / shorts.length) : 0;
+          const alt = kinds.every((k, i) => i === 0 || k !== kinds[i - 1]), issues = [];
+          if (!shorts.length || ratio < c.chainRatio) issues.push("ما أكو فرق واضح بين الشرطة الطويلة والقصيرة — هذا صار خط متقطع مو خط محور");
+          else if (!alt) issues.push("الترتيب لازم يتناوب: طويلة، قصيرة، طويلة…");
+          if (longs.length < 3) issues.push("يحتاج 3 شرطات طويلة على الأقل"); if (R.spread > c.tol || R.off > 8) issues.push("القطع مو على استقامة وحدة");
+          if (issues.length) notes.push(`الشريط 3: ${issues.join("؛ ")}.`); else pass++; }
+        return { ok: pass === 3, score: pass / 3, notes };
       }
       if (T === "cylinder") {
         const items = pens.map((s) => ({ s, l: G.line(s), e: ellipseFit(s) }));

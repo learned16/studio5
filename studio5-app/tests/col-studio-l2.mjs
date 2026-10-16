@@ -63,8 +63,17 @@ const res = await page.evaluate(() => {
   const g6 = chk("L16", ob()); r.obliqueGood = g6.ok === true || g6;
   const sym = ob(); sym[5] = seg(q0, along(q0, [960, 210], 0.25)); sym[6] = seg(q1, along(q1, [960, 210], 0.25)); const b6 = chk("L16", sym);
   r.obliqueWrongVPCaught = b6.ok === false || b6;
+  // ---- types of lines ----
+  const dashes = (y, spec) => { let x = 120; const out = []; for (const [len, gap] of spec) { out.push(seg([x, y], [x + len, y], 0.4)); x += len + gap; } return out; };
+  const hidden = (n = 12, len = 40, gap = 14) => dashes(350, Array.from({ length: n }, () => [len, gap]));
+  const chain = (sl = 6) => dashes(530, Array.from({ length: 6 }, (_, i) => (i % 2 ? [sl, 12] : [80, 12])).concat([[80, 0]]));
+  const good7 = chk("L17", [seg([120, 170], [880, 170], 0.5), ...hidden(), ...chain()]); r.lineTypesGood = good7.ok === true || good7;
+  const bc = chk("L17", [seg([120, 170], [500, 170], 0.5), seg([505, 170], [880, 170], 0.5), ...hidden(), ...chain()]); r.brokenVisibleCaught = (bc.ok === false && bc.notes.some((n) => /الشريط 1/.test(n))) || bc;
+  const bg = chk("L17", [seg([120, 170], [880, 170], 0.5), ...hidden(10, 20, 35), ...chain()]); r.gapsLongerCaught = (bg.ok === false && bg.notes.some((n) => /الشريط 2/.test(n) && /الفراغ أطول/.test(n))) || bg;
+  const un = chk("L17", [seg([120, 170], [880, 170], 0.5), ...dashes(350, [[40, 14], [15, 14], [60, 14], [25, 14], [45, 14], [12, 14], [55, 14]]), ...chain()]); r.unevenDashesCaught = (un.ok === false && un.notes.some((n) => /الشريط 2/.test(n) && /متساوية/.test(n))) || un;
+  const nd = chk("L17", [seg([120, 170], [880, 170], 0.5), ...hidden(), ...dashes(530, Array.from({ length: 7 }, () => [70, 14]))]); r.chainWithoutShortCaught = (nd.ok === false && nd.notes.some((n) => /الشريط 3/.test(n) && /متقطع/.test(n))) || nd;
   // ---- integration ----
-  const ids = S5.STUDIO_LESSONS.map((l) => l.id); r.ladderOrder = ids.indexOf("L11") === 10 && ids.slice(10, 16).join() === "L11,L12,L13,L14,L15,L16" || ids;
+  const ids = S5.STUDIO_LESSONS.map((l) => l.id); r.ladderOrder = ids.indexOf("L11") === 10 && ids.slice(10, 17).join() === "L11,L12,L13,L14,L15,L16,L17" || ids;
   r.level1Unchanged = chk("L2", Array.from({ length: 8 }, (_, i) => seg([150, 120 + i * 60], [850, 120 + i * 60], 0.6))).ok === true;
   r.empty = chk("L12", []).ok === false;
   return r;
