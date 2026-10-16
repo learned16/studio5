@@ -17,11 +17,12 @@
     const H = S5.h, esc = S5.esc, ar = S5.settings.get("lang") === "ar", wk = S5.syllabusWeek(), st = S5.settings.get("semesterStart") || "";
     const have = new Set(S5.store.list("topic", (t) => t.subjectId === s.id).map((t) => t.name));
     /* optional Arabic topic names (S5.SYLLABUS_AR, same shape: subject → [[week, topic]]) shown under the English */
+    const arH = (t) => esc(t).replace(/[A-Za-zθ][^\u0600-\u06FF]*[A-Za-z0-9θ′″)]/g, (m) => `<bdi dir="ltr">${m}</bdi>`);
     const arT = (i) => { const a = ar && S5.SYLLABUS_AR && S5.SYLLABUS_AR[s.name]; return a && a[i] && a[i][0] === rows[i][0] ? a[i][1] : ""; };
     const cur = wk ? rows.find((r) => r[0] === wk) : null;
     const head = `<div class="row" style="margin-bottom:8px;flex-wrap:wrap;gap:8px"><label class="field" style="width:170px"><span>Semester started on</span><input type="date" id="syl-start" value="${esc(st)}"></label>
-      <p class="small grow">${wk === 0 ? "The semester has not started yet." : cur ? (ar ? `هذا <b>الأسبوع ${wk}</b>: <span dir="ltr">${esc(cur[1])}</span>` : `This is <b>week ${wk}</b>: ${esc(cur[1])}`) : wk ? (ar ? `الأسبوع ${wk}.` : `Week ${wk}.`) : "Set the first day of teaching to see this week's topic."}</p></div>`;
-    const list = `<ol class="small syl-list" dir="ltr" style="margin:0;padding-inline-start:22px">${rows.map((r, i) => `<li value="${r[0]}"${r[0] === wk ? ' style="font-weight:700;color:var(--cobalt)"' : ""}>${esc(r[1])}${arT(i) ? `<div class="ar" dir="rtl">${esc(arT(i))}</div>` : ""}${have.has(r[1]) ? " ✓" : ""}</li>`).join("")}</ol>`;
+      <p class="small grow">${wk === 0 ? "The semester has not started yet." : cur ? (ar ? `هذا <b>الأسبوع ${wk}</b>: ${arT(rows.indexOf(cur)) ? arH(arT(rows.indexOf(cur))) : `<span dir="ltr">${esc(cur[1])}</span>`}` : `This is <b>week ${wk}</b>: ${esc(cur[1])}`) : wk ? (ar ? `الأسبوع ${wk}.` : `Week ${wk}.`) : "Set the first day of teaching to see this week's topic."}</p></div>`;
+    const list = `<ol class="small syl-list" dir="ltr" style="margin:0;padding-inline-start:22px">${rows.map((r, i) => `<li value="${r[0]}"${r[0] === wk ? ' style="font-weight:700;color:var(--cobalt)"' : ""}>${esc(r[1])}${arT(i) ? `<div class="ar" dir="rtl">${arH(arT(i))}</div>` : ""}${have.has(r[1]) ? " ✓" : ""}</li>`).join("")}</ol>`;
     return H.section("Official weekly syllabus", head + list + `<p class="tiny muted" style="margin-top:6px">From the department's course description. Your professor may reorder topics — follow what is taught.</p>`, H.btn("Add as exam topics", "syl-topics", { subject: s.id }, "sm"));
   };
   S5.act["syl-topics"] = async (el) => {
