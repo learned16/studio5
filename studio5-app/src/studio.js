@@ -183,7 +183,7 @@ S5.studioProg = {
   },
   habits() { const e = this.all()._errs || {}; return Object.entries(e).sort((a, b) => b[1] - a[1]).slice(0, 4); },
   unlocked(i) { return i === 0 || !!(this.all()[S5.STUDIO_LESSONS[i - 1].id] || {}).passed; },
-  level1Done() { return S5.STUDIO_LESSONS.every((l) => (this.all()[l.id] || {}).passed); },
+  level1Done() { return S5.STUDIO_LESSONS.filter((l) => !l.level || l.level === 1).every((l) => (this.all()[l.id] || {}).passed); },
 };
 
 S5.STUDIO_TAGS = [["tilt", /مايلة|اتجاه/, "lines drift off the target angle"], ["wobble", /الاستقامة|يرجف/, "wobbly, slow lines"], ["short", /قصيرة|طويل/, "lines too short"], ["aim", /ابتعاد|النقطة/, "misses target points"], ["spacing", /متساوية/, "uneven spacing"], ["parallel", /متوازية/, "lines not parallel"], ["pressure", /الضغط/, "little pressure control"], ["oval", /الاستدارة|بيضوية/, "circles come out oval"], ["open", /مسكّرة/, "shapes left open"], ["proportion", /مربعات|مستطيلات|متساوية \(|الطول ضعف/, "proportions off"], ["values", /عدد الخطوط بكل مربع/, "value steps not distinct"]];

@@ -8,3 +8,4 @@ row, works on its own `exec/…` branch and never pushes to `claude/zen-bell-oqc
 | EX-001 | Arabic names for the weekly syllabus topics | §9 wk 1 | done | exec/EX-001-syllabus-ar |
 | EX-002 | Calculus weeks 1–10 bilingual glossary (data) | §9 wk 1 | open | exec/EX-002-calc-glossary |
 | EX-003 | Polish the Arabic of the Calculus problem room | §9 wk 1–2 | open | exec/EX-003-calc-arabic |
+| EX-004 | Arabic of the Studio Level 2 (Freehand Drawing) | §9 wk 3 | open | exec/EX-004-studio-l2-arabic |
