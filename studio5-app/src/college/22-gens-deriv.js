@@ -29,8 +29,8 @@
     PR.obj({ id: "calc.deriv.chain", en: "Chain rule, implicit differentiation and fractional powers (week 13)", ar: "قاعدة السلسلة والاشتقاق الضمني والقوى الكسرية (الأسبوع 13)", subjects: [SUBJ], program: "arch", lessons: [L_DER] });
     PR.obj({ id: "calc.deriv.rates", en: "Related rates of change (week 14)", ar: "المعدلات الزمنية المرتبطة (الأسبوع 14)", subjects: [SUBJ], program: "arch", lessons: [L_APP] });
     PR.obj({ id: "calc.deriv.extrema", en: "Maxima and minima with y′ and y″ (week 15)", ar: "القيم العظمى والصغرى باستعمال y′ و y″ (الأسبوع 15)", subjects: [SUBJ], program: "arch", lessons: [L_APP] });
-    PR.obj({ id: "calc.deriv.graph", en: "Rational functions: asymptotes (week 16)", ar: "الدوال النسبية: المحاذيات (الأسبوع 16)", subjects: [SUBJ], program: "arch", lessons: [L_APP] });
-    PR.obj({ id: "calc.deriv.optim", en: "Optimization problems (week 16)", ar: "مسائل الأمثلية (الأسبوع 16)", subjects: [SUBJ], program: "arch", lessons: [L_APP] });
+    PR.obj({ id: "calc.deriv.graph", en: "Rational functions: asymptotes (week 16)", ar: "الدوال النسبية: خطوط التقارب (الأسبوع 16)", subjects: [SUBJ], program: "arch", lessons: [L_APP] });
+    PR.obj({ id: "calc.deriv.optim", en: "Optimization problems (week 16)", ar: "مسائل القيم المثلى (الأسبوع 16)", subjects: [SUBJ], program: "arch", lessons: [L_APP] });
 
     /* ---------- 1. power rule at a point ---------- */
     PR.register({
@@ -45,7 +45,7 @@
           `f′(x) = ${poly([3 * a, 2 * b, c])}`,
           `f′(${num(x0)}) = ${3 * a}·${par(x0)}² ${2 * b < 0 ? "−" : "+"} ${Math.abs(2 * b)}·${par(x0)} ${c < 0 ? "−" : "+"} ${Math.abs(c)} = ${num(this.solve(p).D)}`];
       },
-      mis: (p) => ({ D: [["noPower", p.a * p.x0 ** 2 + p.b * p.x0 + p.c, note("You lowered each power but did not multiply by it: d/dx x³ = 3x², not x².", "أنزلت القوة لكنك لم تضرب بها: مشتقة x³ هي 3x² وليست x².")], ["fValue", p.a * p.x0 ** 3 + p.b * p.x0 ** 2 + p.c * p.x0 + p.d, note("That is f(x₀), the height of the curve — the question asks for the slope f′(x₀).", "هذه f(x₀) أي ارتفاع المنحني — المطلوب الميل f′(x₀).")]] }),
+      mis: (p) => ({ D: [["noPower", p.a * p.x0 ** 2 + p.b * p.x0 + p.c, note("You lowered each power but did not multiply by it: d/dx x³ = 3x², not x².", "أنزلت الأسّ، لكنك لم تضرب به: مشتقة x³ هي 3x² وليست x².")], ["fValue", p.a * p.x0 ** 3 + p.b * p.x0 ** 2 + p.c * p.x0 + p.d, note("That is f(x₀), the height of the curve — the question asks for the slope f′(x₀).", "هذه قيمة f(x₀)، أي ارتفاع المنحنى — والمطلوب هو الميل f′(x₀).")]] }),
     });
 
     /* ---------- 2. tangent line ---------- */
@@ -54,7 +54,7 @@
       gen(r) { for (let t = 0; t < 40; t++) { const a = r.pick([-3, -2, -1, 1, 2, 3]), b = r.int(-6, 6), c = r.int(-8, 8), x0 = r.pick([-3, -2, -1, 1, 2, 3]); if (2 * a * x0 + b !== 0 && a * x0 * x0 !== 0) return { a, b, c, x0 }; } return { a: 1, b: 2, c: -3, x0: 1 }; },
       solve(p) { const m = 2 * p.a * p.x0 + p.b, y0 = p.a * p.x0 ** 2 + p.b * p.x0 + p.c; return { m, B: y0 - m * p.x0 }; },
       fields: () => [fld("m", "m", "Slope m of the tangent", "ميل المماس m"), fld("B", "b", "y-intercept b of the tangent (y = mx + b)", "المقطع الصادي b للمماس (y = mx + b)")],
-      text: (p, lang) => tr(lang, `Find the tangent line y = mx + b to the curve y = ${poly([p.a, p.b, p.c])} at x = ${num(p.x0)}.`, `أوجد معادلة المماس y = mx + b للمنحني y = ${poly([p.a, p.b, p.c])} عند x = ${num(p.x0)}.`),
+      text: (p, lang) => tr(lang, `Find the tangent line y = mx + b to the curve y = ${poly([p.a, p.b, p.c])} at x = ${num(p.x0)}.`, `أوجد معادلة المماس y = mx + b للمنحنى y = ${poly([p.a, p.b, p.c])} عند x = ${num(p.x0)}.`),
       steps(p, lang) {
         const { a, b, c, x0 } = p, { m, B } = this.solve(p), y0 = a * x0 ** 2 + b * x0 + c;
         return [tr(lang, `Point of contact: y₀ = f(${num(x0)}) = ${num(y0)}, so the point is (${num(x0)}, ${num(y0)}).`, `نقطة التماس: y₀ = f(${num(x0)}) = ${num(y0)}، فالنقطة (${num(x0)}, ${num(y0)}).`),
@@ -120,7 +120,7 @@
       gen(r) { for (let t = 0; t < 60; t++) { const x0 = r.int(-4, 4), y0 = r.int(-4, 4); if (x0 && y0 && x0 + 2 * y0 !== 0 && 2 * x0 + y0 !== 0) return { x0, y0 }; } return { x0: 1, y0: 2 }; },
       solve: (p) => ({ D: -(2 * p.x0 + p.y0) / (p.x0 + 2 * p.y0) }),
       fields: () => [fld("D", "dy/dx", "dy/dx at the point (fraction allowed)", "dy/dx عند النقطة (يُقبل الكسر)")],
-      text(p, lang) { const C = p.x0 ** 2 + p.x0 * p.y0 + p.y0 ** 2; return tr(lang, `The curve x² + xy + y² = ${C} passes through (${num(p.x0)}, ${num(p.y0)}). Find dy/dx there.`, `المنحني x² + xy + y² = ${C} يمر بالنقطة (${num(p.x0)}, ${num(p.y0)}). أوجد dy/dx عندها.`); },
+      text(p, lang) { const C = p.x0 ** 2 + p.x0 * p.y0 + p.y0 ** 2; return tr(lang, `The curve x² + xy + y² = ${C} passes through (${num(p.x0)}, ${num(p.y0)}). Find dy/dx there.`, `يمر المنحنى x² + xy + y² = ${C} بالنقطة (${num(p.x0)}, ${num(p.y0)}). أوجد dy/dx عند هذه النقطة.`); },
       steps(p, lang) {
         const { x0, y0 } = p, n = 2 * x0 + y0, d = x0 + 2 * y0;
         return [tr(lang, "Differentiate both sides with respect to x; y is a function of x, so d/dx y² = 2y·y′ and d/dx (xy) = y + x·y′ (product rule).", "نشتق الطرفين بالنسبة لـ x؛ y دالة في x، فمشتقة y² = 2y·y′ ومشتقة xy = y + x·y′ (قاعدة الضرب)."),
@@ -159,7 +159,7 @@
       fields: (p) => [p.kind === "cube" ? fld("R", "dV/dt", "dV/dt (m³/min)", "dV/dt (م³/دقيقة)") : fld("R", "dy/dt", "dy/dt of the top (m/s, negative when it moves down)", "dy/dt للطرف العلوي (م/ثا، سالبة إذا نزل)")],
       text(p, lang) {
         if (p.kind === "cube") return tr(lang, `A cubic water tank is being built so that its side grows at ${p.v} m/min. How fast is its volume growing when the side is ${p.s} m?`, `يُبنى خزان ماء مكعب يزداد طول ضلعه بمعدل ${p.v} م/دقيقة. ما معدل زيادة حجمه عندما يكون طول الضلع ${p.s} م؟`);
-        return tr(lang, `A ${p.L} m ladder leans against a wall. Its foot slides away from the wall at ${p.v} m/s. How fast is the top moving when the foot is ${p.x} m from the wall?`, `سلّم طوله ${p.L} م يستند إلى جدار. ينزلق أسفله مبتعدًا عن الجدار بمعدل ${p.v} م/ثا. ما معدل تحرك أعلاه عندما يكون أسفله على بعد ${p.x} م من الجدار؟`);
+        return tr(lang, `A ${p.L} m ladder leans against a wall. Its foot slides away from the wall at ${p.v} m/s. How fast is the top moving when the foot is ${p.x} m from the wall?`, `يسند سلّم طوله ${p.L} م إلى جدار. وينزلق طرفه السفلي مبتعدًا عن الجدار بمعدل ${p.v} م/ثا. ما معدل حركة طرفه العلوي عندما يبعد طرفه السفلي ${p.x} م عن الجدار؟`);
       },
       steps(p, lang) {
         if (p.kind === "cube") return [tr(lang, "V = s³; differentiate with respect to time t: dV/dt = 3s²·ds/dt.", "V = s³؛ نشتق بالنسبة للزمن t: dV/dt = 3s²·ds/dt."), `dV/dt = 3·${p.s}²·${p.v} = ${3 * p.s * p.s * p.v}`];
@@ -169,7 +169,7 @@
       },
       mis(p) {
         if (p.kind === "cube") return { R: [["noChain", 3 * p.s * p.s, note("Differentiate with respect to time: multiply 3s² by ds/dt.", "الاشتقاق بالنسبة للزمن: اضرب 3s² في ds/dt.")], ["volume", p.s ** 3, note("That is the volume itself, not its rate of change.", "هذا هو الحجم نفسه وليس معدل تغيّره.")]] };
-        return { R: [["sameRate", -p.v, note("The top does not move at the same speed as the foot: use 2x·dx/dt + 2y·dy/dt = 0.", "الطرف العلوي لا يتحرك بسرعة الأسفل نفسها: استعمل 2x·dx/dt + 2y·dy/dt = 0.")], ["flipXY", (-p.y * p.v) / p.x, note("x and y are swapped: dy/dt = −(x/y)·dx/dt with x the foot distance.", "تبادلت x و y: dy/dt = −(x/y)·dx/dt حيث x بعد القاعدة.")]] };
+        return { R: [["sameRate", -p.v, note("The top does not move at the same speed as the foot: use 2x·dx/dt + 2y·dy/dt = 0.", "لا يتحرك الطرف العلوي بسرعة الطرف السفلي نفسها: استعمل 2x·dx/dt + 2y·dy/dt = 0.")], ["flipXY", (-p.y * p.v) / p.x, note("x and y are swapped: dy/dt = −(x/y)·dx/dt with x the foot distance.", "عكست موضعي x وy: dy/dt = −(x/y)·dx/dt، حيث يمثّل x بُعد قاعدة السلّم عن الجدار.")]] };
       },
     });
 
@@ -180,7 +180,7 @@
       solve: (p) => (p.s > 0 ? { xmax: p.p, xmin: p.q } : { xmax: p.q, xmin: p.p }),
       fields: () => [fld("xmax", "x_max", "x of the local maximum", "x للقيمة العظمى المحلية"), fld("xmin", "x_min", "x of the local minimum", "x للقيمة الصغرى المحلية")],
       coef: (p) => [p.s, (-3 * p.s * (p.p + p.q)) / 2, 3 * p.s * p.p * p.q, p.d],
-      text(p, lang) { return tr(lang, `f(x) = ${poly(this.coef(p))}. Find the x-values of the local maximum and the local minimum.`, `لتكن f(x) = ${poly(this.coef(p))}. أوجد قيم x للنهاية العظمى المحلية والنهاية الصغرى المحلية.`); },
+      text(p, lang) { return tr(lang, `f(x) = ${poly(this.coef(p))}. Find the x-values of the local maximum and the local minimum.`, `لتكن f(x) = ${poly(this.coef(p))}. أوجد قيم x عند القيمة العظمى المحلية والقيمة الصغرى المحلية.`); },
       steps(p, lang) {
         const c = this.coef(p), f1 = [3 * c[0], 2 * c[1], c[2]], { xmax, xmin } = this.solve(p);
         const f2 = (x) => 6 * c[0] * x + 2 * c[1];
@@ -188,7 +188,7 @@
           tr(lang, `Critical points (f′ = 0): x = ${num(p.p)} and x = ${num(p.q)}`, `النقاط الحرجة (f′ = 0): x = ${num(p.p)} و x = ${num(p.q)}`),
           tr(lang, `Second-derivative test: f″(x) = ${poly([6 * c[0], 2 * c[1]])}; f″(${num(xmax)}) = ${num(f2(xmax))} < 0 → maximum; f″(${num(xmin)}) = ${num(f2(xmin))} > 0 → minimum`, `اختبار المشتقة الثانية: f″(x) = ${poly([6 * c[0], 2 * c[1]])}؛ f″(${num(xmax)}) = ${num(f2(xmax))} < 0 ← عظمى؛ f″(${num(xmin)}) = ${num(f2(xmin))} > 0 ← صغرى`)];
       },
-      mis: (p) => { const { xmax, xmin } = p.s > 0 ? { xmax: p.p, xmin: p.q } : { xmax: p.q, xmin: p.p }; const n = note("Swapped: f″ < 0 means the curve bends down — a MAXIMUM; f″ > 0 is a minimum.", "تبادل: f″ < 0 يعني أن المنحني مقعر للأسفل — نهاية عظمى؛ و f″ > 0 نهاية صغرى."); return { xmax: [["swapped", xmin, n]], xmin: [["swapped", xmax, n]] }; },
+      mis: (p) => { const { xmax, xmin } = p.s > 0 ? { xmax: p.p, xmin: p.q } : { xmax: p.q, xmin: p.p }; const n = note("Swapped: f″ < 0 means the curve bends down — a MAXIMUM; f″ > 0 is a minimum.", "الخطأ: إذا كانت f″ < 0 فالمنحنى مقعّر إلى الأسفل — وتكون لدينا قيمة عظمى؛ وإذا كانت f″ > 0 فتكون قيمة صغرى."); return { xmax: [["swapped", xmin, n]], xmin: [["swapped", xmax, n]] }; },
     });
 
     /* ---------- 10. asymptotes of (ax + b)/(cx + d) ---------- */
@@ -196,11 +196,11 @@
       id: "calc.asymptotes", v: 1, obj: "calc.deriv.graph", lesson: L_APP, subject: SUBJ, program: "arch", lvl: 1,
       gen(r) { for (let t = 0; t < 60; t++) { const a = r.int(-6, 6), b = r.int(-8, 8), c = r.pick([-3, -2, -1, 1, 2, 3, 4]), d = r.int(-8, 8); if (a && d && a * d - b * c !== 0) return { a, b, c, d }; } return { a: 2, b: 1, c: 1, d: -3 }; },
       solve: (p) => ({ xv: -p.d / p.c, yh: p.a / p.c }),
-      fields: () => [fld("xv", "x =", "Vertical asymptote x = …", "المحاذي العمودي x = …"), fld("yh", "y =", "Horizontal asymptote y = …", "المحاذي الأفقي y = …")],
-      text: (p, lang) => tr(lang, `f(x) = (${lin(p.a, p.b)}) / (${lin(p.c, p.d)}). Find the vertical and horizontal asymptotes.`, `لتكن f(x) = (${lin(p.a, p.b)}) / (${lin(p.c, p.d)}). أوجد المحاذي العمودي والمحاذي الأفقي.`),
-      steps: (p, lang) => [tr(lang, `Vertical: the denominator is zero (and the numerator is not): ${lin(p.c, p.d)} = 0 → x = ${qs(Q(-p.d, p.c))}`, `العمودي: حيث المقام صفر (والبسط ليس صفرًا): ${lin(p.c, p.d)} = 0 ← x = ${qs(Q(-p.d, p.c))}`),
-        tr(lang, `Horizontal: same degree top and bottom, so y = ratio of the leading coefficients = ${p.a}/${p.c} = ${qs(Q(p.a, p.c))}`, `الأفقي: الدرجة نفسها في البسط والمقام، إذن y = نسبة المعاملين الأعليين = ${p.a}/${p.c} = ${qs(Q(p.a, p.c))}`)],
-      mis: (p) => ({ xv: [["vSign", p.d / p.c, note("Solve cx + d = 0: x = −d/c (mind the sign).", "حل cx + d = 0: x = −d/c (انتبه للإشارة).")]], yh: [["constRatio", p.b / p.d, note("At infinity the leading coefficients decide: y = a/c, not the constants b/d.", "عند اللانهاية تحسم المعاملات العليا: y = a/c وليس الثوابت b/d.")]] }),
+      fields: () => [fld("xv", "x =", "Vertical asymptote x = …", "خط التقارب العمودي x = …"), fld("yh", "y =", "Horizontal asymptote y = …", "خط التقارب الأفقي y = …")],
+      text: (p, lang) => tr(lang, `f(x) = (${lin(p.a, p.b)}) / (${lin(p.c, p.d)}). Find the vertical and horizontal asymptotes.`, `لتكن f(x) = (${lin(p.a, p.b)}) / (${lin(p.c, p.d)}). أوجد خط التقارب العمودي وخط التقارب الأفقي.`),
+      steps: (p, lang) => [tr(lang, `Vertical: the denominator is zero (and the numerator is not): ${lin(p.c, p.d)} = 0 → x = ${qs(Q(-p.d, p.c))}`, `العمودي: نجعل المقام صفرًا (والبسط لا يساوي صفرًا): ${lin(p.c, p.d)} = 0 ← x = ${qs(Q(-p.d, p.c))}`),
+        tr(lang, `Horizontal: same degree top and bottom, so y = ratio of the leading coefficients = ${p.a}/${p.c} = ${qs(Q(p.a, p.c))}`, `الأفقي: بما أن درجة البسط تساوي درجة المقام، فإن y = نسبة معاملي أعلى درجة = ${p.a}/${p.c} = ${qs(Q(p.a, p.c))}`)],
+      mis: (p) => ({ xv: [["vSign", p.d / p.c, note("Solve cx + d = 0: x = −d/c (mind the sign).", "حل cx + d = 0: تذكّر أن x = −d/c (وانتبه للإشارة).")]], yh: [["constRatio", p.b / p.d, note("At infinity the leading coefficients decide: y = a/c, not the constants b/d.", "عند اللانهاية تحدد أعلى درجة خط التقارب الأفقي: y = a/c، وليس نسبة الثابتين b/d.")]] }),
     });
 
     /* ---------- 11. optimization ---------- */
@@ -211,7 +211,7 @@
       fields: (p) => p.kind === "court" ? [fld("x", "x", "Depth x of the courtyard (m, the two sides perpendicular to the wall)", "عمق الفناء x (م، الضلعان العموديان على الجدار)"), fld("A", "A", "Largest area (m²)", "أكبر مساحة (م²)")] : [fld("x", "x", "Side x of the corner squares (cm)", "ضلع المربعات المقطوعة x (سم)"), fld("A", "V", "Largest volume (cm³)", "أكبر حجم (سم³)")],
       text(p, lang) {
         if (p.kind === "court") return tr(lang, `A rectangular courtyard is built against a long building wall, so only three sides need a fence. There are ${p.L} m of fence. Find the depth x that gives the largest area, and that area.`, `يُنشأ فناء مستطيل ملاصق لجدار مبنى طويل، فلا يحتاج السياج إلا لثلاثة أضلاع. طول السياج المتوفر ${p.L} م. أوجد العمق x الذي يعطي أكبر مساحة، وقيمة هذه المساحة.`);
-        return tr(lang, `An open box for a site model is made from a square card of side ${p.a} cm by cutting equal squares of side x from the corners and folding up the sides. Find x for the largest volume, and that volume.`, `يُصنع صندوق مفتوح لمجسم موقع من ورق مقوى مربع طول ضلعه ${p.a} سم بقطع مربعات متساوية ضلعها x من الأركان وثني الجوانب. أوجد x التي تعطي أكبر حجم، وقيمة هذا الحجم.`);
+        return tr(lang, `An open box for a site model is made from a square card of side ${p.a} cm by cutting equal squares of side x from the corners and folding up the sides. Find x for the largest volume, and that volume.`, `يُصنع صندوق مفتوح لمجسّم موقع من ورقة مربعة من الورق المقوّى طول ضلعها ${p.a} سم، بقص مربعات متساوية طول ضلع كل منها x من الأركان ثم طيّ الجوانب إلى الأعلى. أوجد قيمة x التي تجعل حجم الصندوق أكبر ما يمكن، ثم أوجد هذا الحجم.`);
       },
       steps(p, lang) {
         if (p.kind === "court") { const L = p.L; return [tr(lang, `Sides: x, x (perpendicular to the wall) and ${L} − 2x (parallel). A(x) = x(${L} − 2x) = ${L}x − 2x²`, `الأضلاع: x و x (عموديان على الجدار) و ${L} − 2x (موازٍ له). A(x) = x(${L} − 2x) = ${L}x − 2x²`), `A′(x) = ${L} − 4x = 0 → x = ${L / 4}`, tr(lang, `A″ = −4 < 0 → maximum. A = ${L / 4}·${L / 2} = ${(L * L) / 8}`, `A″ = −4 < 0 ← عظمى. A = ${L / 4}·${L / 2} = ${(L * L) / 8}`)]; }
@@ -219,8 +219,8 @@
         return [`V(x) = x(${a} − 2x)²`, tr(lang, `V′(x) = (${a} − 2x)² − 4x(${a} − 2x) = (${a} − 2x)(${a} − 6x) = 0 → x = ${a / 2} (no box) or x = ${x}`, `V′(x) = (${a} − 2x)² − 4x(${a} − 2x) = (${a} − 2x)(${a} − 6x) = 0 ← x = ${a / 2} (لا صندوق) أو x = ${x}`), tr(lang, `V = ${x}·(${a - 2 * x})² = ${(2 * a ** 3) / 27}`, `V = ${x}·(${a - 2 * x})² = ${(2 * a ** 3) / 27}`)];
       },
       mis(p) {
-        if (p.kind === "court") return { x: [["third", p.L / 3, note("The three sides are not equal at the optimum: maximise A(x) = x(L − 2x) with A′ = 0.", "الأضلاع الثلاثة ليست متساوية عند الأمثل: عظّم A(x) = x(L − 2x) بجعل A′ = 0.")]], A: [["fourSides", (p.L * p.L) / 16, note("That is the square with fence on four sides; here the wall is the fourth side.", "هذا مربع مسيّج من أربع جهات؛ هنا الجدار هو الضلع الرابع.")]] };
-        return { x: [["quarter", p.a / 4, note("Set V′(x) = 0 and solve; x = a/4 is a guess, not the stationary point.", "اجعل V′(x) = 0 وحل؛ x = a/4 تخمين وليست نقطة حرجة.")]], A: [["quarterV", p.a ** 3 / 16, note("This volume uses x = a/4; the maximum is at x = a/6.", "هذا الحجم عند x = a/4؛ أما الأعظم فعند x = a/6.")]] };
+        if (p.kind === "court") return { x: [["third", p.L / 3, note("The three sides are not equal at the optimum: maximise A(x) = x(L − 2x) with A′ = 0.", "الأضلاع الثلاثة ليست متساوية في الحل الأمثل: أوجد القيمة العظمى للدالة A(x) = x(L − 2x) بحل A′ = 0.")]], A: [["fourSides", (p.L * p.L) / 16, note("That is the square with fence on four sides; here the wall is the fourth side.", "هذه مساحة مربع مسيّج من الجهات الأربع؛ أمّا هنا فيؤدي الجدار دور الضلع الرابع.")]] };
+        return { x: [["quarter", p.a / 4, note("Set V′(x) = 0 and solve; x = a/4 is a guess, not the stationary point.", "اجعل V′(x) = 0 وحل المعادلة؛ فـ x = a/4 مجرد تخمين وليس نقطة حرجة.")]], A: [["quarterV", p.a ** 3 / 16, note("This volume uses x = a/4; the maximum is at x = a/6.", "هذا الحجم محسوب عند x = a/4؛ أمّا القيمة العظمى فتتحقق عند x = a/6.")]] };
       },
     });
 
@@ -250,16 +250,16 @@
       coef: (p) => [p.a, -3 * p.a * p.m, p.c, p.d],
       solve(p) { const [a, b, c, d] = this.coef(p), x = p.m; return { x, y: a * x ** 3 + b * x ** 2 + c * x + d }; },
       fields: () => [fld("x", "x", "x of the inflection point", "الإحداثي x لنقطة الانقلاب"), fld("y", "y", "y of the inflection point", "الإحداثي y لنقطة الانقلاب")],
-      text(p, lang) { return tr(lang, `Find the point of inflection of f(x) = ${poly(this.coef(p))}.`, `أوجد نقطة الانقلاب للدالة f(x) = ${poly(this.coef(p))}.`); },
+      text(p, lang) { return tr(lang, `Find the point of inflection of f(x) = ${poly(this.coef(p))}.`, `أوجد نقطة الانعطاف للدالة f(x) = ${poly(this.coef(p))}.`); },
       steps(p, lang) {
         const [a, b] = this.coef(p), { x, y } = this.solve(p);
-        return [tr(lang, "Inflection: f″ changes sign (the curve switches between bending up and bending down).", "الانقلاب: تتغير إشارة f″ (يتحول المنحني بين التقعر للأعلى والتقعر للأسفل)."),
+        return [tr(lang, "Inflection: f″ changes sign (the curve switches between bending up and bending down).", "الانعطاف: تتغير إشارة f″ (يتحول المنحنى بين التقعر إلى الأعلى والتقعر إلى الأسفل)."),
           `f″(x) = ${poly([6 * a, 2 * b])} = 0 → x = ${num(x)}`,
-          tr(lang, `f(${num(x)}) = ${num(y)} → inflection point (${num(x)}, ${num(y)})`, `f(${num(x)}) = ${num(y)} ← نقطة الانقلاب (${num(x)}, ${num(y)})`)];
+          tr(lang, `f(${num(x)}) = ${num(y)} → inflection point (${num(x)}, ${num(y)})`, `f(${num(x)}) = ${num(y)} ← نقطة الانعطاف (${num(x)}, ${num(y)})`)];
       },
       mis(p) { const [a, b, c] = this.coef(p), D = 4 * b * b - 12 * a * c; const out = { x: [], y: [] };
-        out.y.push(["fpp", 0, note("At the inflection point f″ = 0, but the point's height is f(x), not f″(x).", "عند نقطة الانقلاب f″ = 0، لكن ارتفاع النقطة هو f(x) وليس f″(x).")]);
-        if (D > 0) for (const sg of [1, -1]) out.x.push(["fp", (-2 * b + sg * Math.sqrt(D)) / (6 * a), note("That is where f′ = 0 (a turning point); inflection needs f″ = 0.", "هذه حيث f′ = 0 (نقطة حرجة)؛ الانقلاب يحتاج f″ = 0.")]);
+        out.y.push(["fpp", 0, note("At the inflection point f″ = 0, but the point's height is f(x), not f″(x).", "عند نقطة الانعطاف تكون f″ = 0، لكن الإحداثي الرأسي للنقطة هو f(x) وليس f″(x).")]);
+        if (D > 0) for (const sg of [1, -1]) out.x.push(["fp", (-2 * b + sg * Math.sqrt(D)) / (6 * a), note("That is where f′ = 0 (a turning point); inflection needs f″ = 0.", "موضع f′ = 0 (نقطة حرجة)؛ أمّا نقطة الانعطاف فتُحدَّد من f″ = 0.")]);
         return out; },
     });
   } catch (e) { (S5.COLLEGE_ERRORS = S5.COLLEGE_ERRORS || []).push("22-gens-deriv: " + (e && e.message)); console.error(e); }
