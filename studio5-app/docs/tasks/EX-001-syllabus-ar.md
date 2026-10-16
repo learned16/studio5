@@ -44,5 +44,6 @@ string contains Arabic letters (/[\u0600-\u06FF]/) and is not empty. `process.ex
 - Added `tests/col-ex-001-syllabus-ar.mjs` to execute both syllabus modules in a VM and check subject keys, topic counts, week alignment, and Arabic text.
 - Validation on Node v22.22.0: `node tests/col-ex-001-syllabus-ar.mjs` PASS (10 subjects, 157 topics); `node build.mjs` PASS (977 KB app, 410 lessons). Confirmed the generated HTML includes the new translations; generated `dist/` and `public/` files are not part of this branch diff.
 - Terminology that may need lead confirmation: “missing third view” for the source's “deleted third position,” and “Thermstone” retained as the material's product name.
+- Delivery: commit `13d2e7c` is pushed to `origin/exec/EX-001-syllabus-ar`. Draft PR creation is blocked: both `gh pr create` and the GitHub REST API return HTTP 403 (`Forbidden`). GitHub's suggested PR page is `https://github.com/learned16/studio5/pull/new/exec/EX-001-syllabus-ar`; set the base to `claude/zen-bell-oqcqtr`.
 
 ## Lead review
