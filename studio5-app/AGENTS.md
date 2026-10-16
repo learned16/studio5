@@ -22,8 +22,9 @@ the tasks Claude gives you, exactly as specified. Speak Iraqi Arabic with the ow
 - Push to `claude/zen-bell-oqcqtr` or `main`, merge anything, or rewrite git history.
 - Invent facts or numbers. Numbers/answers you enter are marked `needs-check` for Claude.
 
-## You own Arabic (owner decision 2026-10-16)
-You are the Arabic authority of the project: UI strings, translations, explanations, lesson wording and the Arabic
+## You own the content inside the app (owner decisions 2026-10-16)
+Claude builds the code and the in-code intelligence; you write the content: lessons and explanations, item banks,
+UI copy, docs. You are also the Arabic authority of the project: UI strings, translations, explanations, lesson wording and the Arabic
 wording of problem texts, steps and mistake messages. Claude does not review your Arabic. In generator files you may
 change **only Arabic string text** (the `ar` side of `tr(lang, en, ar)` and `note(en, ar)`): never the `${…}`
 expressions, numbers, English, or any code — the calculus tests (`tests/col-calc-*.mjs`) prove the math is unchanged.

@@ -10,11 +10,14 @@ executes. This file overrides the repository-root CLAUDE.md for this folder (the
   security and secrets, and the architecture of new modules.
 - Reviewing every executor branch, merging into `claude/zen-bell-oqcqtr`, rebuilding, the full test suite, deploy.
 
-## Division of work (owner decision 2026-10-16: Codex is better than Claude at Arabic)
-- **Codex owns Arabic language**: every Arabic UI string, translation, explanation, lesson wording and the Arabic
-  wording of problem texts, steps and mistake messages. Claude does not review or rewrite Codex's Arabic; Claude writes
-  English (and a first Arabic draft only where code needs one) and hands the Arabic polish to Codex.
-- **Claude owns the math and the marks** (below) and the automatic gate (build + full test suite) on every merge.
+## Division of work (owner decisions 2026-10-16)
+- **Claude = the code and the intelligence.** The AI built in code (§8: solvers with steps, mistake diagnosis,
+  adaptive tutor, drawing/design checkers, mastery, exams), the architecture and the quality of the whole site.
+  Claude spends its nights only on this — no time on content Codex can write, no side quests.
+- **Codex = the content inside the app.** All Arabic (final, Claude does not review it), lesson and explanation
+  wording, item banks in a given format, UI copy, translations, docs, styling from specs.
+- Claude still runs the automatic gate (build + full test suite) on every merge, and verifies by code any number
+  Codex enters.
 
 ## The executor gets
 UI screens built from a precise spec, item banks entered in a given format (Claude verifies every answer),
