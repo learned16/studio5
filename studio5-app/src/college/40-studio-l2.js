@@ -261,5 +261,30 @@
       if (T === "vase") { path([[c.axis, c.top - 30], [c.axis, c.bottom + 30]], YEL, 1.5, [6, 6]); for (const st of pens) path(G.pts(st).map((p) => [2 * c.axis - p[0], p[1]]), YEL, 2, [8, 6]); }
       x.restore(); x.setLineDash([]); x.fillStyle = "rgba(245,245,235,.85)"; x.font = "600 13px sans-serif"; x.direction = "rtl"; x.fillText(T === "vase" ? "أبيض = رسمتك · أصفر = صورتها بالمرآة" : "أبيض = رسمتك · أصفر = الصحيح", w - 12, h - 10);
     };
+
+    /* ---------- day sketch (Arc 101 weeks 5, 9, 15): a timed attempt that is checked automatically at the bell ---------- */
+    S5.daySketch = {
+      minutes: (L) => L.timeMin || ((L.level || 1) >= 2 ? 12 : 4),
+      stop() { const t = S5.studio.timer; if (t) clearInterval(t.iv); S5.studio.timer = null; const el = document.getElementById("st-clock"); if (el) el.remove(); if (S5.studio.ink) S5.studio.ink.o.readOnly = false; },
+      start(ms) {
+        const L = S5.studio.L; if (!L || !S5.studio.ink) return; this.stop();
+        const bar = document.querySelector(".st-actions"); if (!bar) return;
+        bar.insertAdjacentHTML("afterbegin", `<span class="pill amber mono" id="st-clock" aria-live="polite"></span>`);
+        const end = Date.now() + (ms || this.minutes(L) * 60000), total = end - Date.now();
+        const tick = async () => {
+          const el = document.getElementById("st-clock"); if (!el || !el.isConnected) { this.stop(); return; }
+          const left = Math.max(0, end - Date.now()); el.textContent = `⏱ ${Math.floor(left / 60000)}:${String(Math.floor((left % 60000) / 1000)).padStart(2, "0")}`;
+          if (left > 0) return;
+          clearInterval(S5.studio.timer.iv); S5.studio.ink.o.readOnly = true; el.textContent = "⏱ 0:00";
+          await S5.act["st-check"](); const res = S5.studio.last; if (!res) return;
+          const all = { ...S5.studioProg.all() }, tm = { ...(all._timed || {}) }, prev = tm[L.id] || { best: 0, tries: 0 };
+          tm[L.id] = { best: Math.max(prev.best, res.score), tries: prev.tries + 1, passed: prev.passed || res.ok, min: Math.round(total / 60000), at: S5.now() }; all._timed = tm;
+          await S5.store.setMeta("studioProg", all);
+          S5.ui.toast(res.ok ? "Day sketch passed in time ✓" : "Time is up — see the notes", !res.ok);
+        };
+        S5.studio.timer = { end, iv: setInterval(tick, 250) }; tick();
+      },
+    };
+    S5.act["st-timer"] = () => (S5.studio.timer ? S5.daySketch.stop() : S5.daySketch.start());
   } catch (e) { (S5.COLLEGE_ERRORS = S5.COLLEGE_ERRORS || []).push("40-studio-l2: " + (e && e.message)); console.error(e); }
 })();

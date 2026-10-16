@@ -1,1 +1,4 @@
 Level 2 — Freehand (Arc 103):	المستوى 2 — الرسم الحر (Arc 103):
+Day sketch passed in time ✓	نجح الاسكتش اليومي ضمن الوقت ✓
+Time is up — see the notes	انتهى الوقت — شوف الملاحظات
+⏱ Day sketch	⏱ اسكتش يومي

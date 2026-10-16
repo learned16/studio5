@@ -261,7 +261,7 @@ S5.views.studio = (r) => {
       <div class="st-tray" dir="ltr">${S5.STUDIO_TOOLS.map((t) => `<button class="st-tool ${t.kind}${t.k === tool ? " on" : ""}" data-st-tool="${t.k}" title="${S5.esc(t.ar)}"><i style="background:${t.c};height:${Math.max(2, t.w * 1.6)}px"></i><span>${t.k}</span></button>`).join("")}<button class="st-tool eraser" data-st-tool="eraser" title="ممحاة"><i></i><span>⌫</span></button><span class="st-sep"></span>${S5.STUDIO_LOCKED.map(([g, n]) => `<button class="st-tool locked" disabled title="${S5.esc(n)} — تنفتح بالمرحلة الثانية"><span class="g">${g}</span><span>🔒</span></button>`).join("")}<span class="st-sep"></span><button class="btn sm" data-act="st-undo">↶</button><button class="btn sm" data-act="st-clear">Clear</button><span class="tiny" id="st-pen"></span></div>
       <div class="st-paper"><div id="st-ink" class="ink-wrap"></div></div>
       <div class="st-result" id="st-result"></div>
-      <div class="row st-actions">${H.btn("✓ Check my drawing", "st-check", { id: L.id }, "primary")}${idx < S5.STUDIO_LESSONS.length - 1 && P.unlocked(idx + 1) ? H.btn("Next lesson →", "open", { v: "studio", id: S5.STUDIO_LESSONS[idx + 1].id }) : ""}${H.btn("← Practice", "go", { v: "practice" }, "sm")}</div>
+      <div class="row st-actions">${H.btn("✓ Check my drawing", "st-check", { id: L.id }, "primary")}${idx < S5.STUDIO_LESSONS.length - 1 && P.unlocked(idx + 1) ? H.btn("Next lesson →", "open", { v: "studio", id: S5.STUDIO_LESSONS[idx + 1].id }) : ""}${S5.act["st-timer"] ? H.btn("⏱ Day sketch", "st-timer", { id: L.id }, "sm") : ""}${H.btn("← Practice", "go", { v: "practice" }, "sm")}</div>
     </div>
   </div>`;
 };

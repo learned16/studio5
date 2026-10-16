@@ -91,6 +91,20 @@ await page.evaluate(() => { S5.settings.set("lang", "ar"); S5.ui.go({ v: "studio
 res.roomOpens = await page.evaluate(() => !!document.getElementById("st-ink") && !!document.querySelector(".st-ladder"));
 await page.click('[data-act="st-check"]'); await page.waitForTimeout(400);
 res.checkEmptyShowsNote = await page.evaluate(() => /ارسم/.test(document.getElementById("st-result").textContent));
+// day sketch: a 1.2 s timed attempt on L2 with 8 good horizontal lines → auto-checked at the bell, ink locked, recorded
+await page.evaluate(() => S5.ui.go({ v: "studio", id: "L2" })); await page.waitForTimeout(900);
+res.timerButton = await page.evaluate(() => !!document.querySelector('[data-act="st-timer"]'));
+const ds = await page.evaluate(async () => {
+  const mk = (y) => { const p = []; for (let k = 0; k <= 40; k++) p.push(Math.round((150 + k * 17.5) * 10), Math.round(y * 10), 50); return { id: S5.uid("s"), t: "pen", c: "#000", w: 2, p }; };
+  S5.studio.ink.commit({ op: "add", strokes: Array.from({ length: 8 }, (_, i) => mk(120 + i * 60)) });
+  S5.daySketch.start(1200); const clock = !!document.getElementById("st-clock");
+  await new Promise((r) => setTimeout(r, 2200));
+  const t = (S5.studioProg.all()._timed || {}).L2;
+  return { clock, locked: S5.studio.ink.o.readOnly === true, passed: !!(t && t.passed), verdict: /أحسنت/.test(document.getElementById("st-result").textContent) };
+});
+res.daySketch = (ds.clock && ds.locked && ds.passed && ds.verdict) || ds;
+await page.evaluate(() => S5.daySketch.stop());
+res.daySketchStopUnlocks = await page.evaluate(() => S5.studio.ink.o.readOnly === false && !document.getElementById("st-clock"));
 res.noPageErrors = errors.length === 0;
 const failed = Object.entries(res).filter(([k, v]) => v !== true).map(([k]) => k);
 console.log(JSON.stringify({ suite: "col-studio-l2", res, failed, errors }, null, 1));
