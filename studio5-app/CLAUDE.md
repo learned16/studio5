@@ -10,6 +10,12 @@ executes. This file overrides the repository-root CLAUDE.md for this folder (the
   security and secrets, and the architecture of new modules.
 - Reviewing every executor branch, merging into `claude/zen-bell-oqcqtr`, rebuilding, the full test suite, deploy.
 
+## Division of work (owner decision 2026-10-16: Codex is better than Claude at Arabic)
+- **Codex owns Arabic language**: every Arabic UI string, translation, explanation, lesson wording and the Arabic
+  wording of problem texts, steps and mistake messages. Claude does not review or rewrite Codex's Arabic; Claude writes
+  English (and a first Arabic draft only where code needs one) and hands the Arabic polish to Codex.
+- **Claude owns the math and the marks** (below) and the automatic gate (build + full test suite) on every merge.
+
 ## The executor gets
 UI screens built from a precise spec, item banks entered in a given format (Claude verifies every answer),
 Arabic strings, CSS/MatePad polish, tests written from a spec, docs, small listed bug fixes, approved refactors.
@@ -27,4 +33,4 @@ The executor is ChatGPT Codex, started from GitHub: an issue whose body begins w
 3. Green and in scope → merge into `claude/zen-bell-oqcqtr` (merge commit, rebuild dist/public, push; the PR shows as
    merged), close the issue, queue row `done`. Red or out of scope → comment on the PR beginning with `@codex` with
    exactly what to fix (failing output). If Codex never answers an issue, tell the owner in one line.
-4. Content the executor wrote stays marked `needs-check` until Claude has verified it when it is next used.
+4. Arabic from Codex is final (no Arabic review). Numbers/answers Codex enters stay `needs-check` until code verifies them.
